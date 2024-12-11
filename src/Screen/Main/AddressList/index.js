@@ -113,7 +113,7 @@ const DeliveryAddress = ({navigation}) => {
 
         <TouchableOpacity
           style={styles.fab}
-          onPress={() => Alert.alert('Add New Address')}>
+          onPress={() =>  navigation.navigate('Address')}>
           <Text style={styles.fabText}>+</Text>
         </TouchableOpacity>
       </ScrollView>

@@ -224,7 +224,7 @@ const Remedies12SecondComponent = () => {
           </View>
         </View>
 
-        <TouchableOpacity onPress={() =>  navigation.navigate('Address')} style={styles.book}>
+        <TouchableOpacity onPress={() =>  navigation.navigate('AddressList')} style={styles.book}>
           <Text style={styles.btext1}>
             PLACE ORDER
           </Text>

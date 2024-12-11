@@ -13,7 +13,7 @@ const ThankyouPage = ({navigation}) => {
       <Text style={styles.logoText12}>Your order is confirmed</Text>
       </View>
       <View style={{position:'absolute',bottom:20,width:'100%',paddingHorizontal:10}}>
-      <TouchableOpacity onPress={()=>navigation.navigate('Home1')} style={styles.book}>
+      <TouchableOpacity  onPress={()=>navigation.navigate('Home',{screen:'Home1'})} style={styles.book}>
        <Text style={styles.btext1}>DONE</Text>
        </TouchableOpacity>
        </View>
