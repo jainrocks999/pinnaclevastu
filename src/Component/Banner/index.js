@@ -1,0 +1,147 @@
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  Animated,
+  Dimensions,
+  FlatList,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { heightPercent, widthPrecent } from '../ResponsiveScreen/responsive';
+import { colors } from '../colors';
+
+const BannerSlider = ({
+  data,
+  width1,
+  mobileWidth,
+  height1,
+  mobileHeight,
+  local,
+  navigation,
+  onPress,
+  iscollection,
+}) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const flatListRef = useRef(null);
+
+  const { height, width } = Dimensions.get('window');
+  const aspectRatio = height / width;
+  const [autoplay, setAutoplay] = useState(true);
+  const [direction, setDirection] = useState('right');
+  const IsIPAD = aspectRatio < 1.6;
+
+  const scrollX = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (autoplay) {
+      const interval = setInterval(() => {
+        setCurrentIndex(prevIndex => {
+          let nextIndex;
+          if (direction === 'right') {
+            nextIndex = (prevIndex + 1) % data.length;
+            if (nextIndex === data.length - 1) setDirection('left');
+          } else {
+            nextIndex = (prevIndex - 1 + data.length) % data.length;
+            if (nextIndex === 0) setDirection('right');
+          }
+
+          flatListRef.current?.scrollToIndex({
+            index: nextIndex,
+            animated: true,
+          });
+          return nextIndex;
+        });
+      }, 7000); // Slower autoplay interval
+
+      return () => clearInterval(interval);
+    }
+  }, [autoplay, direction, data.length]);
+
+  const renderItem = ({ item }) => {
+    return (
+      <TouchableOpacity style={{ width,
+        height: iscollection ? 110 : height1,paddingHorizontal:12}}
+        activeOpacity={1}
+        onPressIn={() => setAutoplay(false)}
+        onPressOut={() => setAutoplay(true)}
+        onPress={() => onPress(item)}>
+        <Animated.Image
+          style={[
+            {
+             height:'100%',
+             width:'100%',
+              borderRadius: 10,
+              
+              //  resizeMode: 'contain',
+            },
+          ]}
+          source={item.image}
+        />
+      </TouchableOpacity>
+    );
+  };
+
+  return (
+    <View style={{ alignItems: 'center' }}>
+      <Animated.FlatList
+        data={data}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => index.toString()}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        ref={flatListRef}
+        snapToAlignment="center"
+        decelerationRate="normal"
+        onMomentumScrollEnd={event => {
+          const contentOffset = event.nativeEvent.contentOffset.x;
+          const newIndex = Math.round(contentOffset / width);
+          if (newIndex !== currentIndex) setCurrentIndex(newIndex);
+        }}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+          { useNativeDriver: true }
+        )}
+        scrollEventThrottle={16}
+      />
+      {!iscollection ? (
+        <View
+          style={[
+            styles.dotsContainer,
+            { width: IsIPAD ? width1 : mobileWidth },
+          ]}>
+          {data.map((_, index) => (
+            <View
+              key={index}
+              style={[
+                styles.dot,
+                {
+                  width: index === currentIndex ? 30 : 10,  // Change width for active dot
+                  backgroundColor:
+                    index === currentIndex ? colors.Headertext : 'grey',
+                },
+              ]}
+            />
+          ))}
+        </View>
+      ) : null}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  dotsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    position: 'absolute',
+    bottom: -20,
+  },
+  dot: {
+    height: 10,
+    borderRadius: 5,
+    marginLeft: 10,
+  },
+});
+
+export default BannerSlider;

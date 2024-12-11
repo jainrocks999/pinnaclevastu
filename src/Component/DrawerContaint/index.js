@@ -1,0 +1,224 @@
+import React, {useState, useEffect} from 'react';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  FlatList,
+  LayoutAnimation,
+  Alert,
+  ScrollView,
+  Linking,
+} from 'react-native';
+
+import {useNavigation, DrawerActions} from '@react-navigation/native';
+
+import {fontSize} from '../fontsize';
+import {colors} from '../colors';
+import styles from './styles';
+
+const Drawer = props => {
+  const navigation = useNavigation();
+  const [loader, setLoader] = useState(false);
+  const [visible, setVisibles] = useState(false);
+  const [name, setName] = useState('');
+
+  const openApp = async (url, fallbackUrl) => {
+    try {
+      const supported = await Linking.canOpenURL(url); // Check if app is installed
+      if (supported) {
+        await Linking.openURL(url); // Open the app
+      } else {
+        if (fallbackUrl) {
+          // Open fallback web URL if app is not installed
+          await Linking.openURL(fallbackUrl);
+        } else {
+          Alert.alert(
+            'App Not Installed',
+            'The app is not installed on your device.',
+          );
+        }
+      }
+    } catch (error) {
+      Alert.alert('Error', `An error occurred: ${error.message}`);
+    }
+  };
+
+  const manageDashboard = () => {
+    // navigation.dispatch(DrawerActions.closeDrawer());
+    navigation.navigate('Residental');
+  };
+  const manageDashboard1 = () => {
+    // navigation.dispatch(DrawerActions.closeDrawer());
+    navigation.navigate('Remedies');
+  };
+  const Loggout = () => {
+    Alert.alert(
+      'Are you sure you want to log out?',
+      '',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => {
+            cancelable: false;
+          },
+          style: 'cancel',
+        },
+        {text: 'ok', onPress: () => Logout()},
+      ],
+      {cancelable: false},
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.topSection}>
+        <Image source={require('../../assets/image/header.png')} />
+        <TouchableOpacity
+          style={{marginRight: -3}}
+          onPress={() => props.navigation.closeDrawer()}>
+          <Image source={require('../../assets/drawer/close.png')} />
+        </TouchableOpacity>
+      </View>
+      <View
+        style={{
+          width: '88%',
+          alignSelf: 'center',
+          marginTop: 15,
+          borderBottomWidth: 1,
+          borderColor: '#DFE7EF',
+        }}
+      />
+      <ScrollView>
+        <View style={styles.listContainer}>
+          <TouchableOpacity
+            onPress={() => manageDashboard()}
+            style={styles.listRow}>
+            <Image
+              style={styles.icon}
+              source={require('../../assets/drawer/house.png')}
+            />
+            <Text style={styles.listText}>Residential Vastu</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.listRow}>
+            <Image
+              style={styles.icon}
+              source={require('../../assets/drawer/office.png')}
+            />
+            <Text style={styles.listText}>Commercial Vastu</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.listRow}>
+            <Image
+              style={styles.icon}
+              source={require('../../assets/drawer/industry.png')}
+            />
+            <Text style={styles.listText}>Industrial Vastu</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.listRow}>
+            <Image
+              style={styles.icon}
+              source={require('../../assets/drawer/numerology.png')}
+            />
+            <Text style={styles.listText}>Numerology</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.listRow}>
+            <Image
+              style={styles.icon}
+              source={require('../../assets/drawer/Layer.png')}
+            />
+            <Text style={styles.listText}>Gemstone</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.listRow}>
+            <Image
+              style={styles.icon}
+              source={require('../../assets/drawer/beads.png')}
+            />
+            <Text style={styles.listText}>Rudrakasha</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.specialListRow}>
+            <View
+              style={{
+                flexDirection: 'row',
+              }}>
+              <Image
+                style={styles.icon}
+                source={require('../../assets/drawer/app.png')}
+              />
+              <Text style={styles.listText}>{'More  '}</Text>
+            </View>
+            <Image source={require('../../assets/drawer/right.png')} />
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity style={styles.coursesListRow}>
+          <View
+            style={{
+              flexDirection: 'row',
+            }}>
+            <Image
+              style={styles.icon}
+              source={require('../../assets/drawer/Icon.png')}
+            />
+            <Text style={[styles.listText, {color: colors.white}]}>
+              Courses
+            </Text>
+          </View>
+          <Image
+            style={{tintColor: '#fff', marginRight: 4}}
+            source={require('../../assets/drawer/right.png')}
+          />
+        </TouchableOpacity>
+      </ScrollView>
+
+      <View style={styles.sections}>
+        <TouchableOpacity style={styles.extraListItem}>
+          <Text style={[styles.extraListText, {color: '#C2961E'}]}>
+            Numerology Calculator
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.extraListItem}>
+          <Text style={[styles.extraListText, {color: colors.drawertitle}]}>
+            Lucky Gemstone!
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.extraListItem}>
+          <Text style={[styles.extraListText, {color: '#1F5822'}]}>
+            Astro Kundli Insights!
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={[styles.sections, {marginBottom: 0}]}>
+        <View style={styles.socialLinksContainer}>
+          <Text style={styles.headText}>Follow us On</Text>
+          <Text style={styles.versionText}>Version 1.05.11</Text>
+        </View>
+        <View style={styles.socialIconContainer}>
+          <TouchableOpacity
+            onPress={() => openApp('fb://profile', 'https://facebook.com')}>
+            <Image source={require('../../assets/drawer/fb.png')} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => openApp('instagram://app', 'https://instagram.com')}>
+            <Image
+              style={{marginLeft: 20}}
+              source={require('../../assets/drawer/instagram.png')}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => openApp('vnd.youtube://', 'https://youtube.com')}>
+            <Image
+              style={{marginLeft: 20}}
+              source={require('../../assets/drawer/youtube.png')}
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
+};
+
+export default Drawer;
