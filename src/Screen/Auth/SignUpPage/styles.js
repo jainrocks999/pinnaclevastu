@@ -55,8 +55,8 @@ export default StyleSheet.create({
     borderColor: colors.lightGrey,
   },
   input1: {
-    height: '100%',
-    width: '60%',
+    // height: '100%',
+   width: '60%',
     marginLeft: wp(-1),
     fontSize: fontSize.Sixteen,
     fontFamily: 'Poppins-Regular',
@@ -128,6 +128,7 @@ export default StyleSheet.create({
     textAlign: 'center',
   },
   inputShadow: {
+   
     shadowColor: '#c2c0c0', // Light pink color for the shadow
     shadowOffset: {width: 0, height: 2}, // Offset 0px horizontally, 6px vertically
     shadowOpacity: 0.5, // Opacity of the shadow (transparent but visible)

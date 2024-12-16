@@ -12,6 +12,7 @@ import {colors} from '../../../Component/colors';
 import SelectModal from '../../../Component/dropdown';
 import {useNavigation} from '@react-navigation/native';
 import {fontSize} from '../../../Component/fontsize';
+import DatePicker from 'react-native-date-picker';
 const SignUpPage = () => {
   const [setdata, setSedata] = useState([]);
   const [visible, setVisible] = useState(false);
@@ -27,6 +28,32 @@ const SignUpPage = () => {
     setCompanyName(item.label);
     setVisible(false);
   };
+
+  const [date, setDate] = useState(new Date()); 
+  const [open, setOpen] = useState(false); 
+
+
+  const formatDate = (date) => {
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString();
+    return `${day}-${month}-${year}`;
+  };
+
+
+  const [time, setTime] = useState(new Date()); // State to store selected time
+  const [open1, setOpen1] = useState(false); // State to control date picker visibility
+
+  const formatTime = (time) => {
+    let hours = time.getHours();
+    const minutes = time.getMinutes().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM'; // Determine AM or PM
+    hours = hours % 12; // Convert 24-hour format to 12-hour format
+    hours = hours ? hours : 12; // The hour '0' should be '12'
+    const strTime = `${hours}:${minutes} ${ampm}`; // Format time as HH:mm AM/PM
+    return strTime;
+  };
+
 
   const data = [
     {label: 'Male', value: 'Male'},
@@ -131,7 +158,56 @@ const SignUpPage = () => {
           </View>
         </View>
 
+
+        
         <View style={styles.inputmain}>
+      <Text style={styles.title2}>Date of Birth</Text>
+
+    
+      <TouchableOpacity  onPress={() => setOpen(true)}
+        style={[
+          styles.input,
+          styles.inputShadow,
+          {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          },
+        ]}>
+      
+        <Text
+          style={styles.input1}
+        >
+         {formatDate(date)}
+        </Text>
+
+      
+        <Image
+          style={{
+            height: 20,
+            width: 20,
+          }}
+          source={require('../../../assets/image/cale.png')}
+        />
+      </TouchableOpacity>
+
+    
+      <DatePicker
+        modal
+        open={open}
+        date={date}
+        mode="date" 
+        maximumDate={new Date()}
+        onConfirm={(selectedDate) => {
+          setOpen(false); 
+          setDate(selectedDate); 
+        }}
+        onCancel={() => setOpen(false)} 
+      />
+    </View>
+
+
+        {/* <View style={styles.inputmain}>
           <Text style={styles.title2}>Date of Birth</Text>
           <View
             style={[
@@ -157,9 +233,9 @@ const SignUpPage = () => {
               source={require('../../../assets/image/cale.png')}
             />
           </View>
-        </View>
+        </View> */}
 
-        <View style={styles.inputmain}>
+        {/* <View style={styles.inputmain}>
           <Text style={styles.title2}>Time of Birth</Text>
           <View
             style={[
@@ -185,7 +261,52 @@ const SignUpPage = () => {
               source={require('../../../assets/image/Layer.png')}
             />
           </View>
-        </View>
+        </View> */}
+        
+<View style={styles.inputmain}>
+      <Text style={styles.title2}>Time of Birth</Text>
+
+      {/* Input area with DatePicker */}
+      <TouchableOpacity  onPress={() => setOpen1(true)}
+        style={[
+          styles.input,
+          styles.inputShadow,
+          {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          },
+        ]}>
+       
+        <Text
+          style={styles.input1}
+         
+        >
+          {formatTime(time)}
+        </Text>
+
+        <Image
+          style={{
+            height: 20,
+            width: 20,
+          }}
+          source={require('../../../assets/image/Layer.png')}
+        />
+      </TouchableOpacity>
+
+     
+      <DatePicker
+        modal
+        open={open1}
+        date={time}
+        mode="time" 
+        onConfirm={(selectedTime) => {
+          setOpen1(false); 
+          setTime(selectedTime); 
+        }}
+        onCancel={() => setOpen1(false)} 
+      />
+    </View>
         <View style={styles.inputmain}>
           <Text style={styles.title2}>Place of Birth</Text>
           <View style={[styles.input, styles.inputShadow]}>
