@@ -128,7 +128,7 @@ const BannerSlider = ({
       /> */}
 
       <Animated.FlatList
-        data={data && data.length > 0 ? data : []} // Ensure data is valid
+        data={data && data?.length > 0 ? data : []} // Ensure data is valid
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
         horizontal
