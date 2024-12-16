@@ -25,8 +25,8 @@ export default StyleSheet.create({
     fontFamily: 'Poppins-Medium',
   },
   image: {
-    height: wp(26),
-    width: wp(26),
+    height: wp(30),
+    width: wp(31),
   },
   logoText1: {
     marginTop: hp(3),
@@ -44,7 +44,7 @@ export default StyleSheet.create({
   book: {
     backgroundColor: '#6CABF4',
     alignItems: 'center',
-    justifyContent:"center",
+    justifyContent: 'center',
     width: '100%',
     height: wp(13),
     borderRadius: 28,

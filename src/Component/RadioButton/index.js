@@ -16,7 +16,7 @@ const CustomRadioButton = ({ options, selectedOption, onSelect }) => {
           onPress={() => onSelect(option.value)}
           activeOpacity={0.8}
         >
-           {   console.log('ggfdgd',option)}
+         
           {/* Radio Button Circle */}
           <View style={styles.circle}>
             {selectedOption === option.value && <View style={styles.selectedCircle} />}

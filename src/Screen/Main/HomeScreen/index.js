@@ -20,74 +20,59 @@ import BannerSlider from '../../../Component/Banner';
 import {Rating} from 'react-native-ratings';
 import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
 import ImageSlider from '../../../Component/myBanner';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  Banner,
+  Remedie,
+  RemediesCategory,
+} from '../../../Redux/Sclice/HomeSclice';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
+import Loader from '../../../Component/Loader';
+import Imagepath from '../../../Component/Imagepath';
+import LinearGradient from 'react-native-linear-gradient';
 let backPress = 0;
-const HomeScreen = ({navigation}) => {
+const HomeScreen = () => {
   const flatListRef = useRef(null);
+  const navigation = useNavigation();
   const [isLiveCourse, setIsLiveCourse] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const data = [
-    {id: '1', image: require('../../../assets/image/Group1x.png')},
-    {id: '2', image: require('../../../assets/image/Group1x.png')},
-    {id: '3', image: require('../../../assets/image/Group1x.png')},
-  ];
+  const dispatch = useDispatch();
+  const Homebanner = useSelector(state => state.home?.HomeBanner);
+  const Remediesproduct = useSelector(state => state.home?.Remedi?.data);
+  const isLoading = useSelector(state => state.home?.loading);
 
-  const BannerImg = [
-    {id: '1', image: require('../../../assets/image/bannerImg1.png')},
-    {id: '2', image: require('../../../assets/image/bannerImg2.png')},
-    {id: '3', image: require('../../../assets/image/bannerImg3.png')},
-  ];
+  const newArray = [];
+  (Homebanner?.data?.[0]?.slider_items || []).forEach(item => {
+    const formattedItem = {
+      id: item.id,
+      image: `${Imagepath.Path}${item.image}`,
+      word: item.title,
+    };
 
-  const data1 = [
-    {
-      id: '1',
-      image: require('../../../assets/image/house.png'),
-      name: 'Residential Vastu',
-    },
-    {
-      id: '2',
-      image: require('../../../assets/image/house.png'),
-      name: 'Commercial Vastu',
-    },
-    {
-      id: '3',
-      image: require('../../../assets/image/industry.png'),
-      name: 'Industrial Vastu',
-    },
-    {
-      id: '4',
-      image: require('../../../assets/image/numerology.png'),
-      name: 'Numerology',
-    },
-    {
-      id: '5',
-      image: require('../../../assets/image/Layer_x.png'),
-      name: 'Gemstone',
-    },
-    {
-      id: '6',
-      image: require('../../../assets/image/beads.png'),
-      name: 'Rudrakasha',
-    },
-  ];
+    newArray.push(formattedItem);
+  });
+  const focus = useIsFocused();
 
-  const data2 = [
-    {
-      id: '1',
-      image: require('../../../assets/image/numerology.png'),
-      name: 'Numerology Report',
-    },
-    {
-      id: '2',
-      image: require('../../../assets/image/g2.png'),
-      name: 'Vastu Evaluation Report',
-    },
-    {
-      id: '3',
-      image: require('../../../assets/image/astro.png'),
-      name: 'Astro Vastu Fortune Report',
-    },
-  ];
+  useEffect(() => {
+    if (focus) {
+      apicall();
+    }
+  }, [focus]);
 
+  const apicall = async () => {
+    await dispatch(Banner({url: 'home-slider'}));
+    await dispatch(Remedie({url: 'remedies'}));
+  };
+  const RemediesProductcategory = async item => {
+    await dispatch(
+      RemediesCategory({
+        url: 'remedies-by-product',
+        category_id: item.id,
+        navigation,
+        name: item.name,
+      }),
+    );
+  };
   const handleImageChange = index => {
     if (flatListRef.current) {
       flatListRef.current.scrollToIndex({index, animated: true});
@@ -97,18 +82,18 @@ const HomeScreen = ({navigation}) => {
 
   const renderItem = ({item}) => {
     let backgroundColor;
-
-    // Check item name and set background color
-    if (item.name === 'Residential Vastu' || item.name === 'Rudrakasha') {
-      backgroundColor = colors.card1;
+    if (item.name === 'Residential Vastu') {
+      backgroundColor = colors.card4;
+    } else if (item.name === 'Rudrakasha') {
+      backgroundColor = colors.card;
     } else if (item.name === 'Commercial Vastu') {
       backgroundColor = colors.card5;
     } else if (item.name === 'Gemstone') {
-      backgroundColor = colors.card2; // Add this for 'Industrial Vastu'
+      backgroundColor = colors.card2;
     } else if (item.name === 'Numerology') {
       backgroundColor = '#F9E4E8';
     } else {
-      backgroundColor = colors.card3; // Default color for any other items
+      backgroundColor = colors.card3;
     }
 
     return (
@@ -132,13 +117,24 @@ const HomeScreen = ({navigation}) => {
   };
   const renderItem2 = ({item}) => {
     return (
-      <TouchableOpacity style={[styles.cardContainer1]}>
+      <TouchableOpacity
+        onPress={() => RemediesProductcategory(item)}
+        style={[styles.cardContainer1]}>
         <ImageBackground
-          source={item.image}
+          resizeMode="contain"
+          source={{uri: `${Imagepath.Path}${item.image}`}}
           style={{height: '100%', width: '100%'}}>
-          {console.log(item)}
+          <LinearGradient
+            colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.7)']}
+            style={{
+              position: 'absolute',
+              height: '100%',
+              width: '100%',
+            }}
+          />
           <Text style={styles.text1}>{item.name}</Text>
         </ImageBackground>
+        {/* </LinearGradient> */}
       </TouchableOpacity>
     );
   };
@@ -244,7 +240,7 @@ const HomeScreen = ({navigation}) => {
           <Image source={require('../../../assets/image/Group.png')} />
         </TouchableOpacity>
       </View>
-
+      {isLoading ? <Loader /> : null}
       <ScrollView contentContainerStyle={styles.servicesContainer}>
         <View style={styles.searchContainer}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -262,11 +258,9 @@ const HomeScreen = ({navigation}) => {
 
         <View style={styles.welcomeCard}>
           <BannerSlider
-            onPress={item => {
-              console.log(item);
-            }}
+            onPress={item => {}}
             height1={wp(40)}
-            data={data}
+            data={newArray?newArray:[]}
             local={true}
           />
         </View>
@@ -275,7 +269,7 @@ const HomeScreen = ({navigation}) => {
           <Text style={styles.service}>Our Services</Text>
         </View>
         <FlatList
-          data={data1}
+          data={data1?data1:[]}
           renderItem={renderItem}
           keyExtractor={item => item.id}
           numColumns={3}
@@ -302,27 +296,24 @@ const HomeScreen = ({navigation}) => {
 
         <View style={styles.switchBtnContainer}>
           <TouchableOpacity
-            style={[
-              styles.switchBtn,
-             isLiveCourse ? styles.activeBtn : null,
-            ]}
+            style={[styles.switchBtn, isLiveCourse ? styles.activeBtn : null]}
             onPress={() => setIsLiveCourse(true)}>
-            <Text  style={[
+            <Text
+              style={[
                 styles.switchText,
-               isLiveCourse ? {color: '#fff'} : null,
-              ]}>Live Course</Text>
+                isLiveCourse ? {color: '#fff'} : null,
+              ]}>
+              Live Course
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[
-              styles.switchBtn,
-            !isLiveCourse? styles.activeBtn : null,
-            ]}
+            style={[styles.switchBtn, !isLiveCourse ? styles.activeBtn : null]}
             onPress={() => setIsLiveCourse(false)}>
             <Text
               style={[
                 styles.switchText,
-               !isLiveCourse ? {color: '#fff'} : null,
+                !isLiveCourse ? {color: '#fff'} : null,
               ]}>
               Recorded Courses
             </Text>
@@ -333,9 +324,7 @@ const HomeScreen = ({navigation}) => {
           <FlatList
             ref={flatListRef}
             contentContainerStyle={styles.cardContainer0}
-            data={
-            isLiveCourse? LiveCourseData : RecordedCourseData
-            }
+            data={isLiveCourse ? LiveCourseData : RecordedCourseData}
             renderItem={renderCard}
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -350,25 +339,40 @@ const HomeScreen = ({navigation}) => {
           />
 
           <View style={styles.dotContainer}>
-            {(isLiveCourse
-              ? LiveCourseData
-              : RecordedCourseData
-            ).map((_, index) => (
-              <TouchableOpacity
-                key={index}
-                style={[styles.dot, currentIndex === index && styles.activeDot]}
-                onPress={() => handleImageChange(index)}
-              />
-            ))}
+            {(isLiveCourse ? LiveCourseData : RecordedCourseData).map(
+              (_, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    styles.dot,
+                    currentIndex === index && styles.activeDot,
+                  ]}
+                  onPress={() => handleImageChange(index)}
+                />
+              ),
+            )}
           </View>
         </View>
 
         <View style={styles.contain1}>
           <Text style={styles.service}>Remedies</Text>
-          <Text style={styles.service1}>VIEW ALL</Text>
+          <TouchableOpacity
+            onPress={
+              () =>
+                navigation.reset({
+                  index: 0,
+                  routes: [{name: 'Home1', params: {screen: 'Remedie12'}}],
+                })
+              // navigation.navigate('Home1', {
+              //   screen: 'Remedie12',
+              //    params: {screen: 'Remedies'},
+              // })
+            }>
+            <Text style={styles.service1}>VIEW ALL</Text>
+          </TouchableOpacity>
         </View>
         <FlatList
-          data={data3}
+          data={Remediesproduct?.slice(0, 5)}
           renderItem={renderItem2}
           keyExtractor={item => item.id}
           horizontal
@@ -405,7 +409,68 @@ const HomeScreen = ({navigation}) => {
 };
 
 export default HomeScreen;
+const data = [
+  {id: '1', image: require('../../../assets/image/Group1x.png')},
+  {id: '2', image: require('../../../assets/image/Group1x.png')},
+  {id: '3', image: require('../../../assets/image/Group1x.png')},
+];
 
+const BannerImg = [
+  {id: '1', image: require('../../../assets/image/bannerImg1.png')},
+  {id: '2', image: require('../../../assets/image/bannerImg2.png')},
+  {id: '3', image: require('../../../assets/image/bannerImg3.png')},
+];
+
+const data1 = [
+  {
+    id: '1',
+    image: require('../../../assets/image/house.png'),
+    name: 'Residential Vastu',
+  },
+  {
+    id: '2',
+    image: require('../../../assets/image/house.png'),
+    name: 'Commercial Vastu',
+  },
+  {
+    id: '3',
+    image: require('../../../assets/image/industry.png'),
+    name: 'Industrial Vastu',
+  },
+  {
+    id: '4',
+    image: require('../../../assets/image/numerology.png'),
+    name: 'Numerology',
+  },
+  {
+    id: '5',
+    image: require('../../../assets/image/Layer_x.png'),
+    name: 'Gemstone',
+  },
+  {
+    id: '6',
+    image: require('../../../assets/image/beads.png'),
+    name: 'Rudrakasha',
+  },
+];
+
+const data2 = [
+  {
+    id: '1',
+    image: require('../../../assets/image/numerology.png'),
+    name: 'Numerology Report',
+  },
+  {
+    id: '2',
+    image: require('../../../assets/image/g2.png'),
+    name: 'Vastu Evaluation Report',
+  },
+  {
+    id: '3',
+    image: require('../../../assets/image/astro.png'),
+    name: 'Astro Vastu Fortune Report',
+  },
+];
 const LiveCourseData = [
   {id: 1, image: require('../../../assets/otherApp/courseCard1.png')},
   {id: 2, image: require('../../../assets/otherApp/courseCard1.png')},

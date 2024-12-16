@@ -82,8 +82,9 @@ export default StyleSheet.create({
     marginBottom:5
   },
   productQuantity: {
-    fontSize: 12,
-    color: '#324356',
+    fontSize:fontSize.Twelve,
+    color: colors.heading,
+    fontFamily:'Poppins-Medium'
   },
   cancleBtn: {
     marginTop:8,
@@ -183,7 +184,7 @@ export default StyleSheet.create({
 
   dropdown: {
     height: wp(6),
-    width: wp(12),
+    width: wp(14),
     borderColor: '#D8E3E980',
     borderWidth: 1,
     borderRadius: 3,

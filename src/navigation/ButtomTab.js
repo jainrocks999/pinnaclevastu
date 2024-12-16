@@ -27,7 +27,7 @@ import {
 import {fontSize} from '../Component/fontsize';
 import {colors} from '../Component/colors';
 import HomeScreen from '../Screen/Main/HomeScreen';
-import Remedies from './Remediesstack';
+import Remedie from './Remediesstack';
 import CoureList from '../Screen/Main/Courses';
 import MyProfile from './Profilestack';
 import ResidentalScreen from '../Screen/Main/ResidentalVastu';
@@ -136,19 +136,29 @@ export default function BottomTab() {
           }}
         />
         <Tab.Screen
-          name="Remedies"
-          component={Remedies}
+          name="Remedie12"
+          component={Remedie}
           options={{
             headerShown: false,
             tabBarLabel: 'Remedies',
             tabBarShowLabel: false,
-            tabBarIcon: ({color, size, focused}) => (
-              <View
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flex: 1,
-                }}>
+            tabBarIcon: ({color, size, focused}) => {
+              const navigation = useNavigation();
+
+              return (
+                <TouchableOpacity
+                  activeOpacity={0.2}
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flex: 1,
+                   
+                  }}
+               onPress={ ()=> navigation.navigate('Home1', {
+                       screen: 'Remedie12',
+                        params: {screen: 'Remedies'},
+                    })}>
+                   {/* onPress={() => navigation.navigate('')}> */}
                 {focused ? <Group1 /> : <Group />}
                 <Text
                   style={{
@@ -159,8 +169,9 @@ export default function BottomTab() {
                   }}>
                   Remedies
                 </Text>
-              </View>
-            ),
+                </TouchableOpacity>
+              );
+            },
             tabBarButton: props => (
               <TouchableOpacity
                 {...props}

@@ -174,7 +174,12 @@ const Appointment = ({ navigation }) => {
         <View style={styles.headerview}>
           <TouchableOpacity
             style={{ height: 20, width: 30 }}
-            onPress={() => navigation.goBack()}
+            onPress={() =>
+              navigation.reset({
+                index: 0,
+                routes: [{name: 'UserProfile'}],
+              })}
+            // onPress={() => navigation.goBack()}
           >
             <Image
               style={{ height: 15, width: 10 }}
@@ -184,7 +189,7 @@ const Appointment = ({ navigation }) => {
           <Text style={styles.logoText}>Appointments</Text>
         </View>
       </View>
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 20 ,paddingBottom:heightPercent(8)}}>
+      <ScrollView contentContainerStyle={{ paddingHorizontal: 20 ,paddingBottom:heightPercent(10)}}>
         <View style={styles.tabsContainer}>
           <TouchableOpacity
             style={[styles.tab, selectedTab === 'Upcoming' && styles.activeTab]}

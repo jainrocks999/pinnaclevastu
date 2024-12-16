@@ -10,16 +10,43 @@ import {
 } from 'react-native';
 import React from 'react';
 import styles from './styles';
+import LinearGradient from 'react-native-linear-gradient';
+import { useDispatch, useSelector } from 'react-redux';
+import Imagepath from '../../../Component/Imagepath';
+import { RemediesCategory } from '../../../Redux/Sclice/HomeSclice';
+import Loader from '../../../Component/Loader';
 
 const Remedies = ({navigation}) => {
+  const Remediesproduct = useSelector(state => state.home?.Remedi?.data);
+  const isLoading = useSelector(state => state.home?.loading);
+  const dispatch =useDispatch();
+
+  const RemediesProductcategory=async(item)=>{
+ 
+    // navigation.navigate('ProductList')
+   await dispatch(RemediesCategory({url: 'remedies-by-product',category_id:item.id,navigation,name:item.name}));
+  }
+
+
+
+
   const renderItem2 = ({item}) => {
     return (
       <TouchableOpacity
-        onPress={() => navigation.navigate('ProductList')}
+        onPress={() => RemediesProductcategory(item) }
         style={[styles.cardContainer1]}>
         <ImageBackground
-          source={item.image}
+            resizeMode="contain"
+            source={{uri: `${Imagepath.Path}${item.image}`}}
           style={{height: '100%', width: '100%'}}>
+            <LinearGradient
+            colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.75)']}
+            style={{
+              position: 'absolute',
+              height: '100%',
+              width: '100%',
+            }}
+          />
           <Text style={styles.text1}>{item.name}</Text>
         </ImageBackground>
       </TouchableOpacity>
@@ -44,6 +71,7 @@ const Remedies = ({navigation}) => {
           source={require('../../../assets/image/Group.png')} />
         </TouchableOpacity>
       </View>
+      {isLoading?<Loader/>:null}
       <ScrollView contentContainerStyle={styles.searchContainer}>
         <View style={styles.contain1}>
           <Image
@@ -52,7 +80,7 @@ const Remedies = ({navigation}) => {
           />
         </View>
         <FlatList
-          data={data3}
+          data={Remediesproduct}
           renderItem={renderItem2}
           numColumns={2}
           keyExtractor={item => item.id}

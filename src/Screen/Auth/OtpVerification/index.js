@@ -30,7 +30,7 @@ const OTPPAGE = ({navigation}) => {
     const handleVerify = () => {
       navigation.navigate('HomeNavigation');
       const enteredCode = code.join('');
-      console.log('Verification Code:', enteredCode);
+    
       if (enteredCode.length === 6) {
       } else {
         console.log('Please enter a 6-digit code.');

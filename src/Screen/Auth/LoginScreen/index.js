@@ -55,21 +55,59 @@
 
 
 import {
+  Alert,
   Image,
   ImageBackground,
+  Keyboard,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './styles';
 import { colors } from '../../../Component/colors';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
+import Toast from 'react-native-simple-toast';
+import { useDispatch } from 'react-redux';
+import { loginUser } from '../../../Redux/Sclice/Authsclice';
 
 const LoginScreen = ({ navigation }) => {
+ 
+  const [mobile,setMobile]=useState('');
+  const dispatch = useDispatch();
+  const handleInputChange = (text) => {
+
+    const numericText = text.replace(/[^0-9]/g, '');
+
+  
+    const mobileRegex = /^[0-9]{0,10}$/;
+
+    if (mobileRegex.test(numericText)) {
+
+      setMobile(numericText);
+     
+    } else {
+      Toast.show('Invalid mobile number.');
+    }
+  };
+  const LoginAPi=()=>{
+    Keyboard.dismiss();
+    if(mobile==''){
+      Toast.show('Please enter mobile number')
+    }else {
+      dispatch(loginUser({mobile, navigation, url: 'login'}))
+      // navigation.navigate('OTP');
+    }
+
+    
+   
+  }
+
+
+
+
   return (
     <KeyboardAwareScrollView
         extraScrollHeight={20}
@@ -92,16 +130,18 @@ const LoginScreen = ({ navigation }) => {
             <View style={styles.line} />
             <TextInput
               style={styles.inputbox}
+              value={mobile}
               placeholder="Enter Mobile Number"
               placeholderTextColor={colors.placeholder}
               keyboardType="numeric"
               maxLength={10}
+              onChangeText={handleInputChange} 
             
             />
             
           </View>
           <TouchableOpacity
-            onPress={() => navigation.navigate('OTP')}
+            onPress={() => LoginAPi()}
             style={styles.buttoncontainer}
           >
             <View style={styles.touch}>

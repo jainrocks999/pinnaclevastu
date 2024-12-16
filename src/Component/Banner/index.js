@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   Animated,
   Dimensions,
@@ -8,8 +8,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { heightPercent, widthPrecent } from '../ResponsiveScreen/responsive';
-import { colors } from '../colors';
+import {
+  heightPercent as hp,
+  widthPrecent as wp,
+} from '../ResponsiveScreen/responsive';
+import {colors} from '../colors';
 
 const BannerSlider = ({
   data,
@@ -25,7 +28,7 @@ const BannerSlider = ({
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef(null);
 
-  const { height, width } = Dimensions.get('window');
+  const {height, width} = Dimensions.get('window');
   const aspectRatio = height / width;
   const [autoplay, setAutoplay] = useState(true);
   const [direction, setDirection] = useState('right');
@@ -46,22 +49,28 @@ const BannerSlider = ({
             if (nextIndex === 0) setDirection('right');
           }
 
-          flatListRef.current?.scrollToIndex({
+          flatListRef?.current?.scrollToIndex({
             index: nextIndex,
             animated: true,
           });
           return nextIndex;
         });
-      }, 7000); // Slower autoplay interval
+      }, 4000); // Slower autoplay interval
 
       return () => clearInterval(interval);
     }
   }, [autoplay, direction, data.length]);
 
-  const renderItem = ({ item }) => {
+  const renderItem = ({item}) => {
     return (
-      <TouchableOpacity style={{ width,
-        height: iscollection ? 110 : height1,paddingHorizontal:12}}
+      <TouchableOpacity
+        style={{
+          width,
+          alignSelf: 'center',
+          justifyContent: 'center',
+          height: iscollection ? 110 : height1,
+          paddingHorizontal: 12,
+        }}
         activeOpacity={1}
         onPressIn={() => setAutoplay(false)}
         onPressOut={() => setAutoplay(true)}
@@ -69,23 +78,34 @@ const BannerSlider = ({
         <Animated.Image
           style={[
             {
-             height:'100%',
-             width:'100%',
+              height: '100%',
+              width: '100%',
               borderRadius: 10,
-              
-              //  resizeMode: 'contain',
+              borderWidth: 0.3,
+              // resizeMode: 'center',
             },
           ]}
-          source={item.image}
+          source={height1 == wp(60) ? item.image : {uri: item.image}}
         />
       </TouchableOpacity>
     );
   };
 
+  const handleMomentumScrollEnd = event => {
+    const contentOffsetX = event?.nativeEvent?.contentOffset?.x || 0;
+    const newIndex = Math.round(contentOffsetX / width);
+
+    if (newIndex >= 0 && newIndex < data.length) {
+      setCurrentIndex(newIndex);
+    } else {
+      console.warn(`Invalid index: ${newIndex}`);
+    }
+  };
+
   return (
-    <View style={{ alignItems: 'center' }}>
-      <Animated.FlatList
-        data={data}
+    <View style={{alignItems: 'center'}}>
+      {/* <Animated.FlatList
+        data={data?data:[]}
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
         horizontal
@@ -94,9 +114,10 @@ const BannerSlider = ({
         ref={flatListRef}
         snapToAlignment="center"
         decelerationRate="normal"
+        snapToInterval={width} 
         onMomentumScrollEnd={event => {
-          const contentOffset = event.nativeEvent.contentOffset.x;
-          const newIndex = Math.round(contentOffset / width);
+          const contentOffset = event?.nativeEvent?.contentOffset.x;
+          const newIndex = Math?.round(contentOffset / width);
           if (newIndex !== currentIndex) setCurrentIndex(newIndex);
         }}
         onScroll={Animated.event(
@@ -104,12 +125,32 @@ const BannerSlider = ({
           { useNativeDriver: true }
         )}
         scrollEventThrottle={16}
+      /> */}
+
+      <Animated.FlatList
+        data={data && data.length > 0 ? data : []} // Ensure data is valid
+        renderItem={renderItem}
+        keyExtractor={(item, index) => index.toString()}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        ref={flatListRef}
+        snapToAlignment="center"
+        decelerationRate="fast"
+        snapToInterval={width} // Ensures snapping
+        onMomentumScrollEnd={handleMomentumScrollEnd} // Validate newIndex
+        onScroll={Animated.event(
+          [{nativeEvent: {contentOffset: {x: scrollX}}}],
+          {useNativeDriver: true},
+        )}
+        scrollEventThrottle={16}
       />
+
       {!iscollection ? (
         <View
           style={[
             styles.dotsContainer,
-            { width: IsIPAD ? width1 : mobileWidth },
+            {width: IsIPAD ? width1 : mobileWidth},
           ]}>
           {data.map((_, index) => (
             <View
@@ -117,7 +158,7 @@ const BannerSlider = ({
               style={[
                 styles.dot,
                 {
-                  width: index === currentIndex ? 30 : 10,  // Change width for active dot
+                  width: index === currentIndex ? 30 : 10, // Change width for active dot
                   backgroundColor:
                     index === currentIndex ? colors.Headertext : 'grey',
                 },

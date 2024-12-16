@@ -98,7 +98,7 @@ export default StyleSheet.create({
     paddingHorizontal: 18,
   },
   orderCard: {
-    height:wp(38),
+    height:wp(40),
     backgroundColor: colors.white,
     borderWidth: 1,
     borderColor: '#EAEAEA',
@@ -122,7 +122,7 @@ export default StyleSheet.create({
   productContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: 8,
   },
   productImage: {
     width: '40%',
@@ -130,7 +130,7 @@ export default StyleSheet.create({
     borderRadius: 8,
     marginRight: '5%',
     resizeMode: 'contain',
-    borderWidth:0.5,
+    borderWidth:1.3,
     borderColor:colors.lightGrey
   },
   productDetails: {
@@ -172,6 +172,8 @@ export default StyleSheet.create({
   },
   horizontalSeparator: {
     height: 1,
+    width:'98.3%',
+    alignSelf:'center',
     backgroundColor: '#EAEAEA',
   },
   backBtn: {

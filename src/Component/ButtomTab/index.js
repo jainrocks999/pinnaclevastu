@@ -8,7 +8,7 @@ import {
 } from '../../Component/ResponsiveScreen/responsive';
 
 const BottomNavBar = ({navigation}) => {
-  console.log('glkdlkd',navigation);
+
   
   return (
     <View style={styles.navContainer}>

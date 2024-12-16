@@ -22,7 +22,7 @@ import {RadioButton} from 'react-native-paper';
 const ResidentalScreen = ({navigation, route}) => {
   const nav = route.params.data1;
 
-  console.log('Residental', nav);
+
 
   const [radioActive, setRadioActive] = useState('');
 
@@ -89,7 +89,6 @@ const ResidentalScreen = ({navigation, route}) => {
               placeholderTextColor={'#C9C9C9'}
             />
             <TouchableOpacity
-              // onPress={() => navigation.navigate('OTP')}
               style={styles.buttoncontainer1}>
               <Text style={styles.btext}>{'APPLY'}</Text>
             </TouchableOpacity>

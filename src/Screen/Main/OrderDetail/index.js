@@ -4,7 +4,8 @@ import styles from './styles';
 import {Dropdown} from 'react-native-element-dropdown';
 import StepIndicator from 'react-native-step-indicator';
 
-import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
+import {heightPercent, widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
+import { fontSize } from '../../../Component/fontsize';
 
 const labels = [
   'Order Received',
@@ -72,6 +73,7 @@ const OrderDetail = ({navigation}) => {
           paddingHorizontal: 15,
           paddingVertical: 10,
           gap: 10,
+          paddingBottom:heightPercent(10)
         }}>
         <View style={styles.section}>
           {currentPosition >= 1 ? (
@@ -110,9 +112,10 @@ const OrderDetail = ({navigation}) => {
                   style={[styles.dropdown, isFocus]}
                   selectedTextStyle={styles.productQuantity}
                   data={data}
-                  maxHeight={300}
+                  maxHeight={200}
                   labelField="label"
                   valueField="value"
+                  itemContainerStyle={{marginBottom: -20}}
                   placeholder={!isFocus ? '...' : value}
                   value={value}
                   onFocus={() => setIsFocus(true)}
@@ -215,7 +218,7 @@ const OrderDetail = ({navigation}) => {
 
           <View style={[styles.listRow, {marginVertical: 5}]}>
             <Text style={styles.TaxText}>
-              GST <Text style={{fontSize: wp(1.4)}}>(3.0%)</Text>
+              GST <Text style={{fontSize: fontSize.Thirteen}}>(3.0%)</Text>
             </Text>
             <Text style={styles.rowLabel}>₹50.00</Text>
           </View>

@@ -136,6 +136,7 @@ export default StyleSheet.create({
     width: wp(46), // Adjust to fit your design
     height: wp(40),
     borderRadius: 10,
+    borderWidth:0.4,
     margin: 5,
     overflow: 'hidden',
   },
@@ -214,10 +215,14 @@ export default StyleSheet.create({
     color: colors.heading,
     textAlign: 'center',
   },
+  imageOpacity: {
+    // opacity: 0.5, // Adjust the opacity to make the text stand out
+  },
   text1: {
     marginTop: hp(1),
+    width:'90%',
     fontSize: fontSize.Seventeen,
-    fontFamily: 'Poppins-Medium',
+    fontFamily: 'Poppins-SemiBold',
     color: colors.white,
     textAlign: 'center',
     position: 'absolute',

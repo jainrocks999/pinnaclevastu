@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   FlatList,
+  Dimensions,
 } from 'react-native';
 import styles from './styles';
 import {colors} from '../../../Component/colors';
@@ -15,129 +16,18 @@ import Collapsible from 'react-native-collapsible';
 import {Rating} from 'react-native-ratings';
 import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
 import {Checkbox} from 'react-native-paper';
-const ResidentalScreen = ({navigation}) => {
+import {useSelector} from 'react-redux';
+import RenderHTML from 'react-native-render-html';
+const RemediesProductDetail = ({navigation}) => {
+  const {width} = Dimensions.get('window');
   const [checked, setChecked] = useState(true);
+  const Detail = useSelector(state => state.home?.RemeiesDetail?.data);
 
   const [currentIndex, setCurrentIndex] = useState(0);
-
-  const data5 = [
-    {
-      id: '1',
-      image: require('../../../assets/otherApp/services1.png'),
-      name: 'Speedy Delivery',
-      title: 'We ensure express & fast deliver',
-    },
-    {
-      id: '2',
-      image: require('../../../assets/otherApp/services2.png'),
-      name: '100% Payment Secure',
-      title: 'We assure 100% payment Security',
-    },
-    {
-      id: '3',
-      image: require('../../../assets/otherApp/services3.png'),
-      name: 'Over 3000 Products',
-      title: "India's largest healing crystal store",
-    },
-  ];
-  const dummyDatas = [
-    {
-      id: '1',
-
-      title: 'Description',
-      subItems: [
-        {title: '●', subtitle: '1 inch wide and 8 Feet Long.'},
-        {
-          title: '●',
-          subtitle:
-            'Metal Strip Tehnique is used to remove faults in a building and correct the elemental disbalance in a space.',
-        },
-
-        {
-          title: '●',
-          subtitle:
-            'metal strip is drilled in floor to block anti-activity (normally toilets or incorrect entrance).',
-        },
-        {
-          title: '●',
-          subtitle:
-            'Aluminium Metal Strip is used to balance East, East North East, East South East.',
-        },
-      ],
-    },
-    {
-      id: '2',
-
-      title: 'Aluminium strip for Vastu',
-      subItems: [
-        {title: '●', subtitle: '1 inch wide and 8 Feet Long.'},
-        {
-          title: '●',
-          subtitle:
-            'Metal Strip Tehnique is used to remove faults in a building and correct the elemental disbalance in a space.',
-        },
-
-        {
-          title: '●',
-          subtitle:
-            'metal strip is drilled in floor to block anti-activity (normally toilets or incorrect entrance).',
-        },
-        {
-          title: '●',
-          subtitle:
-            'Aluminium Metal Strip is used to balance East, East North East, East South East.',
-        },
-      ],
-    },
-    {
-      id: '3',
-
-      title: 'Aluminium strip for Home',
-      subItems: [
-        {title: '●', subtitle: '1 inch wide and 8 Feet Long.'},
-        {
-          title: '●',
-          subtitle:
-            'Metal Strip Tehnique is used to remove faults in a building and correct the elemental disbalance in a space.',
-        },
-
-        {
-          title: '●',
-          subtitle:
-            'metal strip is drilled in floor to block anti-activity (normally toilets or incorrect entrance).',
-        },
-        {
-          title: '●',
-          subtitle:
-            'Aluminium Metal Strip is used to balance East, East North East, East South East.',
-        },
-      ],
-    },
-    {
-      id: '4',
-
-      title: 'Aluminium strip for Toilet',
-      subItems: [
-        {title: '●', subtitle: '1 inch wide and 8 Feet Long.'},
-        {
-          title: '●',
-          subtitle:
-            'Metal Strip Tehnique is used to remove faults in a building and correct the elemental disbalance in a space.',
-        },
-
-        {
-          title: '●',
-          subtitle:
-            'metal strip is drilled in floor to block anti-activity (normally toilets or incorrect entrance).',
-        },
-        {
-          title: '●',
-          subtitle:
-            'Aluminium Metal Strip is used to balance East, East North East, East South East.',
-        },
-      ],
-    },
-  ];
+  const [isExpanded, setIsExpanded] = useState(false);
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
 
   const handleImageChange = index => {
     setCurrentIndex(index);
@@ -163,7 +53,7 @@ const ResidentalScreen = ({navigation}) => {
         onPress={() => navigation.navigate('profile')}
         style={[styles.cardContainer1]}>
         <View style={styles.reviewCard}>
-          <View style={{paddingLeft:5}}>
+          <View style={{paddingLeft: 5}}>
             <Image style={styles.reviewImage} source={item.image} />
 
             <Rating
@@ -176,10 +66,10 @@ const ResidentalScreen = ({navigation}) => {
               ratingBackgroundColor={colors.lightGrey} // Unfilled star color
             />
           </View>
-          <View style={[styles.card,{paddingLeft:10}]}>
+          <View style={[styles.card, {paddingLeft: 10}]}>
             <Text style={styles.reviewText}>{item.name}</Text>
 
-            <Text style={[styles.third2,{marginTop:-8}]}>{item.msg}</Text>
+            <Text style={[styles.third2, {marginTop: -8}]}>{item.msg}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -188,9 +78,7 @@ const ResidentalScreen = ({navigation}) => {
 
   const [activeIndex, setActiveIndex] = useState(null);
 
-
-
-  const [selectedItems, setSelectedItems] = useState(products?.map(() => true)); 
+  const [selectedItems, setSelectedItems] = useState(products?.map(() => true));
 
   const toggleSelection = index => {
     const updatedSelection = [...selectedItems];
@@ -337,17 +225,19 @@ const ResidentalScreen = ({navigation}) => {
       <ScrollView contentContainerStyle={styles.servicesContainer}>
         <View style={styles.welcomeCard}>
           <BannerSlider
-            onPress={item => {
-              console.log(item);
-            }}
+            onPress={item => {}}
             data={data7}
             local={true}
-            height1={251}
+            height1={wp(60)}
           />
         </View>
 
         <View style={styles.contain}>
-          <Text style={styles.service}>Aluminium Metal Strip Vastu</Text>
+          {/* Aluminium Metal Strip Vastu */}
+          <Text style={styles.service}>
+            {' '}
+            {Array.isArray(Detail) && Detail[0]?.name ? Detail[0]?.name : ''}
+          </Text>
         </View>
         <View style={styles.main}>
           <View style={styles.headerview}>
@@ -396,7 +286,7 @@ const ResidentalScreen = ({navigation}) => {
               {' reviews'}
             </Text>
           </View>
-          <View style={styles.dividerView}/>
+          <View style={styles.dividerView} />
           <Text
             style={[
               styles.third1,
@@ -414,13 +304,40 @@ const ResidentalScreen = ({navigation}) => {
           />
         </View>
         <View>
-          <Text style={styles.cont}>
+          <View style={{paddingHorizontal: 10}}>
+            {Detail?.[0]?.description ? (
+              <RenderHTML
+                contentWidth={width}
+                source={{
+                  html: isExpanded
+                    ? Detail[0]?.description 
+                    : Detail[0]?.description.replace(/<[^>]*>/g, '').slice(0, 80) + '...' 
+                }}
+              />
+            ) : (
+              <Text style={styles.cont}> No content available</Text>
+            )}
+
+            <TouchableOpacity onPress={toggleExpand}>
+              <Text
+                style={{
+                  color: 'blue',
+                  textDecorationLine: 'underline',
+                  marginTop: 10,
+                  // textAlign: 'center',
+                }}>
+                {isExpanded ? 'View Less' : 'View More'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+          {/* <Text style={styles.cont}> 
+          
             {
               'Iron strip for vastu, spacial metel strips for vastu, 10 pieces metel strips for vastu, 100 metel vastu strips, 8 feet metel strip vastu, aluminium metel strips direction south west, artificial strip for vastudosh, mahavastu aluminium strip, steel strip remedy vastu'
             }
-          </Text>
+          </Text> */}
           <Text style={[styles.third1, {marginTop: 15, marginHorizontal: 15}]}>
-            ₹ 725.00
+            {`₹ ${Detail[0]?.price}`}
           </Text>
           <View
             style={[styles.headerview, {marginTop: 15, marginHorizontal: 15}]}>
@@ -442,7 +359,7 @@ const ResidentalScreen = ({navigation}) => {
 
           <TouchableOpacity
             onPress={() => navigation.navigate('Home', {screen: 'MyCart'})}
-            style={[styles.book,{marginTop:15}]}>
+            style={[styles.book, {marginTop: 15}]}>
             <Text style={styles.btext1}>ADD TO CART</Text>
           </TouchableOpacity>
         </View>
@@ -466,8 +383,10 @@ const ResidentalScreen = ({navigation}) => {
           />
         </View>
 
-        <View style={[styles.productsContainer, {gap: 0,}]}>
-          <Text style={[styles.header1,{marginLeft:20}]}>Frequently Bought Together</Text>
+        <View style={[styles.productsContainer, {gap: 0}]}>
+          <Text style={[styles.header1, {marginLeft: 20}]}>
+            Frequently Bought Together
+          </Text>
 
           <FlatList
             data={products}
@@ -477,10 +396,10 @@ const ResidentalScreen = ({navigation}) => {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={[
               styles.productsContainer,
-              {paddingVertical: 0, paddingRight: 25,},
+              {paddingVertical: 0, paddingRight: 25},
             ]}
           />
-          <View style={styles.viewBorder}/>
+          <View style={styles.viewBorder} />
           <Text style={styles.totalText}>Total: ₹ {getTotalPrice()}</Text>
 
           <TouchableOpacity
@@ -523,7 +442,7 @@ const ResidentalScreen = ({navigation}) => {
 
         <View style={{backgroundColor: '#F1F1F1'}}>
           <View style={styles.shareview}>
-            <View style={{marginBottom:-20}}>
+            <View style={{marginBottom: -20}}>
               <Text style={styles.service}>User Reviews (22)</Text>
             </View>
             <TouchableOpacity style={styles.button1}>
@@ -546,8 +465,126 @@ const ResidentalScreen = ({navigation}) => {
   );
 };
 
-export default ResidentalScreen;
+export default RemediesProductDetail;
 
+const data5 = [
+  {
+    id: '1',
+    image: require('../../../assets/otherApp/services1.png'),
+    name: 'Speedy Delivery',
+    title: 'We ensure express & fast deliver',
+  },
+  {
+    id: '2',
+    image: require('../../../assets/otherApp/services2.png'),
+    name: '100% Payment Secure',
+    title: 'We assure 100% payment Security',
+  },
+  {
+    id: '3',
+    image: require('../../../assets/otherApp/services3.png'),
+    name: 'Over 3000 Products',
+    title: "India's largest healing crystal store",
+  },
+];
+const dummyDatas = [
+  {
+    id: '1',
+
+    title: 'Description',
+    subItems: [
+      {title: '●', subtitle: '1 inch wide and 8 Feet Long.'},
+      {
+        title: '●',
+        subtitle:
+          'Metal Strip Tehnique is used to remove faults in a building and correct the elemental disbalance in a space.',
+      },
+
+      {
+        title: '●',
+        subtitle:
+          'metal strip is drilled in floor to block anti-activity (normally toilets or incorrect entrance).',
+      },
+      {
+        title: '●',
+        subtitle:
+          'Aluminium Metal Strip is used to balance East, East North East, East South East.',
+      },
+    ],
+  },
+  {
+    id: '2',
+
+    title: 'Aluminium strip for Vastu',
+    subItems: [
+      {title: '●', subtitle: '1 inch wide and 8 Feet Long.'},
+      {
+        title: '●',
+        subtitle:
+          'Metal Strip Tehnique is used to remove faults in a building and correct the elemental disbalance in a space.',
+      },
+
+      {
+        title: '●',
+        subtitle:
+          'metal strip is drilled in floor to block anti-activity (normally toilets or incorrect entrance).',
+      },
+      {
+        title: '●',
+        subtitle:
+          'Aluminium Metal Strip is used to balance East, East North East, East South East.',
+      },
+    ],
+  },
+  {
+    id: '3',
+
+    title: 'Aluminium strip for Home',
+    subItems: [
+      {title: '●', subtitle: '1 inch wide and 8 Feet Long.'},
+      {
+        title: '●',
+        subtitle:
+          'Metal Strip Tehnique is used to remove faults in a building and correct the elemental disbalance in a space.',
+      },
+
+      {
+        title: '●',
+        subtitle:
+          'metal strip is drilled in floor to block anti-activity (normally toilets or incorrect entrance).',
+      },
+      {
+        title: '●',
+        subtitle:
+          'Aluminium Metal Strip is used to balance East, East North East, East South East.',
+      },
+    ],
+  },
+  {
+    id: '4',
+
+    title: 'Aluminium strip for Toilet',
+    subItems: [
+      {title: '●', subtitle: '1 inch wide and 8 Feet Long.'},
+      {
+        title: '●',
+        subtitle:
+          'Metal Strip Tehnique is used to remove faults in a building and correct the elemental disbalance in a space.',
+      },
+
+      {
+        title: '●',
+        subtitle:
+          'metal strip is drilled in floor to block anti-activity (normally toilets or incorrect entrance).',
+      },
+      {
+        title: '●',
+        subtitle:
+          'Aluminium Metal Strip is used to balance East, East North East, East South East.',
+      },
+    ],
+  },
+];
 const data2 = [
   {
     id: '1',

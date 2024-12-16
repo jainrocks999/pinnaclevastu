@@ -1,7 +1,7 @@
 import {StyleSheet} from 'react-native';
 import {fontSize} from '../../../Component/fontsize';
 import {colors} from '../../../Component/colors';
-import { widthPrecent as wp } from '../../../Component/ResponsiveScreen/responsive';
+import { heightPercent, widthPrecent as wp } from '../../../Component/ResponsiveScreen/responsive';
 export default styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -27,25 +27,29 @@ export default styles = StyleSheet.create({
     fontFamily: 'Poppins-Regular',
   },
   searchContainer: {
-    marginHorizontal:18,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     backgroundColor: colors.ordercolor,
-    borderRadius: wp(4),
-    paddingHorizontal: 12,
-    height: wp(10),
+    borderRadius: 20,
+    // elevation: 3,
+    marginHorizontal:15,
+    paddingHorizontal: 15,
     marginBottom: 5,
   },
   searchInput: {
-    flex: 1,
-    color: colors.heading,
+    width: '95%',
     fontFamily: 'Poppins-Regular',
     fontSize: fontSize.Fourteen,
-    left: 8,
+    paddingHorizontal: 10,
+    color: colors.heading,
+    paddingVertical: 10,
   },
   searchIcon: {
-    width: wp(3),
-    height: wp(3),
+    width: wp(3.5),
+    height: '100%',
+    resizeMode: 'contain',
+    borderWidth: 1,
   },
   tabContainer: {
     flexDirection: 'row',
@@ -103,7 +107,7 @@ export default styles = StyleSheet.create({
     paddingVertical: wp(3),
     backgroundColor: '#F6F6F6',
     borderRadius: 10,
-    // marginBottom: wp(2),
+      marginBottom: heightPercent(2),
     paddingHorizontal: wp(5),
     marginHorizontal:18
   },

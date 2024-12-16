@@ -14,6 +14,7 @@ import { colors } from '../../../Component/colors';
 import { fontSize } from '../../../Component/fontsize';
 
 import styles from './styles';
+import { heightPercent } from '../../../Component/ResponsiveScreen/responsive';
 
 const { width } = Dimensions.get('window');
 
@@ -72,7 +73,13 @@ const MyOrder = ({ navigation }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity
-          onPress={() => navigation.goBack()}>
+          onPress={() =>
+            navigation.reset({
+              index: 0,
+              routes: [{name: 'UserProfile'}],
+            })}
+          // navigation.goBack('UserProfile')}
+          >
           <Image
             style={styles.backBtn}
             source={require('../../../assets/drawer/Back1.png')}
@@ -82,7 +89,7 @@ const MyOrder = ({ navigation }) => {
         <Text style={styles.logoText}>My Orders</Text>
       </View>
 
-      <ScrollView contentContainerStyle={{ flexGrow: 1,}}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1,paddingBottom:heightPercent(10)}}>
         <View style={styles.searchContainer}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Image source={require('../../../assets/image/SearchIcon.png')} />

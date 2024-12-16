@@ -36,7 +36,7 @@ export default StyleSheet.create({
   },
   welcomeCard: {
     marginTop: 20,
-    marginHorizontal: 15,
+    // marginHorizontal: 15,
     // overflow:"hidden",
   },
   shareIcon: {

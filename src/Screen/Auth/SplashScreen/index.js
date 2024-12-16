@@ -5,7 +5,7 @@ import { colors } from '../../../Component/colors';
 const SplashScreen =({navigation})=> {
     useEffect(() => {
         setTimeout(() => {
-          navigation.replace('Login');
+          navigation.replace('Home');
         }, 2000);
       }, []);
   return (

@@ -16,22 +16,40 @@ import styles from './styles';
 import { Rating } from 'react-native-ratings';
 import { colors } from '../../../Component/colors';
 import { widthPrecent as wp } from '../../../Component/ResponsiveScreen/responsive';
-const Remedies = ({ navigation }) => {
-  // const updateRating = (id, newRating) => {
-  //     const updatedItems = data2.map(item =>
-  //       item.id === id ? { ...item, rating: newRating } : item
-  //     );
+import { useDispatch, useSelector } from 'react-redux';
+import Imagepath from '../../../Component/Imagepath';
+import { useNavigation } from '@react-navigation/native';
+import {  productDetail1 } from '../../../Redux/Sclice/HomeSclice';
+import Loader from '../../../Component/Loader';
+const RemediesProductList = ({route}) => {
+  const  name1  = route?.params?.name1; 
 
-  //   };
-
+  
+  const navigation =useNavigation();
+  const dispatch =useDispatch();
+  const RemediesCategory = useSelector(state => state.home?.RemeiesCat?.data);
+  const isLoading = useSelector(state => state.home?.loading);
+  const PRoductDeta =async(item)=>{
+   
+    
+     await dispatch(productDetail1({url:'fetch-single-product',product_id:item.id,navigation}))
+    //  navigation.navigate("ProductDetail")
+  }
   const renderItem = ({ item }) => (
     <View style={styles.slide}>
-      <TouchableOpacity onPress={() => navigation.navigate('ProductDetail')}>
-        <Image source={item.source1} style={styles.image} />
+      <TouchableOpacity onPress={() =>PRoductDeta(item)}>
+        <View style={styles.image}>
+        <Image source={
+    item?.image 
+      ? { uri: `${Imagepath.Path}${item.image}` } :
+      require("../../../assets/image/Remedies/ab.png")}
+     
+   style={{height:'100%',width:'100%',borderRadius:10}} />
+  </View>
       </TouchableOpacity>
       <View style={styles.textContainer}>
-        <Text style={[styles.third, styles.titleText]}>{item.title}</Text>
-        <Text style={[styles.third, styles.priceText]}>{item.price}</Text>
+        <Text style={[styles.third, styles.titleText]}>{item.name}</Text>
+        <Text style={[styles.third, styles.priceText]}>{`₹ ${item.price}`}</Text>
 
         <View style={styles.direction}>
           <Rating
@@ -39,12 +57,12 @@ const Remedies = ({ navigation }) => {
             tintColor={colors.ordercolor}
             ratingCount={5}
             imageSize={wp(4)}
-            startingValue={item.rating}
+            startingValue={5}
             ratingColor="#52B1E9"
             ratingBackgroundColor={colors.lightGrey} // Unfilled star color
           />
         </View>
-        <TouchableOpacity style={styles.buttonstylefirst}>
+        <TouchableOpacity onPress={()=> navigation.navigate("ProductDetail")} style={styles.buttonstylefirst}>
           <Text style={styles.buttonstyle}>Add to Cart</Text>
         </TouchableOpacity>
       </View>
@@ -62,7 +80,7 @@ const Remedies = ({ navigation }) => {
               source={require('../../../assets/drawer/Back1.png')}
             />
           </TouchableOpacity>
-          <Text style={styles.logoText}>Strips</Text>
+          <Text style={styles.logoText}>{name1}</Text>
         </View>
         <TouchableOpacity>
           <Image
@@ -70,6 +88,7 @@ const Remedies = ({ navigation }) => {
             source={require('../../../assets/image/Group.png')} />
         </TouchableOpacity>
       </View>
+      {isLoading?<Loader/>:null}
       <ScrollView contentContainerStyle={styles.Scroll}>
         <View style={styles.searchContainer}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -85,12 +104,12 @@ const Remedies = ({ navigation }) => {
           </TouchableOpacity>
         </View>
         <FlatList
-          data={data2}
+          data={RemediesCategory}
           renderItem={renderItem}
           numColumns={2}
           keyExtractor={item => item.id}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ alignItems: "center" }}
+          contentContainerStyle={{  }}
         />
 
       </ScrollView>
@@ -99,7 +118,7 @@ const Remedies = ({ navigation }) => {
   );
 };
 
-export default Remedies;
+export default RemediesProductList;
 
 const data2 = [
   {

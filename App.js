@@ -12,6 +12,8 @@ import {
 } from 'react-native';
 import RootApp from './src/navigation/index'
 import { colors } from './src/Component/colors';
+import { Provider } from 'react-redux';
+import store from './src/Redux/store/store';
 LogBox.ignoreLogs(['Warning: ...']);
 LogBox.ignoreAllLogs();
 const App = () => {
@@ -26,8 +28,9 @@ const App = () => {
           backgroundColor: Platform.OS == 'ios' ? '#FC0600' : '#fff',
         }}>
        
-     
-          <RootApp />
+       <Provider store={store}>
+            <RootApp />
+          </Provider>
        
         <StatusBar
           backgroundColor={colors.orange}

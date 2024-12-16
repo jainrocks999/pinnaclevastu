@@ -31,7 +31,7 @@ export default StyleSheet.create({
     fontFamily: 'Poppins-Regular',
   },
   searchContainer: {
-    paddingBottom: hp(8),
+    paddingBottom: hp(10),
     // paddingHorizontal: 10,
   },
   searchInput: {
@@ -64,6 +64,7 @@ export default StyleSheet.create({
     height: wp(36),
     borderRadius: 10,
     margin: 5,
+    borderWidth:0.4,
     overflow: 'hidden',
   },
   cardContainer2: {
@@ -139,8 +140,9 @@ export default StyleSheet.create({
   text1: {
     marginTop: hp(1),
     fontSize: fontSize.Seventeen,
-    fontFamily: 'Poppins-Medium',
+    fontFamily: 'Poppins-SemiBold',
     color: colors.white,
+    width:'90%',
     textAlign: 'center',
     position: 'absolute',
     right: 0,

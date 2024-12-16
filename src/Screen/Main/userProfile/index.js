@@ -106,7 +106,7 @@ const MyProfile = ({navigation}) => {
       <ScrollView style={styles.scrollContent}>
         <View style={styles.statsSection}>
           <TouchableOpacity
-           onPress={()=>navigation.navigate( "Home1",{screen:'MyProfile'})}
+           onPress={()=>navigation.navigate( "Home1",{screen:'MyProfile',params:{screen:'MyOrder'}})}
             style={styles.statItem}>
             <Text style={styles.statValue}>25</Text>
             <View style={styles.statLabelRow}>

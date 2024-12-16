@@ -34,6 +34,36 @@ const dummyDatas = [
     ],
   },
   {
+    id: '1',
+    title0: '01',
+    title: 'Astro Vastu Classes',
+    subItems: [
+      {title: 'Class 01', subtitle: 'video'},
+      {title: 'Class 02', subtitle: 'video'},
+      {title: 'Class 03', subtitle: 'video'},
+      {title: 'Class 04', subtitle: 'video'},
+      {title: 'Class 05', subtitle: 'video'},
+      {title: 'Class 06', subtitle: 'video'},
+      {title: 'Class 07', subtitle: 'video'},
+      {title: 'Class 08', subtitle: 'video'},
+    ],
+  },
+  {
+    id: '1',
+    title0: '01',
+    title: 'Astro Vastu Classes',
+    subItems: [
+      {title: 'Class 01', subtitle: 'video'},
+      {title: 'Class 02', subtitle: 'video'},
+      {title: 'Class 03', subtitle: 'video'},
+      {title: 'Class 04', subtitle: 'video'},
+      {title: 'Class 05', subtitle: 'video'},
+      {title: 'Class 06', subtitle: 'video'},
+      {title: 'Class 07', subtitle: 'video'},
+      {title: 'Class 08', subtitle: 'video'},
+    ],
+  },
+  {
     id: '2',
     title0: '02',
     title: 'Astro - Vastu Course Material',
@@ -171,19 +201,16 @@ const CourceListDownload = ({navigation}) => {
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
-          paddingBottom:heightPercent(8),
+          paddingBottom:heightPercent(10),
           marginTop: 15,
         }}>
         <View style={styles.searchContainer}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Image
-              style={styles.searchIcon}
-              source={require('../../../assets/image/SearchIcon.png')}
-            />
+            <Image source={require('../../../assets/image/SearchIcon.png')} />
             <TextInput
               placeholder="Search..."
               style={styles.searchInput}
-              placeholderTextColor={colors.orange}
+              placeholderTextColor={colors.searchBarTextColor}
             />
           </View>
         </View>
