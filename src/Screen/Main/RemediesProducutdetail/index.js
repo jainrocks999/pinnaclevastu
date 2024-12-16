@@ -337,7 +337,7 @@ const RemediesProductDetail = ({navigation}) => {
             }
           </Text> */}
           <Text style={[styles.third1, {marginTop: 15, marginHorizontal: 15}]}>
-            {`₹ ${Detail[0]?.price}`}
+            {`₹ ${Detail?.[0]?.price}`}
           </Text>
           <View
             style={[styles.headerview, {marginTop: 15, marginHorizontal: 15}]}>
