@@ -42,7 +42,7 @@ const SignUpPage = () => {
     setModalVisible(!isModalVisible);
   };
 
-  const [birthDate, setBirthDate] = useState('');
+ 
   const [date, setDate] = useState('');
   const [open, setOpen] = useState(false);
 
@@ -69,10 +69,10 @@ const SignUpPage = () => {
     if (!time) return 'Time Of Birth';
     let hours = time.getHours();
     const minutes = time.getMinutes().toString().padStart(2, '0');
-    const ampm = hours >= 12 ? 'PM' : 'AM'; // Determine AM or PM
-    hours = hours % 12; // Convert 24-hour format to 12-hour format
-    hours = hours ? hours : 12; // The hour '0' should be '12'
-    const strTime = `${hours}:${minutes} ${ampm}`; // Format time as HH:mm AM/PM
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    const strTime = `${hours}:${minutes} ${ampm}`;
     return strTime;
   };
 
@@ -241,9 +241,8 @@ const SignUpPage = () => {
         onClose={value => setVisible(value)}
       />
       <ScrollView
-        contentContainerStyle={styles.main1} // Added to fix scrolling
-        keyboardShouldPersistTaps="handled" // Dismisses keyboard on tap outside
-      >
+        contentContainerStyle={styles.main1}
+        keyboardShouldPersistTaps="handled">
         <View style={styles.subt}>
           <Text style={styles.title}>Sign up</Text>
 

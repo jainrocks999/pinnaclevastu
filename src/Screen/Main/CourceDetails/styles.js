@@ -36,7 +36,7 @@ export default StyleSheet.create({
   },
 
   scrollview: {
-    paddingBottom:10,
+    paddingBottom:hp(3),
     paddingHorizontal: 15,
   },
 

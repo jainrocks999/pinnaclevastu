@@ -37,13 +37,13 @@ const BannerSlider = ({
   const scrollX = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    if (autoplay) {
+    if (autoplay && data?.length > 1) {
       const interval = setInterval(() => {
         setCurrentIndex(prevIndex => {
           let nextIndex;
           if (direction === 'right') {
-            nextIndex = (prevIndex + 1) % data.length;
-            if (nextIndex === data.length - 1) setDirection('left');
+            nextIndex = (prevIndex + 1) % data?.length;
+            if (nextIndex === data?.length - 1) setDirection('left');
           } else {
             nextIndex = (prevIndex - 1 + data.length) % data.length;
             if (nextIndex === 0) setDirection('right');
@@ -59,7 +59,7 @@ const BannerSlider = ({
 
       return () => clearInterval(interval);
     }
-  }, [autoplay, direction, data.length]);
+  }, [autoplay, direction, data?.length]);
 
   const renderItem = ({item}) => {
     return (

@@ -7,14 +7,40 @@ import {
   Image,
   TextInput,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import styles from './styles';
 
 import {colors} from '../../../Component/colors';
+import { CourceDetailApi, CourceLis } from '../../../Redux/Sclice/HomeSclice';
+import { useDispatch, useSelector } from 'react-redux';
+import Loader from '../../../Component/Loader';
+import { useIsFocused } from '@react-navigation/native';
+import Imagepath from '../../../Component/Imagepath';
+import { widthPrecent } from '../../../Component/ResponsiveScreen/responsive';
+import AutoHeightImage from 'react-native-auto-height-image';
 
 const OtherCourses = ({navigation}) => {
   const [isLiveCourse, setIsLiveCourse] = useState(true);
-
+  const Live_cource=useSelector(state=>state?.home?.Cource);
+  const isLoading = useSelector(state => state.home?.loading);
+  const focus = useIsFocused();
+ const  dispatch =useDispatch();
+  const CouseDetail1 =async(item)=>{
+  
+    await dispatch(CourceDetailApi({url:'fetch-courses-details',course_id:item?.course_category_id,navigation}))
+  }
+  
+  
+    useEffect(() => {
+      if (focus) {
+        apicall();
+      }
+    }, [focus]);
+  
+    const apicall = async () => {
+     
+      await dispatch(CourceLis({url:'fetch-courses',slug:'live'}))
+    };
   const LiveCourseData = [
     {id: 1, image: require('../../../assets/otherApp/courseCard1.png')},
     {id: 2, image: require('../../../assets/otherApp/courseCard1.png')},
@@ -31,15 +57,31 @@ const OtherCourses = ({navigation}) => {
   const renderCard = ({item}) => {
     return (
       <View style={styles.card}>
-        <Image source={item.image} style={styles.cardImg} />
+         {/* <AutoHeightImage
+              source={ item.image == null 
+                ? require('../../../assets/otherApp/courseCard1.png') 
+                : { uri: `${Imagepath.Path}${item?.image}` }
+            } 
+               width={widthPrecent(45)}
+              style={styles.cardImg}
+            />  */}
+           <Image 
+          source={
+            item.image == null 
+              ? require('../../../assets/otherApp/courseCard1.png') 
+              : { uri: `${Imagepath.Path}${item?.image}` }
+          } 
+          style={styles.cardImg} 
+        />
+      
         <View style={styles.cardInfo}>
-          <Text style={styles.DateText}>20 Nov 2024</Text>
-          <Text style={styles.titleText}>ADVANCE VASTU COURSE</Text>
+          <Text style={styles.DateText}>{item?.start_date}</Text>
+          <Text style={styles.titleText}>{item?.title}</Text>
           <Text style={styles.regularText}>
             While Vastu Shastra gives us data about our...
           </Text>
-          <Text style={styles.price}>₹ 7250.00</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('CourseDetail')}>
+          <Text style={styles.price}>{`₹ ${item?.price}`}</Text>
+          <TouchableOpacity onPress={() => CouseDetail1(item)}>
             <Text style={styles.cardBtn}>View Details</Text>
           </TouchableOpacity>
         </View>
@@ -57,7 +99,7 @@ const OtherCourses = ({navigation}) => {
           <Image source={require('../../../assets/image/Group.png')} />
         </TouchableOpacity>
       </View>
-
+{isLoading?<Loader/>:null}
       <ScrollView contentContainerStyle={styles.scroll}>
         <View style={styles.searchContainer}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -79,7 +121,13 @@ const OtherCourses = ({navigation}) => {
               styles.switchBtn,
              isLiveCourse ? styles.activeBtn : null,
             ]}
-            onPress={() => setIsLiveCourse(true )}>
+            disabled={isLiveCourse}
+            onPress={async() =>{
+              setIsLiveCourse(true);
+              await dispatch(CourceLis({url:'fetch-courses',slug:'live'}))
+            }
+            
+           }>
             <Text  style={[
                 styles.switchText,
                isLiveCourse ? {color: '#fff'} : null,
@@ -91,7 +139,12 @@ const OtherCourses = ({navigation}) => {
               styles.switchBtn,
             !isLiveCourse? styles.activeBtn : null,
             ]}
-            onPress={() => setIsLiveCourse(false)}>
+            disabled={!isLiveCourse}
+             onPress={async() => 
+              {
+                setIsLiveCourse(false);
+                await dispatch(CourceLis({url:'fetch-courses',slug:'recorded'}))
+              }}>
             <Text
               style={[
                 styles.switchText,
@@ -103,7 +156,7 @@ const OtherCourses = ({navigation}) => {
         </View>
         <FlatList
           contentContainerStyle={styles.cardContainer}
-          data={isLiveCourse ? LiveCourseData : RecordedCourseData}
+          data={ Live_cource?Live_cource:[] }
           renderItem={renderCard}
           // numColumns={2}
         />

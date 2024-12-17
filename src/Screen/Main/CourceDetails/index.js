@@ -6,13 +6,22 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
+  Alert,
+  Linking,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import Collapsible from 'react-native-collapsible';
 import styles from './styles';
-import { colors } from '../../../Component/colors';
+import {colors} from '../../../Component/colors';
+import {useSelector} from 'react-redux';
+import Imagepath from '../../../Component/Imagepath';
+import { widthPrecent } from '../../../Component/ResponsiveScreen/responsive';
 
-const CourseDetail = ({ navigation }) => {
+const CourseDetail = ({navigation}) => {
+  const CourceDetailA = useSelector(state => state?.home?.CourceDetailA);
+  const isLoading = useSelector(state => state.home?.loading);
+ 
+
   const images = [
     require('../../../assets/otherApp/reviewslider.png'),
     require('../../../assets/otherApp/reviewslider.png'),
@@ -99,7 +108,7 @@ const CourseDetail = ({ navigation }) => {
       prevSection === sectionId ? null : sectionId,
     );
   };
-  const renderItem = ({ item }) => (
+  const renderItem = ({item}) => (
     <View style={styles.itemContainer}>
       <Image source={item.icon} style={styles.icon} />
       <View style={styles.textContainer}>
@@ -109,53 +118,78 @@ const CourseDetail = ({ navigation }) => {
     </View>
   );
 
-  const renderItems = ({ item, index  }) => (
+  const renderItems = ({item, index}) => (
     <View style={styles.paddings}>
-              <TouchableOpacity
-                onPress={() => toggleSection(item.id)}
-                style={[
-                  styles.courseToggle1,
-                  expandedSection === item.id && styles.activeCourseToggle,
-                ]}>
-                <View style={styles.direction1}>
+      <TouchableOpacity
+        onPress={() => toggleSection(item.id)}
+        style={[
+          styles.courseToggle1,
+          expandedSection === item.id && styles.activeCourseToggle,
+        ]}>
+        <View style={styles.direction1}>
+          <Text
+            style={[
+              styles.coursetext2,
+              expandedSection === item.id && styles.activeTitleColor,
+            ]}>
+            {item.title}
+          </Text>
+        </View>
+        <Image
+          source={
+            expandedSection === item.id
+              ? require('../../../assets/otherApp/updown.png')
+              : require('../../../assets/image/arrow_icon.png')
+          }
+          style={styles.toggleIcon2}
+        />
+      </TouchableOpacity>
 
-                  <Text
-                    style={[
-                      styles.coursetext2,
-                      expandedSection === item.id && styles.activeTitleColor,
-                    ]}>
-                    {item.title}
-                  </Text>
-                </View>
-                <Image
-                  source={
-                    expandedSection === item.id
-                      ? require('../../../assets/otherApp/updown.png')
-                      : require('../../../assets/image/arrow_icon.png')
-                  }
-                  style={styles.toggleIcon2}
-                />
-              </TouchableOpacity>
-
-              <Collapsible collapsed={expandedSection !== item.id}>
-                <View style={styles.subItemContainer}>
-
-                  {item.subItems.map((subItem, subIndex) => (
-                    <Text key={subIndex} style={styles.subItemText}>
-                      {subItem}
-                    </Text>
-                  ))}
-                </View>
-
-              </Collapsible>
-            </View>
+      <Collapsible collapsed={expandedSection !== item.id}>
+        <View style={styles.subItemContainer}>
+          {item.subItems.map((subItem, subIndex) => (
+            <Text key={subIndex} style={styles.subItemText}>
+              {subItem}
+            </Text>
+          ))}
+        </View>
+      </Collapsible>
+    </View>
   );
+
+
+  const phoneNumber = '+919153300111'; // Ensure this is in the international E.164 format
+
+  const openWhatsApp = async () => {
+    const appUrl = `whatsapp://send?phone=${phoneNumber}`;
+    const webUrl = `https://wa.me/${phoneNumber}`;
+
+    try {
+      // Check if WhatsApp is installed
+      const supported = await Linking.canOpenURL(appUrl);
+      if (supported) {
+        console.log('appUrl ...',appUrl);
+        await Linking.openURL(appUrl);
+      } else {
+        // Fallback to WhatsApp Web
+        console.log('ghghdghdio',webUrl);
+        
+        await Linking.openURL(webUrl);
+      }
+    } catch (error) {
+      // Handle errors
+      Alert.alert('Error', 'Unable to open WhatsApp. Please try again later.');
+      console.error('Failed to open WhatsApp:', error);
+    }
+  };
+
+  
+
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
             style={styles.backBtn}
             source={require('../../../assets/drawer/Back1.png')}
@@ -169,17 +203,23 @@ const CourseDetail = ({ navigation }) => {
       <ScrollView contentContainerStyle={styles.scrollview}>
         <View style={styles.firstimgview}>
           <Image
-            source={require('../../../assets/otherApp/coursedetail.png')}
+            source={
+              CourceDetailA?.image
+                ? {uri: `${Imagepath.Path}${CourceDetailA?.image}`}
+                : require('../../../assets/otherApp/coursedetail.png')
+            }
             style={styles.img1}
           />
         </View>
         <View style={styles.advanceview}>
-          <Text style={styles.advancetext}>Advance Vastu Course</Text>
+          <Text style={styles.advancetext}>{CourceDetailA?.title} </Text>
+          {/* Advance Vastu Course */}
+
           <Text style={styles.learntext}>
             Learn The Most Effective Numero Vastu Techniques
           </Text>
           <View style={styles.direction}>
-            <Text style={styles.ruppestext}>₹ 7250.00</Text>
+            <Text style={styles.ruppestext}>{`₹ ${CourceDetailA?.price}`}</Text>
             <Image
               source={require('../../../assets/otherApp/share.png')}
               style={styles.shareimage}
@@ -195,7 +235,8 @@ const CourseDetail = ({ navigation }) => {
               style={styles.cardimg1}
             />
             <Text style={styles.languagetext}>Languages</Text>
-            <Text style={styles.languagetext1}>Hindi, English</Text>
+            {/* Hindi, English */}
+            <Text style={styles.languagetext1}>{CourceDetailA?.language}</Text>
           </View>
           <View style={styles.verticalLine} />
           <View style={styles.cardItem}>
@@ -204,7 +245,9 @@ const CourseDetail = ({ navigation }) => {
               style={styles.cardimg1}
             />
             <Text style={styles.languagetext}>Date</Text>
-            <Text style={styles.languagetext1}>20 Nov 2024</Text>
+            <Text style={styles.languagetext1}>
+              {CourceDetailA?.start_date}
+            </Text>
           </View>
           <View style={styles.verticalLine} />
           <View style={styles.cardItem}>
@@ -229,7 +272,7 @@ const CourseDetail = ({ navigation }) => {
         <FlatList
           data={dummyData}
           keyExtractor={item => item.id}
-          renderItem={({ item, index }) => (
+          renderItem={({item, index}) => (
             <View style={styles.paddings}>
               <TouchableOpacity
                 onPress={() => toggleSection(item.id)}
@@ -238,7 +281,6 @@ const CourseDetail = ({ navigation }) => {
                   expandedSection === item.id && styles.activeCourseToggle,
                 ]}>
                 <View style={styles.direction1}>
-
                   <Text
                     style={[
                       styles.coursetext2,
@@ -259,14 +301,12 @@ const CourseDetail = ({ navigation }) => {
 
               <Collapsible collapsed={expandedSection !== item.id}>
                 <View style={styles.subItemContainer}>
-
                   {item.subItems.map((subItem, subIndex) => (
                     <Text key={subIndex} style={styles.subItemText}>
                       {subItem}
                     </Text>
                   ))}
                 </View>
-
               </Collapsible>
             </View>
           )}
@@ -280,14 +320,20 @@ const CourseDetail = ({ navigation }) => {
         </View>
 
         <View style={styles.whatsview}>
-          <View style={styles.whatsapp}>
+          <TouchableOpacity onPress={()=>openWhatsApp()} style={styles.whatsapp}>
             <Image source={require('../../../assets/otherApp/whatsapp.png')} />
-            <Text style={styles.textnumber}>+91 812 072 76 90</Text>
-          </View>
-          <View style={styles.call}>
+            <Text style={styles.textnumber}>+91 915 330 01 11</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={()=>
+            {
+              Linking.openURL(`tel:${'+919056611064'}`).catch((err) =>
+                console.error('Error opening dialer:', err)
+              );
+            }
+          } style={styles.call}>
             <Image source={require('../../../assets/otherApp/call.png')} />
-            <Text style={styles.textnumber}>+91 812 072 76 90</Text>
-          </View>
+            <Text style={styles.textnumber}>+91 905 661 10 64</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.firstimgview}>
@@ -362,19 +408,17 @@ const CourseDetail = ({ navigation }) => {
           <FlatList
             data={images}
             keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item, index }) => (
+            renderItem={({item, index}) => (
               <View style={styles.imageContainer}>
                 <Image source={item} style={styles.reviewImage} />
               </View>
             )}
             horizontal
             showsHorizontalScrollIndicator={false}
-            onMomentumScrollEnd={e => {
+            onMomentumScrollEnd={(e) => {
               const contentOffsetX = e.nativeEvent.contentOffset.x;
-              const currentIndex = Math.floor(
-                contentOffsetX / styles.reviewImage.width,
-              );
-              setCurrentIndex(currentIndex);
+              const currentIndex = Math.round(contentOffsetX / widthPrecent(70)); // Calculate index based on item width
+              setCurrentIndex(currentIndex); // Update the current index state
             }}
           />
 
@@ -389,7 +433,7 @@ const CourseDetail = ({ navigation }) => {
           </View>
         </View>
 
-        <View style={{ marginTop: 15 }}>
+        <View style={{marginTop: 15}}>
           <FlatList
             data={data1}
             numColumns={2} // Display items in 2 columns
@@ -405,7 +449,7 @@ const CourseDetail = ({ navigation }) => {
         </View>
         {/* Join Course Button */}
         <TouchableOpacity
-          onPress={() => navigation.navigate('Payment', { data1: 'Cources' })}
+          onPress={() => navigation.navigate('Payment', {data1: 'Cources'})}
           style={styles.book}>
           <Text style={styles.btext1}>Join Course</Text>
         </TouchableOpacity>

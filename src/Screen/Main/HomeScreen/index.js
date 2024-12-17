@@ -23,8 +23,11 @@ import ImageSlider from '../../../Component/myBanner';
 import {useDispatch, useSelector} from 'react-redux';
 import {
   Banner,
+  CourceDetailApi,
+  CourceLis,
   Remedie,
   RemediesCategory,
+  Service,
 } from '../../../Redux/Sclice/HomeSclice';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import Loader from '../../../Component/Loader';
@@ -41,6 +44,20 @@ const HomeScreen = () => {
   const Remediesproduct = useSelector(state => state.home?.Remedi?.data);
   const isLoading = useSelector(state => state.home?.loading);
 
+  const servies = useSelector(state => state?.home?.services);
+  const Live_cource = useSelector(state => state?.home?.Cource);
+
+  const combinedData = servies?.map(service => {
+    const matchedItem = data1?.find(
+      item => item?.name === service?.services_name,
+    );
+    return {
+      id: service.id,
+      services_name: service.services_name,
+      image: matchedItem ? matchedItem.image : null, // Add image if match is found
+    };
+  });
+
   const newArray = [];
   (Homebanner?.data?.[0]?.slider_items || []).forEach(item => {
     const formattedItem = {
@@ -53,6 +70,16 @@ const HomeScreen = () => {
   });
   const focus = useIsFocused();
 
+  const CouseDetail1 = async item => {
+    await dispatch(
+      CourceDetailApi({
+        url: 'fetch-courses-details',
+        course_id: item?.course_category_id,
+        navigation,
+      }),
+    );
+  };
+
   useEffect(() => {
     if (focus) {
       apicall();
@@ -62,6 +89,8 @@ const HomeScreen = () => {
   const apicall = async () => {
     await dispatch(Banner({url: 'home-slider'}));
     await dispatch(Remedie({url: 'remedies'}));
+    await dispatch(Service({url: 'fetch-franchise-services'}));
+    await dispatch(CourceLis({url: 'fetch-courses', slug: 'live'}));
   };
   const RemediesProductcategory = async item => {
     await dispatch(
@@ -82,15 +111,15 @@ const HomeScreen = () => {
 
   const renderItem = ({item}) => {
     let backgroundColor;
-    if (item.name === 'Residential Vastu') {
+    if (item.services_name === 'Residential Vastu') {
       backgroundColor = colors.card4;
-    } else if (item.name === 'Rudrakasha') {
+    } else if (item.services_name === 'Rudraksha') {
       backgroundColor = colors.card;
-    } else if (item.name === 'Commercial Vastu') {
+    } else if (item.services_name === 'Commercial Vastu') {
       backgroundColor = colors.card5;
-    } else if (item.name === 'Gemstone') {
+    } else if (item.services_name === 'Gemstone') {
       backgroundColor = colors.card2;
-    } else if (item.name === 'Numerology') {
+    } else if (item.services_name === 'Numerology Report') {
       backgroundColor = '#F9E4E8';
     } else {
       backgroundColor = colors.card3;
@@ -99,7 +128,7 @@ const HomeScreen = () => {
     return (
       <TouchableOpacity style={[styles.cardContainer, {backgroundColor}]}>
         <Image source={item.image} style={styles.itemImg} />
-        <Text style={styles.text}>{item.name}</Text>
+        <Text style={styles.text}>{item.services_name}</Text>
       </TouchableOpacity>
     );
   };
@@ -187,15 +216,22 @@ const HomeScreen = () => {
   const renderCard = ({item}) => {
     return (
       <View style={styles.card}>
-        <Image source={item.image} style={styles.cardImg} />
+        <Image
+          source={
+            item.image == null
+              ? require('../../../assets/otherApp/courseCard1.png')
+              : {uri: `${Imagepath.Path}${item?.image}`}
+          }
+          style={styles.cardImg}
+        />
         <View style={styles.cardInfo}>
-          <Text style={styles.DateText}>20 Nov 2024</Text>
-          <Text style={styles.titleText}>ADVANCE VASTU COURSE</Text>
+          <Text style={styles.DateText}>{item?.start_date}</Text>
+          <Text style={styles.titleText}>{item?.title}</Text>
           <Text style={styles.regularText}>
             While Vastu Shastra gives us data about our...
           </Text>
-          <Text style={styles.price}>₹ 7250.00</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('CourseDetail')}>
+          <Text style={styles.price}>{`₹ ${item?.price}`}</Text>
+          <TouchableOpacity onPress={() => CouseDetail1(item)}>
             <Text style={styles.cardBtn}>View Details</Text>
           </TouchableOpacity>
         </View>
@@ -257,19 +293,21 @@ const HomeScreen = () => {
         </View>
 
         <View style={styles.welcomeCard}>
-          <BannerSlider
-            onPress={item => {}}
-            height1={wp(40)}
-            data={newArray?newArray:[]}
-            local={true}
-          />
+          {newArray?.length != 0 ? (
+            <BannerSlider
+              onPress={item => {}}
+              height1={wp(40)}
+              data={newArray ? newArray : []}
+              local={true}
+            />
+          ) : null}
         </View>
 
         <View style={styles.contain}>
           <Text style={styles.service}>Our Services</Text>
         </View>
         <FlatList
-          data={data1?data1:[]}
+          data={combinedData ? combinedData : []}
           renderItem={renderItem}
           keyExtractor={item => item.id}
           numColumns={3}
@@ -277,7 +315,16 @@ const HomeScreen = () => {
           contentContainerStyle={styles.listContainer}
         />
 
-        <ImageSlider />
+        <ImageSlider
+        data={imagesilder1}
+        onPress ={(item,index)=>
+           console.log('hh',index,item)
+        
+          // alert('Item Pressed', `Item: ${JSON.stringify(item)}, Index: ${index}`)
+        
+          // navigation.navigate('UserProfile')
+        }
+        />
 
         <View style={[styles.contain, {marginTop: wp(2)}]}>
           <Text style={styles.service}>Premium Services</Text>
@@ -297,7 +344,11 @@ const HomeScreen = () => {
         <View style={styles.switchBtnContainer}>
           <TouchableOpacity
             style={[styles.switchBtn, isLiveCourse ? styles.activeBtn : null]}
-            onPress={() => setIsLiveCourse(true)}>
+            disabled={isLiveCourse}
+            onPress={async () => {
+              setIsLiveCourse(true);
+              await dispatch(CourceLis({url: 'fetch-courses', slug: 'live'}));
+            }}>
             <Text
               style={[
                 styles.switchText,
@@ -308,8 +359,14 @@ const HomeScreen = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
+           disabled={!isLiveCourse}
             style={[styles.switchBtn, !isLiveCourse ? styles.activeBtn : null]}
-            onPress={() => setIsLiveCourse(false)}>
+            onPress={async () => {
+              setIsLiveCourse(false);
+              await dispatch(
+                CourceLis({url: 'fetch-courses', slug: 'recorded'}),
+              );
+            }}>
             <Text
               style={[
                 styles.switchText,
@@ -324,33 +381,38 @@ const HomeScreen = () => {
           <FlatList
             ref={flatListRef}
             contentContainerStyle={styles.cardContainer0}
-            data={isLiveCourse ? LiveCourseData : RecordedCourseData}
+            data={Live_cource ? Live_cource?.slice(0, 4) : []}
             renderItem={renderCard}
             horizontal
             showsHorizontalScrollIndicator={false}
             scrollEventThrottle={16}
-            onScroll={e => {
-              const screenWidth = Dimensions.get('window').width;
-              const slide = Math.ceil(
-                e.nativeEvent.contentOffset.x / screenWidth,
-              );
-              setCurrentIndex(slide);
+            // onScroll={e => {
+            //   const screenWidth = Dimensions.get('window').width*0.65;
+            //   const slide = Math.ceil(
+            //     e.nativeEvent.contentOffset.x / wp(65)+20,
+            //   );
+            //   setCurrentIndex(slide);
+            // }}
+            onMomentumScrollEnd={(e) => {
+              const contentOffsetX = e.nativeEvent.contentOffset.x;
+              const currentIndex = Math.round(contentOffsetX /wp(65)); // Calculate index based on item width
+              setCurrentIndex(currentIndex); // Update the current index state
             }}
+            
           />
 
           <View style={styles.dotContainer}>
-            {(isLiveCourse ? LiveCourseData : RecordedCourseData).map(
-              (_, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={[
-                    styles.dot,
-                    currentIndex === index && styles.activeDot,
-                  ]}
-                  onPress={() => handleImageChange(index)}
-                />
-              ),
-            )}
+            {(Live_cource ? Live_cource?.slice(0, 4) : []).map((_, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[styles.dot, currentIndex === index && styles.activeDot]}
+                onPress={() => {
+                  if (index < (Live_cource?.length || 0)) {
+                    handleImageChange(index);
+                  }
+                }}
+              />
+            ))}
           </View>
         </View>
 
@@ -435,12 +497,12 @@ const data1 = [
   {
     id: '3',
     image: require('../../../assets/image/industry.png'),
-    name: 'Industrial Vastu',
+    name: 'Insustrial Vastu',
   },
   {
     id: '4',
     image: require('../../../assets/image/numerology.png'),
-    name: 'Numerology',
+    name: 'Numerology Report',
   },
   {
     id: '5',
@@ -450,7 +512,7 @@ const data1 = [
   {
     id: '6',
     image: require('../../../assets/image/beads.png'),
-    name: 'Rudrakasha',
+    name: 'Rudraksha',
   },
 ];
 
@@ -483,6 +545,18 @@ const RecordedCourseData = [
   {id: 3, image: require('../../../assets/otherApp/courseCard2.png')},
   {id: 4, image: require('../../../assets/otherApp/courseCard2.png')},
 ];
+
+
+const imagesilder1 = [
+  { id: '1', image: require('../../../assets/image/bannerImg1.png') },
+  { id: '2', image: require('../../../assets/image/bannerImg2.png') },
+  { id: '3', image: require('../../../assets/image/bannerImg3.png') },
+];
+
+
+
+
+
 const data5 = [
   {
     id: '1',
