@@ -4,27 +4,33 @@ import {
   Dimensions,
   StyleSheet,
   FlatList,
+  TouchableOpacity,
 } from 'react-native';
 import AutoHeightImage from 'react-native-auto-height-image';
 
 const { width } = Dimensions.get('window');
 
-const ImageSlider = ({ loading = false }) => {
+const ImageSlider = ({   data,
+  width1,
+  mobileWidth,
+  height1,
+  mobileHeight,
+  local,
+  navigation,
+  onPress,}) => {
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // Local data with images
-  const data = [
-    { id: '1', image: require('../../assets/image/bannerImg1.png') },
-    { id: '2', image: require('../../assets/image/bannerImg2.png') },
-    { id: '3', image: require('../../assets/image/bannerImg3.png') },
-  ];
 
-  const IMAGE_WIDTH = width * 0.87; // Width of the image
+ 
+
+  const IMAGE_WIDTH = width * 0.9; // Width of the image
   const SPACING = 20; // Space between images
 
   const handleMomentumScrollEnd = (event) => {
     const slide = Math.round(event.nativeEvent.contentOffset.x / (IMAGE_WIDTH + SPACING));
     setActiveIndex(slide);
+  
+    
   };
 
   return (
@@ -39,14 +45,15 @@ const ImageSlider = ({ loading = false }) => {
         keyExtractor={(item) => item.id}
         showsHorizontalScrollIndicator={false}
         onMomentumScrollEnd={handleMomentumScrollEnd}
-        renderItem={({ item }) => (
-          <View style={[styles.imageContainer, { width: IMAGE_WIDTH, marginRight:10}]}>
+        renderItem={({ item,index }) => (
+          <TouchableOpacity onPress={()=>onPress(item,index)}
+          style={[styles.imageContainer, { width: IMAGE_WIDTH, marginRight:10}]}>
             <AutoHeightImage
               source={item.image}
               width={IMAGE_WIDTH}
               style={styles.image}
             /> 
-          </View>
+          </TouchableOpacity>
         )}
         // contentContainerStyle={{
         //   paddingHorizontal: (width - IMAGE_WIDTH) / 2, // Center first and last images

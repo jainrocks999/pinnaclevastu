@@ -29,31 +29,28 @@ const SignUpPage = () => {
     setVisible(false);
   };
 
-  const [date, setDate] = useState(new Date()); 
-  const [open, setOpen] = useState(false); 
+  const [date, setDate] = useState(new Date());
+  const [open, setOpen] = useState(false);
 
-
-  const formatDate = (date) => {
+  const formatDate = date => {
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const year = date.getFullYear().toString();
     return `${day}-${month}-${year}`;
   };
 
+  const [time, setTime] = useState(new Date());
+  const [open1, setOpen1] = useState(false);
 
-  const [time, setTime] = useState(new Date()); // State to store selected time
-  const [open1, setOpen1] = useState(false); // State to control date picker visibility
-
-  const formatTime = (time) => {
+  const formatTime = time => {
     let hours = time.getHours();
     const minutes = time.getMinutes().toString().padStart(2, '0');
-    const ampm = hours >= 12 ? 'PM' : 'AM'; // Determine AM or PM
-    hours = hours % 12; // Convert 24-hour format to 12-hour format
-    hours = hours ? hours : 12; // The hour '0' should be '12'
-    const strTime = `${hours}:${minutes} ${ampm}`; // Format time as HH:mm AM/PM
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    const strTime = `${hours}:${minutes} ${ampm}`;
     return strTime;
   };
-
 
   const data = [
     {label: 'Male', value: 'Male'},
@@ -72,142 +69,130 @@ const SignUpPage = () => {
         onClose={value => setVisible(value)}
       />
       <ScrollView
-        contentContainerStyle={styles.main1} // Added to fix scrolling
-        keyboardShouldPersistTaps="handled" // Dismisses keyboard on tap outside
-      >
+        contentContainerStyle={styles.main1}
+        keyboardShouldPersistTaps="handled">
         <View style={styles.subt}>
           <Text style={styles.title}>Sign up</Text>
 
           <Text style={styles.title1}>{'Hello there !\nwelcome to you.'}</Text>
         </View>
-           
-<View style={{paddingHorizontal:5}}>
 
-        <View style={styles.inputmain}>
-          <Text style={styles.title2}>Full Name*</Text>
-          <View style={[styles.input, styles.inputShadow]}>
-            <TextInput
-              style={styles.inputText}
-              placeholder="Name"
-              placeholderTextColor={colors.placeholder}
-            />
+        <View style={{paddingHorizontal: 5}}>
+          <View style={styles.inputmain}>
+            <Text style={styles.title2}>Full Name*</Text>
+            <View style={[styles.input, styles.inputShadow]}>
+              <TextInput
+                style={styles.inputText}
+                placeholder="Name"
+                placeholderTextColor={colors.placeholder}
+              />
+            </View>
           </View>
-        </View>
-        <View style={styles.inputmain}>
-          <Text style={styles.title2}>Email*</Text>
-          <View style={[styles.input, styles.inputShadow]}>
-            <TextInput
-              style={styles.inputText}
-              placeholder="Email"
-              placeholderTextColor={colors.placeholder}
-            />
+          <View style={styles.inputmain}>
+            <Text style={styles.title2}>Email*</Text>
+            <View style={[styles.input, styles.inputShadow]}>
+              <TextInput
+                style={styles.inputText}
+                placeholder="Email"
+                placeholderTextColor={colors.placeholder}
+              />
+            </View>
           </View>
-        </View>
-        <View style={styles.inputmain}>
-          <Text style={styles.title2}>Mobile Number*</Text>
-          <View style={[styles.input, styles.inputShadow]}>
-            <TextInput
-              style={styles.inputText}
-              placeholder="Mobile Number"
-              placeholderTextColor={colors.placeholder}
-              keyboardType="numeric"
-            />
+          <View style={styles.inputmain}>
+            <Text style={styles.title2}>Mobile Number*</Text>
+            <View style={[styles.input, styles.inputShadow]}>
+              <TextInput
+                style={styles.inputText}
+                placeholder="Mobile Number"
+                placeholderTextColor={colors.placeholder}
+                keyboardType="numeric"
+              />
+            </View>
           </View>
-        </View>
-        <View style={styles.inputmain}>
-          <Text style={styles.title2}>Gender*</Text>
+          <View style={styles.inputmain}>
+            <Text style={styles.title2}>Gender*</Text>
 
-          <TouchableOpacity
-            onPress={() => setVisible(true)}
-            style={[
-              styles.input,
-              styles.inputShadow,
-              {
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              },
-            ]}>
-            <Text
-              style={{
-                color: companyName ? '#000' : colors.placeholder,
-                fontSize: fontSize.Sixteen,
-                // marginTop: 2,
-                fontFamily: 'Poppins-Regular',
-              }}>
-              {companyName ? companyName : 'Gender'}
-            </Text>
-            <Image
-              style={{
-                height: 8,
-                width: 15,
+            <TouchableOpacity
+              onPress={() => setVisible(true)}
+              style={[
+                styles.input,
+                styles.inputShadow,
+                {
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                },
+              ]}>
+              <Text
+                style={{
+                  color: companyName ? '#000' : colors.placeholder,
+                  fontSize: fontSize.Sixteen,
+                  // marginTop: 2,
+                  fontFamily: 'Poppins-Regular',
+                }}>
+                {companyName ? companyName : 'Gender'}
+              </Text>
+              <Image
+                style={{
+                  height: 8,
+                  width: 15,
+                }}
+                source={require('../../../assets/image/arrow_icon.png')}
+              />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.inputmain}>
+            <Text style={styles.title2}>Current City Pincode*</Text>
+            <View style={[styles.input, styles.inputShadow]}>
+              <TextInput
+                style={styles.inputText}
+                placeholder="Current City Pincode"
+                placeholderTextColor={colors.placeholder}
+                keyboardType="numeric"
+              />
+            </View>
+          </View>
+
+          <View style={styles.inputmain}>
+            <Text style={styles.title2}>Date of Birth</Text>
+
+            <TouchableOpacity
+              onPress={() => setOpen(true)}
+              style={[
+                styles.input,
+                styles.inputShadow,
+                {
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                },
+              ]}>
+              <Text style={styles.input1}>{formatDate(date)}</Text>
+
+              <Image
+                style={{
+                  height: 20,
+                  width: 20,
+                }}
+                source={require('../../../assets/image/cale.png')}
+              />
+            </TouchableOpacity>
+
+            <DatePicker
+              modal
+              open={open}
+              date={date}
+              mode="date"
+              maximumDate={new Date()}
+              onConfirm={selectedDate => {
+                setOpen(false);
+                setDate(selectedDate);
               }}
-              source={require('../../../assets/image/arrow_icon.png')}
-            />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.inputmain}>
-          <Text style={styles.title2}>Current City Pincode*</Text>
-          <View style={[styles.input, styles.inputShadow]}>
-            <TextInput
-              style={styles.inputText}
-              placeholder="Current City Pincode"
-              placeholderTextColor={colors.placeholder}
-              keyboardType="numeric"
+              onCancel={() => setOpen(false)}
             />
           </View>
-        </View>
 
-
-        
-        <View style={styles.inputmain}>
-      <Text style={styles.title2}>Date of Birth</Text>
-
-    
-      <TouchableOpacity  onPress={() => setOpen(true)}
-        style={[
-          styles.input,
-          styles.inputShadow,
-          {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          },
-        ]}>
-      
-        <Text
-          style={styles.input1}
-        >
-         {formatDate(date)}
-        </Text>
-
-      
-        <Image
-          style={{
-            height: 20,
-            width: 20,
-          }}
-          source={require('../../../assets/image/cale.png')}
-        />
-      </TouchableOpacity>
-
-    
-      <DatePicker
-        modal
-        open={open}
-        date={date}
-        mode="date" 
-        maximumDate={new Date()}
-        onConfirm={(selectedDate) => {
-          setOpen(false); 
-          setDate(selectedDate); 
-        }}
-        onCancel={() => setOpen(false)} 
-      />
-    </View>
-
-
-        {/* <View style={styles.inputmain}>
+          {/* <View style={styles.inputmain}>
           <Text style={styles.title2}>Date of Birth</Text>
           <View
             style={[
@@ -235,7 +220,7 @@ const SignUpPage = () => {
           </View>
         </View> */}
 
-        {/* <View style={styles.inputmain}>
+          {/* <View style={styles.inputmain}>
           <Text style={styles.title2}>Time of Birth</Text>
           <View
             style={[
@@ -262,96 +247,90 @@ const SignUpPage = () => {
             />
           </View>
         </View> */}
-        
-<View style={styles.inputmain}>
-      <Text style={styles.title2}>Time of Birth</Text>
 
-      {/* Input area with DatePicker */}
-      <TouchableOpacity  onPress={() => setOpen1(true)}
-        style={[
-          styles.input,
-          styles.inputShadow,
-          {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          },
-        ]}>
-       
-        <Text
-          style={styles.input1}
-         
-        >
-          {formatTime(time)}
-        </Text>
+          <View style={styles.inputmain}>
+            <Text style={styles.title2}>Time of Birth</Text>
 
-        <Image
-          style={{
-            height: 20,
-            width: 20,
-          }}
-          source={require('../../../assets/image/Layer.png')}
-        />
-      </TouchableOpacity>
+            {/* Input area with DatePicker */}
+            <TouchableOpacity
+              onPress={() => setOpen1(true)}
+              style={[
+                styles.input,
+                styles.inputShadow,
+                {
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                },
+              ]}>
+              <Text style={styles.input1}>{formatTime(time)}</Text>
 
-     
-      <DatePicker
-        modal
-        open={open1}
-        date={time}
-        mode="time" 
-        onConfirm={(selectedTime) => {
-          setOpen1(false); 
-          setTime(selectedTime); 
-        }}
-        onCancel={() => setOpen1(false)} 
-      />
-    </View>
-        <View style={styles.inputmain}>
-          <Text style={styles.title2}>Place of Birth</Text>
-          <View style={[styles.input, styles.inputShadow]}>
-            <TextInput
-              style={styles.inputText}
-              placeholder="Place of Birth"
-              placeholderTextColor={colors.placeholder}
+              <Image
+                style={{
+                  height: 20,
+                  width: 20,
+                }}
+                source={require('../../../assets/image/Layer.png')}
+              />
+            </TouchableOpacity>
+
+            <DatePicker
+              modal
+              open={open1}
+              date={time}
+              mode="time"
+              onConfirm={selectedTime => {
+                setOpen1(false);
+                setTime(selectedTime);
+              }}
+              onCancel={() => setOpen1(false)}
             />
           </View>
-        </View>
-        <View style={styles.inputmain}>
-          <Text style={styles.title2}>Upload Photo</Text>
-          <View
-            style={[
-              styles.input,
-              styles.inputShadow,
-              {
-                alignItems: 'center',
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                paddingHorizontal: 5,
-              },
-            ]}>
-            <TextInput
-              style={styles.input1}
-              placeholder="Upload Photo"
-              placeholderTextColor={colors.placeholder}
-            />
+          <View style={styles.inputmain}>
+            <Text style={styles.title2}>Place of Birth</Text>
+            <View style={[styles.input, styles.inputShadow]}>
+              <TextInput
+                style={styles.inputText}
+                placeholder="Place of Birth"
+                placeholderTextColor={colors.placeholder}
+              />
+            </View>
+          </View>
+          <View style={styles.inputmain}>
+            <Text style={styles.title2}>Upload Photo</Text>
+            <View
+              style={[
+                styles.input,
+                styles.inputShadow,
+                {
+                  alignItems: 'center',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  paddingHorizontal: 5,
+                },
+              ]}>
+              <TextInput
+                style={styles.input1}
+                placeholder="Upload Photo"
+                placeholderTextColor={colors.placeholder}
+              />
+              <TouchableOpacity
+                onPress={() => navigation.navigate('OTP')}
+                style={styles.buttoncontainer1}>
+                <Text style={[styles.btext, {fontSize: fontSize.Fourteen}]}>
+                  {'Browse'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.uppload}>Maximum upload file size 2mb.</Text>
+          </View>
+          <View>
             <TouchableOpacity
               onPress={() => navigation.navigate('OTP')}
-              style={styles.buttoncontainer1}>
-              <Text style={[styles.btext, {fontSize: fontSize.Fourteen}]}>
-                {'Browse'}
-              </Text>
+              style={styles.buttoncontainer}>
+              <Text style={styles.btext}>{'SUBMIT'}</Text>
             </TouchableOpacity>
           </View>
-          <Text style={styles.uppload}>Maximum upload file size 2mb.</Text>
-        </View>
-        <View >
-          <TouchableOpacity
-            onPress={() => navigation.navigate('OTP')}
-            style={styles.buttoncontainer}>
-            <Text style={styles.btext}>{'SUBMIT'}</Text>
-          </TouchableOpacity>
-        </View>
         </View>
       </ScrollView>
     </View>

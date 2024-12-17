@@ -26,20 +26,24 @@
     </application>
 
       <queries>
-        <!-- Facebook -->
+       
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="fb" />
         </intent>
-        <!-- Instagram -->
+     
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="instagram" />
         </intent>
-        <!-- YouTube -->
+      
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="vnd.youtube" />
         </intent>
+         <intent>
+        <action android:name="android.intent.action.VIEW" />
+        <data android:scheme="whatsapp" />
+    </intent>
     </queries>
 </manifest>

@@ -116,7 +116,7 @@ export default StyleSheet.create({
     color: colors.heading,
   },
   input1: {
-    height: wp(13),
+    //  height: wp(13),
     width: '60%',
     marginLeft: wp(-1),
     fontFamily: 'Poppins-Regular',

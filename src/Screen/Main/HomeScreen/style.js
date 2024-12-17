@@ -55,7 +55,7 @@ export default StyleSheet.create({
   welcomeCard: {
     marginTop: 10,
     // width: '100%',
-    borderRadius: 15,
+    // borderRadius: 15,
     //  marginHorizontal: 2,
     // padding: 15,
     // elevation: 5,
@@ -265,8 +265,10 @@ export default StyleSheet.create({
   cardImg: {
     width: '100%',
     height: wp(50),
-    resizeMode: 'contain',
-    marginTop: -wp(2),
+    borderTopLeftRadius:10,
+    borderTopRightRadius:10,
+    //  resizeMode: 'contain',
+    // marginTop: -wp(2),
   },
   cardInfo: {
     // marginTop: -5,

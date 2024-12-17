@@ -15,7 +15,7 @@ import {colors} from '../../../Component/colors';
 import {fontSize} from '../../../Component/fontsize';
 import SelectModal from '../../../Component/dropdown';
 import {Checkbox} from 'react-native-paper';
-
+import DatePicker from 'react-native-date-picker';
 const ResidentalScreen = ({navigation}) => {
   const [isResident,setIsresident]=useState(true)
   const [isIndustrial,setIsindustrial]=useState(false)
@@ -40,6 +40,33 @@ const ResidentalScreen = ({navigation}) => {
     {label: 'Female', value: 'Female'},
     {label: 'Transgender', value: 'Transgender'},
   ];
+
+  const [date, setDate] = useState(new Date()); 
+  const [open, setOpen] = useState(false); 
+
+
+  const formatDate = (date) => {
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString();
+    return `${day}-${month}-${year}`;
+  };
+
+
+  const [time, setTime] = useState(new Date());
+  const [open1, setOpen1] = useState(false);
+  const [time1, setTime1] = useState('');
+  const formatTime = (time) => {
+    let hours = time.getHours();
+    const minutes = time.getMinutes().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    const strTime = `${hours}:${minutes} ${ampm}`;
+    setTime1(strTime);
+    // return strTime;
+  };
+
 
   return (
     <View style={styles.container}>
@@ -212,52 +239,153 @@ const ResidentalScreen = ({navigation}) => {
           </View>
 
           <View style={styles.inputmain}>
-            <Text style={styles.title2}>Date of Birth</Text>
-            <View
-              style={[
-                styles.input,
-                {
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                },
-              ]}>
-              <TextInput
-                style={styles.input1}
-                placeholder="Date of Birth"
-                placeholderTextColor={colors.placeholder}
-                keyboardType="number-pad"
-              />
-              <Image source={require('../../../assets/image/cale.png')} />
-            </View>
-          </View>
+      <Text style={styles.title2}>Date of Birth</Text>
 
-          <View style={styles.inputmain}>
-            <Text style={styles.title2}>Time of Birth</Text>
-            <View
-              style={[
-                styles.input,
-                {
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                },
-              ]}>
-              <TextInput
-                style={styles.input1}
-                placeholder="Time of Birth"
-                placeholderTextColor={colors.placeholder}
-                keyboardType="number-pad"
-              />
-              <Image
-                style={{
-                  height: 20,
-                  width: 20,
-                }}
-                source={require('../../../assets/image/Layer.png')}
-              />
-            </View>
+    
+      <TouchableOpacity  onPress={() => setOpen(true)}
+        style={[
+          styles.input,
+          styles.inputShadow,
+          {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          },
+        ]}>
+      
+        <Text
+          style={styles.input1}
+        >
+         {formatDate(date)}
+        </Text>
+
+      
+        <Image
+          style={{
+            height: 20,
+            width: 20,
+          }}
+          source={require('../../../assets/image/cale.png')}
+        />
+      </TouchableOpacity>
+
+    
+      <DatePicker
+        modal
+        open={open}
+        date={date}
+        mode="date" 
+        maximumDate={new Date()}
+        onConfirm={(selectedDate) => {
+          setOpen(false); 
+          setDate(selectedDate); 
+        }}
+        onCancel={() => setOpen(false)} 
+      />
+    </View>
+
+
+        {/* <View style={styles.inputmain}>
+          <Text style={styles.title2}>Date of Birth</Text>
+          <View
+            style={[
+              styles.input,
+              styles.inputShadow,
+              {
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              },
+            ]}>
+            <TextInput
+              style={styles.input1}
+              placeholder="Date of Birth"
+              placeholderTextColor={colors.placeholder}
+              keyboardType="number-pad"
+            />
+            <Image
+              style={{
+                height: 20,
+                width: 20,
+              }}
+              source={require('../../../assets/image/cale.png')}
+            />
           </View>
+        </View> */}
+
+        {/* <View style={styles.inputmain}>
+          <Text style={styles.title2}>Time of Birth</Text>
+          <View
+            style={[
+              styles.input,
+              styles.inputShadow,
+              {
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              },
+            ]}>
+            <TextInput
+              style={styles.input1}
+              placeholder="Time of Birth"
+              placeholderTextColor={colors.placeholder}
+              keyboardType="number-pad"
+            />
+            <Image
+              style={{
+                height: 20,
+                width: 20,
+              }}
+              source={require('../../../assets/image/Layer.png')}
+            />
+          </View>
+        </View> */}
+        
+<View style={styles.inputmain}>
+      <Text style={styles.title2}>Time of Birth</Text>
+
+      {/* Input area with DatePicker */}
+      <TouchableOpacity  onPress={() => setOpen1(true)}
+        style={[
+          styles.input,
+          styles.inputShadow,
+          {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          },
+        ]}>
+       
+        <Text
+          style={[styles.input1,{color:time1==''?colors.placeholder:colors.heading}]}
+         
+        >
+          {time1 ==''?'Date of Birth':time1}
+        </Text>
+
+        <Image
+          style={{
+            height: 20,
+            width: 20,
+          }}
+          source={require('../../../assets/image/Layer.png')}
+        />
+      </TouchableOpacity>
+
+     
+      <DatePicker
+        modal
+        open={open1}
+        date={time}
+        mode="time" 
+        onConfirm={(selectedTime) => {
+          setOpen1(false); 
+          setTime(selectedTime); 
+          formatTime(selectedTime)
+        }}
+        onCancel={() => setOpen1(false)} 
+      />
+    </View>
 
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Place of Birth</Text>

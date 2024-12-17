@@ -117,17 +117,21 @@ export default StyleSheet.create({
     backgroundColor: '#FBF5F2',
     borderRadius: 10,
     marginBottom: 10,
+    // borderWidth:6
   },
   cardImg: {
-    width: '100%',
-    height: wp(40),
-    resizeMode: 'contain',
-    marginTop: -wp(3),
+    // width: '100%',
+    height: wp(50),
+   resizeMode: 'contain',
+   borderTopRightRadius:10,
+   borderTopLeftRadius:10,
+    //  marginTop: -wp(3),
   },
   cardInfo: {
-    marginTop: -20,
-    padding: 15,
-    gap: 6,
+    marginTop: 0,
+    // borderWidth:4,
+     padding: 10,
+     gap: 6,
   },
   DateText: {
     color: colors.Headertext,
