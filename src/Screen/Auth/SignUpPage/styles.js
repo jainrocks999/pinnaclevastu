@@ -14,7 +14,7 @@ export default StyleSheet.create({
   main1: {
     //  paddingHorizontal: 15,
     // paddingVertical: 10,
-    paddingBottom:10
+    paddingBottom: 10,
   },
   title: {
     fontSize: fontSize.Eighteen,
@@ -56,7 +56,7 @@ export default StyleSheet.create({
   },
   input1: {
     // height: '100%',
-   width: '60%',
+    width: '60%',
     marginLeft: wp(-1),
     fontSize: fontSize.Sixteen,
     fontFamily: 'Poppins-Regular',
@@ -105,10 +105,10 @@ export default StyleSheet.create({
     paddingHorizontal: 15,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: "#ad3803", 
-    shadowOffset: {width: 0, height: 6}, 
-    shadowOpacity: 0.8, 
-    shadowRadius: 10, 
+    shadowColor: '#ad3803',
+    shadowOffset: {width: 0, height: 6},
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
 
     elevation: 8,
   },
@@ -128,13 +128,57 @@ export default StyleSheet.create({
     textAlign: 'center',
   },
   inputShadow: {
-   
-    shadowColor: '#c2c0c0', // Light pink color for the shadow
-    shadowOffset: {width: 0, height: 2}, // Offset 0px horizontally, 6px vertically
-    shadowOpacity: 0.5, // Opacity of the shadow (transparent but visible)
-    shadowRadius: 10, // Blur radius of 10px
-
-    // Android Elevation
+    shadowColor: '#c2c0c0',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
     elevation: 5,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    padding: 20,
+    paddingTop: wp(15),
+    borderRadius: 10,
+    height: wp(40),
+    width: '90%',
+    gap: "10%",
+  },
+  modalTitle: {
+    position: 'absolute',
+    top: 10,
+    fontSize: 18,
+  },
+  closeBtn: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+  },
+  modalBtn: {
+    height: '80%',
+    paddingVertical: 15,
+    width: '35%',
+    backgroundColor: colors.orange,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#D87C51',
+    shadowOffset: {width: 0, height: 3},
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+    elevation: 8,
+  },
+  modalBtnIcon: {
+    height: '100%',
+    width: '100%',
+    resizeMode: 'contain',
   },
 });
