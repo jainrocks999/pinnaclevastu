@@ -10,7 +10,7 @@ import SignUpPage from '../Screen/Auth/SignUpPage';
 import HomeScreen from '../Screen/Main/HomeScreen';
 import Drawer from '../Component/DrawerContaint';
 import {createDrawerNavigator} from '@react-navigation/drawer';
-import Residental from '../Screen/Main/ResidentalVastu';
+// import Residental from '../Screen/Main/ResidentalVastu';
 import Profile from '../Screen/Main/ProfileScreen';
 import Appoinment from '../Screen/Main/MakeAppoinment';
 import Payment from '../Screen/Main/paymentInformation';
@@ -61,7 +61,7 @@ function Navigate() {
         <Stack.Screen name="Signup" component={SignUpPage} />
         <Stack.Screen name="Home" component={MyDrawer} />
         {/* <Stack.Screen name="Home1" component={HomeScreen} /> */}
-        <Stack.Screen name="Residental" component={Residental}/>
+        {/* <Stack.Screen name="Residental" component={Residental}/> */}
         <Stack.Screen name="profile" component={Profile}/>
         <Stack.Screen name="Appoiment" component={Appoinment}/>
         <Stack.Screen name="Payment" component={Payment}/>

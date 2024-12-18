@@ -52,12 +52,12 @@ const HomeScreen = () => {
     return {
       id: service.id,
       services_name: service.services_name,
-      image: matchedItem ? matchedItem.image : null, // Add image if match is found
+      image: matchedItem ? matchedItem.image : null,
     };
   });
 
   const newArray = [];
-  (Homebanner?.data?.[0]?.slider_items || []).forEach(item => {
+  (Homebanner?.data?.[0].slider_items || []).forEach(item => {
     const formattedItem = {
       id: item.id,
       image: `${Imagepath.Path}${item.image}`,
@@ -97,6 +97,7 @@ const HomeScreen = () => {
         category_id: item.id,
         navigation,
         name: item.name,
+        id:true
       }),
     );
   };
@@ -419,14 +420,14 @@ const HomeScreen = () => {
           <TouchableOpacity
             onPress={
               () =>
-                navigation.reset({
-                  index: 0,
-                  routes: [{name: 'Home1', params: {screen: 'Remedie12'}}],
-                })
-              // navigation.navigate('Home1', {
-              //   screen: 'Remedie12',
-              //    params: {screen: 'Remedies'},
-              // })
+                // navigation.reset({
+                //   index: 0,
+                //   routes: [{name: 'Home1', params: {screen: 'Remedie12'}}],
+                // })
+              navigation.navigate('Home1', {
+                screen: 'Remedie12',
+                 params: {screen: 'Remedies'},
+              })
             }>
             <Text style={styles.service1}>VIEW ALL</Text>
           </TouchableOpacity>

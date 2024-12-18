@@ -120,9 +120,9 @@ export default StyleSheet.create({
     // borderWidth:6
   },
   cardImg: {
-    // width: '100%',
+     width: '100%',
     height: wp(50),
-   resizeMode: 'contain',
+  //  resizeMode: 'contain',
    borderTopRightRadius:10,
    borderTopLeftRadius:10,
     //  marginTop: -wp(3),
