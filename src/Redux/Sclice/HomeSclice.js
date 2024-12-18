@@ -95,7 +95,7 @@ export const Remedie = createAsyncThunk(
 
 export const RemediesCategory = createAsyncThunk(
   'home/RemediesCategory',
-  async ({url, category_id, navigation, name}, {rejectWithValue}) => {
+  async ({url, category_id, navigation, name,id}, {rejectWithValue}) => {
     console.log('Remedies category', url, category_id, name);
 
     try {
@@ -120,7 +120,7 @@ export const RemediesCategory = createAsyncThunk(
                   {
                     name: 'Remedie12',
                     state: {
-                      routes: [{name: 'ProductList', params: {name1: name}}],
+                      routes: [{name: 'ProductList', params: {name1: name,id:id}}],
                     },
                   },
                 ],
@@ -284,7 +284,6 @@ const homeSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-
       .addCase(Remedie.pending, state => {
         state.loading = true;
         state.error = null;

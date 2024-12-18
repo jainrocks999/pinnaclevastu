@@ -24,7 +24,7 @@ const Remedies = ({navigation}) => {
   const RemediesProductcategory=async(item)=>{
  
     // navigation.navigate('ProductList')
-   await dispatch(RemediesCategory({url: 'remedies-by-product',category_id:item.id,navigation,name:item.name}));
+   await dispatch(RemediesCategory({url: 'remedies-by-product',category_id:item.id,navigation,name:item.name, id:false}));
   }
 
 

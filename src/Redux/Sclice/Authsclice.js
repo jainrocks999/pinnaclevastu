@@ -54,9 +54,8 @@ export const loginUser = createAsyncThunk(
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
-    logindata: [],
-    registerotp: [],
-    SignUp:[],
+    userData: [],
+   
     loading: false,
     error: null,
   },

@@ -23,7 +23,9 @@ import {  productDetail1 } from '../../../Redux/Sclice/HomeSclice';
 import Loader from '../../../Component/Loader';
 const RemediesProductList = ({route}) => {
   const  name1  = route?.params?.name1; 
-
+ 
+  console.log('lnkslks',route.params.id);
+  
   
   const navigation =useNavigation();
   const dispatch =useDispatch();
@@ -74,7 +76,15 @@ const RemediesProductList = ({route}) => {
       <View style={styles.header}>
         <View style={styles.headerview}>
           <TouchableOpacity
-            onPress={() => navigation.goBack()}>
+            onPress={() =>
+              route.params.id?navigation.goBack():
+              navigation.reset({
+                  index: 0,
+                  routes: [{name: 'Home1', params: {screen: 'Remedie12'}}],
+                })}
+            
+            // 
+            >
             <Image
               style={styles.backBtn}
               source={require('../../../assets/drawer/Back1.png')}
@@ -89,7 +99,9 @@ const RemediesProductList = ({route}) => {
         </TouchableOpacity>
       </View>
       {isLoading?<Loader/>:null}
-      <ScrollView contentContainerStyle={styles.Scroll}>
+      <ScrollView contentContainerStyle={styles.Scroll}
+      scrollEnabled={false}
+      >
         <View style={styles.searchContainer}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Image source={require('../../../assets/image/SearchIcon.png')} />
@@ -108,6 +120,7 @@ const RemediesProductList = ({route}) => {
           renderItem={renderItem}
           numColumns={2}
           keyExtractor={item => item.id}
+          nestedScrollEnabled={true} 
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{  }}
         />

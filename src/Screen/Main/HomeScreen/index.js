@@ -40,7 +40,7 @@ const HomeScreen = () => {
   const [isLiveCourse, setIsLiveCourse] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const dispatch = useDispatch();
-  const Homebanner = useSelector(state => state.home?.HomeBanner);
+  const Homebanner = useSelector(state => state.home?.HomeBanner?.data?.[0]);
   const Remediesproduct = useSelector(state => state.home?.Remedi?.data);
   const isLoading = useSelector(state => state.home?.loading);
 
@@ -59,7 +59,7 @@ const HomeScreen = () => {
   });
 
   const newArray = [];
-  (Homebanner?.data?.[0]?.slider_items || []).forEach(item => {
+  (Homebanner?.slider_items || []).forEach(item => {
     const formattedItem = {
       id: item.id,
       image: `${Imagepath.Path}${item.image}`,
@@ -99,6 +99,7 @@ const HomeScreen = () => {
         category_id: item.id,
         navigation,
         name: item.name,
+        id:true
       }),
     );
   };
@@ -421,14 +422,14 @@ const HomeScreen = () => {
           <TouchableOpacity
             onPress={
               () =>
-                navigation.reset({
-                  index: 0,
-                  routes: [{name: 'Home1', params: {screen: 'Remedie12'}}],
-                })
-              // navigation.navigate('Home1', {
-              //   screen: 'Remedie12',
-              //    params: {screen: 'Remedies'},
-              // })
+                // navigation.reset({
+                //   index: 0,
+                //   routes: [{name: 'Home1', params: {screen: 'Remedie12'}}],
+                // })
+              navigation.navigate('Home1', {
+                screen: 'Remedie12',
+                 params: {screen: 'Remedies'},
+              })
             }>
             <Text style={styles.service1}>VIEW ALL</Text>
           </TouchableOpacity>

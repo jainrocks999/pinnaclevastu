@@ -46,7 +46,10 @@ const Drawer = props => {
 
   const manageDashboard = () => {
     // navigation.dispatch(DrawerActions.closeDrawer());
-    navigation.navigate('Residental');
+    navigation.navigate('Home', {
+      screen: 'Home1',
+       params: {screen: 'Consultancy'},
+    })
   };
   const manageDashboard1 = () => {
     // navigation.dispatch(DrawerActions.closeDrawer());

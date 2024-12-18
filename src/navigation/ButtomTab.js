@@ -158,7 +158,7 @@ export default function BottomTab() {
                        screen: 'Remedie12',
                         params: {screen: 'Remedies'},
                     })}>
-                   {/* onPress={() => navigation.navigate('')}> */}
+                  
                 {focused ? <Group1 /> : <Group />}
                 <Text
                   style={{
