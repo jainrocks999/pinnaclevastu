@@ -40,7 +40,7 @@ const HomeScreen = () => {
   const [isLiveCourse, setIsLiveCourse] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const dispatch = useDispatch();
-  const Homebanner = useSelector(state => state.home?.HomeBanner?.data?.[0]);
+  const Homebanner = useSelector(state => state.home?.HomeBanner);
   const Remediesproduct = useSelector(state => state.home?.Remedi?.data);
   const isLoading = useSelector(state => state.home?.loading);
 
@@ -54,12 +54,12 @@ const HomeScreen = () => {
     return {
       id: service.id,
       services_name: service.services_name,
-      image: matchedItem ? matchedItem.image : null, // Add image if match is found
+      image: matchedItem ? matchedItem.image : null,
     };
   });
 
   const newArray = [];
-  (Homebanner?.slider_items || []).forEach(item => {
+  (Homebanner?.data?.[0].slider_items || []).forEach(item => {
     const formattedItem = {
       id: item.id,
       image: `${Imagepath.Path}${item.image}`,
