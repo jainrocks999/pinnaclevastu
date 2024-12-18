@@ -19,7 +19,7 @@ import { widthPrecent as wp } from '../../../Component/ResponsiveScreen/responsi
 import { useDispatch, useSelector } from 'react-redux';
 import Imagepath from '../../../Component/Imagepath';
 import { useNavigation } from '@react-navigation/native';
-import {  productDetail1 } from '../../../Redux/Sclice/HomeSclice';
+import {  productDetail1 } from '../../../Redux/Slice/HomeSlice';
 import Loader from '../../../Component/Loader';
 const RemediesProductList = ({route}) => {
   const  name1  = route?.params?.name1; 

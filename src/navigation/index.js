@@ -53,7 +53,7 @@ function Navigate() {
     >
       {/* <View style={{flex:1}}> */}
       <Stack.Navigator
-        initialRouteName="Signup"
+        initialRouteName="Splash"
         screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Splash" component={Splash} />
         <Stack.Screen name="Login" component={Login} />

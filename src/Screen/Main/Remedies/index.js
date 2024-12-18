@@ -13,7 +13,7 @@ import styles from './styles';
 import LinearGradient from 'react-native-linear-gradient';
 import { useDispatch, useSelector } from 'react-redux';
 import Imagepath from '../../../Component/Imagepath';
-import { RemediesCategory } from '../../../Redux/Sclice/HomeSclice';
+import { RemediesCategory } from '../../../Redux/Slice/HomeSlice';
 import Loader from '../../../Component/Loader';
 
 const Remedies = ({navigation}) => {

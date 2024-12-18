@@ -1,10 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
-import authSlice from '../Sclice/Authsclice';
-import homesclice from '../Sclice/HomeSclice';
+import authSlice from '../Slice/Authslice';
+import homeSlice from '../Slice/HomeSlice';
 const store = configureStore({
   reducer: {
     Auth: authSlice,
-   home:homesclice,
+   home:homeSlice,
   },
 });
 

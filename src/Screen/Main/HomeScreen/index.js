@@ -5,13 +5,11 @@ import {
   TextInput,
   Image,
   TouchableOpacity,
-  StyleSheet,
   ScrollView,
   FlatList,
   ImageBackground,
   BackHandler,
   ToastAndroid,
-  Dimensions,
 } from 'react-native';
 import styles from './style';
 import {colors} from '../../../Component/colors';
@@ -28,7 +26,7 @@ import {
   Remedie,
   RemediesCategory,
   Service,
-} from '../../../Redux/Sclice/HomeSclice';
+} from '../../../Redux/Slice/HomeSlice';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import Loader from '../../../Component/Loader';
 import Imagepath from '../../../Component/Imagepath';

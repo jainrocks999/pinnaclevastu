@@ -46,12 +46,12 @@ const SelectModal = ({visible, search, setSearch, data, onSelect, onClose}) => {
               style={{
                 color: 'grey',
                 textAlign: 'center',
-                fontSize: 15,
-                fontFamily: 'Montserrat-Bold',
+                fontSize: fontSize.Fourteen,
+                fontFamily: 'Poppins-Regular',
               }}>
               Select Gender
             </Text>
-            <View style={{height: '5%'}} />
+            <View />
             <TextInput
               placeholder="Search"
               placeholderTextColor={colors.placeholder}
@@ -59,7 +59,7 @@ const SelectModal = ({visible, search, setSearch, data, onSelect, onClose}) => {
               onChangeText={value => setSearch(value)}
               style={{
                 marginHorizontal: '5%',
-                height: heightPercent(5.5),
+                height: widthPrecent(13),
                 paddingLeft: '5%',
                 borderRadius: 10,
                 borderWidth: 0.5,

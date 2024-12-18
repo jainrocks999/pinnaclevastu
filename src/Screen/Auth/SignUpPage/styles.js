@@ -150,12 +150,14 @@ export default StyleSheet.create({
     borderRadius: 10,
     height: wp(40),
     width: '90%',
-    gap: "10%",
+    gap: '10%',
   },
   modalTitle: {
     position: 'absolute',
     top: 10,
-    fontSize: 18,
+    fontSize: fontSize.Sixteen,
+    color:colors.heading,
+    fontFamily: 'Poppins-Regular',
   },
   closeBtn: {
     position: 'absolute',

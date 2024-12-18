@@ -11,7 +11,7 @@ import React, {useEffect, useState} from 'react';
 import styles from './styles';
 
 import {colors} from '../../../Component/colors';
-import { CourceDetailApi, CourceLis } from '../../../Redux/Sclice/HomeSclice';
+import { CourceDetailApi, CourceLis } from '../../../Redux/Slice/HomeSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import Loader from '../../../Component/Loader';
 import { useIsFocused } from '@react-navigation/native';

@@ -17,9 +17,11 @@ import {fontSize} from '../../../Component/fontsize';
 import DatePicker from 'react-native-date-picker';
 import Toast from 'react-native-simple-toast';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import {useDispatch} from 'react-redux';
+import {signupUser} from '../../../Redux/Slice/Authslice';
 
 const SignUpPage = () => {
-  const [setdata, setSedata] = useState([]);
+  const dispatch = useDispatch();
   const [visible, setVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState({
     label: '',
@@ -42,7 +44,6 @@ const SignUpPage = () => {
     setModalVisible(!isModalVisible);
   };
 
- 
   const [date, setDate] = useState('');
   const [open, setOpen] = useState(false);
 
@@ -176,7 +177,6 @@ const SignUpPage = () => {
       mobileRegex.test(numericValue)
         ? setFormData({...formData, mobile: numericValue})
         : Toast.show('Invalid mobile number.');
-
     } else if (name === 'cityPincode') {
       const numericValue = value.replace(/[^0-9]/g, '');
       const pinCodeRegex = /^[0-9]{0,6}$/;
@@ -188,7 +188,6 @@ const SignUpPage = () => {
   };
 
   const handleSubmit = () => {
-
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
 
     if (formData.name == '') {
@@ -219,9 +218,19 @@ const SignUpPage = () => {
       Toast.show('Please enter Birth Date');
       return;
     } else {
-      navigation.navigate('OTP');
+      dispatch(
+        signupUser({
+          formData,
+          gender,
+          date,
+          time,
+          selectedImage,
+          url: 'sign-up',
+        }),
+      );
+   
     }
-    console.log(formData);
+    // console.log(formData);
   };
 
   const data = [
@@ -350,7 +359,13 @@ const SignUpPage = () => {
                   alignItems: 'center',
                 },
               ]}>
-              <Text style={[styles.input1, { color: date === '' ? colors.placeholder : colors.heading }]}>{formatDate(date)}</Text>
+              <Text
+                style={[
+                  styles.input1,
+                  {color: date === '' ? colors.placeholder : colors.heading},
+                ]}>
+                {formatDate(date)}
+              </Text>
 
               <Image
                 style={{
@@ -372,7 +387,6 @@ const SignUpPage = () => {
                 setDate(selectedDate);
               }}
               onCancel={() => setOpen(false)}
-             
             />
           </View>
 
@@ -447,7 +461,13 @@ const SignUpPage = () => {
                   alignItems: 'center',
                 },
               ]}>
-            <Text style={[styles.input1, { color: date === '' ? colors.placeholder : colors.heading }]}>{formatTime(time)}</Text>
+              <Text
+                style={[
+                  styles.input1,
+                  {color: time === '' ? colors.placeholder : colors.heading},
+                ]}>
+                {formatTime(time)}
+              </Text>
 
               <Image
                 style={{
@@ -530,7 +550,7 @@ const SignUpPage = () => {
         onRequestClose={toggleModal}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Choose an option</Text>
+            <Text style={styles.modalTitle}>Upload Profile Picture</Text>
             <TouchableOpacity onPress={openCamera} style={[styles.modalBtn]}>
               <Image
                 source={require('../../../assets/image/cameraIcon.png')}
@@ -555,8 +575,6 @@ const SignUpPage = () => {
           </View>
         </View>
       </Modal>
-
-      {/* Display Selected Image */}
     </View>
   );
 };

@@ -16,10 +16,12 @@ import {fontSize} from '../../../Component/fontsize';
 import SelectModal from '../../../Component/dropdown';
 import {Checkbox} from 'react-native-paper';
 import DatePicker from 'react-native-date-picker';
+import Toast from 'react-native-simple-toast';
+
 const ResidentalScreen = ({navigation}) => {
-  const [isResident,setIsresident]=useState(true)
-  const [isIndustrial,setIsindustrial]=useState(false)
-  const [isGemstone,setIsGemstone]=useState(false)
+  const [isResident, setIsresident] = useState(true);
+  const [isIndustrial, setIsindustrial] = useState(false);
+  const [isGemstone, setIsGemstone] = useState(false);
 
   const [visible, setVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState({
@@ -27,11 +29,11 @@ const ResidentalScreen = ({navigation}) => {
     value: '',
   });
 
-  const [companyName, setCompanyName] = useState('');
+  const [gender, setGender] = useState('');
   const [search, setSearch] = useState('');
   const onSelect = item => {
     setSelectedItem(item);
-    setCompanyName(item.label);
+    setGender(item.label);
     setVisible(false);
   };
 
@@ -41,32 +43,97 @@ const ResidentalScreen = ({navigation}) => {
     {label: 'Transgender', value: 'Transgender'},
   ];
 
-  const [date, setDate] = useState(new Date()); 
-  const [open, setOpen] = useState(false); 
+  const [date, setDate] = useState('');
+  const [open, setOpen] = useState(false);
 
-
-  const formatDate = (date) => {
+  const formatDate = date => {
+    if (!date) return 'Date of Birth';
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const year = date.getFullYear().toString();
     return `${day}-${month}-${year}`;
   };
 
-
-  const [time, setTime] = useState(new Date());
+  const [time, setTime] = useState('');
   const [open1, setOpen1] = useState(false);
-  const [time1, setTime1] = useState('');
-  const formatTime = (time) => {
+
+  const formatTime = time => {
+    if (!time) return 'Time Of Birth';
     let hours = time.getHours();
     const minutes = time.getMinutes().toString().padStart(2, '0');
     const ampm = hours >= 12 ? 'PM' : 'AM';
     hours = hours % 12;
     hours = hours ? hours : 12;
     const strTime = `${hours}:${minutes} ${ampm}`;
-    setTime1(strTime);
-    // return strTime;
+    return strTime;
   };
 
+  const [formData, setFormData] = useState({
+      name: '',
+      email: '',
+      mobile: '',
+      cityPincode: '',
+      birthPlace: '',
+      additionalInfo:''
+    });
+
+  const handleInputChange = (name, value) => {
+    setFormData({...formData, [name]: value});
+
+    if (name === 'mobile') {
+      const numericValue = value.replace(/[^0-9]/g, '');
+      const mobileRegex = /^[0-9]{0,10}$/;
+
+      mobileRegex.test(numericValue)
+        ? setFormData({...formData, mobile: numericValue})
+        : Toast.show('Invalid mobile number.');
+
+    } else if (name === 'cityPincode') {
+      const numericValue = value.replace(/[^0-9]/g, '');
+      const pinCodeRegex = /^[0-9]{0,6}$/;
+
+      pinCodeRegex.test(numericValue)
+        ? setFormData({...formData, cityPincode: numericValue})
+        : Toast.show('Invalid city pincode.');
+    }
+  };
+
+  const handleSubmit = () => {
+
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+
+    if (formData.name == '') {
+      Toast.show('Please enter name');
+      return;
+    } else if (formData.email == '') {
+      Toast.show('Please enter email');
+      return;
+    } else if (!emailRegex.test(formData.email)) {
+      Toast.show('Please valid Email');
+      return;
+    } else if (formData.mobile == '') {
+      Toast.show('Please enter mobile Number');
+      return;
+    } else if (formData.mobile.length < 10) {
+      Toast.show('Mobile number should be at least 10 digits');
+      return;
+    } else if (gender == '') {
+      Toast.show('Please enter gender');
+      return;
+    } else if (formData.cityPincode == '') {
+      Toast.show('Please enter city pincode');
+      return;
+    } else if (formData.cityPincode.length < 6) {
+      Toast.show('Pincode should be at least 6 digits');
+      return;
+    } else if (date == '') {
+      Toast.show('Please enter Birth Date');
+      return;
+    } else {
+      navigation.navigate('Payment', {data1: 'Residental'})
+    }
+    console.log(formData);
+  };
 
   return (
     <View style={styles.container}>
@@ -107,7 +174,7 @@ const ResidentalScreen = ({navigation}) => {
               <View
                 style={[
                   styles.checkboxWrapper,
-                  isResident && styles.checkedBackground
+                  isResident && styles.checkedBackground,
                 ]}>
                 <Checkbox
                   status={isResident ? 'checked' : 'unchecked'}
@@ -132,7 +199,7 @@ const ResidentalScreen = ({navigation}) => {
               <View
                 style={[
                   styles.checkboxWrapper,
-                  isIndustrial && styles.checkedBackground
+                  isIndustrial && styles.checkedBackground,
                 ]}>
                 <Checkbox
                   status={isIndustrial ? 'checked' : 'unchecked'}
@@ -147,13 +214,12 @@ const ResidentalScreen = ({navigation}) => {
             </View>
 
             <View style={styles.serviceSection}>
-            <View
+              <View
                 style={[
                   styles.checkboxWrapper,
-                  isGemstone ?styles.checkedBackground:null,
+                  isGemstone ? styles.checkedBackground : null,
                 ]}>
                 <Checkbox
-              
                   status={isGemstone ? 'checked' : 'unchecked'}
                   onPress={() => setIsGemstone(!isGemstone)}
                   color="#FFF"
@@ -176,6 +242,8 @@ const ResidentalScreen = ({navigation}) => {
               style={[styles.input, {elevation: 5}]}
               placeholder="Name"
               placeholderTextColor={colors.placeholder}
+              value={formData.name}
+              onChangeText={text => handleInputChange('name', text)}
             />
           </View>
           <View style={styles.inputmain}>
@@ -185,6 +253,8 @@ const ResidentalScreen = ({navigation}) => {
               placeholder="Email"
               placeholderTextColor={colors.placeholder}
               keyboardType="email-address"
+              value={formData.email}
+              onChangeText={text => handleInputChange('email', text)}
             />
           </View>
           <View style={styles.inputmain}>
@@ -194,7 +264,9 @@ const ResidentalScreen = ({navigation}) => {
               placeholder="Mobile Number"
               placeholderTextColor={colors.placeholder}
               maxLength={10}
-              keyboardType="number-pad"
+              keyboardType="numeric"
+              value={formData.mobile}
+              onChangeText={text => handleInputChange('mobile', text)}
             />
           </View>
           <View style={styles.inputmain}>
@@ -212,12 +284,12 @@ const ResidentalScreen = ({navigation}) => {
               ]}>
               <Text
                 style={{
-                  color: companyName ? colors.heading : colors.placeholder,
+                  color: gender ? colors.heading : colors.placeholder,
                   fontSize: fontSize.Fifteen,
                   // marginTop: 2,
                   fontFamily: 'Poppins-Regular',
                 }}>
-                {companyName == '' ? 'Gender' : companyName}
+                {gender == '' ? 'Gender' : gender}
               </Text>
               <Image
                 style={{
@@ -234,58 +306,58 @@ const ResidentalScreen = ({navigation}) => {
               style={styles.input}
               placeholder="Pincode"
               placeholderTextColor={colors.placeholder}
-              keyboardType="number-pad"
+              keyboardType="numeric"
+              value={formData.cityPincode}
+              onChangeText={text => handleInputChange('cityPincode', text)}
             />
           </View>
 
           <View style={styles.inputmain}>
-      <Text style={styles.title2}>Date of Birth</Text>
+            <Text style={styles.title2}>Date of Birth*</Text>
 
-    
-      <TouchableOpacity  onPress={() => setOpen(true)}
-        style={[
-          styles.input,
-          styles.inputShadow,
-          {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          },
-        ]}>
-      
-        <Text
-          style={styles.input1}
-        >
-         {formatDate(date)}
-        </Text>
+            <TouchableOpacity
+              onPress={() => setOpen(true)}
+              style={[
+                styles.input,
+                styles.inputShadow,
+                {
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                },
+              ]}>
+              <Text
+                style={[
+                  styles.input1,
+                  {color: date === '' ? colors.placeholder : colors.heading},
+                ]}>
+                {formatDate(date)}
+              </Text>
 
-      
-        <Image
-          style={{
-            height: 20,
-            width: 20,
-          }}
-          source={require('../../../assets/image/cale.png')}
-        />
-      </TouchableOpacity>
+              <Image
+                style={{
+                  height: 20,
+                  width: 20,
+                }}
+                source={require('../../../assets/image/cale.png')}
+              />
+            </TouchableOpacity>
 
-    
-      <DatePicker
-        modal
-        open={open}
-        date={date}
-        mode="date" 
-        maximumDate={new Date()}
-        onConfirm={(selectedDate) => {
-          setOpen(false); 
-          setDate(selectedDate); 
-        }}
-        onCancel={() => setOpen(false)} 
-      />
-    </View>
+            <DatePicker
+              modal
+              open={open}
+              date={date || new Date()}
+              mode="date"
+              maximumDate={new Date()}
+              onConfirm={selectedDate => {
+                setOpen(false);
+                setDate(selectedDate);
+              }}
+              onCancel={() => setOpen(false)}
+            />
+          </View>
 
-
-        {/* <View style={styles.inputmain}>
+          {/* <View style={styles.inputmain}>
           <Text style={styles.title2}>Date of Birth</Text>
           <View
             style={[
@@ -313,7 +385,7 @@ const ResidentalScreen = ({navigation}) => {
           </View>
         </View> */}
 
-        {/* <View style={styles.inputmain}>
+          {/* <View style={styles.inputmain}>
           <Text style={styles.title2}>Time of Birth</Text>
           <View
             style={[
@@ -340,52 +412,51 @@ const ResidentalScreen = ({navigation}) => {
             />
           </View>
         </View> */}
-        
-<View style={styles.inputmain}>
-      <Text style={styles.title2}>Time of Birth</Text>
 
-      {/* Input area with DatePicker */}
-      <TouchableOpacity  onPress={() => setOpen1(true)}
-        style={[
-          styles.input,
-          styles.inputShadow,
-          {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          },
-        ]}>
-       
-        <Text
-          style={[styles.input1,{color:time1==''?colors.placeholder:colors.heading}]}
-         
-        >
-          {time1 ==''?'Date of Birth':time1}
-        </Text>
+          <View style={styles.inputmain}>
+            <Text style={styles.title2}>Time of Birth</Text>
 
-        <Image
-          style={{
-            height: 20,
-            width: 20,
-          }}
-          source={require('../../../assets/image/Layer.png')}
-        />
-      </TouchableOpacity>
+            {/* Input area with DatePicker */}
+            <TouchableOpacity
+              onPress={() => setOpen1(true)}
+              style={[
+                styles.input,
+                styles.inputShadow,
+                {
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                },
+              ]}>
+              <Text
+                style={[
+                  styles.input1,
+                  {color: time === '' ? colors.placeholder : colors.heading},
+                ]}>
+                {formatTime(time)}
+              </Text>
 
-     
-      <DatePicker
-        modal
-        open={open1}
-        date={time}
-        mode="time" 
-        onConfirm={(selectedTime) => {
-          setOpen1(false); 
-          setTime(selectedTime); 
-          formatTime(selectedTime)
-        }}
-        onCancel={() => setOpen1(false)} 
-      />
-    </View>
+              <Image
+                style={{
+                  height: 20,
+                  width: 20,
+                }}
+                source={require('../../../assets/image/Layer.png')}
+              />
+            </TouchableOpacity>
+
+            <DatePicker
+              modal
+              open={open1}
+              date={time || new Date()}
+              mode="time"
+              onConfirm={selectedTime => {
+                setOpen1(false);
+                setTime(selectedTime);
+              }}
+              onCancel={() => setOpen1(false)}
+            />
+          </View>
 
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Place of Birth</Text>
@@ -393,6 +464,8 @@ const ResidentalScreen = ({navigation}) => {
               style={styles.input}
               placeholder="Place of Birth"
               placeholderTextColor={colors.placeholder}
+              value={formData.birthPlace}
+              onChangeText={text => handleInputChange('birthPlace', text)}
             />
           </View>
           <View style={styles.inputmain}>
@@ -401,12 +474,14 @@ const ResidentalScreen = ({navigation}) => {
               style={styles.messageInput}
               placeholder="Type here..."
               placeholderTextColor={colors.placeholder}
+              value={formData.additionalInfo}
+              onChangeText={text => handleInputChange('additionalInfo', text)}
             />
           </View>
         </View>
 
         <TouchableOpacity
-          onPress={() => navigation.navigate('Payment', {data1: 'Residental'})}
+          onPress={handleSubmit}
           style={styles.book}>
           <Text style={styles.btext1}>SUBMIT</Text>
         </TouchableOpacity>
