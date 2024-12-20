@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,9 +6,11 @@ import {
   FlatList,
   Image,
   ScrollView,
+  Alert,
+  BackHandler,
 } from 'react-native';
 import styles from './styles';
-import BottomNavBar from '../../../Component/ButtomTab';
+
 import { Rating } from 'react-native-ratings';
 import { heightPercent } from '../../../Component/ResponsiveScreen/responsive';
 
@@ -82,6 +84,7 @@ const Appointment = ({ navigation }) => {
       setAppointmentsData(completedAppointments);
     }
   };
+
 
   const renderAppointment = ({ item }) => (
     <TouchableOpacity
@@ -174,12 +177,12 @@ const Appointment = ({ navigation }) => {
         <View style={styles.headerview}>
           <TouchableOpacity
             style={{ height: 20, width: 30 }}
-            onPress={() =>
-              navigation.reset({
-                index: 0,
-                routes: [{name: 'UserProfile'}],
-              })}
-            // onPress={() => navigation.goBack()}
+            // onPress={() =>
+            //   navigation.reset({
+            //     index: 0,
+            //     routes: [{name: 'UserProfile'}],
+            //   })}
+            onPress={() => navigation.goBack()}
           >
             <Image
               style={{ height: 15, width: 10 }}
@@ -225,7 +228,7 @@ const Appointment = ({ navigation }) => {
           keyExtractor={item => item.id}
         />
       </ScrollView>
-      <BottomNavBar navigation={navigation} />
+     
     </View>
   );
 };

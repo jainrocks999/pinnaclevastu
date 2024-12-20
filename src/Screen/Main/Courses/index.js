@@ -95,7 +95,10 @@ const OtherCourses = ({navigation}) => {
           <Image source={require('../../../assets/image/Drawer.png')} />
         </TouchableOpacity>
         <Image source={require('../../../assets/image/header.png')} />
-        <TouchableOpacity style={styles.bagIcon}>
+        <TouchableOpacity 
+         onPress={() => navigation.navigate('Home', {screen: 'MyCart'})}
+        
+        style={styles.bagIcon}>
           <Image source={require('../../../assets/image/Group.png')} />
         </TouchableOpacity>
       </View>

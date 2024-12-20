@@ -68,12 +68,15 @@ import styles from './styles';
 import {colors} from '../../../Component/colors';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Toast from 'react-native-simple-toast';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import { loginUser } from '../../../Redux/Slice/Authslice';
+import Loader from '../../../Component/Loader';
 
 
 const LoginScreen = ({navigation}) => {
   const [mobile, setMobile] = useState('');
+ const  isLoading =useSelector(state=>state.Auth?.loading)
+ 
   const dispatch = useDispatch();
   const handleInputChange = text => {
     const numericText = text.replace(/[^0-9]/g, '');
@@ -108,6 +111,8 @@ const LoginScreen = ({navigation}) => {
       <ImageBackground
         style={styles.imgbcg}
         source={require('../../../assets/image/Group1.png')}>
+
+          {isLoading?<Loader/>:null}
         <View style={styles.main}>
           <View style={styles.subt}>
             <Text style={styles.title}>Login</Text>

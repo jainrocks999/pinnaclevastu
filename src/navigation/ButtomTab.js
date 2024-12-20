@@ -31,14 +31,18 @@ import Remedie from './Remediesstack';
 import CoureList from '../Screen/Main/Courses';
 import MyProfile from './Profilestack';
 import ResidentalScreen from '../Screen/Main/ResidentalVastu';
-import {useNavigation} from '@react-navigation/native';
+import {getFocusedRouteNameFromRoute, useNavigation, useNavigationState} from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
 
 export default function BottomTab() {
+
+  
   return (
     <SafeAreaView style={{flex: 1}}>
-      <Tab.Navigator
+
+
+      {/* <Tab.Navigator
         initialRouteName="MainStack"
         screenOptions={{
           animationEnabled: false,
@@ -46,7 +50,43 @@ export default function BottomTab() {
           inactiveTintColor: 'grey',
           headerShown: false,
           tabBarStyle: styles.tabBarStyle,
-        }}>
+        }}> */}
+
+<Tab.Navigator
+  initialRouteName="MainStack"
+  screenOptions={({ route }) => ({
+    animationEnabled: false,
+    activeTintColor: 'green',
+    inactiveTintColor: 'grey',
+    headerShown: false,
+    tabBarStyle: [
+      {
+        
+         
+
+        display: shouldHideTabBar(route) ? 'none' : 'flex',
+        backgroundColor: colors.orange,
+        height: 60,
+        alignItems: 'center',
+        justifyContent: 'space-around',
+        borderTopLeftRadius: 10,
+        borderTopRightRadius: 10,
+        paddingHorizontal: moderateScale(1),
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
+        elevation: 5,
+        position: 'absolute',
+        bottom: 0,
+        overflow: 'hidden',
+      },
+    ],
+  })}
+>
+
+
+
         <Tab.Screen
           name="MainStack"
           component={HomeScreen}
@@ -62,6 +102,8 @@ export default function BottomTab() {
                   justifyContent: 'center',
                   flex: 1,
                 }}>
+                
+                  
                 {focused ? (
                   <Home />
                 ) : (
@@ -235,32 +277,53 @@ export default function BottomTab() {
             headerShown: false,
             tabBarLabel: 'Profile',
             tabBarShowLabel: false,
-            tabBarIcon: ({color, size, focused}) => {
-              const navigation = useNavigation();
+            // tabBarIcon: ({color, size, focused}) => {
+            //   const navigation = useNavigation();
 
-              return (
-                <TouchableOpacity
-                  activeOpacity={0.2}
-                  style={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flex: 1,
+            //   return (
+            //     <TouchableOpacity
+            //       activeOpacity={0.2}
+            //       style={{
+            //         alignItems: 'center',
+            //         justifyContent: 'center',
+            //         flex: 1,
                    
-                  }}
-                  onPress={() => navigation.navigate('UserProfile')}>
-                  {focused ? <Layer /> : <Laye />}
-                  <Text
-                    style={{
-                      color: colors.white,
-                      fontSize: fontSize.Twelve,
-                      fontFamily: 'Poppins-Regular',
-                      width: '100%',
-                    }}>
-                    Profile
-                  </Text>
-                </TouchableOpacity>
-              );
-            },
+            //       }}
+            //       onPress={() => navigation.navigate('UserProfile')}>
+            //       {focused ? <Layer /> : <Laye />}
+            //       <Text
+            //         style={{
+            //           color: colors.white,
+            //           fontSize: fontSize.Twelve,
+            //           fontFamily: 'Poppins-Regular',
+            //           width: '100%',
+            //         }}>
+            //         Profile
+            //       </Text>
+            //     </TouchableOpacity>
+            //   );
+            // },
+            tabBarIcon: ({color, size, focused,route}) => (
+              <View
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flex: 1,
+                }}>
+                   
+                 {focused ? <Layer /> : <Laye />}
+                <Text
+                  style={{
+                    color: colors.white,
+                    fontSize: fontSize.Twelve,
+                    fontFamily: 'Poppins-Regular',
+                    width: '100%',
+                    textAlign: 'center',
+                  }}>
+                   Profile
+                </Text>
+              </View>
+            ),
             tabBarButton: props => (
               <TouchableOpacity
                 {...props}
@@ -280,6 +343,27 @@ export default function BottomTab() {
     </SafeAreaView>
   );
 }
+function shouldHideTabBar(route) {
+  const focusedRouteName = getFocusedRouteNameFromRoute(route);
+
+  
+  if (route.name === 'MyProfile') {
+   
+    if (!focusedRouteName) {
+      return true;
+    }
+
+ 
+    if (focusedRouteName === 'UserProfile' || focusedRouteName === 'EditProfile') {
+      return true;
+    }
+  }
+
+  return false; 
+}
+
+
+
 
 const styles = StyleSheet.create({
   tabBarStyle: {

@@ -7,19 +7,108 @@ import {
   TouchableOpacity,
   FlatList,
 } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import styles from './styles';
 import { fontSize } from '../../../Component/fontsize';
 import { colors } from '../../../Component/colors';
 import { Rating } from 'react-native-ratings';
 import { widthPrecent as wp } from '../../../Component/ResponsiveScreen/responsive';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const Remedies12SecondComponent = () => {
   const navigation = useNavigation();
-
+  const [cartItemList, setCartItemList] = useState([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const handleNavigation = () => {
+  
     navigation.navigate('RemediesInnerScreenFirst');
   };
+
+  
+  useEffect(() => {
+    getCartData();
+    const checkLoginStatus = async () => {
+      try {
+        const userStatus = await AsyncStorage.getItem('user_data');
+        const existingCart = await AsyncStorage.getItem('cartItems');
+
+        console.log('virendra',existingCart,userStatus);
+     
+        
+        if (userStatus) {
+          setIsLoggedIn(true);
+        } else {
+          setIsLoggedIn(false);
+          // navigation.navigate('Login'); // Navigate to login screen if not logged in
+        }
+      } catch (error) {
+        console.error('Error checking login status:', error);
+      }
+    };
+
+    checkLoginStatus();
+  }, [navigation]);
+
+ 
+  const getCartData = async () => {
+    try {
+      const cartData = await AsyncStorage.getItem('cartItems');
+      const parsedCartData = cartData ? JSON.parse(cartData) : [];
+
+      setCartItemList(parsedCartData);
+
+      console.log(cartItemList, 'Retrieved cart data');
+    } catch (error) {
+      console.error('Error retrieving cart data:', error);
+    }
+  };
+
+  const increment = async id => {
+    try {
+      const updatedData = cartItemList.map(item =>
+        item.id === id
+          ? {
+              ...item,
+              quantity: item.quantity < 100 ? item.quantity + 1 : quantity,
+            }
+          : item,
+      );
+      setCartItemList(updatedData);
+      await AsyncStorage.setItem('cartItems', JSON.stringify(updatedData));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const decrement = async id => {
+    try {
+      const updatedData = cartItemList.map(item =>
+        item.id === id
+          ? {
+              ...item,
+              quantity: item.quantity > 1 ? item.quantity - 1 : quantity,
+            }
+          : item,
+      );
+
+      setCartItemList(updatedData);
+      await AsyncStorage.setItem('cartItems', JSON.stringify(updatedData));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const removerItem = async id => {
+    try {
+      const updatedData = cartItemList.filter(item => item.id !== id);
+      setCartItemList(updatedData);
+
+      await AsyncStorage.setItem('cartItems', JSON.stringify(updatedData));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
 
   const data2 = [
     {
@@ -91,36 +180,46 @@ const Remedies12SecondComponent = () => {
 
 
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({item}) => (
     <View style={styles.viewinner}>
-      <Image source={item.image} style={styles.image1} />
+      <Image
+        source={require('../../../assets/image/Remedies/ab.png')}
+        style={styles.image1}
+      />
       <View style={styles.contentContainer}>
-        <Text style={styles.textstyle}>{item.title}</Text>
+        <Text style={styles.textstyle}>{item.name}</Text>
         <View style={styles.ruupebutton}>
           <View style={styles.rupees}>
-            <Text style={styles.rupeestext}>{item.price}</Text>
+            <Text style={styles.rupeestext}>₹ {item.price}</Text>
           </View>
           <View style={[styles.headerview, styles.quantitySection]}>
-            <TouchableOpacity style={styles.touch}>
+            <TouchableOpacity
+              style={styles.touch}
+              onPress={() => decrement(item.id)}>
               <Text style={[styles.third1, styles.quantityBtns]}>{'-'}</Text>
             </TouchableOpacity>
-            <Text style={[styles.third1, { marginLeft: 5, marginTop: 3 }]}>
-              1
+            <Text style={[styles.third1, {marginLeft: 5, marginTop: 3}]}>
+              {item.quantity}
             </Text>
-            <TouchableOpacity style={[styles.touch, { marginLeft: 0 }]}>
+            <TouchableOpacity
+              style={[styles.touch, {marginLeft: 0}]}
+              onPress={() => increment(item.id)}>
               <Text style={[styles.third1, styles.quantityBtns]}>{'+'}</Text>
             </TouchableOpacity>
           </View>
         </View>
       </View>
-      <TouchableOpacity style={styles.crossIcon} onPress={handleNavigation}>
+      <TouchableOpacity
+        style={styles.crossIcon}
+        onPress={() => {
+          removerItem(item.id);
+        }}>
         <View style={styles.closeButton}>
           <Text style={styles.closeIcon}>+</Text>
         </View>
       </TouchableOpacity>
     </View>
   );
-
 
 
 
@@ -136,7 +235,10 @@ const Remedies12SecondComponent = () => {
             source={require('../../../assets/image/header.png')}
           />
         </View>
-        <TouchableOpacity>
+        <TouchableOpacity 
+         onPress={() => navigation.navigate('Home', {screen: 'MyCart'})}
+        
+        style={styles.bagIcon}>
           <Image source={require('../../../assets/image/Group.png')} />
         </TouchableOpacity>
       </View>
@@ -164,7 +266,7 @@ const Remedies12SecondComponent = () => {
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll}>
-        <View style={styles.viewDeliver}>
+       {isLoggedIn? <View style={styles.viewDeliver}>
           <View style={styles.toview}>
             <Text style={styles.textDeliver}>Deliver To:</Text>
             <Text style={styles.texttejash}>Tejash Shah, 400078</Text>
@@ -176,14 +278,18 @@ const Remedies12SecondComponent = () => {
             </Text>
             <Text style={styles.change}>Change</Text>
           </View>
-        </View>
+        </View>:null}
 
+        {cartItemList?.length != 0 ? (null
+          // <Text style={[styles.viewinner1,styles.third,{textAlign:"center"}]}>Cart is Empty !</Text>
+        ) : (
           <FlatList
-            data={data}
-            keyExtractor={(item) => item.id}
+            data={cartItemList}
+            keyExtractor={item => item.id}
             renderItem={renderItem}
             contentContainerStyle={styles.viewinner1}
           />
+        )}
    
 
 
@@ -237,7 +343,11 @@ const Remedies12SecondComponent = () => {
           </View>
         </View>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Home', { screen: 'MyCart1' })} 
+        <TouchableOpacity onPress={() =>{isLoggedIn ?
+          navigation.navigate("AddressList"):
+          navigation.navigate("Login")
+        }
+        } 
         style={styles.book}>
           <Text style={styles.btext1}>
             PLACE ORDER

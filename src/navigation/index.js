@@ -112,8 +112,8 @@ function MyDrawer() {
       <DrawerStack.Screen name="MyCart" component={Mycart}/>
       <DrawerStack.Screen name="MyCart1" component={MyCart1}/>
       <DrawerStack.Screen name="Courses" component={Courses}/>
-      <DrawerStack.Screen name='UserProfile' component={userprofile}/>
-      <DrawerStack.Screen name='EditProfile' component={EditProfile}/>
+      {/* <DrawerStack.Screen name='UserProfile' component={userprofile}/>
+      <DrawerStack.Screen name='EditProfile' component={EditProfile}/> */}
     </DrawerStack.Navigator>
   );
 }

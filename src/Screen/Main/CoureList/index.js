@@ -24,12 +24,13 @@ const CoureList = ({navigation}) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity   onPress={() =>
-            navigation.reset({
-              index: 0,
-              routes: [{name: 'UserProfile'}],
-            })}
-        // onPress={() => navigation.goBack()}
+        <TouchableOpacity  
+        //  onPress={() =>
+        //     navigation.reset({
+        //       index: 0,
+        //       routes: [{name: 'UserProfile'}],
+        //     })}
+         onPress={() => navigation.goBack()}
           >
           <Image
             style={styles.backBtn}

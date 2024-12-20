@@ -146,7 +146,7 @@ const BannerSlider = ({
         scrollEventThrottle={16}
       />
 
-      {!iscollection ? (
+      {local ? (
         <View
           style={[
             styles.dotsContainer,

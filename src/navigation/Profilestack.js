@@ -9,17 +9,24 @@ import CoureList from "../Screen/Main/CoureList";
 import Appointment from "../Screen/Main/Appoinment";
 import OrderDetail from "../Screen/Main/OrderDetail";
 import AppointmentDetails from "../Screen/Main/AppoinmentDetail";
+import userprofile from '../Screen/Main/userProfile';
+import EditProfile from "../Screen/Main/EditProfile";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
+
+
 export default function ProfileStack({ navigation }) {
+ 
     const Stack = createNativeStackNavigator();
     return (
         <Stack.Navigator
-            initialRouteName="MyOrder"
+            initialRouteName="UserProfile"
             screenOptions={{
                 headerShown: false,
             }}
         >
-          
+           <Stack.Screen name='UserProfile' component={userprofile}/>
+           <Stack.Screen name='EditProfile' component={EditProfile}/>
             <Stack.Screen name='MyOrder' component={MyOrder}/>
        <Stack.Screen name='CoureList' component={CoureList}/>
        <Stack.Screen name='CourceListDownload' component ={CourceListDownload}/>  

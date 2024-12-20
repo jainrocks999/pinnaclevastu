@@ -49,7 +49,7 @@ const ImageSlider = ({   data,
           <TouchableOpacity onPress={()=>onPress(item,index)}
           style={[styles.imageContainer, { width: IMAGE_WIDTH, marginRight:10}]}>
             <AutoHeightImage
-              source={item.image}
+              source={{uri:item.image}}
               width={IMAGE_WIDTH}
               style={styles.image}
             /> 

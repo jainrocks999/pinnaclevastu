@@ -74,11 +74,11 @@ const MyOrder = ({ navigation }) => {
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() =>
-            navigation.reset({
-              index: 0,
-              routes: [{name: 'UserProfile'}],
-            })}
-          // navigation.goBack('UserProfile')}
+            // navigation.reset({
+            //   index: 0,
+            //   routes: [{name: 'UserProfile'}],
+            // })}
+           navigation.goBack()}
           >
           <Image
             style={styles.backBtn}

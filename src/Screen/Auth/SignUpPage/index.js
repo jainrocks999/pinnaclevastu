@@ -520,6 +520,7 @@ const SignUpPage = () => {
                 placeholder="Upload Photo"
                 placeholderTextColor={colors.placeholder}
                 value={selectedImage}
+                editable={false}
               />
 
               <TouchableOpacity

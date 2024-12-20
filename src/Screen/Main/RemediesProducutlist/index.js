@@ -13,45 +13,96 @@ import {
 import React from 'react';
 import styles from './styles';
 
-import { Rating } from 'react-native-ratings';
-import { colors } from '../../../Component/colors';
-import { widthPrecent as wp } from '../../../Component/ResponsiveScreen/responsive';
-import { useDispatch, useSelector } from 'react-redux';
+import {Rating} from 'react-native-ratings';
+import {colors} from '../../../Component/colors';
+import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
+import {useDispatch, useSelector} from 'react-redux';
 import Imagepath from '../../../Component/Imagepath';
-import { useNavigation } from '@react-navigation/native';
-import {  productDetail1 } from '../../../Redux/Slice/HomeSlice';
+import {useNavigation} from '@react-navigation/native';
+import {productDetail1} from '../../../Redux/Slice/HomeSlice';
 import Loader from '../../../Component/Loader';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-simple-toast';
+
 const RemediesProductList = ({route}) => {
-  const  name1  = route?.params?.name1; 
- 
-  console.log('lnkslks',route.params.id);
-  
-  
-  const navigation =useNavigation();
-  const dispatch =useDispatch();
+  const name1 = route?.params?.name1;
+
+  console.log('lnkslks', route.params.id);
+
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
   const RemediesCategory = useSelector(state => state.home?.RemeiesCat?.data);
   const isLoading = useSelector(state => state.home?.loading);
-  const PRoductDeta =async(item)=>{
-   
-    
-     await dispatch(productDetail1({url:'fetch-single-product',product_id:item.id,navigation}))
+  const PRoductDeta = async item => {
+    await dispatch(
+      productDetail1({
+        url: 'fetch-single-product',
+        product_id: item.id,
+        navigation,
+      }),
+    );
     //  navigation.navigate("ProductDetail")
-  }
-  const renderItem = ({ item }) => (
+  };
+
+  const Addtocard = async item => {
+    try {
+      const existingCart = await AsyncStorage.getItem('cartItems');
+      // console.log('virendra', existingCart);
+
+      let cartItems = existingCart ? JSON.parse(existingCart) : [];
+
+      // const uniqueId = `${Date.now()}-${Math.random()
+      //   .toString(36)
+      //   .substr(2, 9)}`;
+
+      const itemWithId = {
+        ...item,
+        quantity: 1,
+        // uniqueId: uniqueId,
+        addedAt: new Date().toISOString(),
+      };
+
+      let existingItemIndex = cartItems.findIndex(
+        cartItem => cartItem.id === item.id,
+      );
+
+      if (existingItemIndex !== -1) {
+        cartItems[existingItemIndex] = {
+          ...cartItems[existingItemIndex],
+          ...itemWithId,
+          // updatedQuantity:
+          // quantity: quantity,
+        };
+      } else {
+        cartItems.push(itemWithId);
+      }
+      // console.log(cartItems);
+      await AsyncStorage.setItem('cartItems', JSON.stringify(cartItems));
+      console.log('Item added to cart:', itemWithId);
+      Toast.show('Item added to cart successfully');
+    } catch (error) {
+      console.error('Error adding item to cart:', error);
+    }
+  };
+
+  const renderItem = ({item}) => (
     <View style={styles.slide}>
-      <TouchableOpacity onPress={() =>PRoductDeta(item)}>
+      <TouchableOpacity onPress={() => PRoductDeta(item)}>
         <View style={styles.image}>
-        <Image source={
-    item?.image 
-      ? { uri: `${Imagepath.Path}${item.image}` } :
-      require("../../../assets/image/Remedies/ab.png")}
-     
-   style={{height:'100%',width:'100%',borderRadius:10}} />
-  </View>
+          <Image
+            source={
+              item?.image
+                ? {uri: `${Imagepath.Path}${item.image}`}
+                : require('../../../assets/image/Remedies/ab.png')
+            }
+            style={{height: '100%', width: '100%', borderRadius: 10}}
+          />
+        </View>
       </TouchableOpacity>
       <View style={styles.textContainer}>
         <Text style={[styles.third, styles.titleText]}>{item.name}</Text>
-        <Text style={[styles.third, styles.priceText]}>{`₹ ${item.price}`}</Text>
+        <Text
+          style={[styles.third, styles.priceText]}>{`₹ ${item.price}`}</Text>
 
         <View style={styles.direction}>
           <Rating
@@ -64,7 +115,9 @@ const RemediesProductList = ({route}) => {
             ratingBackgroundColor={colors.lightGrey} // Unfilled star color
           />
         </View>
-        <TouchableOpacity onPress={()=> navigation.navigate("ProductDetail")} style={styles.buttonstylefirst}>
+        <TouchableOpacity
+          onPress={() => Addtocard(item)}
+          style={styles.buttonstylefirst}>
           <Text style={styles.buttonstyle}>Add to Cart</Text>
         </TouchableOpacity>
       </View>
@@ -77,14 +130,16 @@ const RemediesProductList = ({route}) => {
         <View style={styles.headerview}>
           <TouchableOpacity
             onPress={() =>
-              route.params.id?navigation.goBack():
-              navigation.reset({
-                  index: 0,
-                  routes: [{name: 'Home1', params: {screen: 'Remedie12'}}],
-                })}
-            
-            // 
-            >
+              route.params.id
+                ? navigation.goBack()
+                : navigation.reset({
+                    index: 0,
+                    routes: [{name: 'Home1', params: {screen: 'Remedie12'}}],
+                  })
+            }
+
+            //
+          >
             <Image
               style={styles.backBtn}
               source={require('../../../assets/drawer/Back1.png')}
@@ -92,18 +147,20 @@ const RemediesProductList = ({route}) => {
           </TouchableOpacity>
           <Text style={styles.logoText}>{name1}</Text>
         </View>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('Home', {screen: 'MyCart'});
+          }}>
           <Image
             style={styles.bagBtn}
-            source={require('../../../assets/image/Group.png')} />
+            source={require('../../../assets/image/Group.png')}
+          />
         </TouchableOpacity>
       </View>
-      {isLoading?<Loader/>:null}
-      <ScrollView contentContainerStyle={styles.Scroll}
-      scrollEnabled={false}
-      >
+      {isLoading ? <Loader /> : null}
+      <ScrollView contentContainerStyle={styles.Scroll} scrollEnabled={false}>
         <View style={styles.searchContainer}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <Image source={require('../../../assets/image/SearchIcon.png')} />
             <TextInput
               placeholder="Search..."
@@ -120,13 +177,11 @@ const RemediesProductList = ({route}) => {
           renderItem={renderItem}
           numColumns={2}
           keyExtractor={item => item.id}
-          nestedScrollEnabled={true} 
+          nestedScrollEnabled={true}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{  }}
+          contentContainerStyle={{}}
         />
-
       </ScrollView>
-  
     </View>
   );
 };

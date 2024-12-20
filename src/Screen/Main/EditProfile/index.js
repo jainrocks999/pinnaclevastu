@@ -208,7 +208,10 @@ const EditProfile = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => 
+          
+          navigation.goBack()
+          }>
           <Image
             style={styles.backBtn}
             source={require('../../../assets/drawer/Back1.png')}
@@ -414,6 +417,7 @@ const EditProfile = () => {
               placeholder="Upload Photo"
               placeholderTextColor={colors.placeholder}
               value={selectedImage}
+              editable={false}
             />
             <TouchableOpacity
               onPress={toggleModal}

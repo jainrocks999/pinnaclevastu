@@ -8,16 +8,29 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import styles from './styles';
 import LinearGradient from 'react-native-linear-gradient';
 import { useDispatch, useSelector } from 'react-redux';
 import Imagepath from '../../../Component/Imagepath';
-import { RemediesCategory } from '../../../Redux/Slice/HomeSlice';
+import { Remedie, RemediesCategory } from '../../../Redux/Slice/HomeSlice';
 import Loader from '../../../Component/Loader';
+import { useIsFocused } from '@react-navigation/native';
+import BannerSlider from '../../../Component/Banner';
+import { widthPrecent } from '../../../Component/ResponsiveScreen/responsive';
 
 const Remedies = ({navigation}) => {
   const Remediesproduct = useSelector(state => state.home?.Remedi?.data);
+  console.log('kjoijgoigbjo',Remediesproduct?.remedies_categories_banner?.[0]?.slider_items);
+  const newArray = [];
+  (Remediesproduct?.remedies_categories_banner?.[0]?.slider_items|| []).forEach(item => {
+    const updatedItem = {
+      ...item, 
+      image: `${Imagepath.Path}${item.image}`,
+    };
+
+    newArray.push(updatedItem);
+  });
   const isLoading = useSelector(state => state.home?.loading);
   const dispatch =useDispatch();
 
@@ -27,7 +40,20 @@ const Remedies = ({navigation}) => {
    await dispatch(RemediesCategory({url: 'remedies-by-product',category_id:item.id,navigation,name:item.name, id:false}));
   }
 
+  const focus = useIsFocused();
 
+  useEffect(() => {
+    if (focus) {
+      apicall();
+    }
+  }, [focus]);
+
+  const apicall = async () => {
+   
+     await dispatch(Remedie({url: 'remedies'}));
+    // await dispatch(Service({url: 'fetch-franchise-services'}));
+    // await dispatch(CourceLis({url: 'fetch-courses', slug: 'live'}));
+  };
 
 
   const renderItem2 = ({item}) => {
@@ -65,7 +91,7 @@ const Remedies = ({navigation}) => {
           </TouchableOpacity>
           <Text style={styles.logoText}>Remedies</Text>
         </View>
-        <TouchableOpacity>
+        <TouchableOpacity   onPress={() => navigation.navigate('Home', {screen: 'MyCart'})} >
           <Image 
           style={styles.bagBtn}
           source={require('../../../assets/image/Group.png')} />
@@ -73,20 +99,33 @@ const Remedies = ({navigation}) => {
       </View>
       {isLoading?<Loader/>:null}
       <ScrollView contentContainerStyle={styles.searchContainer}>
-        <View style={styles.contain1}>
+        {/* <View style={styles.contain1}>
           <Image
             style={styles.image}
             source={require('../../../assets/image/Group1x.png')}
           />
+        </View> */}
+         <View style={styles.welcomeCard}>
+          {newArray?.length != 0 ? (
+            <BannerSlider
+              onPress={item => {}}
+              height1={widthPrecent(40)}
+              data={newArray ? newArray : []}
+              local={false}
+            />
+          ) : null}
         </View>
-        <FlatList
-          data={Remediesproduct}
+        <View >     
+            <FlatList
+          data={Remediesproduct?.remedies_categories?Remediesproduct?.remedies_categories:[]}
           renderItem={renderItem2}
           numColumns={2}
           keyExtractor={item => item.id}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{paddingHorizontal: 0, alignSelf: 'center'}}
+          contentContainerStyle={{paddingHorizontal: 0, alignSelf: 'center',marginTop:widthPrecent(5)}}
         />
+        </View>
+ 
       </ScrollView>
     
     </View>

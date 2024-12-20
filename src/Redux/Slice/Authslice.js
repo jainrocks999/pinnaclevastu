@@ -26,19 +26,26 @@ export const loginUser = createAsyncThunk(
       const response = await axios.request(config);
       console.log('response data', response.data);
 
-      //   if (response.data.status == 200) {
-      //     console.log('svhkjhvkjdfgvgh', response.data);
-      //     // AsyncStorage.setItem('Otp', response.data.OTP);
-      //     AsyncStorage.setItem('user_id',JSON.stringify(response.data.user_id))
-      //     AsyncStorage.setItem('Token',response.data.token);
-      //     Toast.show(response.data.msg);
-      //     navigation.replace('Forget', {data: response.data, item: user,register:true});
-      //     return response.data;
-      //   } else {
-      //     Toast.show(response.data.msg);
-      //     console.log('errrorroro', response.data);
-      //     return rejectWithValue(error.response?.data || error.message);
-      //   }
+        if (response.data.status == 200) {
+          
+
+          const responseDataString = JSON.stringify(response.data);
+
+         
+          AsyncStorage.setItem('user_data', responseDataString);
+        
+          
+          AsyncStorage.setItem('user_type', response.data.user_type);
+          AsyncStorage.setItem('user_id', JSON.stringify(response.data.user_id));
+          AsyncStorage.setItem('Token', response.data.token);
+          Toast.show(response.data.msg);
+           navigation.replace('OTP', {data: response.data, item:mobile,});
+          return response.data;
+        } else {
+          Toast.show(response.data.msg);
+          console.log('errrorroro', response.data);
+          return rejectWithValue(error.response?.data || error.message);
+        }
 
       return response.data;
     } catch (error) {

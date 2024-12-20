@@ -18,6 +18,9 @@ import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive
 import {Checkbox} from 'react-native-paper';
 import {useSelector} from 'react-redux';
 import RenderHTML from 'react-native-render-html';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-simple-toast';
+
 const RemediesProductDetail = ({navigation}) => {
   const {width} = Dimensions.get('window');
   const [checked, setChecked] = useState(true);
@@ -25,6 +28,8 @@ const RemediesProductDetail = ({navigation}) => {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [quantity, setQuantity] = useState(1);
+
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
@@ -33,6 +38,58 @@ const RemediesProductDetail = ({navigation}) => {
     setCurrentIndex(index);
   };
 
+  const increment = () => {
+    if (quantity < 100) {
+      setQuantity(quantity + 1);
+    }
+  };
+
+  const decrement = () => {
+    if (quantity > 1) {
+      setQuantity(quantity - 1);
+    }
+  };
+
+  const Addtocard = async item => {
+    try {
+      const existingCart = await AsyncStorage.getItem('cartItems');
+      // console.log('virendra', existingCart);
+
+      let cartItems = existingCart ? JSON.parse(existingCart) : [];
+
+      // const uniqueId = `${Date.now()}-${Math.random()
+      //   .toString(36)
+      //   .substr(2, 9)}`;
+
+      const itemWithId = {
+        ...item,
+        quantity: quantity,
+        // uniqueId: uniqueId,
+        addedAt: new Date().toISOString(),
+      };
+
+      let existingItemIndex = cartItems.findIndex(
+        cartItem => cartItem.id === item.id,
+      );
+
+      if (existingItemIndex !== -1) {
+        cartItems[existingItemIndex] = {
+          ...cartItems[existingItemIndex],
+          ...itemWithId,
+          // updatedQuantity:
+          // quantity: quantity,
+        };
+      } else {
+        cartItems.push(itemWithId);
+      }
+
+      await AsyncStorage.setItem('cartItems', JSON.stringify(cartItems));
+      // console.log('Item added to cart:', itemWithId);
+      Toast.show('Item added to cart successfully');
+    } catch (error) {
+      console.error('Error adding item to cart:', error);
+    }
+  };
   const renderItem4 = ({item}) => {
     return (
       <View style={{flexDirection: 'row'}}>
@@ -214,7 +271,10 @@ const RemediesProductDetail = ({navigation}) => {
           </TouchableOpacity>
           <Text style={styles.logoText}>Product Detail</Text>
         </View>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('Home', {screen: 'MyCart'});
+          }}>
           <Image
             style={styles.bagBtn}
             source={require('../../../assets/image/Group.png')}
@@ -310,8 +370,10 @@ const RemediesProductDetail = ({navigation}) => {
                 contentWidth={width}
                 source={{
                   html: isExpanded
-                    ? Detail[0]?.description 
-                    : Detail[0]?.description.replace(/<[^>]*>/g, '').slice(0, 80) + '...' 
+                    ? Detail[0]?.description
+                    : Detail[0]?.description
+                        .replace(/<[^>]*>/g, '')
+                        .slice(0, 80) + '...',
                 }}
               />
             ) : (
@@ -345,22 +407,24 @@ const RemediesProductDetail = ({navigation}) => {
               Quantity:
             </Text>
             <View style={[styles.headerview, styles.quantitySection]}>
-              <TouchableOpacity style={styles.touch}>
+              <TouchableOpacity style={styles.touch} onPress={()=>decrement()}>
                 <Text style={[styles.third1, styles.quantityBtns]}>{'-'}</Text>
               </TouchableOpacity>
               <Text style={[styles.third1, {marginLeft: 5, marginTop: 3}]}>
-                1
+                {quantity}
               </Text>
-              <TouchableOpacity style={[styles.touch, {marginLeft: 0}]}>
+              <TouchableOpacity
+                style={[styles.touch, {marginLeft: 0}]}
+                onPress={()=>increment()}>
                 <Text style={[styles.third1, styles.quantityBtns]}>{'+'}</Text>
               </TouchableOpacity>
             </View>
           </View>
 
           <TouchableOpacity
-            onPress={() => navigation.navigate('Home', {screen: 'MyCart'})}
+            onPress={() => Addtocard(Detail[0])}
             style={[styles.book, {marginTop: 15}]}>
-            <Text style={styles.btext1}>ADD TO CART</Text>
+            <Text style={styles.btext1}>ADD TO CART </Text>
           </TouchableOpacity>
         </View>
 

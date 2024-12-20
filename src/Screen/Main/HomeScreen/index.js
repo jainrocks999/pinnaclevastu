@@ -38,45 +38,53 @@ const HomeScreen = () => {
   const [isLiveCourse, setIsLiveCourse] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const dispatch = useDispatch();
-  const Homebanner = useSelector(state => state.home?.HomeBanner);
-  const Remediesproduct = useSelector(state => state.home?.Remedi?.data);
+  const Homebanner = useSelector(state => state.home?.HomeBanner?.data);
+ 
   const isLoading = useSelector(state => state.home?.loading);
 
-  const servies = useSelector(state => state?.home?.services);
+
   const Live_cource = useSelector(state => state?.home?.Cource);
 
-  const combinedData = servies?.map(service => {
-    const matchedItem = data1?.find(
-      item => item?.name === service?.services_name,
-    );
-    return {
-      id: service.id,
-      services_name: service.services_name,
-      image: matchedItem ? matchedItem.image : null,
-    };
-  });
+
 
   const newArray = [];
-  (Homebanner?.data?.[0].slider_items || []).forEach(item => {
-    const formattedItem = {
-      id: item.id,
+  (Homebanner?.home_slider?.[0]?.slider_items|| []).forEach(item => {
+    const updatedItem = {
+      ...item, 
       image: `${Imagepath.Path}${item.image}`,
-      word: item.title,
     };
 
-    newArray.push(formattedItem);
+    newArray.push(updatedItem);
   });
-  const focus = useIsFocused();
+
+ 
+  const imagesilder11 =[];
+  (Homebanner?.offer_slider?.[0]?.slider_items || []).forEach(item => {
+    const updatedItem = {
+      ...item, 
+      image: `${Imagepath.Path}${item.image}`, 
+    };
+  
+    imagesilder11.push(updatedItem); 
+  });
+
+
+
+ 
+
+
+
 
   const CouseDetail1 = async item => {
     await dispatch(
       CourceDetailApi({
         url: 'fetch-courses-details',
-        course_id: item?.course_category_id,
+        course_id: item?.id,
         navigation,
       }),
     );
   };
+  const focus = useIsFocused();
 
   useEffect(() => {
     if (focus) {
@@ -86,9 +94,9 @@ const HomeScreen = () => {
 
   const apicall = async () => {
     await dispatch(Banner({url: 'home-slider'}));
-    await dispatch(Remedie({url: 'remedies'}));
-    await dispatch(Service({url: 'fetch-franchise-services'}));
-    await dispatch(CourceLis({url: 'fetch-courses', slug: 'live'}));
+    // await dispatch(Remedie({url: 'remedies'}));
+    // await dispatch(Service({url: 'fetch-franchise-services'}));
+    // await dispatch(CourceLis({url: 'fetch-courses', slug: 'live'}));
   };
   const RemediesProductcategory = async item => {
     await dispatch(
@@ -124,9 +132,11 @@ const HomeScreen = () => {
       backgroundColor = colors.card3;
     }
 
+  
+    
     return (
-      <TouchableOpacity style={[styles.cardContainer, {backgroundColor}]}>
-        <Image source={item.image} style={styles.itemImg} />
+      <TouchableOpacity style={[styles.cardContainer, {backgroundColor:item?.color_code}]}>
+        <Image source={{uri:`${Imagepath.Path}${item?.logo}`}} style={styles.itemImg} />
         <Text style={styles.text}>{item.services_name}</Text>
       </TouchableOpacity>
     );
@@ -136,10 +146,10 @@ const HomeScreen = () => {
     return (
       <TouchableOpacity style={[styles.smallCardContainer]}>
         <Image
-          source={item.image}
+          source={{uri:`${Imagepath.Path}${item?.logo}`}}
           style={[styles.itemImg, {resizeMode: 'contain'}]}
         />
-        <Text style={styles.smallCardtext}>{item.name}</Text>
+        <Text style={styles.smallCardtext}>{item.services_name}</Text>
       </TouchableOpacity>
     );
   };
@@ -271,7 +281,10 @@ const HomeScreen = () => {
           <Image source={require('../../../assets/image/Drawer.png')} />
         </TouchableOpacity>
         <Image source={require('../../../assets/image/header.png')} />
-        <TouchableOpacity style={styles.bagIcon}>
+        <TouchableOpacity 
+         onPress={() => navigation.navigate('Home', {screen: 'MyCart'})}
+        
+        style={styles.bagIcon}>
           <Image source={require('../../../assets/image/Group.png')} />
         </TouchableOpacity>
       </View>
@@ -306,16 +319,16 @@ const HomeScreen = () => {
           <Text style={styles.service}>Our Services</Text>
         </View>
         <FlatList
-          data={combinedData ? combinedData : []}
+          data={Homebanner?.services ? Homebanner?.services : []}
           renderItem={renderItem}
           keyExtractor={item => item.id}
           numColumns={3}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContainer}
         />
-
+{imagesilder11.length!=0?
         <ImageSlider
-        data={imagesilder1}
+        data={imagesilder11}
         onPress ={(item,index)=>
            console.log('hh',index,item)
         
@@ -323,13 +336,13 @@ const HomeScreen = () => {
         
           // navigation.navigate('UserProfile')
         }
-        />
+        />:null}
 
         <View style={[styles.contain, {marginTop: wp(2)}]}>
           <Text style={styles.service}>Premium Services</Text>
         </View>
         <FlatList
-          data={data2}
+          data={Homebanner?.premium_services?Homebanner?.premium_services:[]}
           renderItem={renderItem1}
           keyExtractor={item => item.id}
           numColumns={3}
@@ -346,7 +359,7 @@ const HomeScreen = () => {
             disabled={isLiveCourse}
             onPress={async () => {
               setIsLiveCourse(true);
-              await dispatch(CourceLis({url: 'fetch-courses', slug: 'live'}));
+             
             }}>
             <Text
               style={[
@@ -362,9 +375,7 @@ const HomeScreen = () => {
             style={[styles.switchBtn, !isLiveCourse ? styles.activeBtn : null]}
             onPress={async () => {
               setIsLiveCourse(false);
-              await dispatch(
-                CourceLis({url: 'fetch-courses', slug: 'recorded'}),
-              );
+             
             }}>
             <Text
               style={[
@@ -380,7 +391,9 @@ const HomeScreen = () => {
           <FlatList
             ref={flatListRef}
             contentContainerStyle={styles.cardContainer0}
-            data={Live_cource ? Live_cource?.slice(0, 4) : []}
+            data={ isLiveCourse
+              ? (Homebanner?.live_courses?.slice(0, 4) || [])
+              : (Homebanner?.recoded_courses?.slice(0, 4) || [])}
             renderItem={renderCard}
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -401,12 +414,18 @@ const HomeScreen = () => {
           />
 
           <View style={styles.dotContainer}>
-            {(Live_cource ? Live_cource?.slice(0, 4) : []).map((_, index) => (
+          {(isLiveCourse 
+  ? (Homebanner?.live_courses?.slice(0, 4) || []) 
+  : (Homebanner?.recoded_courses?.slice(0, 4) || [])
+).map((item, index) => (
               <TouchableOpacity
                 key={index}
                 style={[styles.dot, currentIndex === index && styles.activeDot]}
                 onPress={() => {
-                  if (index < (Live_cource?.length || 0)) {
+                  if (index < (isLiveCourse 
+                    ? (Homebanner?.live_courses?.slice(0, 4) || []) 
+                    : (Homebanner?.recoded_courses?.slice(0, 4) || [])
+                  )) {
                     handleImageChange(index);
                   }
                 }}
@@ -433,7 +452,7 @@ const HomeScreen = () => {
           </TouchableOpacity>
         </View>
         <FlatList
-          data={Remediesproduct?.slice(0, 5)}
+          data={Homebanner?.remedies?.slice(0, 5)}
           renderItem={renderItem2}
           keyExtractor={item => item.id}
           horizontal
