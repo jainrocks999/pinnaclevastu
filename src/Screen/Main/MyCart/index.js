@@ -7,24 +7,24 @@ import {
   TouchableOpacity,
   FlatList,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import React, {useEffect, useState} from 'react';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import styles from './styles';
-import { fontSize } from '../../../Component/fontsize';
-import { colors } from '../../../Component/colors';
-import { Rating } from 'react-native-ratings';
-import { widthPrecent as wp } from '../../../Component/ResponsiveScreen/responsive';
+import {fontSize} from '../../../Component/fontsize';
+import {colors} from '../../../Component/colors';
+import {Rating} from 'react-native-ratings';
+import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const Remedies12SecondComponent = () => {
   const navigation = useNavigation();
   const [cartItemList, setCartItemList] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const handleNavigation = () => {
-  
     navigation.navigate('RemediesInnerScreenFirst');
   };
 
-  
+  const focus = useIsFocused();
+
   useEffect(() => {
     getCartData();
     const checkLoginStatus = async () => {
@@ -32,9 +32,8 @@ const Remedies12SecondComponent = () => {
         const userStatus = await AsyncStorage.getItem('user_data');
         const existingCart = await AsyncStorage.getItem('cartItems');
 
-        console.log('virendra',existingCart,userStatus);
-     
-        
+        // console.log('virendra',existingCart,userStatus);
+
         if (userStatus) {
           setIsLoggedIn(true);
         } else {
@@ -47,13 +46,13 @@ const Remedies12SecondComponent = () => {
     };
 
     checkLoginStatus();
-  }, [navigation]);
+  }, [focus]);
 
- 
   const getCartData = async () => {
     try {
       const cartData = await AsyncStorage.getItem('cartItems');
       const parsedCartData = cartData ? JSON.parse(cartData) : [];
+      console.log('fjkgfg gfg dgsfg', cartData);
 
       setCartItemList(parsedCartData);
 
@@ -109,7 +108,6 @@ const Remedies12SecondComponent = () => {
     }
   };
 
-
   const data2 = [
     {
       id: '1',
@@ -143,21 +141,17 @@ const Remedies12SecondComponent = () => {
       rating: 3,
       reviewCount: 2,
     },
-
   ];
 
-
-  const renderItem2 = ({ item },
-  ) => (
-    <View >
+  const renderItem2 = ({item}) => (
+    <View>
       <View style={styles.slide}>
         <TouchableOpacity onPress={() => navigation.navigate('ProductDetail')}>
-
           <Image source={item.source1} style={styles.image} />
         </TouchableOpacity>
         <View style={styles.textContainer}>
           <Text style={[styles.third, styles.titleText]}>{item.title}</Text>
-          <Text style={[styles.third, { marginTop: 10, }]}>{item.price}</Text>
+          <Text style={[styles.third, {marginTop: 10}]}>{item.price}</Text>
 
           <View style={styles.direction}>
             <Rating
@@ -177,8 +171,6 @@ const Remedies12SecondComponent = () => {
       </View>
     </View>
   );
-
-
 
   const renderItem = ({item}) => (
     <View style={styles.viewinner}>
@@ -221,8 +213,6 @@ const Remedies12SecondComponent = () => {
     </View>
   );
 
-
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -231,14 +221,13 @@ const Remedies12SecondComponent = () => {
             <Image source={require('../../../assets/image/Drawer.png')} />
           </TouchableOpacity>
           <Image
-            style={{ marginLeft: 15 }}
+            style={{marginLeft: 15}}
             source={require('../../../assets/image/header.png')}
           />
         </View>
-        <TouchableOpacity 
-         onPress={() => navigation.navigate('Home', {screen: 'MyCart'})}
-        
-        style={styles.bagIcon}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Home', {screen: 'MyCart'})}
+          style={styles.bagIcon}>
           <Image source={require('../../../assets/image/Group.png')} />
         </TouchableOpacity>
       </View>
@@ -252,8 +241,7 @@ const Remedies12SecondComponent = () => {
             backgroundColor: '#fff',
           },
         ]}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
             style={styles.backBtn}
             source={require('../../../assets/drawer/Back1.png')}
@@ -266,23 +254,24 @@ const Remedies12SecondComponent = () => {
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll}>
-       {isLoggedIn? <View style={styles.viewDeliver}>
-          <View style={styles.toview}>
-            <Text style={styles.textDeliver}>Deliver To:</Text>
-            <Text style={styles.texttejash}>Tejash Shah, 400078</Text>
+        {isLoggedIn ? (
+          <View style={styles.viewDeliver}>
+            <View style={styles.toview}>
+              <Text style={styles.textDeliver}>Deliver To:</Text>
+              <Text style={styles.texttejash}>Tejash Shah, 400078</Text>
+            </View>
+            <View style={styles.loremview}>
+              <Text style={styles.loremtext}>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. feugiat
+                faucibus...{' '}
+              </Text>
+              <Text style={styles.change}>Change</Text>
+            </View>
           </View>
-          <View style={styles.loremview}>
-            <Text style={styles.loremtext}>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. feugiat
-              faucibus...{' '}
-            </Text>
-            <Text style={styles.change}>Change</Text>
-          </View>
-        </View>:null}
+        ) : null}
 
-        {cartItemList?.length != 0 ? (null
+        {cartItemList?.length == 0 ? null : (
           // <Text style={[styles.viewinner1,styles.third,{textAlign:"center"}]}>Cart is Empty !</Text>
-        ) : (
           <FlatList
             data={cartItemList}
             keyExtractor={item => item.id}
@@ -290,8 +279,6 @@ const Remedies12SecondComponent = () => {
             contentContainerStyle={styles.viewinner1}
           />
         )}
-   
-
 
         <View style={styles.main}>
           <Text style={styles.header1}>You May Also Like</Text>
@@ -301,11 +288,9 @@ const Remedies12SecondComponent = () => {
             horizontal
             keyExtractor={item => item.id}
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{marginBottom:15}}
+            contentContainerStyle={{marginBottom: 15}}
           />
         </View>
-
-
       </ScrollView>
       <View style={styles.subtotalsavingyview}>
         <View style={styles.summaryview}>
@@ -314,44 +299,44 @@ const Remedies12SecondComponent = () => {
 
         <View style={styles.horizontalLine} />
 
-   
-
-          <View style={[styles.direction1,{marginBottom:-10}]}>
-            <Text style={styles.subtotaltext}>SubTotal</Text>
-            <View style={styles.rupees}>
-              {/* <FontAwesome name="rupee" size={12} color="#324356" /> */}
-              <Text style={styles.rupeestext}>₹ 1,855</Text>
-            </View>
-          </View>
-
-          <View style={styles.direction1}>
-            <Text style={[styles.subtotaltext,{paddingBottom:10}]}>Saving :</Text>
-            <View style={styles.rupees}>
-              {/* <FontAwesome name="rupee" size={12} color="#324356" /> */}
-              <Text style={styles.rupeestext}>₹ 0</Text>
-            </View>
-          </View>
-       
-
-        <View style={styles.horizontalLine} />
-
-        <View style={styles.direction1}>
-          <Text style={[styles.subtotaltext1,{paddingBottom:5}]}>Grand Total :</Text>
+        <View style={[styles.direction1, {marginBottom: -10}]}>
+          <Text style={styles.subtotaltext}>SubTotal</Text>
           <View style={styles.rupees}>
             {/* <FontAwesome name="rupee" size={12} color="#324356" /> */}
             <Text style={styles.rupeestext}>₹ 1,855</Text>
           </View>
         </View>
 
-        <TouchableOpacity onPress={() =>{isLoggedIn ?
-          navigation.navigate("AddressList"):
-          navigation.navigate("Login")
-        }
-        } 
-        style={styles.book}>
-          <Text style={styles.btext1}>
-            PLACE ORDER
+        <View style={styles.direction1}>
+          <Text style={[styles.subtotaltext, {paddingBottom: 10}]}>
+            Saving :
           </Text>
+          <View style={styles.rupees}>
+            {/* <FontAwesome name="rupee" size={12} color="#324356" /> */}
+            <Text style={styles.rupeestext}>₹ 0</Text>
+          </View>
+        </View>
+
+        <View style={styles.horizontalLine} />
+
+        <View style={styles.direction1}>
+          <Text style={[styles.subtotaltext1, {paddingBottom: 5}]}>
+            Grand Total :
+          </Text>
+          <View style={styles.rupees}>
+            {/* <FontAwesome name="rupee" size={12} color="#324356" /> */}
+            <Text style={styles.rupeestext}>₹ 1,855</Text>
+          </View>
+        </View>
+
+        <TouchableOpacity
+          onPress={() => {
+            isLoggedIn
+              ? navigation.navigate('AddressList')
+              : navigation.navigate('Login');
+          }}
+          style={styles.book}>
+          <Text style={styles.btext1}>PLACE ORDER</Text>
         </TouchableOpacity>
       </View>
     </View>

@@ -304,6 +304,7 @@ export default StyleSheet.create({
     borderColor: '#EAEAEA',
     marginBottom: 10,
     padding: 5,
+    paddingHorizontal:20
   },
   singleSubItem: {
     flexDirection: 'row',
@@ -517,6 +518,7 @@ export default StyleSheet.create({
     width: '8%',
   },
   backBtn: {
+    marginTop:-5,
     height: wp(4),
     width: wp(2.3),
     resizeMode: 'stretch',

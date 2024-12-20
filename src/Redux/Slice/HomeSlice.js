@@ -26,7 +26,7 @@ export const Banner = createAsyncThunk(
       }
     } catch (error) {
       console.log('banner error ', error);
-
+       Toast.show(error.message)
       return rejectWithValue(
         error.response ? error.response.data : error.message,
       );
@@ -34,10 +34,10 @@ export const Banner = createAsyncThunk(
   },
 );
 
-export const Service = createAsyncThunk(
-  'home/Service',
+export const DrawerApi = createAsyncThunk(
+  'home/DrawerApi',
   async ({url}, {rejectWithValue}) => {
-    console.log('homeService..', url);
+    console.log('DrawerApi..', url);
 
     try {
       const config = {
@@ -246,7 +246,7 @@ const homeSlice = createSlice({
     Remedi: [],
     RemeiesCat: [],
     RemeiesDetail: [],
-    services: [],
+    Drawerdata: [],
     Cource: [],
     CourceDetailA: [],
     loading: false,
@@ -272,15 +272,15 @@ const homeSlice = createSlice({
         state.error = action.payload;
       })
 
-      .addCase(Service.pending, state => {
+      .addCase(DrawerApi.pending, state => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(Service.fulfilled, (state, action) => {
+      .addCase(DrawerApi.fulfilled, (state, action) => {
         state.loading = false;
-        state.services = action.payload;
+        state.Drawerdata = action.payload;
       })
-      .addCase(Service.rejected, (state, action) => {
+      .addCase(DrawerApi.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })

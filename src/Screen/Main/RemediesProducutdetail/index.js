@@ -20,11 +20,39 @@ import {useSelector} from 'react-redux';
 import RenderHTML from 'react-native-render-html';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-simple-toast';
+import Imagepath from '../../../Component/Imagepath';
 
 const RemediesProductDetail = ({navigation}) => {
   const {width} = Dimensions.get('window');
   const [checked, setChecked] = useState(true);
   const Detail = useSelector(state => state.home?.RemeiesDetail?.data);
+  const newArray = [];
+  (Detail?.image_data || []).forEach(item => {
+    const updatedItem = {
+      ...item,
+      image: `${Imagepath.Path}${item.image}`,
+    };
+
+    newArray.push(updatedItem);
+  });
+
+  const calculateAverageRating = (reviews) => {
+    const totalRatings = reviews.reduce((sum, review) => sum + review.rating, 0);
+    const averageRating = reviews.length > 0 ? totalRatings / reviews.length : 0;
+    return averageRating.toFixed(2); // Round to 2 decimal places
+  };
+  
+  const averageRating = calculateAverageRating(Detail?.reviews);
+  console.log("Average Rating:", averageRating)
+
+  const [checkedItems, setCheckedItems] = useState({}); // Object to track checked status by item ID
+
+  const toggleCheckbox = id => {
+    setCheckedItems(prevState => ({
+      ...prevState,
+      [id]: !prevState[id], // Toggle the checkbox status for the specific ID
+    }));
+  };
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -111,7 +139,14 @@ const RemediesProductDetail = ({navigation}) => {
         style={[styles.cardContainer1]}>
         <View style={styles.reviewCard}>
           <View style={{paddingLeft: 5}}>
-            <Image style={styles.reviewImage} source={item.image} />
+            <Image
+              style={styles.reviewImage}
+              source={
+                item?.customer_image != null
+                  ? {uri: `${Imagepath?.Path}${item?.customer_image}`}
+                  : require('../../../assets/image/Ellipse1.png')
+              }
+            />
 
             <Rating
               type="custom"
@@ -124,9 +159,11 @@ const RemediesProductDetail = ({navigation}) => {
             />
           </View>
           <View style={[styles.card, {paddingLeft: 10}]}>
-            <Text style={styles.reviewText}>{item.name}</Text>
+            <Text style={styles.reviewText}>{item.customer_name}</Text>
 
-            <Text style={[styles.third2, {marginTop: -8}]}>{item.msg}</Text>
+            <Text style={[styles.third2, {marginTop: -8}]}>
+              {item?.comment}
+            </Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -135,7 +172,9 @@ const RemediesProductDetail = ({navigation}) => {
 
   const [activeIndex, setActiveIndex] = useState(null);
 
-  const [selectedItems, setSelectedItems] = useState(products?.map(() => true));
+  const [selectedItems, setSelectedItems] = useState(
+    Detail?.cross_sales?.map(() => true),
+  );
 
   const toggleSelection = index => {
     const updatedSelection = [...selectedItems];
@@ -151,7 +190,7 @@ const RemediesProductDetail = ({navigation}) => {
     );
   };
   const getTotalPrice = () => {
-    return products.reduce((total, product, index) => {
+    return Detail?.cross_sales?.reduce((total, product, index) => {
       return selectedItems[index] ? total + product.price : total;
     }, 0);
   };
@@ -159,31 +198,52 @@ const RemediesProductDetail = ({navigation}) => {
   const renderItem = ({item, index}) => (
     <View>
       <View style={styles.productCard}>
-        <Image source={item.image} style={styles.productImage} />
+        <Image
+          source={
+            item?.image
+              ? {uri: `${Imagepath.Path}${item.image}`}
+              : require('../../../assets/image/Remedies/vk.png')
+          }
+          style={styles.productImage}
+        />
         <Text style={[styles.productName, {}]}>{item.name}</Text>
-        <Text style={[styles.productName]}>₹ {item.price}.00</Text>
+        <Text style={[styles.productName]}>₹ {item.price}</Text>
         <View
-          style={[styles.checkboxWrapper, checked && styles.checkedBackground]}>
+          style={[
+            styles.checkboxWrapper,
+            checkedItems[item.id] && styles.checkedBackground,
+          ]}>
           <Checkbox
-            status={checked ? 'checked' : 'unchecked'}
-            onPress={() => setChecked(!checked)}
+            status={checkedItems[item.id] ? 'checked' : 'unchecked'}
+            onPress={() => toggleCheckbox(item.id)}
             color="#FFF"
             uncheckedColor="#DFE7EF"
           />
         </View>
       </View>
-      {index !== 2 ? <Text style={styles.plusBtn}>+</Text> : null}
+      {index !== Detail?.cross_sales?.length - 1 ? (
+        <Text style={styles.plusBtn}>+</Text>
+      ) : null}
     </View>
   );
 
   const renderItem2 = ({item}) => (
     <View>
       <View style={styles.slide}>
-        <TouchableOpacity onPress={() => navigation.navigate('ProductDetail')}>
-          <Image source={item.source1} style={styles.image} />
+        <TouchableOpacity
+          disabled
+          onPress={() => navigation.navigate('ProductDetail')}>
+          <Image
+            source={
+              item?.image
+                ? {uri: `${Imagepath.Path}${item?.image}`}
+                : require('../../../assets/image/Remedies/vk.png')
+            }
+            style={styles.image}
+          />
         </TouchableOpacity>
         <View style={styles.textContainer}>
-          <Text style={[styles.thirdCard, styles.titleText]}>{item.title}</Text>
+          <Text style={[styles.thirdCard, styles.titleText]}>{item.name}</Text>
           <Text style={[styles.thirdCard, {marginTop: 10}]}>{item.price}</Text>
 
           <View style={styles.direction}>
@@ -191,7 +251,7 @@ const RemediesProductDetail = ({navigation}) => {
               type="custom"
               tintColor={colors.ordercolor}
               ratingCount={5}
-              imageSize={wp(4)}
+              imageSize={16}
               startingValue={item.rating}
               ratingColor="#52B1E9"
               ratingBackgroundColor={colors.lightGrey} // Unfilled star color
@@ -215,10 +275,10 @@ const RemediesProductDetail = ({navigation}) => {
   const renderItems = ({item}) => (
     <View style={styles.paddings}>
       <TouchableOpacity
-        onPress={() => toggleSection(item.id)}
+        onPress={() => toggleSection(item.desc_data_id)}
         style={[
           styles.courseToggle1,
-          expandedSection === item.id && styles.activeCourseToggle,
+          expandedSection === item.desc_data_id && styles.activeCourseToggle,
         ]}>
         <View style={styles.direction1}>
           {/* <Text
@@ -231,14 +291,14 @@ const RemediesProductDetail = ({navigation}) => {
           <Text
             style={[
               styles.coursetext2,
-              expandedSection === item.id && styles.activeTitleColor,
+              expandedSection === item.desc_data_id && styles.activeTitleColor,
             ]}>
-            {item.title}
+            {item.label}
           </Text>
         </View>
         <Image
           source={
-            expandedSection === item.id
+            expandedSection === item.desc_data_id
               ? require('../../../assets/otherApp/updown.png')
               : require('../../../assets/image/arrow_icon.png')
           }
@@ -246,14 +306,22 @@ const RemediesProductDetail = ({navigation}) => {
         />
       </TouchableOpacity>
 
-      <Collapsible collapsed={expandedSection !== item.id}>
-        <View style={styles.subItemContainer}>
+      <Collapsible collapsed={expandedSection !== item.desc_data_id}>
+      <View style={styles.subItemContainer}>
+        <RenderHTML
+          contentWidth={width}
+          source={{
+            html: item.description
+          }}
+        />
+         </View>
+        {/* <View style={styles.subItemContainer}>
           <FlatList
             data={item.subItems}
             keyExtractor={(subItem, index) => index.toString()}
             renderItem={renderSubItems}
           />
-        </View>
+        </View> */}
       </Collapsible>
     </View>
   );
@@ -283,20 +351,21 @@ const RemediesProductDetail = ({navigation}) => {
       </View>
 
       <ScrollView contentContainerStyle={styles.servicesContainer}>
+       {newArray?.length!=0?
         <View style={styles.welcomeCard}>
           <BannerSlider
             onPress={item => {}}
-            data={data7}
+            data={newArray}
             local={true}
             height1={wp(60)}
           />
         </View>
-
+:null}
         <View style={styles.contain}>
           {/* Aluminium Metal Strip Vastu */}
           <Text style={styles.service}>
-            {' '}
-            {Array.isArray(Detail) && Detail[0]?.name ? Detail[0]?.name : ''}
+            {Detail?.name}
+            {/* {Array.isArray(Detail) && Detail[0]?.name ? Detail[0]?.name : ''} */}
           </Text>
         </View>
         <View style={styles.main}>
@@ -307,44 +376,47 @@ const RemediesProductDetail = ({navigation}) => {
                 tintColor={colors.white}
                 ratingCount={5}
                 imageSize={wp(4)}
-                startingValue={2}
+                startingValue={averageRating}
                 ratingColor="#52B1E9"
                 ratingBackgroundColor={colors.lightGrey} // Unfilled star color
               />
             </View>
-            <Text
-              style={[
-                styles.third1,
-                {
-                  fontSize: fontSize.Twelve,
-                  color: colors.heading,
-                  marginLeft: 8,
-                },
-              ]}>
-              {'('}
-            </Text>
-            <Text
-              style={[
-                styles.third1,
-                {fontSize: fontSize.Twelve, color: '#27C571'},
-              ]}>
-              {'22'}
-            </Text>
-
-            <Text
-              style={[
-                styles.third1,
-                {fontSize: fontSize.Twelve, color: colors.heading},
-              ]}>
-              {')'}
-            </Text>
-            <Text
-              style={[
-                styles.third1,
-                {fontSize: fontSize.Fourteen, color: colors.light_gr},
-              ]}>
-              {' reviews'}
-            </Text>
+            {Detail?.reviews?.length > 0 && (
+              <>
+                <Text
+                  style={[
+                    styles.third1,
+                    {
+                      fontSize: fontSize.Twelve,
+                      color: colors.heading,
+                      marginLeft: 8,
+                    },
+                  ]}>
+                  {'('}
+                </Text>
+                <Text
+                  style={[
+                    styles.third1,
+                    {fontSize: fontSize.Twelve, color: '#27C571'},
+                  ]}>
+                  {Detail.reviews.length}
+                </Text>
+                <Text
+                  style={[
+                    styles.third1,
+                    {fontSize: fontSize.Twelve, color: colors.heading},
+                  ]}>
+                  {')'}
+                </Text>
+                <Text
+                  style={[
+                    styles.third1,
+                    {fontSize: fontSize.Fourteen, color: colors.light_gr},
+                  ]}>
+                  {' reviews'}
+                </Text>
+              </>
+            )}
           </View>
           <View style={styles.dividerView} />
           <Text
@@ -364,7 +436,7 @@ const RemediesProductDetail = ({navigation}) => {
           />
         </View>
         <View>
-          <View style={{paddingHorizontal: 10}}>
+          {/* <View style={{paddingHorizontal: 10}}>
             {Detail?.[0]?.description ? (
               <RenderHTML
                 contentWidth={width}
@@ -391,15 +463,15 @@ const RemediesProductDetail = ({navigation}) => {
                 {isExpanded ? 'View Less' : 'View More'}
               </Text>
             </TouchableOpacity>
-          </View>
-          {/* <Text style={styles.cont}> 
-          
-            {
+          </View> */}
+          <Text style={styles.cont}>
+            {Detail?.short_description}
+            {/* {
               'Iron strip for vastu, spacial metel strips for vastu, 10 pieces metel strips for vastu, 100 metel vastu strips, 8 feet metel strip vastu, aluminium metel strips direction south west, artificial strip for vastudosh, mahavastu aluminium strip, steel strip remedy vastu'
-            }
-          </Text> */}
+            } */}
+          </Text>
           <Text style={[styles.third1, {marginTop: 15, marginHorizontal: 15}]}>
-            {`₹ ${Detail?.[0]?.price}`}
+            {`₹ ${Detail?.price}`}
           </Text>
           <View
             style={[styles.headerview, {marginTop: 15, marginHorizontal: 15}]}>
@@ -407,7 +479,9 @@ const RemediesProductDetail = ({navigation}) => {
               Quantity:
             </Text>
             <View style={[styles.headerview, styles.quantitySection]}>
-              <TouchableOpacity style={styles.touch} onPress={()=>decrement()}>
+              <TouchableOpacity
+                style={styles.touch}
+                onPress={() => decrement()}>
                 <Text style={[styles.third1, styles.quantityBtns]}>{'-'}</Text>
               </TouchableOpacity>
               <Text style={[styles.third1, {marginLeft: 5, marginTop: 3}]}>
@@ -415,17 +489,11 @@ const RemediesProductDetail = ({navigation}) => {
               </Text>
               <TouchableOpacity
                 style={[styles.touch, {marginLeft: 0}]}
-                onPress={()=>increment()}>
+                onPress={() => increment()}>
                 <Text style={[styles.third1, styles.quantityBtns]}>{'+'}</Text>
               </TouchableOpacity>
             </View>
           </View>
-
-          <TouchableOpacity
-            onPress={() => Addtocard(Detail[0])}
-            style={[styles.book, {marginTop: 15}]}>
-            <Text style={styles.btext1}>ADD TO CART </Text>
-          </TouchableOpacity>
         </View>
 
         <View>
@@ -441,88 +509,103 @@ const RemediesProductDetail = ({navigation}) => {
 
         <View style={{marginTop: 10, marginHorizontal: 15}}>
           <FlatList
-            data={dummyDatas}
+            data={Detail?.desc_data}
             keyExtractor={item => item.id}
             renderItem={renderItems}
           />
         </View>
-
-        <View style={[styles.productsContainer, {gap: 0}]}>
-          <Text style={[styles.header1, {marginLeft: 20}]}>
-            Frequently Bought Together
-          </Text>
-
-          <FlatList
-            data={products}
-            renderItem={renderItem}
-            keyExtractor={item => item.id.toString()}
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={[
-              styles.productsContainer,
-              {paddingVertical: 0, paddingRight: 25},
-            ]}
-          />
-          <View style={styles.viewBorder} />
-          <Text style={styles.totalText}>Total: ₹ {getTotalPrice()}</Text>
-
-          <TouchableOpacity
-            onPress={() => navigation.navigate('Appoiment')}
-            style={styles.book}>
-            <Text style={styles.btext1}>
-              ADD {selectedItems.filter(Boolean).length} ITEMS TO CART
+        {Detail?.cross_sales?.length != 0 ? (
+          <View style={[styles.productsContainer, {gap: 0}]}>
+            <Text style={[styles.header1, {marginLeft: 20}]}>
+              Frequently Bought Together
             </Text>
-          </TouchableOpacity>
-        </View>
 
-        <View style={styles.suggestItemContainer}>
-          <Text style={styles.header1}>Top Best Sellers</Text>
+            <FlatList
+              data={Detail?.cross_sales}
+              renderItem={renderItem}
+              keyExtractor={item => item.id.toString()}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={[
+                styles.productsContainer,
+                {paddingVertical: 0, paddingRight: 25},
+              ]}
+            />
+            <View style={styles.viewBorder} />
+            <Text style={styles.totalText}>Total: ₹ {getTotalPrice()}</Text>
 
-          <FlatList
-            data={data2}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderItem2}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            onMomentumScrollEnd={e => {
-              const contentOffsetX = e.nativeEvent.contentOffset.x;
-              const currentIndex = Math.floor(
-                contentOffsetX / styles.reviewImage.width,
-              );
-              setCurrentIndex(currentIndex);
-            }}
-          />
-
-          <View style={styles.dotContainer}>
-            {data2.map((_, index) => (
-              <TouchableOpacity
-                key={index}
-                style={[styles.dot, currentIndex === index && styles.activeDot]}
-                onPress={() => handleImageChange(index)}
-              />
-            ))}
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Appoiment')}
+              style={styles.book}>
+              <Text style={styles.btext1}>
+                ADD {selectedItems?.filter(Boolean)?.length} ITEMS TO CART
+              </Text>
+            </TouchableOpacity>
           </View>
-        </View>
+        ) : null}
+        {Detail?.top_best_seller?.length != 0 ? (
+          <View style={styles.suggestItemContainer}>
+            <Text style={styles.header1}>Top Best Sellers</Text>
 
+            <FlatList
+              data={Detail?.top_best_seller}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={renderItem2}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              onMomentumScrollEnd={(e) => {
+                const contentOffsetX = e.nativeEvent.contentOffset.x;
+                const slideWidth = styles.slide.width; // Assuming styles.slide.width defines the width of each slide
+                const currentIndex = Math.round(contentOffsetX / slideWidth); // Use Math.round for more accurate calculation
+                setCurrentIndex(currentIndex); // Update state with the calculated index
+              }}
+            />
+
+            <View style={styles.dotContainer}>
+              {Detail?.top_best_seller.map((_, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    styles.dot,
+                    currentIndex === index && styles.activeDot,
+                  ]}
+                  onPress={() => handleImageChange(index)}
+                />
+              ))}
+            </View>
+          </View>
+        ) : null}
         <View style={{backgroundColor: '#F1F1F1'}}>
           <View style={styles.shareview}>
-            <View style={{marginBottom: -20}}>
-              <Text style={styles.service}>User Reviews (22)</Text>
-            </View>
+            {Detail?.reviews?.length == 0 ? null : (
+              <View style={{marginBottom: -20}}>
+                <Text
+                  style={
+                    styles.service
+                  }>{`User Reviews (${Detail?.reviews?.length})`}</Text>
+              </View>
+            )}
             <TouchableOpacity style={styles.button1}>
               <Text style={styles.btext}>Write a Review</Text>
             </TouchableOpacity>
           </View>
-          <FlatList
-            data={data1}
-            renderItem={renderItem3}
-            keyExtractor={item => item.id}
-            //   numColumns={3}
-            showsVerticalScrollIndicator={false}
-          />
+          {Detail?.reviews?.length == 0 ? null : (
+            <FlatList
+              data={Detail?.reviews}
+              renderItem={renderItem3}
+              keyExtractor={item => item.id}
+              //   numColumns={3}
+              showsVerticalScrollIndicator={false}
+            />
+          )}
 
           <Text style={styles.seeall}>See all Reviews</Text>
         </View>
+        <TouchableOpacity
+          onPress={() => Addtocard(Detail)}
+          style={[styles.book, {marginTop: 10, marginBottom: 10}]}>
+          <Text style={styles.btext1}>ADD TO CART </Text>
+        </TouchableOpacity>
       </ScrollView>
       {/* <ButtomTab /> */}
     </View>
@@ -558,22 +641,22 @@ const dummyDatas = [
     title: 'Description',
     subItems: [
       {title: '●', subtitle: '1 inch wide and 8 Feet Long.'},
-      {
-        title: '●',
-        subtitle:
-          'Metal Strip Tehnique is used to remove faults in a building and correct the elemental disbalance in a space.',
-      },
+      // {
+      //   title: '●',
+      //   subtitle:
+      //     'Metal Strip Tehnique is used to remove faults in a building and correct the elemental disbalance in a space.',
+      // },
 
-      {
-        title: '●',
-        subtitle:
-          'metal strip is drilled in floor to block anti-activity (normally toilets or incorrect entrance).',
-      },
-      {
-        title: '●',
-        subtitle:
-          'Aluminium Metal Strip is used to balance East, East North East, East South East.',
-      },
+      // {
+      //   title: '●',
+      //   subtitle:
+      //     'metal strip is drilled in floor to block anti-activity (normally toilets or incorrect entrance).',
+      // },
+      // {
+      //   title: '●',
+      //   subtitle:
+      //     'Aluminium Metal Strip is used to balance East, East North East, East South East.',
+      // },
     ],
   },
   {
@@ -588,16 +671,16 @@ const dummyDatas = [
           'Metal Strip Tehnique is used to remove faults in a building and correct the elemental disbalance in a space.',
       },
 
-      {
-        title: '●',
-        subtitle:
-          'metal strip is drilled in floor to block anti-activity (normally toilets or incorrect entrance).',
-      },
-      {
-        title: '●',
-        subtitle:
-          'Aluminium Metal Strip is used to balance East, East North East, East South East.',
-      },
+      // {
+      //   title: '●',
+      //   subtitle:
+      //     'metal strip is drilled in floor to block anti-activity (normally toilets or incorrect entrance).',
+      // },
+      // {
+      //   title: '●',
+      //   subtitle:
+      //     'Aluminium Metal Strip is used to balance East, East North East, East South East.',
+      // },
     ],
   },
   {
