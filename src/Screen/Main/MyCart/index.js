@@ -155,13 +155,13 @@ const Remedies12SecondComponent = () => {
       );
     } else {
       try {
-        const updatedData = cartItemList.map(item =>
+        const updatedData = cartItemList.map(prod =>
           prod.id === item.id
             ? {
-                ...item,
-                qty: item.qty > 1 ? item.qty - 1 : item.qty,
+                ...prod,
+                qty: prod.qty < 100 ? prod.qty - 1 : prod.qty,
               }
-            : item,
+            : prod,
         );
 
         setCartItemList(updatedData);
@@ -192,7 +192,9 @@ const Remedies12SecondComponent = () => {
       );
     } else {
       try {
-        const updatedData = cartItemList.filter(prod => prod.rowid !== item.rowid);
+        const updatedData = cartItemList.filter(
+          prod => prod.rowid !== item.rowid,
+        );
         setCartItemList(updatedData);
 
         await AsyncStorage.setItem('cartItems', JSON.stringify(updatedData));
