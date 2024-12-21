@@ -106,6 +106,7 @@ export default StyleSheet.create({
     width: wp(40),
     borderRadius: 20,
     marginBottom: hp(2),
+    resizeMode:"contain"
   },
   textContainer: {
     backgroundColor:colors.ordercolor,
