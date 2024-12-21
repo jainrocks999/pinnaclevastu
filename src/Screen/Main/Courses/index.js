@@ -57,22 +57,22 @@ const OtherCourses = ({navigation}) => {
   const renderCard = ({item}) => {
     return (
       <View style={styles.card}>
-         {/* <AutoHeightImage
+         <AutoHeightImage
               source={ item.image == null 
                 ? require('../../../assets/otherApp/courseCard1.png') 
                 : { uri: `${Imagepath.Path}${item?.image}` }
             } 
                width={widthPrecent(45)}
               style={styles.cardImg}
-            />  */}
-           <Image 
+            /> 
+           {/* <Image 
           source={
             item.image == null 
               ? require('../../../assets/otherApp/courseCard1.png') 
               : { uri: `${Imagepath.Path}${item?.image}` }
           } 
           style={styles.cardImg} 
-        />
+        /> */}
       
         <View style={styles.cardInfo}>
           <Text style={styles.DateText}>{item?.start_date}</Text>

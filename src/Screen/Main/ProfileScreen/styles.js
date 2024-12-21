@@ -280,6 +280,7 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
   backBtn: {
+    marginTop:-5,
     height: wp(4),
     width: wp(2.3),
     resizeMode: 'stretch',

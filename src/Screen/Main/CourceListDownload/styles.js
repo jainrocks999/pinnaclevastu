@@ -1,7 +1,7 @@
 import {StyleSheet} from 'react-native';
 import {fontSize} from '../../../Component/fontsize';
 import {colors} from '../../../Component/colors';
-import { heightPercent, widthPrecent as wp } from '../../../Component/ResponsiveScreen/responsive';
+import { widthPrecent as wp } from '../../../Component/ResponsiveScreen/responsive';
 export default styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -107,7 +107,7 @@ export default styles = StyleSheet.create({
     paddingVertical: wp(3),
     backgroundColor: '#F6F6F6',
     borderRadius: 10,
-      marginBottom: heightPercent(2),
+    // marginBottom: wp(2),
     paddingHorizontal: wp(5),
     marginHorizontal:18
   },

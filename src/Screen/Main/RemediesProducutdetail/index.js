@@ -63,7 +63,7 @@ const RemediesProductDetail = ({navigation}) => {
 
       const itemWithId = {
         ...item,
-        quantity: quantity,
+        qty: quantity,
         // uniqueId: uniqueId,
         addedAt: new Date().toISOString(),
       };

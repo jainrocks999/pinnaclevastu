@@ -19,10 +19,12 @@ import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive
 import {useDispatch, useSelector} from 'react-redux';
 import Imagepath from '../../../Component/Imagepath';
 import {useNavigation} from '@react-navigation/native';
-import {productDetail1} from '../../../Redux/Slice/HomeSlice';
+import {addToCartApi, productDetail1} from '../../../Redux/Slice/HomeSlice';
 import Loader from '../../../Component/Loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-simple-toast';
+import axios from 'axios';
+import constants from '../../../Redux/constant/constants';
 
 const RemediesProductList = ({route}) => {
   const name1 = route?.params?.name1;
@@ -33,6 +35,7 @@ const RemediesProductList = ({route}) => {
   const dispatch = useDispatch();
   const RemediesCategory = useSelector(state => state.home?.RemeiesCat?.data);
   const isLoading = useSelector(state => state.home?.loading);
+
   const PRoductDeta = async item => {
     await dispatch(
       productDetail1({
@@ -46,40 +49,54 @@ const RemediesProductList = ({route}) => {
 
   const Addtocard = async item => {
     try {
-      const existingCart = await AsyncStorage.getItem('cartItems');
-      // console.log('virendra', existingCart);
-
-      let cartItems = existingCart ? JSON.parse(existingCart) : [];
-
-      // const uniqueId = `${Date.now()}-${Math.random()
-      //   .toString(36)
-      //   .substr(2, 9)}`;
-
-      const itemWithId = {
-        ...item,
-        quantity: 1,
-        // uniqueId: uniqueId,
-        addedAt: new Date().toISOString(),
-      };
-
-      let existingItemIndex = cartItems.findIndex(
-        cartItem => cartItem.id === item.id,
-      );
-
-      if (existingItemIndex !== -1) {
-        cartItems[existingItemIndex] = {
-          ...cartItems[existingItemIndex],
-          ...itemWithId,
-          // updatedQuantity:
-          // quantity: quantity,
-        };
+      const userStatus = await AsyncStorage.getItem('user_data');
+      const userData = JSON.parse(userStatus);
+     
+      if (userStatus) {
+        await dispatch(addToCartApi({
+          user_id: userData.user_id,
+          itemId: item.id,
+          qty:1,
+          user_type: userData.user_type,
+          token:userData?.token,
+          url:'add-to-cart'
+        }))
+       
       } else {
-        cartItems.push(itemWithId);
+        const existingCart = await AsyncStorage.getItem('cartItems');
+        // console.log('virendra', existingCart);
+
+        let cartItems = existingCart ? JSON.parse(existingCart) : [];
+
+        // const uniqueId = `${Date.now()}-${Math.random()
+        //   .toString(36)
+        //   .substr(2, 9)}`;
+
+        const itemWithId = {
+          ...item,
+          qty: 1,
+          // uniqueId: uniqueId,
+          addedAt: new Date().toISOString(),
+        };
+
+        let existingItemIndex = cartItems.findIndex(
+          cartItem => cartItem.id === item.id,
+        );
+
+        if (existingItemIndex !== -1) {
+          cartItems[existingItemIndex] = {
+            ...cartItems[existingItemIndex],
+            ...itemWithId,
+            // updatedQuantity:
+            // quantity: quantity,
+          };
+        } else {
+          cartItems.push(itemWithId);
+        }
+        await AsyncStorage.setItem('cartItems', JSON.stringify(cartItems));
+        console.log('Item added to cart:', itemWithId);
+        Toast.show('Item added to cart successfully');
       }
-      // console.log(cartItems);
-      await AsyncStorage.setItem('cartItems', JSON.stringify(cartItems));
-      console.log('Item added to cart:', itemWithId);
-      Toast.show('Item added to cart successfully');
     } catch (error) {
       console.error('Error adding item to cart:', error);
     }
@@ -91,8 +108,8 @@ const RemediesProductList = ({route}) => {
         <View style={styles.image}>
           <Image
             source={
-              item?.image
-                ? {uri: `${Imagepath.Path}${item.image}`}
+              item?.images
+                ? {uri: `${Imagepath.Path}${item.images}`}
                 : require('../../../assets/image/Remedies/ab.png')
             }
             style={{height: '100%', width: '100%', borderRadius: 10}}

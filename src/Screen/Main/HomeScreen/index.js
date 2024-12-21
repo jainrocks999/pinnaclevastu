@@ -31,6 +31,7 @@ import {useIsFocused, useNavigation} from '@react-navigation/native';
 import Loader from '../../../Component/Loader';
 import Imagepath from '../../../Component/Imagepath';
 import LinearGradient from 'react-native-linear-gradient';
+import AutoHeightImage from 'react-native-auto-height-image';
 let backPress = 0;
 const HomeScreen = () => {
   const flatListRef = useRef(null);
@@ -39,41 +40,30 @@ const HomeScreen = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const dispatch = useDispatch();
   const Homebanner = useSelector(state => state.home?.HomeBanner?.data);
- 
-  const isLoading = useSelector(state => state.home?.loading);
 
+  const isLoading = useSelector(state => state.home?.loading);
 
   const Live_cource = useSelector(state => state?.home?.Cource);
 
-
-
   const newArray = [];
-  (Homebanner?.home_slider?.[0]?.slider_items|| []).forEach(item => {
+  (Homebanner?.home_slider?.[0]?.slider_items || []).forEach(item => {
     const updatedItem = {
-      ...item, 
+      ...item,
       image: `${Imagepath.Path}${item.image}`,
     };
 
     newArray.push(updatedItem);
   });
 
- 
-  const imagesilder11 =[];
+  const imagesilder11 = [];
   (Homebanner?.offer_slider?.[0]?.slider_items || []).forEach(item => {
     const updatedItem = {
-      ...item, 
-      image: `${Imagepath.Path}${item.image}`, 
+      ...item,
+      image: `${Imagepath.Path}${item.image}`,
     };
-  
-    imagesilder11.push(updatedItem); 
+
+    imagesilder11.push(updatedItem);
   });
-
-
-
- 
-
-
-
 
   const CouseDetail1 = async item => {
     await dispatch(
@@ -105,7 +95,7 @@ const HomeScreen = () => {
         category_id: item.id,
         navigation,
         name: item.name,
-        id:true
+        id: true,
       }),
     );
   };
@@ -132,11 +122,13 @@ const HomeScreen = () => {
       backgroundColor = colors.card3;
     }
 
-  
-    
     return (
-      <TouchableOpacity style={[styles.cardContainer, {backgroundColor:item?.color_code}]}>
-        <Image source={{uri:`${Imagepath.Path}${item?.logo}`}} style={styles.itemImg} />
+      <TouchableOpacity
+        style={[styles.cardContainer, {backgroundColor: item?.color_code}]}>
+        <Image
+          source={{uri: `${Imagepath.Path}${item?.logo}`}}
+          style={styles.itemImg}
+        />
         <Text style={styles.text}>{item.services_name}</Text>
       </TouchableOpacity>
     );
@@ -146,7 +138,7 @@ const HomeScreen = () => {
     return (
       <TouchableOpacity style={[styles.smallCardContainer]}>
         <Image
-          source={{uri:`${Imagepath.Path}${item?.logo}`}}
+          source={{uri: `${Imagepath.Path}${item?.logo}`}}
           style={[styles.itemImg, {resizeMode: 'contain'}]}
         />
         <Text style={styles.smallCardtext}>{item.services_name}</Text>
@@ -225,19 +217,31 @@ const HomeScreen = () => {
   const renderCard = ({item}) => {
     return (
       <View style={styles.card}>
-        <Image
+        {/* <Image
           source={
             item.image == null
               ? require('../../../assets/otherApp/courseCard1.png')
               : {uri: `${Imagepath.Path}${item?.image}`}
           }
           style={styles.cardImg}
+        /> */}
+        <AutoHeightImage
+          source={
+            item.image == null
+              ? require('../../../assets/otherApp/courseCard1.png')
+              : {uri: `${Imagepath.Path}${item?.image}`}
+          }
+          width={wp(65)}
+          style={styles.cardImg}
         />
         <View style={styles.cardInfo}>
           <Text style={styles.DateText}>{item?.start_date}</Text>
           <Text style={styles.titleText}>{item?.title}</Text>
+         
           <Text style={styles.regularText}>
-            While Vastu Shastra gives us data about our...
+            {item?.short_description == null
+              ? 'While Vastu Shastra gives us data about our...'
+              : item?.short_description}
           </Text>
           <Text style={styles.price}>{`₹ ${item?.price}`}</Text>
           <TouchableOpacity onPress={() => CouseDetail1(item)}>
@@ -281,10 +285,9 @@ const HomeScreen = () => {
           <Image source={require('../../../assets/image/Drawer.png')} />
         </TouchableOpacity>
         <Image source={require('../../../assets/image/header.png')} />
-        <TouchableOpacity 
-         onPress={() => navigation.navigate('Home', {screen: 'MyCart'})}
-        
-        style={styles.bagIcon}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Home', {screen: 'MyCart'})}
+          style={styles.bagIcon}>
           <Image source={require('../../../assets/image/Group.png')} />
         </TouchableOpacity>
       </View>
@@ -326,23 +329,26 @@ const HomeScreen = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContainer}
         />
-{imagesilder11.length!=0?
-        <ImageSlider
-        data={imagesilder11}
-        onPress ={(item,index)=>
-           console.log('hh',index,item)
-        
-          // alert('Item Pressed', `Item: ${JSON.stringify(item)}, Index: ${index}`)
-        
-          // navigation.navigate('UserProfile')
-        }
-        />:null}
+        {imagesilder11.length != 0 ? (
+          <ImageSlider
+            data={imagesilder11}
+            onPress={
+              (item, index) => console.log('hh', index, item)
+
+              // alert('Item Pressed', `Item: ${JSON.stringify(item)}, Index: ${index}`)
+
+              // navigation.navigate('UserProfile')
+            }
+          />
+        ) : null}
 
         <View style={[styles.contain, {marginTop: wp(2)}]}>
           <Text style={styles.service}>Premium Services</Text>
         </View>
         <FlatList
-          data={Homebanner?.premium_services?Homebanner?.premium_services:[]}
+          data={
+            Homebanner?.premium_services ? Homebanner?.premium_services : []
+          }
           renderItem={renderItem1}
           keyExtractor={item => item.id}
           numColumns={3}
@@ -359,7 +365,6 @@ const HomeScreen = () => {
             disabled={isLiveCourse}
             onPress={async () => {
               setIsLiveCourse(true);
-             
             }}>
             <Text
               style={[
@@ -371,11 +376,10 @@ const HomeScreen = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
-           disabled={!isLiveCourse}
+            disabled={!isLiveCourse}
             style={[styles.switchBtn, !isLiveCourse ? styles.activeBtn : null]}
             onPress={async () => {
               setIsLiveCourse(false);
-             
             }}>
             <Text
               style={[
@@ -391,9 +395,11 @@ const HomeScreen = () => {
           <FlatList
             ref={flatListRef}
             contentContainerStyle={styles.cardContainer0}
-            data={ isLiveCourse
-              ? (Homebanner?.live_courses?.slice(0, 4) || [])
-              : (Homebanner?.recoded_courses?.slice(0, 4) || [])}
+            data={
+              isLiveCourse
+                ? Homebanner?.live_courses?.slice(0, 4) || []
+                : Homebanner?.recoded_courses?.slice(0, 4) || []
+            }
             renderItem={renderCard}
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -405,27 +411,28 @@ const HomeScreen = () => {
             //   );
             //   setCurrentIndex(slide);
             // }}
-            onMomentumScrollEnd={(e) => {
+            onMomentumScrollEnd={e => {
               const contentOffsetX = e.nativeEvent.contentOffset.x;
-              const currentIndex = Math.round(contentOffsetX /wp(65)); // Calculate index based on item width
+              const currentIndex = Math.round(contentOffsetX / wp(65)); // Calculate index based on item width
               setCurrentIndex(currentIndex); // Update the current index state
             }}
-            
           />
 
           <View style={styles.dotContainer}>
-          {(isLiveCourse 
-  ? (Homebanner?.live_courses?.slice(0, 4) || []) 
-  : (Homebanner?.recoded_courses?.slice(0, 4) || [])
-).map((item, index) => (
+            {(isLiveCourse
+              ? Homebanner?.live_courses?.slice(0, 4) || []
+              : Homebanner?.recoded_courses?.slice(0, 4) || []
+            ).map((item, index) => (
               <TouchableOpacity
                 key={index}
                 style={[styles.dot, currentIndex === index && styles.activeDot]}
                 onPress={() => {
-                  if (index < (isLiveCourse 
-                    ? (Homebanner?.live_courses?.slice(0, 4) || []) 
-                    : (Homebanner?.recoded_courses?.slice(0, 4) || [])
-                  )) {
+                  if (
+                    index <
+                    (isLiveCourse
+                      ? Homebanner?.live_courses?.slice(0, 4) || []
+                      : Homebanner?.recoded_courses?.slice(0, 4) || [])
+                  ) {
                     handleImageChange(index);
                   }
                 }}
@@ -437,15 +444,14 @@ const HomeScreen = () => {
         <View style={styles.contain1}>
           <Text style={styles.service}>Remedies</Text>
           <TouchableOpacity
-            onPress={
-              () =>
-                // navigation.reset({
-                //   index: 0,
-                //   routes: [{name: 'Home1', params: {screen: 'Remedie12'}}],
-                // })
+            onPress={() =>
+              // navigation.reset({
+              //   index: 0,
+              //   routes: [{name: 'Home1', params: {screen: 'Remedie12'}}],
+              // })
               navigation.navigate('Home1', {
                 screen: 'Remedie12',
-                 params: {screen: 'Remedies'},
+                params: {screen: 'Remedies'},
               })
             }>
             <Text style={styles.service1}>VIEW ALL</Text>
@@ -564,16 +570,11 @@ const RecordedCourseData = [
   {id: 4, image: require('../../../assets/otherApp/courseCard2.png')},
 ];
 
-
 const imagesilder1 = [
-  { id: '1', image: require('../../../assets/image/bannerImg1.png') },
-  { id: '2', image: require('../../../assets/image/bannerImg2.png') },
-  { id: '3', image: require('../../../assets/image/bannerImg3.png') },
+  {id: '1', image: require('../../../assets/image/bannerImg1.png')},
+  {id: '2', image: require('../../../assets/image/bannerImg2.png')},
+  {id: '3', image: require('../../../assets/image/bannerImg3.png')},
 ];
-
-
-
-
 
 const data5 = [
   {
