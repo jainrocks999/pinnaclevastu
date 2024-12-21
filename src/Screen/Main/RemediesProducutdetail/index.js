@@ -369,20 +369,22 @@ const RemediesProductDetail = ({navigation}) => {
           </Text>
         </View>
         <View style={styles.main}>
+        {Detail?.reviews?.length > 0 && (
+              <>
           <View style={styles.headerview}>
+        
             <View style={{marginTop: -5}}>
               <Rating
                 type="custom"
                 tintColor={colors.white}
                 ratingCount={5}
-                imageSize={wp(4)}
+                imageSize={16}
                 startingValue={averageRating}
                 ratingColor="#52B1E9"
                 ratingBackgroundColor={colors.lightGrey} // Unfilled star color
               />
             </View>
-            {Detail?.reviews?.length > 0 && (
-              <>
+            
                 <Text
                   style={[
                     styles.third1,
@@ -415,9 +417,10 @@ const RemediesProductDetail = ({navigation}) => {
                   ]}>
                   {' reviews'}
                 </Text>
-              </>
-            )}
+
           </View>
+          </>
+            )}
           <View style={styles.dividerView} />
           <Text
             style={[
