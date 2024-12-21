@@ -217,7 +217,7 @@ export default StyleSheet.create({
   },
   btext: {
     fontFamily: 'Poppins-Regular',
-    fontSize: fontSize.Fourteen,
+    fontSize: fontSize.Twelve,
     color: colors.white,
   },
   socialImg: {
