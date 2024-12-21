@@ -122,12 +122,12 @@ const RemediesProductList = ({route}) => {
           style={[styles.third, styles.priceText]}>{`₹ ${item.price}`}</Text>
 
         <View style={styles.direction}>
-          <Rating
+        <Rating
             type="custom"
             tintColor={colors.ordercolor}
             ratingCount={5}
-            imageSize={wp(4)}
-            startingValue={5}
+            imageSize={item?.rating?16:20}
+            startingValue={item?.rating}
             ratingColor="#52B1E9"
             ratingBackgroundColor={colors.lightGrey} // Unfilled star color
           />
@@ -175,7 +175,7 @@ const RemediesProductList = ({route}) => {
         </TouchableOpacity>
       </View>
       {isLoading ? <Loader /> : null}
-      <ScrollView contentContainerStyle={styles.Scroll} scrollEnabled={false}>
+      <ScrollView contentContainerStyle={styles.Scroll}>
         <View style={styles.searchContainer}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <Image source={require('../../../assets/image/SearchIcon.png')} />
@@ -194,7 +194,7 @@ const RemediesProductList = ({route}) => {
           renderItem={renderItem}
           numColumns={2}
           keyExtractor={item => item.id}
-          nestedScrollEnabled={true}
+          // nestedScrollEnabled={true}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{}}
         />
