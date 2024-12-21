@@ -23,6 +23,7 @@ import {
 } from '../../../Redux/Slice/HomeSlice';
 import axios from 'axios';
 import constants from '../../../Redux/constant/constants';
+import {useRoute} from '@react-navigation/native';
 
 const Remedies12SecondComponent = () => {
   const dispatch = useDispatch();
@@ -31,14 +32,11 @@ const Remedies12SecondComponent = () => {
   const [cartItemList, setCartItemList] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const cartDataList = useSelector(state => state?.home?.CartData);
-  const [userToken, setUserToken] = useState('');
 
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
         const userStatus = await AsyncStorage.getItem('user_data');
-        const token = await AsyncStorage.getItem('Token');
-        setUserToken(token);
         const userData = JSON.parse(userStatus);
 
         console.log('virendra', userData);
@@ -434,7 +432,7 @@ const Remedies12SecondComponent = () => {
           onPress={() => {
             isLoggedIn
               ? navigation.navigate('AddressList')
-              : navigation.navigate('Login');
+              : navigation.navigate('Login', { from: 'MyCart' });
           }}
           style={styles.book}>
           <Text style={styles.btext1}>PLACE ORDER</Text>

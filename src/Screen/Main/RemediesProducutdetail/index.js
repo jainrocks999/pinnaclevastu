@@ -16,16 +16,18 @@ import Collapsible from 'react-native-collapsible';
 import {Rating} from 'react-native-ratings';
 import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
 import {Checkbox} from 'react-native-paper';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import RenderHTML from 'react-native-render-html';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-simple-toast';
+import { addToCartApi } from '../../../Redux/Slice/HomeSlice';
 
 const RemediesProductDetail = ({navigation}) => {
   const {width} = Dimensions.get('window');
   const [checked, setChecked] = useState(true);
   const Detail = useSelector(state => state.home?.RemeiesDetail?.data);
 
+  const dispatch = useDispatch();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
   const [quantity, setQuantity] = useState(1);
@@ -52,40 +54,56 @@ const RemediesProductDetail = ({navigation}) => {
 
   const Addtocard = async item => {
     try {
-      const existingCart = await AsyncStorage.getItem('cartItems');
-      // console.log('virendra', existingCart);
-
-      let cartItems = existingCart ? JSON.parse(existingCart) : [];
-
-      // const uniqueId = `${Date.now()}-${Math.random()
-      //   .toString(36)
-      //   .substr(2, 9)}`;
-
-      const itemWithId = {
-        ...item,
-        qty: quantity,
-        // uniqueId: uniqueId,
-        addedAt: new Date().toISOString(),
-      };
-
-      let existingItemIndex = cartItems.findIndex(
-        cartItem => cartItem.id === item.id,
-      );
-
-      if (existingItemIndex !== -1) {
-        cartItems[existingItemIndex] = {
-          ...cartItems[existingItemIndex],
-          ...itemWithId,
-          // updatedQuantity:
-          // quantity: quantity,
-        };
+      const userStatus = await AsyncStorage.getItem('user_data');
+      const userData = JSON.parse(userStatus);
+     console.log(item)
+      if (userStatus) {
+        await dispatch(
+          addToCartApi({
+            user_id: userData.user_id,
+            itemId: item.id,
+            qty: quantity,
+            user_type: userData.user_type,
+            token: userData?.token,
+            url: 'add-to-cart',
+          }),
+        );
       } else {
-        cartItems.push(itemWithId);
-      }
+        const existingCart = await AsyncStorage.getItem('cartItems');
+        // console.log('virendra', existingCart);
 
-      await AsyncStorage.setItem('cartItems', JSON.stringify(cartItems));
-      // console.log('Item added to cart:', itemWithId);
-      Toast.show('Item added to cart successfully');
+        let cartItems = existingCart ? JSON.parse(existingCart) : [];
+
+        // const uniqueId = `${Date.now()}-${Math.random()
+        //   .toString(36)
+        //   .substr(2, 9)}`;
+
+        const itemWithId = {
+          ...item,
+          qty: quantity,
+          // uniqueId: uniqueId,
+          addedAt: new Date().toISOString(),
+        };
+
+        let existingItemIndex = cartItems.findIndex(
+          cartItem => cartItem.id === item.id,
+        );
+
+        if (existingItemIndex !== -1) {
+          cartItems[existingItemIndex] = {
+            ...cartItems[existingItemIndex],
+            ...itemWithId,
+            // updatedQuantity:
+            // quantity: quantity,
+          };
+        } else {
+          cartItems.push(itemWithId);
+        }
+
+        await AsyncStorage.setItem('cartItems', JSON.stringify(cartItems));
+        // console.log('Item added to cart:', itemWithId);
+        Toast.show('Item added to cart successfully');
+      }
     } catch (error) {
       console.error('Error adding item to cart:', error);
     }
@@ -407,7 +425,9 @@ const RemediesProductDetail = ({navigation}) => {
               Quantity:
             </Text>
             <View style={[styles.headerview, styles.quantitySection]}>
-              <TouchableOpacity style={styles.touch} onPress={()=>decrement()}>
+              <TouchableOpacity
+                style={styles.touch}
+                onPress={() => decrement()}>
                 <Text style={[styles.third1, styles.quantityBtns]}>{'-'}</Text>
               </TouchableOpacity>
               <Text style={[styles.third1, {marginLeft: 5, marginTop: 3}]}>
@@ -415,14 +435,14 @@ const RemediesProductDetail = ({navigation}) => {
               </Text>
               <TouchableOpacity
                 style={[styles.touch, {marginLeft: 0}]}
-                onPress={()=>increment()}>
+                onPress={() =>increment()}>
                 <Text style={[styles.third1, styles.quantityBtns]}>{'+'}</Text>
               </TouchableOpacity>
             </View>
           </View>
 
           <TouchableOpacity
-            onPress={() => Addtocard(Detail[0])}
+            onPress={() =>Addtocard(Detail)}
             style={[styles.book, {marginTop: 15}]}>
             <Text style={styles.btext1}>ADD TO CART </Text>
           </TouchableOpacity>
