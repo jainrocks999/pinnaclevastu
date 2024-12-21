@@ -116,7 +116,7 @@ const Remedies12SecondComponent = () => {
   const increment = async item => {
     const userStatus = await AsyncStorage.getItem('user_data');
     const userData = JSON.parse(userStatus);
-  console.log(userStatus)
+    console.log(userStatus);
     if (userStatus) {
       await handleUpdateCartData(
         userData?.user_id,
@@ -156,7 +156,7 @@ const Remedies12SecondComponent = () => {
     } else {
       try {
         const updatedData = cartItemList.map(item =>
-          item.rowid === rowid
+          prod.id === item.id
             ? {
                 ...item,
                 qty: item.qty > 1 ? item.qty - 1 : item.qty,
@@ -172,16 +172,18 @@ const Remedies12SecondComponent = () => {
     }
   };
 
-  const removerItem = async (rowid)  => {
+  const removerItem = async item => {
     const userStatus = await AsyncStorage.getItem('user_data');
     const userData = JSON.parse(userStatus);
 
     if (userStatus) {
-      await dispatch(removeCartItemApi({
-        user_id:userData?.user_id,
-        rowid:rowid,
-        token:userData?.token
-      }))
+      await dispatch(
+        removeCartItemApi({
+          user_id: userData?.user_id,
+          rowid: item.rowid,
+          token: userData?.token,
+        }),
+      );
       await dispatch(
         getCartDataApi({
           token: userData?.token,
@@ -190,7 +192,7 @@ const Remedies12SecondComponent = () => {
       );
     } else {
       try {
-        const updatedData = cartItemList.filter(item => item.rowid !== rowid);
+        const updatedData = cartItemList.filter(prod => prod.rowid !== item.rowid);
         setCartItemList(updatedData);
 
         await AsyncStorage.setItem('cartItems', JSON.stringify(updatedData));
@@ -200,7 +202,9 @@ const Remedies12SecondComponent = () => {
     }
   };
   const calculateSubtotal = () => {
-    return cartItemList?.reduce((acc, item) => acc + item.price * item.qty, 0);
+    return isLoggedIn
+      ? cartDataList?.reduce((acc, item) => acc + item.price * item.qty, 0)
+      : cartItemList?.reduce((acc, item) => acc + item.price * item.qty, 0);
   };
 
   const data2 = [
@@ -299,7 +303,7 @@ const Remedies12SecondComponent = () => {
       <TouchableOpacity
         style={styles.crossIcon}
         onPress={() => {
-          removerItem(item.rowid);
+          removerItem(item);
         }}>
         <View style={styles.closeButton}>
           <Text style={styles.closeIcon}>+</Text>
