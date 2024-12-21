@@ -4,33 +4,56 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  // FlatList,
-  // LayoutAnimation,
+  FlatList,
+  LayoutAnimation,
   Alert,
   ScrollView,
   Linking,
 } from 'react-native';
 
-import {useNavigation, DrawerActions} from '@react-navigation/native';
-
+import {useNavigation, DrawerActions, useIsFocused} from '@react-navigation/native';
 import {fontSize} from '../fontsize';
 import {colors} from '../colors';
 import styles from './styles';
+import { useDispatch, useSelector } from 'react-redux';
+import { DrawerApi } from '../../Redux/Slice/HomeSlice';
+import Imagepath from '../Imagepath';
+
 
 const Drawer = props => {
   const navigation = useNavigation();
   const [loader, setLoader] = useState(false);
   const [visible, setVisibles] = useState(false);
   const [name, setName] = useState('');
+  const dispatch =useDispatch();
+ const  data =useSelector(state=>state.home?.Drawerdata?.services)
+console.log('drawer data ',data);
+
+
+  const focus = useIsFocused();
+
+  useEffect(() => {
+    if (focus) {
+      apicall();
+    }
+  }, [focus]);
+
+  const apicall = async () => {
+    await dispatch(DrawerApi({url: 'draw-menu'}));
+    
+  };
+
+
+
 
   const openApp = async (url, fallbackUrl) => {
     try {
-      const supported = await Linking.canOpenURL(url); // Check if app is installed
+      const supported = await Linking.canOpenURL(url); 
       if (supported) {
-        await Linking.openURL(url); // Open the app
+        await Linking.openURL(url);
       } else {
         if (fallbackUrl) {
-          // Open fallback web URL if app is not installed
+         
           await Linking.openURL(fallbackUrl);
         } else {
           Alert.alert(
@@ -73,6 +96,24 @@ const Drawer = props => {
     );
   };
 
+
+  const renderItem = ({ item }) => (
+    <TouchableOpacity style={styles.listRow}
+      // style={true ? styles.specialListRow : styles.listRow}
+      // onPress={item.onPress ? item.onPress : null}
+      >
+      {/* <View style={styles.rowContent}> */}
+        <Image style={styles.icon}  source={{uri: `${Imagepath.Path}${item?.logo}`}} />
+        <Text style={styles.listText}>{item.services_name}</Text>
+      {/* </View> */}
+      {/* {item.isSpecial && (
+        <Image source={require('../../assets/drawer/right.png')} />
+      )} */}
+    </TouchableOpacity>
+  );
+
+
+
   return (
     <View style={styles.container}>
       <View style={styles.topSection}>
@@ -93,7 +134,7 @@ const Drawer = props => {
         }}
       />
       <ScrollView>
-        <View style={styles.listContainer}>
+        {/* <View style={styles.listContainer}>
           <TouchableOpacity
             onPress={() => manageDashboard()}
             style={styles.listRow}>
@@ -154,7 +195,31 @@ const Drawer = props => {
             </View>
             <Image source={require('../../assets/drawer/right.png')} />
           </TouchableOpacity>
-        </View>
+        </View> */}
+
+<View style={styles.listContainer}>
+      <FlatList
+        data={data?data:[]}
+        renderItem={renderItem}
+        keyExtractor={item => item.id}
+        showsVerticalScrollIndicator={false}
+      />
+      <TouchableOpacity style={styles.specialListRow}>
+            <View
+              style={{
+                flexDirection: 'row',
+              }}>
+              <Image
+                style={styles.icon}
+                source={require('../../assets/drawer/app.png')}
+              />
+              <Text style={styles.listText}>{'More  '}</Text>
+            </View>
+            <Image source={require('../../assets/drawer/right.png')} />
+          </TouchableOpacity>
+    </View>
+
+
         <TouchableOpacity style={styles.coursesListRow}>
           <View
             style={{
