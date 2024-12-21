@@ -1,3 +1,4 @@
+
 // import { Image, ImageBackground, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 // import React from 'react'
 // import styles from './styles'
@@ -73,7 +74,7 @@ import { loginUser } from '../../../Redux/Slice/Authslice';
 import Loader from '../../../Component/Loader';
 
 
-const LoginScreen = ({navigation}) => {
+const LoginScreen = ({route,navigation}) => {
   const [mobile, setMobile] = useState('');
  const  isLoading =useSelector(state=>state.Auth?.loading)
  
@@ -97,7 +98,7 @@ const LoginScreen = ({navigation}) => {
       Toast.show('Mobile number should be at least 10 digits');
       return;
     } else {
-      dispatch(loginUser({mobile, navigation, url: 'login'}));
+      dispatch(loginUser({mobile, navigation, url: 'login',route}));
       // navigation.navigate('OTP');
     }
   };

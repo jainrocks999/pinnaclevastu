@@ -15,7 +15,7 @@ import Toast from 'react-native-simple-toast';
 const {width} = Dimensions.get('window');
 const OTPPAGE = ({route}) => {
   console.log('fsdss', route?.params.data.OTP);
-
+  // console.log(route?.params.from);
   const navigation = useNavigation();
   const [code, setCode] = useState(['', '', '', '', '', '']);
   const inputs = useRef([]);
@@ -41,15 +41,21 @@ const OTPPAGE = ({route}) => {
   const handleVerify = () => {
     const enteredCode = code.join('');
 
-    console.log('dnkdsnfd',enteredCode, route?.params?.data?.OTP);
-    
+    console.log('dnkdsnfd', enteredCode, route?.params?.data?.OTP);
+
     if (enteredCode.length < 6) {
       Toast.show('Please enter a complete 6-digit code.');
     } else if (enteredCode != route?.params?.data?.OTP) {
       Toast.show('The entered OTP is incorrect.');
     } else {
       Toast.show('OTP verified successfully!');
-       navigation.navigate('Home');
+      console.log(route?.params?.from)
+      if (route?.params?.from == 'MyCart') {
+        // navigation.navigate('MyCart', {from: 'OTP'});
+        navigation.navigate('Home', {screen: 'MyCart' ,params: { from: 'OTP' },});
+      } else {
+        navigation.navigate('Home');
+      }
     }
   };
 
