@@ -8,33 +8,48 @@ import {
   ScrollView,
   Image,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import styles from './styles';
 import {RadioButton} from 'react-native-paper';
 import {colors} from '../../../Component/colors';
+import { useDispatch, useSelector } from 'react-redux';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getAddress, RemoveAddress } from '../../../Redux/Slice/Addresslice';
+import Loader from '../../../Component/Loader';
 
-const DeliveryAddress = ({navigation}) => {
-  const [data, setData] = useState([
-    {
-      id: '1',
-      title: 'Tejash Shah',
-      description:
-        'Lorem ipsum is simply dummy text of the printing and typesetting industry. -123456',
-      phone: '+91 123456789',
-      isDefault: true,
-    },
-    {
-      id: '2',
-      title: 'Tejash Shah',
-      description:
-        'Lorem ipsum is simply dummy text of the printing and typesetting industry. -123456',
-      phone: '+91 123456789',
-      isDefault: false,
-    },
-  ]);
+const DeliveryAddress = () => {
+  const  navigation =useNavigation();
+  const isLoading=useSelector(state=>state.address.loading);
+  const addresstoget=useSelector(state=>state.address?.getaData?.data);
+  console.log('sfjsfslk',addresstoget);
+  
+   const dispatch = useDispatch()
+   const focus=useIsFocused();
+ useEffect(()=>{
+ if(focus){
+   AddressList();
+ }
+  
+ },[focus])
+ const AddressList = async()=>{
+ 
+ const token = await AsyncStorage.getItem('Token');
+ const userid = await AsyncStorage.getItem('user_id');
+ await  dispatch(getAddress({  
+   user_id: userid,
+   
+   token: token,
+  
+   url:'fetch-customer-address',
+   // navigation,
+ }));
+ }
+
+  const [data, setData] = useState('');
 
   const toggleDefaultAddress = id => {
-    const updatedData = data.map(item =>
+    const updatedData = addresstoget?.map(item =>
       item.id === id ? {...item, isDefault: true} : {...item, isDefault: false},
     );
     setData(updatedData);
@@ -43,28 +58,43 @@ const DeliveryAddress = ({navigation}) => {
   const handleEdit = id => {
     Alert.alert('Edit', `Editing address with ID: ${id}`);
   };
+  const cartRemove = async item => {
+    const token = await AsyncStorage.getItem('Token');
+    const userid = await AsyncStorage.getItem('user_id');
+console.log('fgfdg',item);
 
-  const handleDelete = id => {
-    Alert.alert('Delete', `Deleting address with ID: ${id}`);
+    await dispatch(
+      RemoveAddress({
+        user_id: userid,
+        customer_address_id:item,
+        token: token,
+        url: 'delete-customer-address',
+        navigation,
+      }),
+    );
   };
 
   const renderItem = ({item}) => (
     <View style={styles.card}>
+      {console.log('dfmlks',item)}
+      
       <View style={styles.cardContentWrapper}>
         <View style={styles.textWrapper}>
           <View style={styles.direction}>
-            <Text style={styles.cardTitle}>{item.title}</Text>
+            <Text style={styles.cardTitle}>{item.name}</Text>
             <View style={styles.editDeleteWrapper}>
-              <TouchableOpacity onPress={() => handleEdit(item.id)}>
+              <TouchableOpacity onPress={() =>
+                
+                navigation.navigate('Address', {data: false, item:item})}>
                 <Text style={styles.editDeleteText1}>Edit</Text>
               </TouchableOpacity>
               <View style={styles.viewLine} />
-              <TouchableOpacity onPress={() => handleDelete(item.id)}>
+              <TouchableOpacity onPress={() =>cartRemove(item.id)}>
                 <Text style={styles.editDeleteText}>Delete</Text>
               </TouchableOpacity>
             </View>
           </View>
-          <Text style={styles.cardDescription}>{item.description}</Text>
+          <Text style={styles.cardDescription}>{item?.address} {item.apartment}  {item?.city} ({item?.zip_code})</Text>
           <Text style={styles.cardPhone}>{item.phone}</Text>
         </View>
       </View>
@@ -73,8 +103,8 @@ const DeliveryAddress = ({navigation}) => {
         <View style={styles.radioButtonWrapper}>
           <RadioButton
             value={item.id}
-            status={item.isDefault ? 'checked' : 'unchecked'}
-            onPress={() => toggleDefaultAddress(item.id)}
+            status={item.is_default==1 ? 'checked' : 'unchecked'}
+            onPress={() => toggleDefaultAddress(item.is_default)}
             color={colors.Headertext}
             uncheckedColor={colors.light_gr}
           />
@@ -103,20 +133,26 @@ const DeliveryAddress = ({navigation}) => {
           <Text style={styles.logoText}>Select Delivery Address</Text>
         </View>
       </View>
-
+{isLoading?<Loader/>:null}
       <ScrollView contentContainerStyle={styles.scrollview}>
         <FlatList
-          data={data}
+          data={addresstoget}
           renderItem={renderItem}
           keyExtractor={item => item.id}
         />
+ 
 
-        <TouchableOpacity
+
+       
+      </ScrollView>
+      <TouchableOpacity
           style={styles.fab}
-          onPress={() =>  navigation.navigate('Address')}>
+          onPress={() =>
+            navigation.navigate('Address', {data: true, item: {}})}
+          // navigation.navigate('Address')}
+          >
           <Text style={styles.fabText}>+</Text>
         </TouchableOpacity>
-      </ScrollView>
       <View style={styles.scrollview}>
         <TouchableOpacity
           onPress={() => navigation.navigate('Payment', {data1: 'Remedies'})}

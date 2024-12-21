@@ -182,7 +182,7 @@ const HomeScreen = () => {
                 type="custom"
                 tintColor={colors.white}
                 ratingCount={5}
-                imageSize={wp(3.5)}
+                imageSize={16}
                 startingValue={item.rating}
                 ratingColor="#52B1E9"
                 ratingBackgroundColor={colors.lightGrey} // Unfilled star color
