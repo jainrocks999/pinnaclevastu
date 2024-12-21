@@ -21,7 +21,7 @@ import { widthPrecent } from '../../../Component/ResponsiveScreen/responsive';
 
 const Remedies = ({navigation}) => {
   const Remediesproduct = useSelector(state => state.home?.Remedi?.data);
- 
+  console.log('kjoijgoigbjo',Remediesproduct?.remedies_categories_banner?.[0]?.slider_items);
   const newArray = [];
   (Remediesproduct?.remedies_categories_banner?.[0]?.slider_items|| []).forEach(item => {
     const updatedItem = {

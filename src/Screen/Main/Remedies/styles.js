@@ -167,7 +167,6 @@ export default StyleSheet.create({
     fontFamily: 'Poppins-Regular',
   },
   backBtn: {
-    marginTop:-5,
     height: wp(4),
     width: wp(2.3),
     resizeMode: 'stretch',

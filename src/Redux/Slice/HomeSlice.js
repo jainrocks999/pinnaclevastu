@@ -26,7 +26,7 @@ export const Banner = createAsyncThunk(
       }
     } catch (error) {
       console.log('banner error ', error);
-       Toast.show(error.message)
+
       return rejectWithValue(
         error.response ? error.response.data : error.message,
       );
@@ -34,10 +34,10 @@ export const Banner = createAsyncThunk(
   },
 );
 
-export const DrawerApi = createAsyncThunk(
-  'home/DrawerApi',
+export const Service = createAsyncThunk(
+  'home/Service',
   async ({url}, {rejectWithValue}) => {
-    console.log('DrawerApi..', url);
+    console.log('homeService..', url);
 
     try {
       const config = {
@@ -95,7 +95,7 @@ export const Remedie = createAsyncThunk(
 
 export const RemediesCategory = createAsyncThunk(
   'home/RemediesCategory',
-  async ({url, category_id, navigation, name,id}, {rejectWithValue}) => {
+  async ({url, category_id, navigation, name, id}, {rejectWithValue}) => {
     console.log('Remedies category', url, category_id, name);
 
     try {
@@ -120,7 +120,9 @@ export const RemediesCategory = createAsyncThunk(
                   {
                     name: 'Remedie12',
                     state: {
-                      routes: [{name: 'ProductList', params: {name1: name,id:id}}],
+                      routes: [
+                        {name: 'ProductList', params: {name1: name, id: id}},
+                      ],
                     },
                   },
                 ],
@@ -239,6 +241,110 @@ export const CourceDetailApi = createAsyncThunk(
   },
 );
 
+export const getCartDataApi = createAsyncThunk(
+  'home/getCartData',
+  async ({token, url}, {rejectWithValue}) => {
+    console.log(token, url, 'card get data gfgm');
+    try {
+      const config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: `${constant.mainUrl}${url}`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      };
+      const response = await axios.request(config);
+
+      if (response?.data?.status == 200) {
+        // console.log(response.data.data, 'response.data Virendra');
+        return response?.data?.data;
+      } else {
+        console.log('cart error ', error);
+        // Toast.show(response?.data?.msg);
+      }
+    } catch (error) {
+      console.log('banner error ', error);
+
+      return rejectWithValue(
+        error.response ? error.response.data : error.message,
+      );
+    }
+  },
+);
+
+export const addToCartApi = createAsyncThunk(
+  'home/addToCart',
+  async ({user_id, itemId, qty, user_type, token, url}, {rejectWithValue}) => {
+    // console.log({user_id, itemId, qty, user_type, token, url})
+    try {
+      let data = {
+        user_id: user_id,
+        id: itemId,
+        qty: qty,
+        user_type: user_type,
+      };
+      const config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: `${constant.mainUrl}${url}`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        data: JSON.stringify(data),
+      };
+
+      const response = await axios.request(config);
+
+      if (response?.data?.status == 200) {
+        // console.log(response.data.data, 'response.data Virendra dfgmkdflgkdflg');
+        Toast.show(response?.data?.data.msg);
+      } 
+    } catch (error) {
+      console.log('cart error ', error);
+
+      return rejectWithValue(
+        error.response ? error.response.data : error.message,
+      );
+    }
+  },
+);
+export const removeCartItemApi = createAsyncThunk(
+  'home/removeCartData',
+  async ({user_id,rowid, token}, {rejectWithValue}) => {
+    console.log({user_id,rowid,token })
+    try {
+      const config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: `${constant.mainUrl}remove-to cart?user_id=${user_id}&rowid=${rowid}`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      };
+
+      const response = await axios.request(config);
+     console.log(response.data)
+      if (response?.data?.status == 200) {
+        console.log(response.data, 'response.data Sandeep dfgmkdflgkdflg');
+        
+        // Toast.show(response?.data?.data.msg);
+      } 
+    } catch (error) {
+      console.log('cart remove error ', error);
+
+      return rejectWithValue(
+        error.response ? error.response.data : error.message,
+      );
+    }
+  },
+);
+
+
+
 const homeSlice = createSlice({
   name: 'home',
   initialState: {
@@ -246,9 +352,10 @@ const homeSlice = createSlice({
     Remedi: [],
     RemeiesCat: [],
     RemeiesDetail: [],
-    Drawerdata: [],
+    services: [],
     Cource: [],
     CourceDetailA: [],
+    CartData: [],
     loading: false,
     error: null,
   },
@@ -272,15 +379,15 @@ const homeSlice = createSlice({
         state.error = action.payload;
       })
 
-      .addCase(DrawerApi.pending, state => {
+      .addCase(Service.pending, state => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(DrawerApi.fulfilled, (state, action) => {
+      .addCase(Service.fulfilled, (state, action) => {
         state.loading = false;
-        state.Drawerdata = action.payload;
+        state.services = action.payload;
       })
-      .addCase(DrawerApi.rejected, (state, action) => {
+      .addCase(Service.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
@@ -347,7 +454,42 @@ const homeSlice = createSlice({
       .addCase(CourceDetailApi.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
+
+      .addCase(getCartDataApi.pending, state => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getCartDataApi.fulfilled, (state, action) => {
+        state.loading = false;
+        state.CartData = action.payload;
+      })
+      .addCase(getCartDataApi.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(addToCartApi.pending, state => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(addToCartApi.fulfilled, state => {
+        state.loading = false;
+      })
+      .addCase(addToCartApi.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(removeCartItemApi.pending,state=>{
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(removeCartItemApi.fulfilled, state => {
+        state.loading = false;
+      })
+      .addCase(removeCartItemApi.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
   },
 });
 

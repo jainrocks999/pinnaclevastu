@@ -263,8 +263,8 @@ export default StyleSheet.create({
     borderRadius: 10,
   },
   cardImg: {
-    width: '100%',
-    height: wp(50),
+    // width: '100%',
+    // height: wp(50),
     borderTopLeftRadius:10,
     borderTopRightRadius:10,
     //  resizeMode: 'contain',
@@ -281,6 +281,7 @@ export default StyleSheet.create({
     fontFamily: 'Poppins-Medium',
   },
   titleText: {
+    minHeight:wp(11),
     marginTop:-6,
     fontSize: fontSize.Fourteen,
     color: colors.heading,
@@ -332,6 +333,7 @@ export default StyleSheet.create({
     backgroundColor: '#FBF5F2',
     padding: wp(2),
     borderRadius: 10,
+    marginBottom:wp(3)
   },
   button: {
   },

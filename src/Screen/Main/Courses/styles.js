@@ -105,6 +105,7 @@ export default StyleSheet.create({
   },
   cardContainer: {
     // margin: 20,
+    marginTop:wp(5),
     marginHorizontal: wp(3),
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -120,12 +121,14 @@ export default StyleSheet.create({
     // borderWidth:6
   },
   cardImg: {
-     width: '100%',
-    height: wp(50),
+    //  width: '100%',
+    // height: wp(50), 
+    // height: '50%', 
   //  resizeMode: 'contain',
    borderTopRightRadius:10,
    borderTopLeftRadius:10,
     //  marginTop: -wp(3),
+    // resizeMode:"contain"
   },
   cardInfo: {
     marginTop: 0,
@@ -139,6 +142,7 @@ export default StyleSheet.create({
     fontFamily: 'Poppins-Medium',
   },
   titleText: {
+    minHeight:wp(18),
     fontSize: fontSize.Fourteen,
     color: colors.heading,
     fontFamily: 'Poppins-SemiBold',

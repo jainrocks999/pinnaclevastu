@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -11,14 +11,16 @@ import {
   ImageBackground,
 } from 'react-native';
 import styles from './styles';
-import {colors} from '../../../Component/colors';
-import {fontSize} from '../../../Component/fontsize';
+import { colors } from '../../../Component/colors';
+import { fontSize } from '../../../Component/fontsize';
 import SelectModal from '../../../Component/dropdown';
-import {Checkbox} from 'react-native-paper';
+import { Checkbox } from 'react-native-paper';
 import DatePicker from 'react-native-date-picker';
 import Toast from 'react-native-simple-toast';
+import { Dropdown } from 'react-native-element-dropdown';
 
-const ResidentalScreen = ({navigation}) => {
+
+const ResidentalScreen = ({ navigation }) => {
   const [isResident, setIsresident] = useState(true);
   const [isIndustrial, setIsindustrial] = useState(false);
   const [isGemstone, setIsGemstone] = useState(false);
@@ -37,10 +39,12 @@ const ResidentalScreen = ({navigation}) => {
     setVisible(false);
   };
 
-  const data = [
-    {label: 'Male', value: 'Male'},
-    {label: 'Female', value: 'Female'},
-    {label: 'Transgender', value: 'Transgender'},
+  
+
+  const genderOptions = [
+    { label: 'Male', value: 'Male' },
+    { label: 'Female', value: 'Female' },
+    { label: 'Transgender', value: 'Transgender' },
   ];
 
   const [date, setDate] = useState('');
@@ -69,23 +73,23 @@ const ResidentalScreen = ({navigation}) => {
   };
 
   const [formData, setFormData] = useState({
-      name: '',
-      email: '',
-      mobile: '',
-      cityPincode: '',
-      birthPlace: '',
-      additionalInfo:''
-    });
+    name: '',
+    email: '',
+    mobile: '',
+    cityPincode: '',
+    birthPlace: '',
+    additionalInfo: ''
+  });
 
   const handleInputChange = (name, value) => {
-    setFormData({...formData, [name]: value});
+    setFormData({ ...formData, [name]: value });
 
     if (name === 'mobile') {
       const numericValue = value.replace(/[^0-9]/g, '');
       const mobileRegex = /^[0-9]{0,10}$/;
 
       mobileRegex.test(numericValue)
-        ? setFormData({...formData, mobile: numericValue})
+        ? setFormData({ ...formData, mobile: numericValue })
         : Toast.show('Invalid mobile number.');
 
     } else if (name === 'cityPincode') {
@@ -93,7 +97,7 @@ const ResidentalScreen = ({navigation}) => {
       const pinCodeRegex = /^[0-9]{0,6}$/;
 
       pinCodeRegex.test(numericValue)
-        ? setFormData({...formData, cityPincode: numericValue})
+        ? setFormData({ ...formData, cityPincode: numericValue })
         : Toast.show('Invalid city pincode.');
     }
   };
@@ -130,14 +134,14 @@ const ResidentalScreen = ({navigation}) => {
       Toast.show('Please enter Birth Date');
       return;
     } else {
-      navigation.navigate('Payment', {data1: 'Residental'})
+      navigation.navigate('Payment', { data1: 'Residental' })
     }
     console.log(formData);
   };
 
   return (
     <View style={styles.container}>
-      {/* Header */}
+
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
@@ -151,21 +155,21 @@ const ResidentalScreen = ({navigation}) => {
         </View>
       </View>
 
-      <SelectModal
+      {/* <SelectModal
         search={search}
         data={data}
         setSearch={setSearch}
         visible={visible}
         onSelect={onSelect}
         onClose={value => setVisible(value)}
-      />
+      /> */}
       <ScrollView contentContainerStyle={styles.servicesContainer}>
         <View style={[styles.cardContainer2]}>
           <Text
             style={[
               styles.service,
               styles.widthOfSevices1,
-              {fontSize: fontSize.Fifteen},
+              { fontSize: fontSize.Fifteen },
             ]}>
             Services
           </Text>
@@ -233,13 +237,13 @@ const ResidentalScreen = ({navigation}) => {
         </View>
 
         <View style={styles.cardContainer2}>
-          <Text style={[styles.service, {fontSize: fontSize.Fifteen}]}>
+          <Text style={[styles.service, styles.widthOfSevices2, { fontSize: fontSize.Fifteen }]}>
             Personal Detail
           </Text>
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Full Name*</Text>
             <TextInput
-              style={[styles.input, {elevation: 5}]}
+              style={[styles.input, { elevation: 5 }]}
               placeholder="Name"
               placeholderTextColor={colors.placeholder}
               value={formData.name}
@@ -269,7 +273,7 @@ const ResidentalScreen = ({navigation}) => {
               onChangeText={text => handleInputChange('mobile', text)}
             />
           </View>
-          <View style={styles.inputmain}>
+          {/* <View style={styles.inputmain}>
             <Text style={styles.title2}>Gender*</Text>
 
             <TouchableOpacity
@@ -299,6 +303,52 @@ const ResidentalScreen = ({navigation}) => {
                 source={require('../../../assets/image/arrow_icon.png')}
               />
             </TouchableOpacity>
+          </View> */}
+
+          <View style={styles.inputmain}>
+            <Text style={styles.title2}>Gender*</Text>
+            <Dropdown
+              style={styles.input}
+              data={genderOptions}
+              labelField="label"
+              valueField="value"
+              placeholder={'Select Gender'}
+              placeholderStyle={{
+                color: formData.gender ? colors.heading : colors.placeholder,
+                fontSize: fontSize.Fifteen,
+              }}
+              selectedTextStyle={{
+                color: colors.heading,
+                fontSize: fontSize.Fifteen,
+                fontFamily: 'Poppins-Regular',
+              }}
+              value={formData.gender}
+              onChange={text => handleInputChange('gender', text.value)}
+              renderRightIcon={() => (
+                <Image
+                  style={{
+                    height: 8,
+                    width: 15,
+                  }}
+                  source={require('../../../assets/image/arrow_icon.png')}
+                />
+              )}
+              renderItem={item => (
+                <Text
+                  style={{
+                    color: colors.heading, // इनपुट का टेक्स्ट कलर
+                    fontSize: fontSize.Fifteen,
+                    fontFamily: 'Poppins-Regular',
+                    padding: 10, // आइटम के लिए padding
+                  }}
+                >
+                  {item.label} 
+                </Text>
+              )}
+            />
+
+
+
           </View>
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Current City Pincode*</Text>
@@ -329,7 +379,7 @@ const ResidentalScreen = ({navigation}) => {
               <Text
                 style={[
                   styles.input1,
-                  {color: date === '' ? colors.placeholder : colors.heading},
+                  { color: date === '' ? colors.placeholder : colors.heading },
                 ]}>
                 {formatDate(date)}
               </Text>
@@ -416,7 +466,7 @@ const ResidentalScreen = ({navigation}) => {
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Time of Birth</Text>
 
-            {/* Input area with DatePicker */}
+   
             <TouchableOpacity
               onPress={() => setOpen1(true)}
               style={[
@@ -431,7 +481,7 @@ const ResidentalScreen = ({navigation}) => {
               <Text
                 style={[
                   styles.input1,
-                  {color: time === '' ? colors.placeholder : colors.heading},
+                  { color: time === '' ? colors.placeholder : colors.heading },
                 ]}>
                 {formatTime(time)}
               </Text>
@@ -486,7 +536,7 @@ const ResidentalScreen = ({navigation}) => {
           <Text style={styles.btext1}>SUBMIT</Text>
         </TouchableOpacity>
       </ScrollView>
-      {/* <ButtomTab /> */}
+    
     </View>
   );
 };

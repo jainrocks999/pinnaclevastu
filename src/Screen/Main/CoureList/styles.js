@@ -118,9 +118,10 @@ export default StyleSheet.create({
     color: '#CBCBCB',
   },
   backBtn: {
+    marginTop:-5,
     height: wp(4),
     width: wp(2.3),
-    resizeMode: 'stretch',
+    // resizeMode: 'stretch',
     marginRight: 20,
   },
 });

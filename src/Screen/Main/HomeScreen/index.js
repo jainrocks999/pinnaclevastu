@@ -31,6 +31,7 @@ import {useIsFocused, useNavigation} from '@react-navigation/native';
 import Loader from '../../../Component/Loader';
 import Imagepath from '../../../Component/Imagepath';
 import LinearGradient from 'react-native-linear-gradient';
+import AutoHeightImage from 'react-native-auto-height-image';
 let backPress = 0;
 const HomeScreen = () => {
   const flatListRef = useRef(null);
@@ -216,19 +217,31 @@ const HomeScreen = () => {
   const renderCard = ({item}) => {
     return (
       <View style={styles.card}>
-        <Image
+        {/* <Image
           source={
             item.image == null
               ? require('../../../assets/otherApp/courseCard1.png')
               : {uri: `${Imagepath.Path}${item?.image}`}
           }
           style={styles.cardImg}
+        /> */}
+        <AutoHeightImage
+          source={
+            item.image == null
+              ? require('../../../assets/otherApp/courseCard1.png')
+              : {uri: `${Imagepath.Path}${item?.image}`}
+          }
+          width={wp(65)}
+          style={styles.cardImg}
         />
         <View style={styles.cardInfo}>
           <Text style={styles.DateText}>{item?.start_date}</Text>
           <Text style={styles.titleText}>{item?.title}</Text>
+         
           <Text style={styles.regularText}>
-            While Vastu Shastra gives us data about our...
+            {item?.short_description == null
+              ? 'While Vastu Shastra gives us data about our...'
+              : item?.short_description}
           </Text>
           <Text style={styles.price}>{`₹ ${item?.price}`}</Text>
           <TouchableOpacity onPress={() => CouseDetail1(item)}>

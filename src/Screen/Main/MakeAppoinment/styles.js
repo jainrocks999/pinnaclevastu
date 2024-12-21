@@ -29,6 +29,7 @@ export default StyleSheet.create({
   },
 
   backBtn: {
+    marginTop:-5,
     height: wp(4),
     width: wp(2.3),
     resizeMode: 'stretch',
@@ -73,14 +74,19 @@ export default StyleSheet.create({
   service: {
     position: 'absolute',
     top: -wp(2.8),
-    left: wp(4),
+    left: wp(5),
     fontSize: fontSize.Fourteen,
     color: colors.heading,
     fontFamily: 'Poppins-Medium',
     backgroundColor: '#fff',
   },
   widthOfSevices1: {
-    width: wp(15),
+    width: wp(22),
+    textAlign:"center",
+  },
+  widthOfSevices2: {
+    width: wp(35),
+    textAlign:"center",
   },
   cont: {
     fontSize: fontSize.Fourteen,
