@@ -107,20 +107,20 @@ const HomeScreen = () => {
   };
 
   const renderItem = ({item}) => {
-    // let backgroundColor;
-    // if (item.services_name === 'Residential Vastu') {
-    //   backgroundColor = colors.card4;
-    // } else if (item.services_name === 'Rudraksha') {
-    //   backgroundColor = colors.card;
-    // } else if (item.services_name === 'Commercial Vastu') {
-    //   backgroundColor = colors.card5;
-    // } else if (item.services_name === 'Gemstone') {
-    //   backgroundColor = colors.card2;
-    // } else if (item.services_name === 'Numerology Report') {
-    //   backgroundColor = '#F9E4E8';
-    // } else {
-    //   backgroundColor = colors.card3;
-    // }
+    let backgroundColor;
+    if (item.services_name === 'Residential Vastu') {
+      backgroundColor = colors.card4;
+    } else if (item.services_name === 'Rudraksha') {
+      backgroundColor = colors.card;
+    } else if (item.services_name === 'Commercial Vastu') {
+      backgroundColor = colors.card5;
+    } else if (item.services_name === 'Gemstone') {
+      backgroundColor = colors.card2;
+    } else if (item.services_name === 'Numerology Report') {
+      backgroundColor = '#F9E4E8';
+    } else {
+      backgroundColor = colors.card3;
+    }
 
     return (
       <TouchableOpacity
@@ -225,6 +225,7 @@ const HomeScreen = () => {
           }
           style={styles.cardImg}
         /> */}
+        {/* {changes} */}
         <AutoHeightImage
           source={
             item.image == null
@@ -306,31 +307,29 @@ const HomeScreen = () => {
             <Image source={require('../../../assets/image/Vector.png')} />
           </TouchableOpacity>
         </View>
-        {newArray?.length != 0 ? (
-          <View style={styles.welcomeCard}>
+
+        <View style={styles.welcomeCard}>
+          {newArray?.length != 0 ? (
             <BannerSlider
               onPress={item => {}}
               height1={wp(40)}
               data={newArray ? newArray : []}
               local={true}
             />
-          </View>
-        ) : null}
-        {Homebanner?.services?.length > 0 ? (
-          <>
-            <View style={styles.contain}>
-              <Text style={styles.service}>Our Services</Text>
-            </View>
-            <FlatList
-              data={Homebanner?.services || []}
-              renderItem={renderItem}
-              keyExtractor={item => item.id.toString()} // Ensure id is converted to string
-              numColumns={3}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.listContainer}
-            />
-          </>
-        ) : null}
+          ) : null}
+        </View>
+
+        <View style={styles.contain}>
+          <Text style={styles.service}>Our Services</Text>
+        </View>
+        <FlatList
+          data={Homebanner?.services ? Homebanner?.services : []}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+          numColumns={3}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listContainer}
+        />
         {imagesilder11.length != 0 ? (
           <ImageSlider
             data={imagesilder11}
@@ -343,23 +342,20 @@ const HomeScreen = () => {
             }
           />
         ) : null}
-        {Homebanner?.premium_services?.length > 0 ? (
-          <>
-            <View style={[styles.contain, {marginTop: wp(2)}]}>
-              <Text style={styles.service}>Premium Services</Text>
-            </View>
-            <FlatList
-              data={Homebanner?.premium_services || []} // Safely handle null/undefined
-              renderItem={renderItem1}
-              keyExtractor={item => item.id.toString()} // Ensure id is a string
-              numColumns={3}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.listContainer}
-            />
-          </>
-        ) : null}
 
-        {/* 
+        <View style={[styles.contain, {marginTop: wp(2)}]}>
+          <Text style={styles.service}>Premium Services</Text>
+        </View>
+        <FlatList
+          data={
+            Homebanner?.premium_services ? Homebanner?.premium_services : []
+          }
+          renderItem={renderItem1}
+          keyExtractor={item => item.id}
+          numColumns={3}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listContainer}
+        />
         <View style={[styles.contain, {marginTop: 10}]}>
           <Text style={styles.service}>Courses</Text>
         </View>
@@ -394,51 +390,7 @@ const HomeScreen = () => {
               Recorded Courses
             </Text>
           </TouchableOpacity>
-        </View> */}
-
-        {(isLiveCourse
-          ? Homebanner?.live_courses?.length > 0
-          : Homebanner?.recoded_courses?.length > 0) && (
-          <>
-            <View style={[styles.contain, {marginTop: 10}]}>
-              <Text style={styles.service}>Courses</Text>
-            </View>
-
-            <View style={styles.switchBtnContainer}>
-              <TouchableOpacity
-                style={[
-                  styles.switchBtn,
-                  isLiveCourse ? styles.activeBtn : null,
-                ]}
-                disabled={isLiveCourse}
-                onPress={() => setIsLiveCourse(true)}>
-                <Text
-                  style={[
-                    styles.switchText,
-                    isLiveCourse ? {color: '#fff'} : null,
-                  ]}>
-                  Live Course
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                disabled={!isLiveCourse}
-                style={[
-                  styles.switchBtn,
-                  !isLiveCourse ? styles.activeBtn : null,
-                ]}
-                onPress={() => setIsLiveCourse(false)}>
-                <Text
-                  style={[
-                    styles.switchText,
-                    !isLiveCourse ? {color: '#fff'} : null,
-                  ]}>
-                  Recorded Courses
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </>
-        )}
+        </View>
 
         <View style={{paddingHorizontal: 10, marginVertical: 10}}>
           <FlatList
@@ -489,35 +441,31 @@ const HomeScreen = () => {
             ))}
           </View>
         </View>
-        {Homebanner?.remedies?.length > 0 && (
-          <>
-            <View style={styles.contain1}>
-              <Text style={styles.service}>Remedies</Text>
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate('Home1', {
-                    screen: 'Remedie12',
-                    params: {screen: 'Remedies'},
-                  })
-                }>
-                <Text style={styles.service1}>VIEW ALL</Text>
-              </TouchableOpacity>
-            </View>
 
-            <FlatList
-              data={Homebanner?.remedies?.slice(0, 5)}
-              renderItem={renderItem2}
-              keyExtractor={item => item.id}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{
-                paddingHorizontal: 10,
-                marginBottom: wp(8),
-              }}
-            />
-          </>
-        )}
-
+        <View style={styles.contain1}>
+          <Text style={styles.service}>Remedies</Text>
+          <TouchableOpacity
+            onPress={() =>
+              // navigation.reset({
+              //   index: 0,
+              //   routes: [{name: 'Home1', params: {screen: 'Remedie12'}}],
+              // })
+              navigation.navigate('Home1', {
+                screen: 'Remedie12',
+                params: {screen: 'Remedies'},
+              })
+            }>
+            <Text style={styles.service1}>VIEW ALL</Text>
+          </TouchableOpacity>
+        </View>
+        <FlatList
+          data={Homebanner?.remedies?.slice(0, 5)}
+          renderItem={renderItem2}
+          keyExtractor={item => item.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{paddingHorizontal: 10, marginBottom: wp(8)}}
+        />
         <View style={styles.consultationSection}>
           <View style={[styles.contain1, {}]}>
             <Text style={styles.service}>Consultation</Text>

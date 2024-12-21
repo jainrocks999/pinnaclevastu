@@ -6,7 +6,7 @@ import constants from '../constant/constants';
 
 export const loginUser = createAsyncThunk(
   'auth/loginUser',
-  async ({mobile, navigation, url}, {rejectWithValue}) => {
+  async ({mobile, navigation, url, route}, {rejectWithValue}) => {
     let data = {
       phone_no: mobile,
     };
@@ -26,26 +26,26 @@ export const loginUser = createAsyncThunk(
       const response = await axios.request(config);
       console.log('response data', response.data);
 
-        if (response.data.status == 200) {
-          
+      if (response.data.status == 200) {
+        const responseDataString = JSON.stringify(response.data);
 
-          const responseDataString = JSON.stringify(response.data);
+        AsyncStorage.setItem('user_data', responseDataString);
 
-         
-          AsyncStorage.setItem('user_data', responseDataString);
-        
-          
-          AsyncStorage.setItem('user_type', response.data.user_type);
-          AsyncStorage.setItem('user_id', JSON.stringify(response.data.user_id));
-          AsyncStorage.setItem('Token', response.data.token);
-          Toast.show(response.data.msg);
-           navigation.replace('OTP', {data: response.data, item:mobile,});
-          return response.data;
-        } else {
-          Toast.show(response.data.msg);
-          console.log('errrorroro', response.data);
-          return rejectWithValue(error.response?.data || error.message);
+        AsyncStorage.setItem('user_type', response.data.user_type);
+        AsyncStorage.setItem('user_id', JSON.stringify(response.data.user_id));
+        AsyncStorage.setItem('Token', response.data.token);
+        Toast.show(response.data.msg);
+        if (route?.params?.from && route?.params.from == 'MyCart'){
+          navigation.replace('OTP', {data: response.data, item: mobile,from: 'MyCart'});
+        }else{
+          navigation.replace('OTP', {data: response.data, item: mobile});
         }
+        return response.data;
+      } else {
+        Toast.show(response.data.msg);
+        console.log('errrorroro', response.data);
+        return rejectWithValue(error.response?.data || error.message);
+      }
 
       return response.data;
     } catch (error) {
@@ -78,13 +78,12 @@ export const signupUser = createAsyncThunk(
 
     try {
       const response = await axios.request(config);
-      if(response.data.status==200){
+      if (response.data.status == 200) {
         console.log(response.data);
         Toast.show(response.data.msg);
-           navigation.navigate('OTP');
+        navigation.navigate('OTP');
         return response.data;
       }
-      
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }

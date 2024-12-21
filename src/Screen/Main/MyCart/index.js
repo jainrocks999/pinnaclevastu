@@ -17,12 +17,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {useDispatch, useSelector} from 'react-redux';
 import {
+  addToCartApi,
   getCartDataApi,
   removeCartItemApi,
   updateCartDataApi,
 } from '../../../Redux/Slice/HomeSlice';
 import axios from 'axios';
 import constants from '../../../Redux/constant/constants';
+import {useRoute} from '@react-navigation/native';
+import Imagepath from '../../../Component/Imagepath';
 
 const Remedies12SecondComponent = () => {
   const dispatch = useDispatch();
@@ -31,19 +34,46 @@ const Remedies12SecondComponent = () => {
   const [cartItemList, setCartItemList] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const cartDataList = useSelector(state => state?.home?.CartData);
-  const [userToken, setUserToken] = useState('');
+
+  console.log(cartDataList,"sandeep dsfjkosdfosf");
+
+  const route = useRoute();
+
+  const fromScreen = route?.params?.from;
 
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
         const userStatus = await AsyncStorage.getItem('user_data');
-        const token = await AsyncStorage.getItem('Token');
-        setUserToken(token);
         const userData = JSON.parse(userStatus);
 
         console.log('virendra', userData);
 
         if (userStatus) {
+          // logged user come from OTP Screen
+          if (fromScreen) {
+            const cartData = await AsyncStorage.getItem('cartItems');
+            const parsedCartData = cartData ? JSON.parse(cartData) : [];
+
+            if (parsedCartData.length > 0) {
+              for (const item of parsedCartData) {
+                await dispatch(
+                  addToCartApi({
+                    user_id: userData.user_id,
+                    itemId: item.id,
+                    qty: item.qty,
+                    user_type: userData.user_type,
+                    token: userData?.token,
+                    url: 'add-to-cart',
+                  }),
+                );
+              }
+              await AsyncStorage.removeItem('cartItems');
+            }
+          } else {
+            console.log('null...........');
+          }
+
           await dispatch(
             getCartDataApi({
               token: userData.token,
@@ -51,7 +81,7 @@ const Remedies12SecondComponent = () => {
             }),
           );
           setCartItemList(cartDataList);
-          console.log(cartDataList, 'sandeep');
+          // console.log(cartDataList, 'sandeep');
           setIsLoggedIn(true);
         } else {
           getCartData();
@@ -116,7 +146,7 @@ const Remedies12SecondComponent = () => {
   const increment = async item => {
     const userStatus = await AsyncStorage.getItem('user_data');
     const userData = JSON.parse(userStatus);
-  console.log(userStatus)
+    console.log(userStatus);
     if (userStatus) {
       await handleUpdateCartData(
         userData?.user_id,
@@ -155,13 +185,13 @@ const Remedies12SecondComponent = () => {
       );
     } else {
       try {
-        const updatedData = cartItemList.map(item =>
-          item.rowid === rowid
+        const updatedData = cartItemList.map(prod =>
+          prod.id === item.id
             ? {
-                ...item,
-                qty: item.qty > 1 ? item.qty - 1 : item.qty,
+                ...prod,
+                qty: prod.qty > 1 ? prod.qty - 1 : prod.qty,
               }
-            : item,
+            : prod,
         );
 
         setCartItemList(updatedData);
@@ -172,16 +202,18 @@ const Remedies12SecondComponent = () => {
     }
   };
 
-  const removerItem = async (rowid)  => {
+  const removerItem = async item => {
     const userStatus = await AsyncStorage.getItem('user_data');
     const userData = JSON.parse(userStatus);
 
     if (userStatus) {
-      await dispatch(removeCartItemApi({
-        user_id:userData?.user_id,
-        rowid:rowid,
-        token:userData?.token
-      }))
+      await dispatch(
+        removeCartItemApi({
+          user_id: userData?.user_id,
+          rowid: item.rowid,
+          token: userData?.token,
+        }),
+      );
       await dispatch(
         getCartDataApi({
           token: userData?.token,
@@ -190,7 +222,7 @@ const Remedies12SecondComponent = () => {
       );
     } else {
       try {
-        const updatedData = cartItemList.filter(item => item.rowid !== rowid);
+        const updatedData = cartItemList.filter(prod => prod.id !== item.id);
         setCartItemList(updatedData);
 
         await AsyncStorage.setItem('cartItems', JSON.stringify(updatedData));
@@ -200,7 +232,9 @@ const Remedies12SecondComponent = () => {
     }
   };
   const calculateSubtotal = () => {
-    return cartItemList?.reduce((acc, item) => acc + item.price * item.qty, 0);
+    return isLoggedIn
+      ? cartDataList?.reduce((acc, item) => acc + item.price * item.qty, 0)
+      : cartItemList?.reduce((acc, item) => acc + item.price * item.qty, 0);
   };
 
   const data2 = [
@@ -270,7 +304,11 @@ const Remedies12SecondComponent = () => {
   const renderItem = ({item}) => (
     <View style={styles.viewinner}>
       <Image
-        source={require('../../../assets/image/Remedies/ab.png')}
+        source={
+          item?.option?.image
+            ? {uri: `${Imagepath.Path}${item.option.image}`}
+            : require('../../../assets/image/Remedies/ab.png')
+        }
         style={styles.image1}
       />
       <View style={styles.contentContainer}>
@@ -299,7 +337,7 @@ const Remedies12SecondComponent = () => {
       <TouchableOpacity
         style={styles.crossIcon}
         onPress={() => {
-          removerItem(item.rowid);
+          removerItem(item);
         }}>
         <View style={styles.closeButton}>
           <Text style={styles.closeIcon}>+</Text>
@@ -428,7 +466,7 @@ const Remedies12SecondComponent = () => {
           onPress={() => {
             isLoggedIn
               ? navigation.navigate('AddressList')
-              : navigation.navigate('Login');
+              : navigation.navigate('Login', {from: 'MyCart'});
           }}
           style={styles.book}>
           <Text style={styles.btext1}>PLACE ORDER</Text>

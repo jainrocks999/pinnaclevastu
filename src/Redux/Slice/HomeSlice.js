@@ -258,7 +258,7 @@ export const getCartDataApi = createAsyncThunk(
         },
       };
       const response = await axios.request(config);
-
+  
       if (response?.data?.status == 200) {
         // console.log(response.data.data, 'response.data Virendra');
         return response?.data?.data;
@@ -303,7 +303,7 @@ export const addToCartApi = createAsyncThunk(
       const response = await axios.request(config);
 
       if (response?.data?.status == 200) {
-        // console.log(response.data.data, 'response.data Virendra dfgmkdflgkdflg');
+        console.log(response.data.data, 'response.data Virendra dfgmkdflgkdflg');
         Toast.show(response?.data?.data.msg);
       } 
     } catch (error) {

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -16,15 +16,15 @@ import Collapsible from 'react-native-collapsible';
 import {Rating} from 'react-native-ratings';
 import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
 import {Checkbox} from 'react-native-paper';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import RenderHTML from 'react-native-render-html';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-simple-toast';
+import {addToCartApi} from '../../../Redux/Slice/HomeSlice';
 import Imagepath from '../../../Component/Imagepath';
 
 const RemediesProductDetail = ({navigation}) => {
   const {width} = Dimensions.get('window');
-  const [checked, setChecked] = useState(true);
   const Detail = useSelector(state => state.home?.RemeiesDetail?.data);
   const newArray = [];
   (Detail?.image_data || []).forEach(item => {
@@ -36,31 +36,56 @@ const RemediesProductDetail = ({navigation}) => {
     newArray.push(updatedItem);
   });
 
-  const calculateAverageRating = (reviews) => {
-    const totalRatings = reviews?.reduce((sum, review) => sum + review.rating, 0);
-    const averageRating = reviews?.length > 0 ? totalRatings / reviews.length : 0;
-    return averageRating.toFixed(2); // Round to 2 decimal places
+  const calculateAverageRating = reviews => {
+    const totalRatings = reviews?.reduce(
+      (sum, review) => sum + review.rating,
+      0,
+    );
+    const averageRating =
+      reviews?.length > 0 ? totalRatings / reviews.length : 0;
+    return averageRating.toFixed(1);
   };
-  
+
   const averageRating = calculateAverageRating(Detail?.reviews);
-  console.log("Average Rating:", averageRating)
 
-  const [checkedItems, setCheckedItems] = useState({}); // Object to track checked status by item ID
+  const [checkedItems, setCheckedItems] = useState({});
+  const [totalPrice, setTotalPrice] = useState(0);
 
-  const toggleCheckbox = id => {
-    setCheckedItems(prevState => ({
-      ...prevState,
-      [id]: !prevState[id], // Toggle the checkbox status for the specific ID
-    }));
+  useEffect(() => {
+    if (Detail?.cross_sales) {
+      // Initialize checkedItems with all items set to true
+      const initialCheckedState = Detail.cross_sales.reduce((acc, item) => {
+        acc[item.id] = true; // Set all items to selected initially
+        return acc;
+      }, {});
+      setCheckedItems(initialCheckedState);
+      calculateTotalPrice(initialCheckedState); // Calculate initial total price
+    }
+  }, [Detail?.cross_sales]);
+
+  const toggleCheckbox = itemId => {
+    setCheckedItems(prevState => {
+      const updatedState = {
+        ...prevState,
+        [itemId]: !prevState[itemId], // Toggle the selected state
+      };
+      calculateTotalPrice(updatedState); // Recalculate total price
+      return updatedState;
+    });
   };
 
+  const calculateTotalPrice = checkedState => {
+    // Calculate total price based on selected items
+    const total = Detail?.cross_sales?.reduce((sum, product) => {
+      return checkedState[product.id] ? sum + (product?.price || 0) : sum;
+    }, 0);
+    setTotalPrice(total); // Update the total price state
+  };
+
+  const dispatch = useDispatch();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
   const [quantity, setQuantity] = useState(1);
-
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
-  };
 
   const handleImageChange = index => {
     setCurrentIndex(index);
@@ -78,46 +103,125 @@ const RemediesProductDetail = ({navigation}) => {
     }
   };
 
-  const Addtocard = async item => {
+  const Addtocart = async item => {
     try {
-      const existingCart = await AsyncStorage.getItem('cartItems');
-      // console.log('virendra', existingCart);
-
-      let cartItems = existingCart ? JSON.parse(existingCart) : [];
-
-      // const uniqueId = `${Date.now()}-${Math.random()
-      //   .toString(36)
-      //   .substr(2, 9)}`;
-
-      const itemWithId = {
-        ...item,
-        quantity: quantity,
-        // uniqueId: uniqueId,
-        addedAt: new Date().toISOString(),
-      };
-
-      let existingItemIndex = cartItems.findIndex(
-        cartItem => cartItem.id === item.id,
-      );
-
-      if (existingItemIndex !== -1) {
-        cartItems[existingItemIndex] = {
-          ...cartItems[existingItemIndex],
-          ...itemWithId,
-          // updatedQuantity:
-          // quantity: quantity,
-        };
+      const userStatus = await AsyncStorage.getItem('user_data');
+      const userData = JSON.parse(userStatus);
+      console.log(item);
+      if (userStatus) {
+        await dispatch(
+          addToCartApi({
+            user_id: userData.user_id,
+            itemId: item.id,
+            qty: quantity,
+            user_type: userData.user_type,
+            token: userData?.token,
+            url: 'add-to-cart',
+          }),
+        );
       } else {
-        cartItems.push(itemWithId);
-      }
+        const existingCart = await AsyncStorage.getItem('cartItems');
+        // console.log('virendra', existingCart);
 
-      await AsyncStorage.setItem('cartItems', JSON.stringify(cartItems));
-      // console.log('Item added to cart:', itemWithId);
-      Toast.show('Item added to cart successfully');
+        let cartItems = existingCart ? JSON.parse(existingCart) : [];
+
+        // const uniqueId = `${Date.now()}-${Math.random()
+        //   .toString(36)
+        //   .substr(2, 9)}`;
+
+        const itemWithId = {
+          ...item,
+          qty: quantity,
+          // uniqueId: uniqueId,
+          addedAt: new Date().toISOString(),
+        };
+
+        let existingItemIndex = cartItems.findIndex(
+          cartItem => cartItem.id === item.id,
+        );
+
+        if (existingItemIndex !== -1) {
+          cartItems[existingItemIndex] = {
+            ...cartItems[existingItemIndex],
+            ...itemWithId,
+            // updatedQuantity:
+            // quantity: quantity,
+          };
+        } else {
+          cartItems.push(itemWithId);
+        }
+
+        await AsyncStorage.setItem('cartItems', JSON.stringify(cartItems));
+        // console.log('Item added to cart:', itemWithId);
+        Toast.show('Item added to cart successfully');
+      }
     } catch (error) {
       console.error('Error adding item to cart:', error);
     }
   };
+
+  const AddExtraItemInCart = async checkedItems => {
+    const selectedItems = Object.entries(checkedItems)
+      .filter(([key, isChecked]) => isChecked) // Only keep the checked ones
+      .map(([key, value]) => key); // Extract only the keys (item IDs)
+
+    if (selectedItems.length === 0) {
+      console.log('No items selected');
+      return;
+    }
+
+    try {
+      const userStatus = await AsyncStorage.getItem('user_data');
+      const userData = JSON.parse(userStatus);
+
+      const matchedItems = Detail?.cross_sales?.filter(
+        item => selectedItems.includes(item.id.toString()), 
+      );
+      if (userStatus) {
+
+        for (const item of matchedItems) {
+          await dispatch(
+            addToCartApi({
+              user_id: userData.user_id,
+              itemId: item.id, 
+              qty: 1, 
+              user_type: userData.user_type,
+              token: userData?.token,
+              url: 'add-to-cart',
+            })
+          );
+        }
+        
+      } else { 
+        const existingCart = await AsyncStorage.getItem('cartItems');
+        let cartItems = existingCart ? JSON.parse(existingCart) : [];
+
+        for (const item of matchedItems) {
+          const itemWithId = {
+            ...item,
+            qty: 1,
+            addedAt: new Date().toISOString(),
+          };
+
+          let existingItemIndex = cartItems.findIndex(
+            cartItem => cartItem.id === item.id,
+          );
+
+          if (existingItemIndex === -1) {
+            cartItems.push(itemWithId);
+          } else {
+            console.log('Item already in cart, skipping add');
+          }
+        }
+        await AsyncStorage.setItem('cartItems', JSON.stringify(cartItems));
+
+        Toast.show('Items added to cart successfully');
+      }
+    } catch (error) {
+      console.log('Error adding items to cart:', error);
+    }
+  };
+
   const renderItem4 = ({item}) => {
     return (
       <View style={{flexDirection: 'row'}}>
@@ -170,29 +274,12 @@ const RemediesProductDetail = ({navigation}) => {
     );
   };
 
-  const [activeIndex, setActiveIndex] = useState(null);
-
-  const [selectedItems, setSelectedItems] = useState(
-    Detail?.cross_sales?.map(() => true),
-  );
-
-  const toggleSelection = index => {
-    const updatedSelection = [...selectedItems];
-    updatedSelection[index] = !updatedSelection[index];
-    setSelectedItems(updatedSelection);
-  };
-
   const [expandedSection, setExpandedSection] = useState(null);
 
   const toggleSection = sectionId => {
     setExpandedSection(prevSection =>
       prevSection === sectionId ? null : sectionId,
     );
-  };
-  const getTotalPrice = () => {
-    return Detail?.cross_sales?.reduce((total, product, index) => {
-      return selectedItems[index] ? total + product.price : total;
-    }, 0);
   };
 
   const renderItem = ({item, index}) => (
@@ -274,6 +361,7 @@ const RemediesProductDetail = ({navigation}) => {
 
   const renderItems = ({item}) => (
     <View style={styles.paddings}>
+      {console.log('slksflk', item)}
       <TouchableOpacity
         onPress={() => toggleSection(item.desc_data_id)}
         style={[
@@ -307,14 +395,14 @@ const RemediesProductDetail = ({navigation}) => {
       </TouchableOpacity>
 
       <Collapsible collapsed={expandedSection !== item.desc_data_id}>
-      <View style={styles.subItemContainer}>
-        <RenderHTML
-          contentWidth={width}
-          source={{
-            html: item.description
-          }}
-        />
-         </View>
+        <View style={styles.subItemContainer}>
+          <RenderHTML
+            contentWidth={width}
+            source={{
+              html: item.description,
+            }}
+          />
+        </View>
         {/* <View style={styles.subItemContainer}>
           <FlatList
             data={item.subItems}
@@ -351,16 +439,16 @@ const RemediesProductDetail = ({navigation}) => {
       </View>
 
       <ScrollView contentContainerStyle={styles.servicesContainer}>
-       {newArray?.length!=0?
-        <View style={styles.welcomeCard}>
-          <BannerSlider
-            onPress={item => {}}
-            data={newArray}
-            local={true}
-            height1={wp(60)}
-          />
-        </View>
-:null}
+        {newArray?.length != 0 ? (
+          <View style={styles.welcomeCard}>
+            <BannerSlider
+              onPress={item => {}}
+              data={newArray}
+              local={true}
+              height1={wp(60)}
+            />
+          </View>
+        ) : null}
         <View style={styles.contain}>
           {/* Aluminium Metal Strip Vastu */}
           <Text style={styles.service}>
@@ -369,6 +457,7 @@ const RemediesProductDetail = ({navigation}) => {
           </Text>
         </View>
         <View style={styles.main}>
+<<<<<<< HEAD
         {Detail?.reviews?.length > 0 && (
               <>
           <View style={styles.headerview}>
@@ -385,6 +474,23 @@ const RemediesProductDetail = ({navigation}) => {
               />
             </View>
             
+=======
+          {Detail?.reviews?.length > 0 && (
+            <>
+              <View style={styles.headerview}>
+                <View style={{marginTop: -5}}>
+                  <Rating
+                    type="custom"
+                    tintColor={colors.white}
+                    ratingCount={5}
+                    imageSize={16}
+                    startingValue={averageRating}
+                    ratingColor="#52B1E9"
+                    ratingBackgroundColor={colors.lightGrey} // Unfilled star color
+                  />
+                </View>
+
+>>>>>>> 476b7e41fd28ba3831476e8f85aed22385d28066
                 <Text
                   style={[
                     styles.third1,
@@ -417,11 +523,19 @@ const RemediesProductDetail = ({navigation}) => {
                   ]}>
                   {' reviews'}
                 </Text>
+<<<<<<< HEAD
 
           </View>
           </>
             )}
           <View style={styles.dividerView} />
+=======
+              </View>
+
+              <View style={styles.dividerView} />
+            </>
+          )}
+>>>>>>> 476b7e41fd28ba3831476e8f85aed22385d28066
           <Text
             style={[
               styles.third1,
@@ -497,6 +611,11 @@ const RemediesProductDetail = ({navigation}) => {
               </TouchableOpacity>
             </View>
           </View>
+          <TouchableOpacity
+            onPress={() => Addtocart(Detail)}
+            style={[styles.book, {marginTop: 15}]}>
+            <Text style={styles.btext1}>ADD TO CART </Text>
+          </TouchableOpacity>
         </View>
 
         <View>
@@ -512,8 +631,10 @@ const RemediesProductDetail = ({navigation}) => {
 
         <View style={{marginTop: 10, marginHorizontal: 15}}>
           <FlatList
-            data={Detail?.desc_data}
-            keyExtractor={item => item.id}
+            data={Detail?.desc_data?.filter(
+              item => item.description !== null && item.label !== null,
+            )}
+            keyExtractor={item => item.desc_data_id.toString()}
             renderItem={renderItems}
           />
         </View>
@@ -523,6 +644,8 @@ const RemediesProductDetail = ({navigation}) => {
               Frequently Bought Together
             </Text>
 
+            {console.log(checkedItems)}
+            {console.log(Detail?.cross_sales)}
             <FlatList
               data={Detail?.cross_sales}
               renderItem={renderItem}
@@ -535,13 +658,14 @@ const RemediesProductDetail = ({navigation}) => {
               ]}
             />
             <View style={styles.viewBorder} />
-            <Text style={styles.totalText}>Total: ₹ {getTotalPrice()}</Text>
+            <Text style={styles.totalText}>Total: ₹ {totalPrice}</Text>
 
             <TouchableOpacity
-              onPress={() => navigation.navigate('Appoiment')}
+              onPress={() => AddExtraItemInCart(checkedItems)}
               style={styles.book}>
               <Text style={styles.btext1}>
-                ADD {selectedItems?.filter(Boolean)?.length} ITEMS TO CART
+                ADD {Object.values(checkedItems)?.filter(Boolean)?.length} ITEMS
+                TO CART
               </Text>
             </TouchableOpacity>
           </View>
@@ -556,7 +680,7 @@ const RemediesProductDetail = ({navigation}) => {
               renderItem={renderItem2}
               horizontal
               showsHorizontalScrollIndicator={false}
-              onMomentumScrollEnd={(e) => {
+              onMomentumScrollEnd={e => {
                 const contentOffsetX = e.nativeEvent.contentOffset.x;
                 const slideWidth = styles.slide.width; // Assuming styles.slide.width defines the width of each slide
                 const currentIndex = Math.round(contentOffsetX / slideWidth); // Use Math.round for more accurate calculation
@@ -580,7 +704,9 @@ const RemediesProductDetail = ({navigation}) => {
         ) : null}
         <View style={{backgroundColor: '#F1F1F1'}}>
           <View style={styles.shareview}>
-            {Detail?.reviews?.length == 0 ? null : (
+            {Detail?.reviews?.length == 0 ? (
+              <View style={{marginBottom: -20}} />
+            ) : (
               <View style={{marginBottom: -20}}>
                 <Text
                   style={
@@ -593,21 +719,23 @@ const RemediesProductDetail = ({navigation}) => {
             </TouchableOpacity>
           </View>
           {Detail?.reviews?.length == 0 ? null : (
-            <FlatList
-              data={Detail?.reviews}
-              renderItem={renderItem3}
-              keyExtractor={item => item.id}
-              //   numColumns={3}
-              showsVerticalScrollIndicator={false}
-            />
-          )}
+            <>
+              <FlatList
+                data={Detail?.reviews}
+                renderItem={renderItem3}
+                keyExtractor={item => item.id}
+                //   numColumns={3}
+                showsVerticalScrollIndicator={false}
+              />
 
-          <Text style={styles.seeall}>See all Reviews</Text>
+              <Text style={styles.seeall}>See all Reviews</Text>
+            </>
+          )}
         </View>
         <TouchableOpacity
-          onPress={() => Addtocard(Detail)}
+          onPress={() => Addtocart(Detail)}
           style={[styles.book, {marginTop: 10, marginBottom: 10}]}>
-          <Text style={styles.btext1}>ADD TO CART </Text>
+          <Text style={styles.btext1}>ADD TO CART</Text>
         </TouchableOpacity>
       </ScrollView>
       {/* <ButtomTab /> */}

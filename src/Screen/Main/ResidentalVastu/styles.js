@@ -66,12 +66,15 @@ export default StyleSheet.create({
     resizeMode:"contain"
   },
   main: {
+   
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 18,
     backgroundColor: colors.Resident,
     paddingVertical: 10,
+    marginRight: -5,
+    marginLeft: -5
   },
   title: {
     fontSize: fontSize.Fourteen,
