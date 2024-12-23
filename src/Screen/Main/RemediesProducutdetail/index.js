@@ -26,6 +26,7 @@ import Imagepath from '../../../Component/Imagepath';
 const RemediesProductDetail = ({navigation}) => {
   const {width} = Dimensions.get('window');
   const Detail = useSelector(state => state.home?.RemeiesDetail?.data);
+  console.log(Detail);
   const newArray = [];
   (Detail?.image_data || []).forEach(item => {
     const updatedItem = {
@@ -61,7 +62,14 @@ const RemediesProductDetail = ({navigation}) => {
       setCheckedItems(initialCheckedState);
       calculateTotalPrice(initialCheckedState); // Calculate initial total price
     }
+    getUserType();
   }, [Detail?.cross_sales]);
+
+  const getUserType = async () => {
+    const userStatus = await AsyncStorage.getItem('user_data');
+    const userData = JSON.parse(userStatus);
+    setUserType(userData?.user_type);
+  };
 
   const toggleCheckbox = itemId => {
     setCheckedItems(prevState => {
@@ -86,6 +94,7 @@ const RemediesProductDetail = ({navigation}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [userType, setUserType] = useState('');
 
   const handleImageChange = index => {
     setCurrentIndex(index);
@@ -107,6 +116,7 @@ const RemediesProductDetail = ({navigation}) => {
     try {
       const userStatus = await AsyncStorage.getItem('user_data');
       const userData = JSON.parse(userStatus);
+
       console.log(item);
       if (userStatus) {
         await dispatch(
@@ -125,14 +135,9 @@ const RemediesProductDetail = ({navigation}) => {
 
         let cartItems = existingCart ? JSON.parse(existingCart) : [];
 
-        // const uniqueId = `${Date.now()}-${Math.random()
-        //   .toString(36)
-        //   .substr(2, 9)}`;
-
         const itemWithId = {
           ...item,
           qty: quantity,
-          // uniqueId: uniqueId,
           addedAt: new Date().toISOString(),
         };
 
@@ -144,16 +149,14 @@ const RemediesProductDetail = ({navigation}) => {
           cartItems[existingItemIndex] = {
             ...cartItems[existingItemIndex],
             ...itemWithId,
-            // updatedQuantity:
-            // quantity: quantity,
           };
+          Toast.show('Item is already added to cart !');
         } else {
           cartItems.push(itemWithId);
+          Toast.show('Item added to cart successfully');
         }
-
         await AsyncStorage.setItem('cartItems', JSON.stringify(cartItems));
         // console.log('Item added to cart:', itemWithId);
-        Toast.show('Item added to cart successfully');
       }
     } catch (error) {
       console.error('Error adding item to cart:', error);
@@ -174,25 +177,23 @@ const RemediesProductDetail = ({navigation}) => {
       const userStatus = await AsyncStorage.getItem('user_data');
       const userData = JSON.parse(userStatus);
 
-      const matchedItems = Detail?.cross_sales?.filter(
-        item => selectedItems.includes(item.id.toString()), 
+      const matchedItems = Detail?.cross_sales?.filter(item =>
+        selectedItems.includes(item.id.toString()),
       );
       if (userStatus) {
-
         for (const item of matchedItems) {
           await dispatch(
             addToCartApi({
               user_id: userData.user_id,
-              itemId: item.id, 
-              qty: 1, 
+              itemId: item.id,
+              qty: 1,
               user_type: userData.user_type,
               token: userData?.token,
               url: 'add-to-cart',
-            })
+            }),
           );
         }
-        
-      } else { 
+      } else {
         const existingCart = await AsyncStorage.getItem('cartItems');
         let cartItems = existingCart ? JSON.parse(existingCart) : [];
 
@@ -209,13 +210,14 @@ const RemediesProductDetail = ({navigation}) => {
 
           if (existingItemIndex === -1) {
             cartItems.push(itemWithId);
+            Toast.show('Items added to cart successfully');
           } else {
             console.log('Item already in cart, skipping add');
+            Toast.show('Item is already added to cart !');
           }
         }
         await AsyncStorage.setItem('cartItems', JSON.stringify(cartItems));
-
-        Toast.show('Items added to cart successfully');
+        console.log(cartItems);
       }
     } catch (error) {
       console.log('Error adding items to cart:', error);
@@ -361,7 +363,7 @@ const RemediesProductDetail = ({navigation}) => {
 
   const renderItems = ({item}) => (
     <View style={styles.paddings}>
-      {console.log('slksflk', item)}
+      {/* {console.log('slksflk', item)} */}
       <TouchableOpacity
         onPress={() => toggleSection(item.desc_data_id)}
         style={[
@@ -390,7 +392,12 @@ const RemediesProductDetail = ({navigation}) => {
               ? require('../../../assets/otherApp/updown.png')
               : require('../../../assets/image/arrow_icon.png')
           }
-          style={styles.toggleIcon2}
+          style={[
+            styles.toggleIcon2,
+            expandedSection !== item.desc_data_id
+              ? {resizeMode: 'contain'}
+              : null,
+          ]}
         />
       </TouchableOpacity>
 
@@ -560,9 +567,39 @@ const RemediesProductDetail = ({navigation}) => {
               'Iron strip for vastu, spacial metel strips for vastu, 10 pieces metel strips for vastu, 100 metel vastu strips, 8 feet metel strip vastu, aluminium metel strips direction south west, artificial strip for vastudosh, mahavastu aluminium strip, steel strip remedy vastu'
             } */}
           </Text>
-          <Text style={[styles.third1, {marginTop: 15, marginHorizontal: 15}]}>
-            {`₹ ${Detail?.price}`}
-          </Text>
+
+          <View
+            style={{
+              marginTop: 15,
+              marginHorizontal: 15,
+              flexDirection: 'row',
+              gap: 10,
+            }}>
+            {userType &&
+            (Detail?.sale_price < Detail?.price ||
+              Detail?.student_price < Detail?.price ||
+              Detail?.franchise_price < Detail?.price) &&
+            (Detail?.sale_price ||
+              Detail?.student_price ||
+              Detail?.franchise_price) ? (
+              <Text
+                style={[styles.third1, {textDecorationLine: 'line-through'}]}>
+                ₹ {Detail?.price}
+              </Text>
+            ) : null}
+
+            <Text style={[styles.third1]}>
+              {`₹ ${
+                userType === 'customers' && Detail?.sale_price
+                  ? Detail?.sale_price
+                  : userType === 'student' && Detail?.student_price
+                  ? Detail?.student_price
+                  : userType === 'franchise' && Detail?.franchise_price
+                  ? Detail?.franchise_price
+                  : Detail?.price
+              }`}
+            </Text>
+          </View>
           <View
             style={[styles.headerview, {marginTop: 15, marginHorizontal: 15}]}>
             <Text style={[styles.third2, {color: colors.heading}]}>
@@ -617,8 +654,6 @@ const RemediesProductDetail = ({navigation}) => {
               Frequently Bought Together
             </Text>
 
-            {console.log(checkedItems)}
-            {console.log(Detail?.cross_sales)}
             <FlatList
               data={Detail?.cross_sales}
               renderItem={renderItem}

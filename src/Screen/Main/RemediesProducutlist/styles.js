@@ -36,7 +36,7 @@ export default StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginVertical: 15,
-    marginHorizontal:12,
+    marginHorizontal: 12,
     backgroundColor: colors.ordercolor,
     borderRadius: 20,
     elevation: 3,
@@ -171,7 +171,12 @@ export default StyleSheet.create({
   titleText: {
     minHeight: wp(11),
   },
-  priceText: {marginTop: 5},
+  priceText: {
+    marginTop: 5,
+    flexDirection: 'row',
+    gap:5
+  },
+
   buttoncontainer: {
     height: 50,
     width: '50%',
@@ -191,7 +196,7 @@ export default StyleSheet.create({
   },
   backBtn: {
     height: wp(4),
-    marginTop:-5,
+    marginTop: -5,
     width: wp(2.3),
     resizeMode: 'stretch',
     marginRight: 20,

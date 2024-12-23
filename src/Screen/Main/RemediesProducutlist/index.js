@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import styles from './styles';
 
 import {Rating} from 'react-native-ratings';
@@ -33,8 +33,13 @@ const RemediesProductList = ({route}) => {
 
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const [userType, setUserType] = useState('');
   const RemediesCategory = useSelector(state => state.home?.RemeiesCat?.data);
   const isLoading = useSelector(state => state.home?.loading);
+
+  useEffect(() => {
+    getUserType();
+  }, []);
 
   const PRoductDeta = async item => {
     await dispatch(
@@ -47,21 +52,28 @@ const RemediesProductList = ({route}) => {
     //  navigation.navigate("ProductDetail")
   };
 
+  const getUserType = async () => {
+    const userStatus = await AsyncStorage.getItem('user_data');
+    const userData = JSON.parse(userStatus);
+    setUserType(userData?.user_type);
+  };
+
   const Addtocard = async item => {
     try {
       const userStatus = await AsyncStorage.getItem('user_data');
       const userData = JSON.parse(userStatus);
-     
+
       if (userStatus) {
-        await dispatch(addToCartApi({
-          user_id: userData.user_id,
-          itemId: item.id,
-          qty:1,
-          user_type: userData.user_type,
-          token:userData?.token,
-          url:'add-to-cart'
-        }))
-       
+        await dispatch(
+          addToCartApi({
+            user_id: userData.user_id,
+            itemId: item.id,
+            qty: 1,
+            user_type: userData.user_type,
+            token: userData?.token,
+            url: 'add-to-cart',
+          }),
+        );
       } else {
         const existingCart = await AsyncStorage.getItem('cartItems');
         // console.log('virendra', existingCart);
@@ -90,12 +102,13 @@ const RemediesProductList = ({route}) => {
             // updatedQuantity:
             // quantity: quantity,
           };
+          Toast.show('Item is already added to cart ! ');
         } else {
           cartItems.push(itemWithId);
+          Toast.show('Item added to cart successfully');
         }
         await AsyncStorage.setItem('cartItems', JSON.stringify(cartItems));
         console.log('Item added to cart:', itemWithId);
-        Toast.show('Item added to cart successfully');
       }
     } catch (error) {
       console.error('Error adding item to cart:', error);
@@ -108,8 +121,8 @@ const RemediesProductList = ({route}) => {
         <View style={styles.image}>
           <Image
             source={
-              item?.images
-                ? {uri: `${Imagepath.Path}${item.images}`}
+              item?.image
+                ? {uri: `${Imagepath.Path}${item.image}`}
                 : require('../../../assets/image/Remedies/ab.png')
             }
             style={{height: '100%', width: '100%', borderRadius: 10}}
@@ -118,15 +131,37 @@ const RemediesProductList = ({route}) => {
       </TouchableOpacity>
       <View style={styles.textContainer}>
         <Text style={[styles.third, styles.titleText]}>{item.name}</Text>
-        <Text
-          style={[styles.third, styles.priceText]}>{`₹ ${item.price}`}</Text>
+        <View style={styles.priceText}>
+     
+          {userType &&
+          (item?.sale_price < item?.price ||
+            item?.student_price < item?.price ||
+            item?.franchise_price < item?.price) &&
+          (item?.sale_price || item?.student_price || item?.franchise_price) ? (
+            <Text style={[styles.third, {textDecorationLine: 'line-through'}]}>
+              ₹ {item?.price}
+            </Text>
+          ) : null}
+
+          <Text style={[styles.third]}>
+            {`₹ ${
+              userType === 'customers' && item?.sale_price
+                ? item?.sale_price
+                : userType === 'student' && item?.student_price
+                ? item?.student_price
+                : userType === 'franchise' && item?.franchise_price
+                ? item?.franchise_price
+                : item?.price
+            }`}
+          </Text>
+        </View>
 
         <View style={styles.direction}>
-        <Rating
+          <Rating
             type="custom"
             tintColor={colors.ordercolor}
             ratingCount={5}
-            imageSize={item?.rating?16:20}
+            imageSize={item?.rating ? 16 : 20}
             startingValue={item?.rating}
             ratingColor="#52B1E9"
             ratingBackgroundColor={colors.lightGrey} // Unfilled star color

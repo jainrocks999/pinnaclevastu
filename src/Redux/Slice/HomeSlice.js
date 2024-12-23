@@ -26,8 +26,7 @@ export const Banner = createAsyncThunk(
       }
     } catch (error) {
       console.log('banner error ', error);
-      Toast.show(error.message)
-
+      Toast.show(error.message);
 
       return rejectWithValue(
         error.response ? error.response.data : error.message,
@@ -258,7 +257,7 @@ export const getCartDataApi = createAsyncThunk(
         },
       };
       const response = await axios.request(config);
-  
+
       if (response?.data?.status == 200) {
         // console.log(response.data.data, 'response.data Virendra');
         return response?.data?.data;
@@ -276,12 +275,10 @@ export const getCartDataApi = createAsyncThunk(
   },
 );
 
-
-
 export const addToCartApi = createAsyncThunk(
   'home/addToCart',
   async ({user_id, itemId, qty, user_type, token, url}, {rejectWithValue}) => {
-    // console.log({user_id, itemId, qty, user_type, token, url})
+    console.log({user_id, itemId, qty, user_type, token, url})
     try {
       let data = {
         user_id: user_id,
@@ -303,9 +300,12 @@ export const addToCartApi = createAsyncThunk(
       const response = await axios.request(config);
 
       if (response?.data?.status == 200) {
-        console.log(response.data.data, 'response.data Virendra dfgmkdflgkdflg');
+        console.log(
+          response.data.data,
+          'response.data Virendra dfgmkdflgkdflg',
+        );
         Toast.show(response?.data?.data.msg);
-      } 
+      }
     } catch (error) {
       console.log('cart error ', error);
 
@@ -317,8 +317,8 @@ export const addToCartApi = createAsyncThunk(
 );
 export const removeCartItemApi = createAsyncThunk(
   'home/removeCartData',
-  async ({user_id,rowid, token}, {rejectWithValue}) => {
-    console.log({user_id,rowid,token })
+  async ({user_id, rowid, token}, {rejectWithValue}) => {
+    console.log({user_id, rowid, token});
     try {
       const config = {
         method: 'get',
@@ -331,12 +331,10 @@ export const removeCartItemApi = createAsyncThunk(
       };
 
       const response = await axios.request(config);
-     console.log(response.data)
       if (response?.data?.status == 200) {
-        console.log(response.data, 'response.data Sandeep dfgmkdflgkdflg');
-        
-        // Toast.show(response?.data?.data.msg);
-      } 
+        // console.log(response.data, 'response.data Sandeep dfgmkdflgkdflg');
+        Toast.show(response?.data?.msg);
+      }
     } catch (error) {
       console.log('cart remove error ', error);
 
@@ -347,7 +345,35 @@ export const removeCartItemApi = createAsyncThunk(
   },
 );
 
+export const likedProductListApi = createAsyncThunk(
+  'home/likedProducts',
+  async ({url}, {rejectWithValue}) => {
+    try {
+      const config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: `${constant.mainUrl}${url}`,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
 
+      const response = await axios.request(config);
+      // console.log(response.data, 'sandeep df,sdfsl;df');
+
+      if (response?.data?.status == 200) {
+        // console.log(response.data, 'response.data Sandeep dfgmkdflgkdflg');
+        return response?.data?.data;
+      }
+    } catch (error) {
+      console.log('Liked Product List error ', error);
+
+      return rejectWithValue(
+        error.response ? error.response.data : error.message,
+      );
+    }
+  },
+);
 
 const homeSlice = createSlice({
   name: 'home',
@@ -360,6 +386,7 @@ const homeSlice = createSlice({
     Cource: [],
     CourceDetailA: [],
     CartData: [],
+    likeProductList: [],
     loading: false,
     error: null,
   },
@@ -389,7 +416,7 @@ const homeSlice = createSlice({
       })
       .addCase(DrawerApi.fulfilled, (state, action) => {
         state.loading = false;
-        state. Drawerdata = action.payload;
+        state.Drawerdata = action.payload;
       })
       .addCase(DrawerApi.rejected, (state, action) => {
         state.loading = false;
@@ -483,7 +510,7 @@ const homeSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(removeCartItemApi.pending,state=>{
+      .addCase(removeCartItemApi.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -494,6 +521,18 @@ const homeSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      .addCase(likedProductListApi.pending, state => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(likedProductListApi.fulfilled, (state, action) => {
+        state.loading = false;
+        state.likeProductList = action.payload;
+      })
+      .addCase(likedProductListApi.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
 
