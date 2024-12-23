@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -14,10 +14,40 @@ import {fontSize} from '../../../Component/fontsize';
 import {colors} from '../../../Component/colors';
 import {widthPrecent} from '../../../Component/ResponsiveScreen/responsive';
 import styles from './styles';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const {width} = Dimensions.get('window');
 
-const MyProfile = ({navigation}) => {
+const MyProfile = () => {
+const navigation=useNavigation();
+const [isLoggedIn, setIsLoggedIn] = useState(false);
+const focus =useIsFocused();
+useEffect(() => {
+  const checkLoginStatus = async () => {
+    try {
+      const userStatus = await AsyncStorage.getItem('user_data');
+      const userData = JSON.parse(userStatus);
+
+      console.log('virendra', userData);
+
+      if (userStatus) {
+        // await AsyncStorage.clear();
+        setIsLoggedIn(true);
+      } else {
+       navigation.navigate('Login')
+        setIsLoggedIn(false);
+        // navigation.navigate('Login'); // Navigate to login screen if not logged in
+      }
+    } catch (error) {
+      console.log('Error checking login status:', error);
+    }
+  };
+
+  checkLoginStatus();
+}, [focus]);
+
+
   const actionItems = [
     {
       id: '1',

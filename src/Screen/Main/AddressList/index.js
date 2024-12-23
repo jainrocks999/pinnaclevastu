@@ -18,12 +18,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getAddress, RemoveAddress } from '../../../Redux/Slice/Addresslice';
 import Loader from '../../../Component/Loader';
 
-const DeliveryAddress = () => {
+const DeliveryAddress = ({route}) => {
+  const item=route?.params
   const  navigation =useNavigation();
   const isLoading=useSelector(state=>state.address.loading);
   const addresstoget=useSelector(state=>state.address?.getaData?.data);
-  console.log('sfjsfslk',addresstoget);
+  console.log('fkglkf',addresstoget);
   
+  const [addresstoget1, setAddresstoget] = useState(addresstoget); // Address list
+  const [defaultAddress, setDefaultAddress] = useState(null); 
    const dispatch = useDispatch()
    const focus=useIsFocused();
  useEffect(()=>{
@@ -46,22 +49,30 @@ const DeliveryAddress = () => {
  }));
  }
 
-  const [data, setData] = useState('');
 
-  const toggleDefaultAddress = id => {
-    const updatedData = addresstoget?.map(item =>
-      item.id === id ? {...item, isDefault: true} : {...item, isDefault: false},
-    );
-    setData(updatedData);
-  };
+ useEffect(() => {
+  // Set initial default address
+  const defaultItem = addresstoget1?.find((item) => item?.is_default === 1);
+  setDefaultAddress(defaultItem);
+}, [addresstoget1]);
 
-  const handleEdit = id => {
-    Alert.alert('Edit', `Editing address with ID: ${id}`);
-  };
+const toggleDefaultAddress = (item) => {
+ 
+  const updatedAddresses = addresstoget1.map((addr) =>
+    addr.id === item.id
+      ? { ...addr, is_default: 1 }
+      : { ...addr, is_default: 0 }
+  );
+  setAddresstoget(updatedAddresses);
+  setDefaultAddress(item);
+  console.log('Default address saved locally:', item);
+};
+
+ 
   const cartRemove = async item => {
     const token = await AsyncStorage.getItem('Token');
     const userid = await AsyncStorage.getItem('user_id');
-console.log('fgfdg',item);
+
 
     await dispatch(
       RemoveAddress({
@@ -76,7 +87,7 @@ console.log('fgfdg',item);
 
   const renderItem = ({item}) => (
     <View style={styles.card}>
-      {console.log('dfmlks',item)}
+     
       
       <View style={styles.cardContentWrapper}>
         <View style={styles.textWrapper}>
@@ -98,25 +109,22 @@ console.log('fgfdg',item);
           <Text style={styles.cardPhone}>{item.phone}</Text>
         </View>
       </View>
-
+    {  addresstoget1?.length==1?null:(
       <View style={styles.direction1}>
         <View style={styles.radioButtonWrapper}>
           <RadioButton
             value={item.id}
             status={item.is_default==1 ? 'checked' : 'unchecked'}
-            onPress={() => toggleDefaultAddress(item.is_default)}
+            onPress={() => toggleDefaultAddress(item)}
             color={colors.Headertext}
             uncheckedColor={colors.light_gr}
           />
         </View>
         <View style={styles.makeview}>
-          <Text style={styles.maketext}>
-            {item.isDefault
-              ? 'Make this my default address'
-              : 'Make this my default address'}
-          </Text>
+          <Text style={styles.maketext}>{'Make this my default address'}</Text>
         </View>
       </View>
+    )}
     </View>
   );
 
@@ -133,10 +141,11 @@ console.log('fgfdg',item);
           <Text style={styles.logoText}>Select Delivery Address</Text>
         </View>
       </View>
-{isLoading?<Loader/>:null}
+
       <ScrollView contentContainerStyle={styles.scrollview}>
+      {isLoading?<Loader/>:null}
         <FlatList
-          data={addresstoget}
+          data={addresstoget1==null? addresstoget:addresstoget1}
           renderItem={renderItem}
           keyExtractor={item => item.id}
         />
@@ -153,9 +162,9 @@ console.log('fgfdg',item);
           >
           <Text style={styles.fabText}>+</Text>
         </TouchableOpacity>
-      <View style={styles.scrollview}>
+      <View style={styles.scrollview1}>
         <TouchableOpacity
-          onPress={() => navigation.navigate('Payment', {data1: 'Remedies'})}
+          onPress={() => navigation.navigate('Payment', {data1: 'Remedies',data: item, adress: defaultAddress})}
           style={styles.book}>
           <Text style={styles.btext}>CONIFORM PAYMENT</Text>
         </TouchableOpacity>
