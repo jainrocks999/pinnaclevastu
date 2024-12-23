@@ -14,11 +14,13 @@ import {colors} from '../../../Component/colors';
 import {Rating} from 'react-native-ratings';
 import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-simple-toast';
 
 import {useDispatch, useSelector} from 'react-redux';
 import {
   addToCartApi,
   getCartDataApi,
+  likedProductListApi,
   removeCartItemApi,
   updateCartDataApi,
 } from '../../../Redux/Slice/HomeSlice';
@@ -26,6 +28,7 @@ import axios from 'axios';
 import constants from '../../../Redux/constant/constants';
 import {useRoute} from '@react-navigation/native';
 import Imagepath from '../../../Component/Imagepath';
+import {getAddress} from '../../../Redux/Slice/Addresslice';
 
 const Remedies12SecondComponent = () => {
   const dispatch = useDispatch();
@@ -34,10 +37,13 @@ const Remedies12SecondComponent = () => {
   const [cartItemList, setCartItemList] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const cartDataList = useSelector(state => state?.home?.CartData);
+  const LikeItemList = useSelector(state => state?.home?.likeProductList);
+  const addressData = useSelector(state => state.address?.getaData?.data);
+  const defaultAddress = addressData?.find(ob => ob.is_default === 1);
 
-  console.log(cartDataList,"sandeep dsfjkosdfosf");
-
+  const [userType, setUserType] = useState('');
   const route = useRoute();
+  console.log(cartDataList, 'sandeep djfdkflsfsd');
 
   const fromScreen = route?.params?.from;
 
@@ -47,9 +53,11 @@ const Remedies12SecondComponent = () => {
         const userStatus = await AsyncStorage.getItem('user_data');
         const userData = JSON.parse(userStatus);
 
-        console.log('virendra', userData);
+        // console.log('virendra', userData);
+        // console.log('useEffect run sdldkfldmfsld');
 
         if (userStatus) {
+          setUserType(userData.user_type);
           // logged user come from OTP Screen
           if (fromScreen) {
             const cartData = await AsyncStorage.getItem('cartItems');
@@ -70,9 +78,16 @@ const Remedies12SecondComponent = () => {
               }
               await AsyncStorage.removeItem('cartItems');
             }
-          } else {
-            console.log('null...........');
           }
+          await dispatch(
+            getAddress({
+              user_id: userData.user_id,
+              token: userData.token,
+
+              url: 'fetch-customer-address',
+              // navigation,
+            }),
+          );
 
           await dispatch(
             getCartDataApi({
@@ -80,14 +95,21 @@ const Remedies12SecondComponent = () => {
               url: `cart?user_id=${userData.user_id}`,
             }),
           );
+
           setCartItemList(cartDataList);
           // console.log(cartDataList, 'sandeep');
           setIsLoggedIn(true);
         } else {
           getCartData();
           setIsLoggedIn(false);
-          // navigation.navigate('Login'); // Navigate to login screen if not logged in
         }
+
+        // Liked Product List Api...
+        await dispatch(
+          likedProductListApi({
+            url: 'products-collection',
+          }),
+        );
       } catch (error) {
         console.log('Error checking login status:', error);
       }
@@ -140,6 +162,61 @@ const Remedies12SecondComponent = () => {
       // console.log(cartItemList, 'Retrieved cart data');
     } catch (error) {
       console.error('Error retrieving cart data:', error);
+    }
+  };
+
+  const Addtocart = async item => {
+    try {
+      const userStatus = await AsyncStorage.getItem('user_data');
+      const userData = JSON.parse(userStatus);
+      if (userStatus) {
+        await dispatch(
+          addToCartApi({
+            user_id: userData.user_id,
+            itemId: item.id,
+            qty: 1,
+            user_type: userData.user_type,
+            token: userData?.token,
+            url: 'add-to-cart',
+          }),
+        );
+        await dispatch(
+          getCartDataApi({
+            token: userData?.token,
+            url: `cart?user_id=${userData?.user_id}`,
+          }),
+        );
+      } else {
+        const existingCart = await AsyncStorage.getItem('cartItems');
+
+        let cartItems = existingCart ? JSON.parse(existingCart) : [];
+
+        const itemWithId = {
+          ...item,
+          qty: 1,
+          // uniqueId: uniqueId,
+          addedAt: new Date().toISOString(),
+        };
+
+        let existingItemIndex = cartItems.findIndex(
+          cartItem => cartItem.id === item.id,
+        );
+
+        if (existingItemIndex !== -1) {
+          cartItems[existingItemIndex] = {
+            ...cartItems[existingItemIndex],
+            ...itemWithId,
+          };
+          Toast.show('Item is already added to cart ! ');
+        } else {
+          cartItems.push(itemWithId);
+          Toast.show('Item added to cart successfully');
+        }
+        await AsyncStorage.setItem('cartItems', JSON.stringify(cartItems));
+        getCartData();
+      }
+    } catch (error) {
+      console.error('Error adding item to cart:', error);
     }
   };
 
@@ -226,17 +303,46 @@ const Remedies12SecondComponent = () => {
         setCartItemList(updatedData);
 
         await AsyncStorage.setItem('cartItems', JSON.stringify(updatedData));
+        Toast.show('Cart item remove successfully.');
       } catch (error) {
         console.log(error);
       }
     }
   };
-  const calculateSubtotal = () => {
-    return isLoggedIn
-      ? cartDataList?.reduce((acc, item) => acc + item.price * item.qty, 0)
-      : cartItemList?.reduce((acc, item) => acc + item.price * item.qty, 0);
+
+  const calculateSubtotalAndSavings = () => {
+    let subtotal = 0;
+    let savings = 0;
+
+    const dataList = isLoggedIn ? cartDataList : cartItemList;
+
+    dataList?.forEach(item => {
+      const discountedPrice =
+        userType === 'customers'
+          ? item?.sale_price
+          : userType === 'student'
+          ? item?.student_price
+          : userType === 'franchise'
+          ? item?.franchise_price
+          : item?.price;
+
+      // Ensure discountedPrice is valid and non-negative
+      const validDiscountedPrice =
+        discountedPrice > 0 ? discountedPrice : item?.price;
+
+      subtotal += item?.price * item.qty;
+
+      // Calculate savings only if discountedPrice is non-negative and lower than item price
+      savings += (item?.price - validDiscountedPrice) * item.qty;
+    });
+
+    return {subtotal, savings};
   };
 
+  const {subtotal, savings} = calculateSubtotalAndSavings();
+
+  console.log(`Subtotal: ${subtotal}, Savings: ${savings}`);
+ 
   const data2 = [
     {
       id: '1',
@@ -276,11 +382,18 @@ const Remedies12SecondComponent = () => {
     <View>
       <View style={styles.slide}>
         <TouchableOpacity onPress={() => navigation.navigate('ProductDetail')}>
-          <Image source={item.source1} style={styles.image} />
+          <Image
+            source={
+              item?.image
+                ? {uri: `${Imagepath.Path}${item?.image}`}
+                : require('../../../assets/image/Remedies/ab.png')
+            }
+            style={styles.image}
+          />
         </TouchableOpacity>
         <View style={styles.textContainer}>
-          <Text style={[styles.third, styles.titleText]}>{item.title}</Text>
-          <Text style={[styles.third, {marginTop: 10}]}>{item.price}</Text>
+          <Text style={[styles.third, styles.titleText]}>{item?.name}</Text>
+          <Text style={[styles.third, {marginTop: 10}]}>₹ {item?.price}</Text>
 
           <View style={styles.direction}>
             <Rating
@@ -288,12 +401,14 @@ const Remedies12SecondComponent = () => {
               tintColor={colors.ordercolor}
               ratingCount={5}
               imageSize={wp(4)}
-              startingValue={item.rating}
+              startingValue={item?.rating}
               ratingColor="#52B1E9"
               ratingBackgroundColor={colors.lightGrey} // Unfilled star color
             />
           </View>
-          <TouchableOpacity style={styles.buttonstylefirst}>
+          <TouchableOpacity
+            style={styles.buttonstylefirst}
+            onPress={() => Addtocart(item)}>
             <Text style={styles.buttonstyle}>Add to Cart</Text>
           </TouchableOpacity>
         </View>
@@ -303,19 +418,59 @@ const Remedies12SecondComponent = () => {
 
   const renderItem = ({item}) => (
     <View style={styles.viewinner}>
-      <Image
-        source={
-          item?.option?.image
-            ? {uri: `${Imagepath.Path}${item.option.image}`}
-            : require('../../../assets/image/Remedies/ab.png')
-        }
-        style={styles.image1}
-      />
+      {console.log(item)}
+      {isLoggedIn ? (
+        <Image
+          source={
+            item?.option?.image
+              ? {uri: `${Imagepath.Path}${item.option.image}`}
+              : require('../../../assets/image/Remedies/ab.png')
+          }
+          style={styles.image1}
+        />
+      ) : (
+        <Image
+          source={
+            item?.image
+              ? {uri: `${Imagepath.Path}${item.image}`}
+              : require('../../../assets/image/Remedies/ab.png')
+          }
+          style={styles.image1}
+        />
+      )}
       <View style={styles.contentContainer}>
-        <Text style={styles.textstyle}>{item.name}</Text>
+        <Text style={styles.textstyle}>{item?.name}</Text>
         <View style={styles.ruupebutton}>
           <View style={styles.rupees}>
-            <Text style={styles.rupeestext}>₹ {item.price}</Text>
+            {/* <Text style={styles.rupeestext}>₹ {item?.price}</Text> */}
+            {isLoggedIn &&
+            (item?.sale_price < item?.price ||
+              item?.student_price < item?.price ||
+              item?.franchise_price < item?.price) &&
+            (item?.sale_price ||
+              item?.student_price ||
+              item?.franchise_price) ? (
+              <Text
+                style={[
+                  styles.rupeestext,
+                  {textDecorationLine: 'line-through'},
+                ]}>
+                ₹ {item?.price}
+              </Text>
+            ) : null}
+
+            <Text style={styles.rupeestext}>
+              ₹{' '}
+              {
+                userType === 'customers' && item?.sale_price
+                  ? item?.sale_price
+                  : userType === 'student' && item?.student_price
+                  ? item?.student_price
+                  : userType === 'franchise' && item?.franchise_price
+                  ? item?.franchise_price
+                  : item?.price /* Default case when userType is null or undefined */
+              }
+            </Text>
           </View>
           <View style={[styles.headerview, styles.quantitySection]}>
             <TouchableOpacity
@@ -324,7 +479,7 @@ const Remedies12SecondComponent = () => {
               <Text style={[styles.third1, styles.quantityBtns]}>{'-'}</Text>
             </TouchableOpacity>
             <Text style={[styles.third1, {marginLeft: 5, marginTop: 3}]}>
-              {item.qty}
+              {item?.qty}
             </Text>
             <TouchableOpacity
               style={[styles.touch, {marginLeft: 0}]}
@@ -391,14 +546,19 @@ const Remedies12SecondComponent = () => {
           <View style={styles.viewDeliver}>
             <View style={styles.toview}>
               <Text style={styles.textDeliver}>Deliver To:</Text>
-              <Text style={styles.texttejash}>Tejash Shah, 400078</Text>
+              <Text style={styles.texttejash}>
+                {defaultAddress?.name}, {defaultAddress?.zip_code}
+              </Text>
             </View>
             <View style={styles.loremview}>
               <Text style={styles.loremtext}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. feugiat
-                faucibus...{' '}
+                {defaultAddress?.apartment}, {defaultAddress?.address}.{' '}
+                {defaultAddress?.city}, {defaultAddress?.state}...
               </Text>
-              <Text style={styles.change}>Change</Text>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('AddressList')}>
+                <Text style={styles.change}>Change</Text>
+              </TouchableOpacity>
             </View>
           </View>
         ) : null}
@@ -416,10 +576,10 @@ const Remedies12SecondComponent = () => {
         <View style={styles.main}>
           <Text style={styles.header1}>You May Also Like</Text>
           <FlatList
-            data={data2}
+            data={LikeItemList}
             renderItem={renderItem2}
             horizontal
-            keyExtractor={item => item.id}
+            keyExtractor={item => item?.id}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{marginBottom: 15}}
           />
@@ -436,21 +596,24 @@ const Remedies12SecondComponent = () => {
           <Text style={styles.subtotaltext}>SubTotal</Text>
           <View style={styles.rupees}>
             {/* <FontAwesome name="rupee" size={12} color="#324356" /> */}
-            <Text style={styles.rupeestext}>₹ {calculateSubtotal()}</Text>
+            <Text style={styles.rupeestext}>₹ {subtotal}</Text>
           </View>
         </View>
 
-        <View style={styles.direction1}>
-          <Text style={[styles.subtotaltext, {paddingBottom: 10}]}>
-            Saving :
-          </Text>
-          <View style={styles.rupees}>
-            {/* <FontAwesome name="rupee" size={12} color="#324356" /> */}
-            <Text style={styles.rupeestext}>₹ 0</Text>
-          </View>
-        </View>
+        {savings > 0 && subtotal !== savings ? (
+          <>
+            <View style={styles.direction1}>
+              <Text style={[styles.subtotaltext, {paddingBottom: 10}]}>
+                Saving:
+              </Text>
+              <View style={styles.rupees}>
+                <Text style={styles.rupeestext}>₹ {savings}</Text>
+              </View>
+            </View>
 
-        <View style={styles.horizontalLine} />
+            <View style={styles.horizontalLine} />
+          </>
+        ) : null}
 
         <View style={styles.direction1}>
           <Text style={[styles.subtotaltext1, {paddingBottom: 5}]}>
@@ -458,7 +621,10 @@ const Remedies12SecondComponent = () => {
           </Text>
           <View style={styles.rupees}>
             {/* <FontAwesome name="rupee" size={12} color="#324356" /> */}
-            <Text style={styles.rupeestext}>₹ {calculateSubtotal()}</Text>
+            <Text style={styles.rupeestext}>
+              {' '}
+              ₹ {subtotal !== savings ? subtotal - savings : subtotal}
+            </Text>
           </View>
         </View>
 
