@@ -26,7 +26,7 @@ const Address = ({route}) => {
   console.log('fhfjf',item);
   
   const navigation = useNavigation();
-  const isLoading = useSelector(state => state.address.loading);
+  const isLoading = useSelector(state => state.address?.loading);
   const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
@@ -139,7 +139,8 @@ const Address = ({route}) => {
         zip_code: formData.pincode,
         apartment:formData.apartment,
         user_id: userid,
-        is_default: item?.data === false ? (saveInfo ? '1' : '0') : (saveInfo ? '1' : '0'),
+        is_default:'1',
+        // is_default: item?.data === false ? (saveInfo ? '1' : '0') : (saveInfo ? '1' : '0'),
          ...(item?.data == false && {customer_address_id: item?.item?.id}),
       };
   
@@ -179,7 +180,7 @@ const Address = ({route}) => {
         </TouchableOpacity>
 
         <View style={styles.headerview}>
-          <Text style={styles.logoText}>Add Details</Text>
+          <Text style={styles.logoText}>{item.data?"Add Details":"Edit Details"}</Text>
         </View>
       </View>
       {isLoading?<Loader/>:null}
@@ -305,7 +306,7 @@ const Address = ({route}) => {
           </View>
         </View>
 
-        <View style={styles.checkboxRow}>
+        {/* <View style={styles.checkboxRow}>
           <View
             style={[
               styles.checkboxWrapper,
@@ -321,7 +322,7 @@ const Address = ({route}) => {
           <Text style={styles.checkboxText}>
             Save this information for the next time
           </Text>
-        </View>
+        </View> */}
         <TouchableOpacity onPress={handleSubmit} style={styles.book}>
           <Text style={styles.btext1}>CONTINUE</Text>
         </TouchableOpacity>

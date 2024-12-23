@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -15,10 +15,69 @@ import { fontSize } from '../../../Component/fontsize';
 
 import styles from './styles';
 import { heightPercent } from '../../../Component/ResponsiveScreen/responsive';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { orderlistapi } from '../../../Redux/Slice/orderSclice';
 
 const { width } = Dimensions.get('window');
 
-const MyOrder = ({ navigation }) => {
+const MyOrder = () => {
+const navigation =useNavigation();
+
+
+
+const product = useSelector(state => state?.order?.orderList1?.data);
+const loading1 = useSelector(state => state?.order?.loading);
+console.log('jkfdkjhfdj',product?.data);
+
+const focus = useIsFocused();
+const dispatch = useDispatch();
+
+useEffect(() => {
+  if (focus) {
+    apicall();
+  }
+}, [focus]);
+
+const apicall = async () => {
+  try {
+    // Retrieve token and user_id from AsyncStorage
+    const token = await AsyncStorage.getItem('Token');
+    const userid = await AsyncStorage.getItem('user_id');
+
+    if (!token || !userid) {
+      console.error('Token or User ID is missing.');
+      return;
+    }
+
+    await dispatch(
+      orderlistapi({id: userid, token: token, url: 'fetch-order'}),
+    );
+  } catch (error) {
+    console.error('Error in API call:', error);
+  }
+};
+
+const OrderDetails = async item => {
+  const token = await AsyncStorage.getItem('Token');
+  const userid = await AsyncStorage.getItem('user_id');
+  await dispatch(
+    orderDetail({
+      id: userid,
+      token: token,
+      url: 'fetch-order-details',
+      orderid: item.id,
+      code: item?.code,
+      navigation,
+    }),
+  );
+};
+
+
+
+
+
   const [selectedTab, setSelectedTab] = useState('Remedies');
 
   const orders = [
@@ -50,15 +109,19 @@ const MyOrder = ({ navigation }) => {
 
   const renderOrderItem = ({ item }) => (
     <View style={styles.orderCard}>
-      <Text style={styles.orderNo}>Order No: {item.orderNo}</Text>
+      <Text style={styles.orderNo}>Order No: {item.code}</Text>
 
       <View style={styles.horizontalSeparator} />
       <View style={styles.productContainer}>
-        <Image source={item.productImage} style={styles.productImage} />
+        <Image source={
+          
+          require('../../../assets/otherApp/order3.png')}
+        
+        style={styles.productImage} />
         <View style={styles.productDetails}>
           <Text style={styles.productName}>{item.productName}</Text>
-          <Text style={styles.productQuantity}>Quantity: {item.quantity}</Text>
-          <Text style={styles.productName}>{item.price}</Text>
+          <Text style={styles.productQuantity}>Quantity: {item?.qty}</Text>
+          <Text style={styles.productName}>Total: ₹ {item?.amount}</Text>
         </View>
       </View>
       <TouchableOpacity
@@ -125,7 +188,7 @@ const MyOrder = ({ navigation }) => {
         </View>
 
         <FlatList
-          data={orders}
+          data={product?.data}
           keyExtractor={item => item.id}
           renderItem={renderOrderItem}
           contentContainerStyle={styles.ordersList}

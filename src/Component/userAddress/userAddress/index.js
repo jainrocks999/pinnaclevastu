@@ -3,17 +3,17 @@ import React, { useState } from 'react'
 import { Checkbox } from 'react-native-paper'
 import styles from './styles';
 
-const UserAddress = () => {
+const UserAddress = ({data}) => {
 
-    const [checked,setChecked]=useState(false)
+    const [checked,setChecked]=useState(data?.id)
 
   return (
     <View style={styles.section}>
         <Text style={styles.titleText}>Confirm Address</Text>
-        <Text style={styles.NameText}>Tejash Shah</Text>
-        <Text style={styles.smallText}>
-          Lorem Ipsum is simply dummy text of the printing and typesetting
-          industry.- 123456
+        <Text style={styles.NameText}>{data?.name}</Text>
+        <Text style={styles.smallText}>{data?.address} {data?.apartment}  {data?.city} ({data?.zip_code})
+          {/* Lorem Ipsum is simply dummy text of the printing and typesetting
+          industry.- 123456 */}
         </Text>
 
         <View

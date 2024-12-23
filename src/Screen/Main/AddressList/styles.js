@@ -55,8 +55,15 @@ export default StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 5,
     marginTop: hp(2),
+    // borderWidth:1
   },
-
+  scrollview1: {
+    paddingBottom: 20,
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    marginTop: hp(2),
+    // borderWidth:1
+  },
   card: {
     backgroundColor: colors.white,
     borderRadius: 10,
@@ -144,8 +151,12 @@ export default StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 5,
-    marginTop: hp(25),
+    position:'absolute',
+    // marginTop: hp(25),
     alignSelf: 'flex-end',
+    zIndex:100,
+    bottom:hp(16),
+    right:wp(4)
   },
   fabText: {
     color: '#FFFFFF',
