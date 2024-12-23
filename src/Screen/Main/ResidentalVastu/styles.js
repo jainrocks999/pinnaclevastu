@@ -1,6 +1,6 @@
-import {StyleSheet} from 'react-native';
-import {fontSize} from '../../../Component/fontsize';
-import {colors} from '../../../Component/colors';
+import { StyleSheet } from 'react-native';
+import { fontSize } from '../../../Component/fontsize';
+import { colors } from '../../../Component/colors';
 import {
   widthPrecent as wp,
   heightPercent as hp,
@@ -63,10 +63,10 @@ export default StyleSheet.create({
   arrowIcon: {
     height: wp(4),
     width: wp(2),
-    resizeMode:"contain"
+    resizeMode: "contain"
   },
   main: {
-   
+
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -84,28 +84,28 @@ export default StyleSheet.create({
   servicesContainer: {
     // paddingHorizontal:15
     marginHorizontal: 5,
-    paddingBottom:hp(8)
+    paddingBottom: hp(8)
   },
   nextBtn: {
     // borderWidth:1,
     height: wp(5),
     width: wp(2.5),
     tintColor: colors.orange,
-    alignSelf:"center",
+    alignSelf: "center",
     // marginRight: 10,
-    resizeMode:"contain"
+    resizeMode: "contain"
   },
   listContainer: {
     margin: 10,
-    paddingHorizontal:5,
+    paddingHorizontal: 5,
     // paddingTop: hp(2),
   },
 
-  imgContainer:{
-    width:"30%"
+  imgContainer: {
+    width: "30%"
   },
   direction: {
-    marginTop:4
+    marginTop: 4
   },
 
   cardContainer2: {
@@ -116,9 +116,9 @@ export default StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#DFE7EF',
-    shadowColor: '#bdc3c7', 
-    shadowOffset: { width: 0, height: 6 }, 
-    shadowOpacity: 0.5, 
+    shadowColor: '#bdc3c7',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.5,
     shadowRadius: 10,
     elevation: 8, /// For Android shadow effect
     // margin:5,
@@ -127,21 +127,21 @@ export default StyleSheet.create({
     // marginVertical: 10,
   },
   card: {
-    paddingLeft:10,
+    paddingLeft: 10,
     width: '65%',
   },
   cardImage: {
-    height:wp(30),
     borderRadius: 10,
-    width: '100%',
-    // resizeMode: 'contain',
+    width: '100%', 
+    height: wp(30), 
+    resizeMode: 'cover',
   },
 
   starContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    marginBottom:10
+    marginBottom: 10
   },
   third: {
     fontSize: fontSize.Fifteen,
@@ -152,7 +152,7 @@ export default StyleSheet.create({
     fontSize: fontSize.Eighteen,
     color: colors.heading,
     fontFamily: 'Poppins-Medium',
-    marginBottom:2
+    marginBottom: 2
   },
   third2: {
 
@@ -160,14 +160,14 @@ export default StyleSheet.create({
     color: '#51575C',
     fontFamily: 'Poppins-Regular',
   },
-  priceText:{
-    marginTop:2,
+  priceText: {
+    marginTop: 2,
     fontSize: fontSize.Fourteen,
     color: '#51575C',
     fontFamily: 'Poppins-Medium',
   },
   backBtn: {
-    marginTop:-5,
+    marginTop: -5,
     height: wp(4),
     width: wp(2.3),
     resizeMode: 'stretch',

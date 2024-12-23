@@ -245,16 +245,14 @@ const ResidentalScreen = ({ navigation }) => {
   const [scaleAnim] = useState(new Animated.Value(1));
   const [currentIndex, setCurrentIndex] = useState(0);
   const animatedValue = useRef(new Animated.Value(1)).current;
-  const bgAnim = useRef(new Animated.Value(0)).current; 
+  const bgAnim = useRef(new Animated.Value(0)).current;
 
-  
   const textItems = [
-    { text: "Which direction boosts success?", color: "#B1F0F7" }, 
-    { text: "Unlock Prosperity with Vastu!", color: "#E195AB" },
-    { text: "Transform Space, Elevate Success", color: "#FFE7A7" }, 
+    { text: 'Which direction boosts success?', color: '#B1F0F7' },
+    { text: 'Unlock Prosperity with Vastu!', color: '#E195AB' },
+    { text: 'Transform Space, Elevate Success', color: '#FFE7A7' },
   ];
 
-  
   useEffect(() => {
     const interval = setInterval(() => {
       slideText('left');
@@ -279,7 +277,6 @@ const ResidentalScreen = ({ navigation }) => {
     ).start();
   }, [animatedValue]);
 
-  
   const slideText = (direction) => {
     const newIndex =
       direction === 'left'
@@ -290,14 +287,12 @@ const ResidentalScreen = ({ navigation }) => {
         ? textItems.length - 1
         : currentIndex - 1;
 
-    
     Animated.timing(bgAnim, {
       toValue: newIndex,
-      duration: 600, 
+      duration: 600,
       useNativeDriver: false,
     }).start();
 
-    
     setCurrentIndex(newIndex);
     scaleAnim.setValue(0.8);
     Animated.parallel([
@@ -317,22 +312,47 @@ const ResidentalScreen = ({ navigation }) => {
     });
   };
 
-  
   const backgroundColor = bgAnim.interpolate({
-    inputRange: textItems.map((_, index) => index), 
-    outputRange: textItems.map((item) => item.color), 
+    inputRange: textItems.map((_, index) => index),
+    outputRange: textItems.map((item) => item.color),
   });
 
-  
   const renderItem3 = ({ item }) => {
+    const scaleAnim = new Animated.Value(1);
+
+    const handlePress = () => {
+      Animated.sequence([
+        Animated.timing(scaleAnim, {
+          toValue: 0.9,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(scaleAnim, {
+          toValue: 0.9,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(scaleAnim, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        navigation.navigate('profile');
+      });
+    };
+
     return (
-      <TouchableOpacity
-        onPress={() => navigation.navigate('profile')}
-        style={[styles.cardContainer2]}
-      >
+      <TouchableOpacity onPress={handlePress} style={[styles.cardContainer2]}>
         <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
           <View style={styles.imgContainer}>
-            <Image style={styles.cardImage} source={item.image} />
+            <Animated.Image
+              style={[
+                styles.cardImage,
+                { transform: [{ scale: scaleAnim }] },
+              ]}
+              source={item.image}
+            />
             <View style={styles.direction}>
               <Rating
                 type="custom"
@@ -365,7 +385,6 @@ const ResidentalScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
@@ -379,7 +398,6 @@ const ResidentalScreen = ({ navigation }) => {
         </View>
       </View>
 
-      {/* Scrollable Content */}
       <ScrollView contentContainerStyle={styles.servicesContainer}>
         <View style={styles.searchContainer}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -395,9 +413,7 @@ const ResidentalScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Animated Sliding Text with Dynamic Background */}
         <Animated.View style={[styles.main, { backgroundColor }]}>
-          {/* Left Arrow */}
           <TouchableOpacity
             onPress={() => slideText('right')}
             activeOpacity={0.6}
@@ -409,7 +425,6 @@ const ResidentalScreen = ({ navigation }) => {
             />
           </TouchableOpacity>
 
-          {/* Animated Sliding Text */}
           <Animated.View
             style={[
               styles.titleContainer,
@@ -423,7 +438,6 @@ const ResidentalScreen = ({ navigation }) => {
             </Animated.Text>
           </Animated.View>
 
-          {/* Right Arrow */}
           <TouchableOpacity
             onPress={() => slideText('left')}
             activeOpacity={0.6}
@@ -436,7 +450,6 @@ const ResidentalScreen = ({ navigation }) => {
           </TouchableOpacity>
         </Animated.View>
 
-        {/* FlatList for Items */}
         <FlatList
           data={DATA}
           renderItem={renderItem3}
@@ -451,7 +464,6 @@ const ResidentalScreen = ({ navigation }) => {
 
 export default ResidentalScreen;
 
-// Sample Data for FlatList
 const DATA = [
   {
     id: '1',
@@ -481,6 +493,8 @@ const DATA = [
     image: require('../../../assets/image/Imag.png'),
   },
 ];
+
+
 
 
 

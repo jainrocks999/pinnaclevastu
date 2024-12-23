@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -6,12 +6,16 @@ import {
   TouchableOpacity,
   ScrollView,
   FlatList,
+  Animated
 } from 'react-native';
 import styles from './styles';
-import {colors} from '../../../Component/colors';
-import {Rating} from 'react-native-ratings';
-import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
-const ResidentalScreen = ({navigation}) => {
+import { colors } from '../../../Component/colors';
+import { Rating } from 'react-native-ratings';
+import { widthPrecent as wp } from '../../../Component/ResponsiveScreen/responsive';
+import { useNavigation } from '@react-navigation/native';
+const ResidentalScreen = ({ navigation }) => {
+
+  const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
   const data2 = [
     {
       id: '1',
@@ -29,35 +33,50 @@ const ResidentalScreen = ({navigation}) => {
       name: 'Gemstone',
     },
   ];
-
-  const renderItem = ({item}) => {
+  const handlePress = () => {
+    Animated.sequence([
+      Animated.timing(buttonAnimatedValue, {
+        toValue: 0.96,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+      Animated.timing(buttonAnimatedValue, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      navigation.navigate('Appoiment');
+    });
+  };
+  const renderItem = ({ item }) => {
     let backgroundColor;
 
-    // Check item name and set background color
+
     if (item.name === 'Residential Vastu') {
       backgroundColor = colors.card4;
     } else if (item.name === 'Industrial Vastu') {
       backgroundColor = colors.card3;
     } else if (item.name === 'Gemstone') {
-      backgroundColor = colors.card2; // Add this for 'Industrial Vastu'
+      backgroundColor = colors.card2;
     } else {
-      backgroundColor = colors.card3; // Default color for any other items
+      backgroundColor = colors.card3;
     }
 
     return (
-      <TouchableOpacity style={[styles.cardContainer, {backgroundColor}]}>
+      <TouchableOpacity style={[styles.cardContainer, { backgroundColor }]}>
         <Image source={item.image} style={styles.image} />
         <Text style={styles.text}>{item.name}</Text>
       </TouchableOpacity>
     );
   };
-  const renderItem3 = ({item}) => {
+  const renderItem3 = ({ item }) => {
     return (
       <TouchableOpacity
         onPress={() => navigation.navigate('profile')}
         style={[styles.cardContainer1]}>
         <View style={styles.reviewCard}>
-          <View style={{paddingLeft:5}}>
+          <View style={{ paddingLeft: 5 }}>
             <Image style={styles.reviewImage} source={item.image} />
 
             <Rating
@@ -70,10 +89,10 @@ const ResidentalScreen = ({navigation}) => {
               ratingBackgroundColor={colors.lightGrey} // Unfilled star color
             />
           </View>
-          <View style={[styles.card,{paddingLeft:10}]}>
+          <View style={[styles.card, { paddingLeft: 10 }]}>
             <Text style={styles.third1}>{item.name}</Text>
 
-            <Text style={[styles.third2,{marginTop:-8}]}>{item.msg}</Text>
+            <Text style={[styles.third2, { marginTop: -8 }]}>{item.msg}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -96,46 +115,46 @@ const ResidentalScreen = ({navigation}) => {
       </View>
 
       <ScrollView contentContainerStyle={styles.servicesContainer}>
-      
-          <View style={styles.cardContainer1}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'flex-start',
-              }}>
-              <View style={styles.imgContainer}>
-                <Image
-                  style={styles.cardImage}
-                  source={require('../../../assets/image/Rectangle.png')}
+
+        <View style={styles.cardContainer1}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'flex-start',
+            }}>
+            <View style={styles.imgContainer}>
+              <Image
+                style={styles.cardImage}
+                source={require('../../../assets/image/Rectangle.png')}
+              />
+
+              <View style={styles.direction}>
+                <Rating
+                  type="custom"
+                  tintColor={colors.white}
+                  ratingCount={5}
+                  imageSize={wp(3.8)}
+                  startingValue={2}
+                  ratingColor="#52B1E9"
+                  ratingBackgroundColor={colors.lightGrey} // Unfilled star color
                 />
-
-                <View style={styles.direction}>
-                  <Rating
-                    type="custom"
-                    tintColor={colors.white}
-                    ratingCount={5}
-                    imageSize={wp(3.8)}
-                    startingValue={2}
-                    ratingColor="#52B1E9"
-                    ratingBackgroundColor={colors.lightGrey} // Unfilled star color
-                  />
-                </View>
-              </View>
-              <View style={styles.card}>
-                <Text style={styles.third1}>{'Shreni Rajbhandary'}</Text>
-
-                <Text style={[styles.third2,{marginBottom:3}]}>Services : 
-                  {' Residential Vastu, Industrial Vastu, Gemstone'}
-                </Text>
-                <Text style={styles.third2}>{'Marathi, Hindi, English'}</Text>
-                <Text style={styles.third2}>Exp: {'6 Years'}</Text>
-                <Text style={styles.priceText}>
-                  Price: {'₹ 500 to ₹ 25000'}
-                </Text>
               </View>
             </View>
+            <View style={styles.card}>
+              <Text style={styles.third1}>{'Shreni Rajbhandary'}</Text>
+
+              <Text style={[styles.third2, { marginBottom: 3 }]}>Services :
+                {' Residential Vastu, Industrial Vastu, Gemstone'}
+              </Text>
+              <Text style={styles.third2}>{'Marathi, Hindi, English'}</Text>
+              <Text style={styles.third2}>Exp: {'6 Years'}</Text>
+              <Text style={styles.priceText}>
+                Price: {'₹ 500 to ₹ 25000'}
+              </Text>
+            </View>
           </View>
-      
+        </View>
+
 
         <View style={styles.contain}>
           <Text style={styles.service}>Specialist</Text>
@@ -152,7 +171,7 @@ const ResidentalScreen = ({navigation}) => {
             paddingHorizontal: 0,
           }}
         />
-        <View style={{paddingHorizontal: 10}}>
+        <View style={{ paddingHorizontal: 10 }}>
           <Text style={styles.cont}>
             {
               '“Many people say that an individual’s positive energy and young per numerology. Pinnacle Vastu is gratified to share light and knowledge with and through Shreni Rajbhandary.'
@@ -160,7 +179,7 @@ const ResidentalScreen = ({navigation}) => {
           </Text>
         </View>
 
-        <View style={{paddingHorizontal: 10}}>
+        <View style={{ paddingHorizontal: 10 }}>
           <Text style={styles.cont}>
             {
               '“Many people say that an individual’s positive energy and young per numerology. and knowledge with and through Shreni Rajbhandary.'
@@ -168,21 +187,21 @@ const ResidentalScreen = ({navigation}) => {
           </Text>
         </View>
 
-        <View style={{paddingHorizontal: 10}}>
+        <View style={{ paddingHorizontal: 10 }}>
           <Text style={styles.cont}>
             {
               '“Many people say that an individual’s positive energy lights up the room,  involved in the environment and urban planning sector since 2017. While doing so, she was curious about spaces and how traditionally, spaces were developed in this part of the world. With this curiosity, she started to uncover more about Vastu Shastra. She is not just developing Vastu-compliant properties but is also involved in Vastu-compliant urban spaces. Her clients are primarily from the government, development,'
             }
           </Text>
         </View>
-        <View style={{paddingHorizontal: 10}}>
+        <View style={{ paddingHorizontal: 10 }}>
           <Text style={styles.cont}>
             {
               '“Many people say that an individual’s positive energy and young per numerology. Pinnacle Vastu is gratified to share light and knowledge with and through Shreni Rajbhandary.'
             }
           </Text>
         </View>
-        <View style={{paddingHorizontal: 10}}>
+        <View style={{ paddingHorizontal: 10 }}>
           <Text style={styles.cont}>
             {
               '“Many people say that an individual’s positive energy is gratified to share light and knowledge.'
@@ -190,7 +209,7 @@ const ResidentalScreen = ({navigation}) => {
           </Text>
         </View>
 
-  
+
         <View style={styles.shareview}>
           <View style={styles.rowSection}>
             <Image
@@ -198,7 +217,7 @@ const ResidentalScreen = ({navigation}) => {
               source={require('../../../assets/otherApp/share.png')}
             />
 
-            <Text style={[styles.cont, {marginTop: 0}]}>{'Share it :'}</Text>
+            <Text style={[styles.cont, { marginTop: 0 }]}>{'Share it :'}</Text>
             <Image
               style={styles.socialImg}
               source={require('../../..//assets/drawer/fb.png')}
@@ -223,20 +242,29 @@ const ResidentalScreen = ({navigation}) => {
           <View style={styles.contain}>
             <Text style={styles.service}>User Reviews (22)</Text>
           </View>
-            <FlatList
-              data={data1}
-              renderItem={renderItem3}
-              keyExtractor={item => item.id}
-              //   numColumns={3}
-              showsVerticalScrollIndicator={false}
-            />
+          <FlatList
+            data={data1}
+            renderItem={renderItem3}
+            keyExtractor={item => item.id}
+            //   numColumns={3}
+            showsVerticalScrollIndicator={false}
+          />
 
           <Text style={styles.seeall}>See all Reviews</Text>
         </View>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Appoiment')}
-          style={styles.book}>
-          <Text style={styles.btext1}>BOOK NOW</Text>
+
+        <TouchableOpacity onPress={handlePress} activeOpacity={1}>
+          <Animated.View
+            style={[
+              styles.book,
+              {
+                transform: [{ scale: buttonAnimatedValue }],
+                backgroundColor: colors.orange,
+              },
+            ]}
+          >
+            <Text style={styles.btext1}>BOOK NOW</Text>
+          </Animated.View>
         </TouchableOpacity>
       </ScrollView>
       {/* <ButtomTab /> */}
