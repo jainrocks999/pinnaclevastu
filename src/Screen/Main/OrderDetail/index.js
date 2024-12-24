@@ -1,11 +1,24 @@
-import {View, Text, TouchableOpacity, ScrollView, Image} from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+  FlatList,
+} from 'react-native';
 import React, {useState} from 'react';
 import styles from './styles';
 import {Dropdown} from 'react-native-element-dropdown';
 import StepIndicator from 'react-native-step-indicator';
 
-import {heightPercent, widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
-import { fontSize } from '../../../Component/fontsize';
+import {
+  heightPercent,
+  widthPrecent as wp,
+} from '../../../Component/ResponsiveScreen/responsive';
+import {fontSize} from '../../../Component/fontsize';
+import {useNavigation} from '@react-navigation/native';
+import {useSelector} from 'react-redux';
+import Imagepath from '../../../Component/Imagepath';
 
 const labels = [
   'Order Received',
@@ -33,10 +46,28 @@ const customStyles = {
   currentStepLabelColor: '#02A883',
 };
 
-const OrderDetail = ({navigation}) => {
+const OrderDetail = () => {
+  const navigation = useNavigation();
+  const data2 = useSelector(state => state?.order?.orderD);
+  const loading1 = useSelector(state => state?.order?.loading);
+  console.log('detaillkfglkdgldfk', data2);
+
   const [currentPosition, setCurrentPosition] = useState(4);
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
+
+  const getdata = qty => {
+    let value = {label: '1', value: '1'};
+    let array1 = [value];
+    if (qty == 1) {
+      return array1;
+    }
+    let array = [];
+    for (let i = 1; i <= qty; i++) {
+      array.push({label: i.toString(), value: i.toString()});
+    }
+    return array;
+  };
 
   const data = [
     {label: '1', value: '1'},
@@ -53,6 +84,50 @@ const OrderDetail = ({navigation}) => {
   //   setCurrentPosition(position);
   // };
 
+  const renderItem = ({item}) => (
+    <View style={styles.card}>
+      <Image
+        style={styles.cardImg}
+        source={
+          item?.product_image
+            ? {uri: `${Imagepath.Path}${item?.product_image}`}
+            : require('../../../assets/otherApp/itemImg.png')
+        }
+      />
+      <View style={styles.cardInfo}>
+        <Text style={[styles.productName, {marginBottom: 10}]}>
+          {item.product_name}
+        </Text>
+
+        <View style={styles.quantitySection}>
+          <Text style={styles.productName}>Quantity:</Text>
+          <Dropdown
+            style={[styles.dropdown, isFocus]}
+            selectedTextStyle={styles.productQuantity}
+            data={getdata(parseInt(item?.qty))}
+            maxHeight={200}
+            labelField="label"
+            valueField="value"
+            itemContainerStyle={{marginBottom: -20}}
+            placeholder={value ? value : item?.qty}
+            value={item?.qty}
+            onFocus={() => setIsFocus(true)}
+            onBlur={() => setIsFocus(false)}
+            onChange={item => {
+              setValue(item.value);
+              setIsFocus(false);
+            }}
+          />
+        </View>
+
+        <Text style={styles.productName}>Total: ₹ {item?.price}</Text>
+        <TouchableOpacity>
+          <Text style={styles.cancleBtn}>Cancel</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -65,7 +140,7 @@ const OrderDetail = ({navigation}) => {
           </TouchableOpacity>
           <Text style={styles.logoText}>Orders detail</Text>
         </View>
-        <Text style={styles.logoText}>Order No: IN324576</Text>
+        <Text style={styles.logoText}>{`Order No: ${data2?.code}`}</Text>
       </View>
 
       <ScrollView
@@ -73,10 +148,10 @@ const OrderDetail = ({navigation}) => {
           paddingHorizontal: 15,
           paddingVertical: 10,
           gap: 10,
-          paddingBottom:heightPercent(10)
+          paddingBottom: heightPercent(10),
         }}>
         <View style={styles.section}>
-          {currentPosition >= 1 ? (
+          {/* {currentPosition >= 1 ? (
             <View style={styles.OrderstatusMsgContainer}>
               <Image
                 style={styles.cancleOrderImg}
@@ -85,16 +160,23 @@ const OrderDetail = ({navigation}) => {
               <Text style={styles.StatusMsgText}>
                 <Text
                   style={{
-                    color: currentPosition !== 4 ? '#FF0000' : '#02A883',
+                    color: currentPosition !== 1 ? '#FF0000' : '#02A883',
                   }}>
-                  {currentPosition !== 4 ? 'CANCELLED ' : 'DELIVERED '}
+                  {currentPosition !== 2 ? 'CANCELLED ' : 'DELIVERED '}
                 </Text>
                 on 20 Nov 2024
               </Text>
             </View>
-          ) : null}
+          ) : null} */}
 
-          <View style={styles.card}>
+          <FlatList
+            data={data2?.products}
+            keyExtractor={item => item.id.toString()}
+            renderItem={renderItem}
+            contentContainerStyle={styles.listContainer}
+          />
+
+          {/* <View style={styles.card}>
             <Image
               style={styles.cardImg}
               source={require('../../../assets/otherApp/itemImg.png')}
@@ -132,7 +214,7 @@ const OrderDetail = ({navigation}) => {
                 <Text style={styles.cancleBtn}>Cancel</Text>
               </TouchableOpacity>
             </View>
-          </View>
+          </View> */}
         </View>
 
         <View style={styles.OrderTrackcontainer}>
@@ -200,12 +282,10 @@ const OrderDetail = ({navigation}) => {
           <View
             style={[
               styles.listRow,
-              {borderTopWidth: 1, borderColor: '#DFE7EF',
-                marginBottom:-10
-              },
+              {borderTopWidth: 1, borderColor: '#DFE7EF', marginBottom: -10},
             ]}>
             <Text style={styles.rowLabel}>Subtotal</Text>
-            <Text style={styles.rowLabel}>₹1450.00</Text>
+            <Text style={styles.rowLabel}>{`₹ ${data2?.sub_total}`}</Text>
           </View>
           <View
             style={[
@@ -218,9 +298,10 @@ const OrderDetail = ({navigation}) => {
 
           <View style={[styles.listRow, {marginVertical: 5}]}>
             <Text style={styles.TaxText}>
-              GST <Text style={{fontSize: fontSize.Thirteen}}>(3.0%)</Text>
+              Tax
+              {/* <Text style={{fontSize: fontSize.Thirteen}}>(3.0%)</Text> */}
             </Text>
-            <Text style={styles.rowLabel}>₹50.00</Text>
+            <Text style={styles.rowLabel}>{`₹ ${data2?.tax_amount}`}</Text>
           </View>
           <View
             style={[
@@ -228,7 +309,7 @@ const OrderDetail = ({navigation}) => {
               {borderTopWidth: 1, borderColor: '#DFE7EF'},
             ]}>
             <Text style={styles.totalText}>Total Payable Amount</Text>
-            <Text style={styles.rowLabel}>₹ 1450.00</Text>
+            <Text style={styles.rowLabel}>{`₹ ${data2?.amount}`}</Text>
           </View>
         </View>
 
@@ -244,13 +325,25 @@ const OrderDetail = ({navigation}) => {
               },
             ]}>
             <Text style={styles.sectionTitle}>Shipping Address</Text>
-            <Text style={styles.customerName}>Tejas Shah</Text>
-
-            <Text style={[styles.addressText, {marginVertical: 5}]}>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. - 123456
+            <Text style={styles.customerName}>
+              {data2?.shipping_address?.name}
             </Text>
-            <Text style={styles.addressText}> +91 1234567890</Text>
+            {data2?.shipping_address?.address &&<Text style={[styles.addressText, {marginVertical: 5}]}>
+              {data2?.shipping_address?.address &&
+                `${data2.shipping_address.address} `}
+              {data2?.shipping_address?.city &&
+                `${data2.shipping_address.city} `}
+              {data2?.shipping_address?.zip_code &&
+                `- (${data2.shipping_address.zip_code})`}
+            </Text>}
+            <Text style={styles.addressText}>
+              {data2?.shipping_address?.state}{' '}
+              {data2?.shipping_address?.country}
+            </Text>
+            <Text style={styles.addressText}>
+              {' '}
+              +91 {data2?.shipping_address?.phone}
+            </Text>
           </View>
 
           <View style={styles.addressSection}>
@@ -265,7 +358,6 @@ const OrderDetail = ({navigation}) => {
           </View>
         </View>
       </ScrollView>
-     
     </View>
   );
 };

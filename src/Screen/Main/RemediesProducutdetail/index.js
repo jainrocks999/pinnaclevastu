@@ -224,6 +224,17 @@ const RemediesProductDetail = ({navigation}) => {
     }
   };
 
+
+
+
+  const [showAllReviews, setShowAllReviews] = useState(false);
+
+  // Determine the data to show based on `showAllReviews`
+  const reviewsToShow = showAllReviews
+    ? Detail?.reviews
+    : Detail?.reviews?.slice(0, 3);
+
+
   const renderItem4 = ({item}) => {
     return (
       <View style={{flexDirection: 'row'}}>
@@ -726,25 +737,27 @@ const RemediesProductDetail = ({navigation}) => {
               <Text style={styles.btext}>Write a Review</Text>
             </TouchableOpacity>
           </View>
-          {Detail?.reviews?.length == 0 ? null : (
-            <>
-              <FlatList
-                data={Detail?.reviews}
-                renderItem={renderItem3}
-                keyExtractor={item => item.id}
-                //   numColumns={3}
-                showsVerticalScrollIndicator={false}
-              />
-
+          {Detail?.reviews?.length === 0 ? null : (
+        <>
+          <FlatList
+            data={reviewsToShow}
+            renderItem={renderItem3}
+            keyExtractor={(item) => item.id?.toString()}
+            showsVerticalScrollIndicator={false}
+          />
+          {!showAllReviews && (
+            <TouchableOpacity onPress={() => setShowAllReviews(true)}>
               <Text style={styles.seeall}>See all Reviews</Text>
-            </>
+            </TouchableOpacity>
           )}
+        </>
+      )}
         </View>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() => Addtocart(Detail)}
           style={[styles.book, {marginTop: 10, marginBottom: 10}]}>
           <Text style={styles.btext1}>ADD TO CART</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </ScrollView>
       {/* <ButtomTab /> */}
     </View>

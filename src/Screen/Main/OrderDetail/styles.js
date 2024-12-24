@@ -59,6 +59,8 @@ export default StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     gap: 13,
+    // borderWidth:1,
+    marginTop:6
 
   },
   cardImg: {

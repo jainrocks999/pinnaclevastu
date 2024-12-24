@@ -631,7 +631,7 @@ const Remedies12SecondComponent = () => {
         <TouchableOpacity
           onPress={() => {
             isLoggedIn
-              ? navigation.navigate('AddressList',{item:cartDataList,ammount:calculateSubtotal()})
+              ? navigation.navigate('AddressList',{item:cartDataList,ammount:subtotal !== savings ? subtotal - savings : subtotal})
               : navigation.navigate('Login', {from: 'MyCart'});
           }}
           style={styles.book}>

@@ -1,4 +1,5 @@
 import {
+  Dimensions,
   FlatList,
   Image,
   ImageBackground,
@@ -29,14 +30,42 @@ import constants from '../../../Redux/constant/constants';
 const RemediesProductList = ({route}) => {
   const name1 = route?.params?.name1;
 
-  console.log('lnkslks', route.params.id);
+  
 
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [userType, setUserType] = useState('');
   const RemediesCategory = useSelector(state => state.home?.RemeiesCat?.data);
   const isLoading = useSelector(state => state.home?.loading);
+  const [search, setSearch] = useState('');
+  const [filteredDataSource, setFilteredDataSource] = useState(RemediesCategory);
+  const [masterDataSource, setMasterDataSource] = useState(RemediesCategory);
+  const win = Dimensions.get('window');
 
+  const searchFilterFunction = text => {
+    if (text) {
+      const newData = masterDataSource.filter(function (item) {
+        const itemData = `${item.name} ${item.price} `
+          ? `${item.name} ${item.price}`.toUpperCase()
+          : ''.toUpperCase();
+        const textData = text.toUpperCase();
+        return itemData.indexOf(textData) > -1;
+      });
+      setFilteredDataSource(newData);
+      setSearch(text);
+    } else {
+      setFilteredDataSource(masterDataSource);
+      setSearch(text);
+    }
+  };
+
+  const handleSearch = () => {
+    setSearch('');
+    setFilteredDataSource(masterDataSource);
+  };
+
+
+  
   useEffect(() => {
     getUserType();
   }, []);
@@ -218,6 +247,8 @@ const RemediesProductList = ({route}) => {
               placeholder="Search..."
               style={styles.searchInput}
               placeholderTextColor={colors.searchBarTextColor}
+              value={search}
+              onChangeText={val => searchFilterFunction(val)}
             />
           </View>
           <TouchableOpacity style={styles.filterBtn}>
@@ -225,7 +256,7 @@ const RemediesProductList = ({route}) => {
           </TouchableOpacity>
         </View>
         <FlatList
-          data={RemediesCategory}
+          data={filteredDataSource ? filteredDataSource :RemediesCategory}
           renderItem={renderItem}
           numColumns={2}
           keyExtractor={item => item.id}
