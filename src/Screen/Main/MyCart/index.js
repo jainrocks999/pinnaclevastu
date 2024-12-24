@@ -646,17 +646,14 @@ const Remedies12SecondComponent = () => {
             </View>
 
             <TouchableOpacity
-              onPress={() => {
-                isLoggedIn
-                  ? navigation.navigate('AddressList', {
-                      item: cartDataList,
-                      ammount: calculateSubtotal(),
-                    })
-                  : navigation.navigate('Login', {from: 'MyCart'});
-              }}
-              style={styles.book}>
-              <Text style={styles.btext1}>PLACE ORDER</Text>
-            </TouchableOpacity>
+          onPress={() => {
+            isLoggedIn
+              ? navigation.navigate('AddressList',{item:cartDataList,ammount:subtotal !== savings ? subtotal - savings : subtotal})
+              : navigation.navigate('Login', {from: 'MyCart'});
+          }}
+          style={styles.book}>
+          <Text style={styles.btext1}>PLACE ORDER</Text>
+        </TouchableOpacity>
           </View>
         </>
       ) : (

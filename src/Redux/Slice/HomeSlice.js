@@ -278,7 +278,7 @@ export const getCartDataApi = createAsyncThunk(
 export const addToCartApi = createAsyncThunk(
   'home/addToCart',
   async ({user_id, itemId, qty, user_type, token, url}, {rejectWithValue}) => {
-    console.log({user_id, itemId, qty, user_type, token, url}, 'sandeep fgjg');
+     console.log({user_id, itemId, qty, user_type, token, url},'sandeep fgjg')
     try {
       let data = {
         user_id: user_id,
@@ -300,8 +300,9 @@ export const addToCartApi = createAsyncThunk(
       const response = await axios.request(config);
       console.log(response.data.data, 'response.data Virendra dfgmkdflgkdflg');
       if (response?.data?.data?.status == 200) {
-        Toast.show(response?.data?.data.msg);
-      }
+       
+         Toast.show(response?.data?.data.msg);
+      } 
     } catch (error) {
       console.log('cart error ', error);
 
