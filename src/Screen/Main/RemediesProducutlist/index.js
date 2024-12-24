@@ -18,7 +18,7 @@ import {colors} from '../../../Component/colors';
 import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
 import {useDispatch, useSelector} from 'react-redux';
 import Imagepath from '../../../Component/Imagepath';
-import {useNavigation} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {addToCartApi, productDetail1} from '../../../Redux/Slice/HomeSlice';
 import Loader from '../../../Component/Loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -34,12 +34,81 @@ const RemediesProductList = ({route}) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [userType, setUserType] = useState('');
+  const [cartItemList, setCartItemList] = useState([]);
   const RemediesCategory = useSelector(state => state.home?.RemeiesCat?.data);
+  const cartDataList = useSelector(state => state?.home?.CartData);
   const isLoading = useSelector(state => state.home?.loading);
+  const focus = useIsFocused();
+
+  const [totalQuantity, setTotalQuantity] = useState(0);
+
+  // useEffect(() => {
+  //   const getUserType = async () => {
+  //     try {
+  //       const userStatus = await AsyncStorage.getItem('user_data');
+  //       const userData = JSON.parse(userStatus);
+  //       setUserType(userData?.user_type);
+
+  //       const cartData = await AsyncStorage.getItem('cartItems');
+  //       const parsedCartData = cartData ? JSON.parse(cartData) : [];
+
+  //       setCartItemList(parsedCartData);
+
+  //       let data = userType === undefined ? cartItemList : cartDataList;
+  //       const calculateTotalQuantity = data => {
+  //         const total = data.reduce((sum, item) => sum + (item?.qty || 0), 0);
+  //         setTotalQuantity(total);
+  //       };
+  //       calculateTotalQuantity(data);
+  //     } catch (error) {
+  //       console.log('error in user types:', error);
+  //     }
+  //   };
+  //   // console.log("useEffect run !")
+
+  //   getUserType();
+  // }, [focus]);
+
+  // console.log(userType, 'sandeep skdfpsdfsdlf');
 
   useEffect(() => {
+    const getUserType = async () => {
+      try {
+        // Get user data from AsyncStorage
+        const userStatus = await AsyncStorage.getItem('user_data');
+        const userData = userStatus ? JSON.parse(userStatus) : null;
+  
+        const userType = userData?.user_type;
+        setUserType(userType);
+  
+        // Get cart data from AsyncStorage
+        const cartData = await AsyncStorage.getItem('cartItems');
+        const parsedCartData = cartData ? JSON.parse(cartData) : [];
+  
+        setCartItemList(parsedCartData); // Set cart items
+  
+        // Determine which list to use for calculation
+        const data = userType ? cartDataList : parsedCartData;
+  
+        // Calculate total quantity
+        const total = data.reduce((sum, item) => sum + (item?.qty || 0), 0);
+        setTotalQuantity(total);
+      } catch (error) {
+        console.log('Error in fetching user types or cart data:', error);
+      } 
+    };
+  
+    // Call the async function
     getUserType();
-  }, []);
+  }, [focus, cartDataList]); // Include cartDataList in dependencies
+  
+
+  console.log(cartItemList, 'sandeep =');
+
+  // const totalQuantity = (userType===undefined ?  cartItemList:cartDataList).reduce(
+  //   (sum, item) => sum + (item?.qty || 0),
+  //   0,
+  // );
 
   const PRoductDeta = async item => {
     await dispatch(
@@ -49,13 +118,6 @@ const RemediesProductList = ({route}) => {
         navigation,
       }),
     );
-    //  navigation.navigate("ProductDetail")
-  };
-
-  const getUserType = async () => {
-    const userStatus = await AsyncStorage.getItem('user_data');
-    const userData = JSON.parse(userStatus);
-    setUserType(userData?.user_type);
   };
 
   const Addtocard = async item => {
@@ -76,18 +138,11 @@ const RemediesProductList = ({route}) => {
         );
       } else {
         const existingCart = await AsyncStorage.getItem('cartItems');
-        // console.log('virendra', existingCart);
-
         let cartItems = existingCart ? JSON.parse(existingCart) : [];
-
-        // const uniqueId = `${Date.now()}-${Math.random()
-        //   .toString(36)
-        //   .substr(2, 9)}`;
 
         const itemWithId = {
           ...item,
           qty: 1,
-          // uniqueId: uniqueId,
           addedAt: new Date().toISOString(),
         };
 
@@ -99,8 +154,6 @@ const RemediesProductList = ({route}) => {
           cartItems[existingItemIndex] = {
             ...cartItems[existingItemIndex],
             ...itemWithId,
-            // updatedQuantity:
-            // quantity: quantity,
           };
           Toast.show('Item is already added to cart ! ');
         } else {
@@ -108,7 +161,6 @@ const RemediesProductList = ({route}) => {
           Toast.show('Item added to cart successfully');
         }
         await AsyncStorage.setItem('cartItems', JSON.stringify(cartItems));
-        console.log('Item added to cart:', itemWithId);
       }
     } catch (error) {
       console.error('Error adding item to cart:', error);
@@ -132,7 +184,6 @@ const RemediesProductList = ({route}) => {
       <View style={styles.textContainer}>
         <Text style={[styles.third, styles.titleText]}>{item.name}</Text>
         <View style={styles.priceText}>
-     
           {userType &&
           (item?.sale_price < item?.price ||
             item?.student_price < item?.price ||
@@ -203,6 +254,9 @@ const RemediesProductList = ({route}) => {
           onPress={() => {
             navigation.navigate('Home', {screen: 'MyCart'});
           }}>
+          <View style={styles.itemCount}>
+            <Text style={styles.countText}>{totalQuantity}</Text>
+          </View>
           <Image
             style={styles.bagBtn}
             source={require('../../../assets/image/Group.png')}

@@ -174,9 +174,11 @@ export default StyleSheet.create({
     marginRight: 20,
   },
   bagBtn: {
+    // borderWidth:1,
+
     // height: wp(4),
     // width: wp(4),
     resizeMode: 'contain',
-    right: 15,
+    // right: 15,
   },
 });

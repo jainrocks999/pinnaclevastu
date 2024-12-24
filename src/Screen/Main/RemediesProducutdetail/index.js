@@ -22,11 +22,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-simple-toast';
 import {addToCartApi} from '../../../Redux/Slice/HomeSlice';
 import Imagepath from '../../../Component/Imagepath';
+import { DrawerContentScrollView } from '@react-navigation/drawer';
 
 const RemediesProductDetail = ({navigation}) => {
   const {width} = Dimensions.get('window');
   const Detail = useSelector(state => state.home?.RemeiesDetail?.data);
-  console.log(Detail);
+
   const newArray = [];
   (Detail?.image_data || []).forEach(item => {
     const updatedItem = {
@@ -52,6 +53,7 @@ const RemediesProductDetail = ({navigation}) => {
   const [checkedItems, setCheckedItems] = useState({});
   const [totalPrice, setTotalPrice] = useState(0);
 
+    
   useEffect(() => {
     if (Detail?.cross_sales) {
       // Initialize checkedItems with all items set to true
@@ -63,7 +65,7 @@ const RemediesProductDetail = ({navigation}) => {
       calculateTotalPrice(initialCheckedState); // Calculate initial total price
     }
     getUserType();
-  }, [Detail?.cross_sales]);
+  }, [Detail?.cross_sales,]);
 
   const getUserType = async () => {
     const userStatus = await AsyncStorage.getItem('user_data');
@@ -113,11 +115,12 @@ const RemediesProductDetail = ({navigation}) => {
   };
 
   const Addtocart = async item => {
+     console.log(item,"jogfdfg")
     try {
       const userStatus = await AsyncStorage.getItem('user_data');
       const userData = JSON.parse(userStatus);
 
-      console.log(item);
+      // console.log(item);
       if (userStatus) {
         await dispatch(
           addToCartApi({
@@ -346,7 +349,9 @@ const RemediesProductDetail = ({navigation}) => {
               ratingBackgroundColor={colors.lightGrey} // Unfilled star color
             />
           </View>
-          <TouchableOpacity style={styles.buttonstylefirst}>
+          <TouchableOpacity style={styles.buttonstylefirst}
+          onPress={()=>Addtocart(item)}
+          >
             <Text style={styles.buttonstyle}>Add to Cart</Text>
           </TouchableOpacity>
         </View>

@@ -278,7 +278,7 @@ export const getCartDataApi = createAsyncThunk(
 export const addToCartApi = createAsyncThunk(
   'home/addToCart',
   async ({user_id, itemId, qty, user_type, token, url}, {rejectWithValue}) => {
-     console.log({user_id, itemId, qty, user_type, token, url},'sandeep fgjg')
+    console.log({user_id, itemId, qty, user_type, token, url}, 'sandeep fgjg');
     try {
       let data = {
         user_id: user_id,
@@ -300,9 +300,8 @@ export const addToCartApi = createAsyncThunk(
       const response = await axios.request(config);
       console.log(response.data.data, 'response.data Virendra dfgmkdflgkdflg');
       if (response?.data?.data?.status == 200) {
-       
-         Toast.show(response?.data?.data.msg);
-      } 
+        Toast.show(response?.data?.data.msg);
+      }
     } catch (error) {
       console.log('cart error ', error);
 
@@ -382,6 +381,7 @@ const homeSlice = createSlice({
     Drawerdata: [],
     Cource: [],
     CourceDetailA: [],
+    // cartTotalQuantity: 0,
     CartData: [],
     likeProductList: [],
     loading: false,
@@ -391,6 +391,22 @@ const homeSlice = createSlice({
     clearError: state => {
       state.error = null;
     },
+
+    // totalCartQuantity: (state, action) => {
+    //   return {
+    //     ...state,
+    //     cartTotalQuantity: action.payload,
+    //   };
+    // },
+    // updateCartQuantity: (state, action) => {
+    //   return {
+    //     ...state,
+    //     cartTotalQuantity: action.payload.reduce(
+    //       (sum, item) => sum + (item?.qty || 0),
+    //       0,
+    //     ),
+    //   };
+    // },
   },
   extraReducers: builder => {
     builder
@@ -534,5 +550,12 @@ const homeSlice = createSlice({
 });
 
 export const {clearError} = homeSlice.actions;
+// export const {clearError, totalCartQuantity,updateCartQuantity} = homeSlice.actions;
 
 export default homeSlice.reducer;
+// const getallQuantity=async()=>{
+//   return async dispatch=>{
+//   const cartData=await AsyncStorage.getItem("cartItems")
+//   dispatch(totalCartQuantity(cartData.length))
+//   }
+// }

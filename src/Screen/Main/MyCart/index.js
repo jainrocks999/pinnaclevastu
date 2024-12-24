@@ -22,7 +22,9 @@ import {
   getCartDataApi,
   likedProductListApi,
   removeCartItemApi,
+  totalCartQuantity,
   updateCartDataApi,
+  updateCartQuantity,
 } from '../../../Redux/Slice/HomeSlice';
 import axios from 'axios';
 import constants from '../../../Redux/constant/constants';
@@ -37,24 +39,23 @@ const Remedies12SecondComponent = () => {
   const [cartItemList, setCartItemList] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const cartDataList = useSelector(state => state?.home?.CartData);
+  // const cartTotalQuantity = useSelector(state => state?.home?.cartTotalQuantity);
   const LikeItemList = useSelector(state => state?.home?.likeProductList);
   const addressData = useSelector(state => state.address?.getaData?.data);
   const defaultAddress = addressData?.find(ob => ob.is_default === 1);
 
   const [userType, setUserType] = useState('');
   const route = useRoute();
-  console.log(cartDataList, 'sandeep djfdkflsfsd');
 
   const fromScreen = route?.params?.from;
+
+  console.log("cartRun !!!")
 
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
         const userStatus = await AsyncStorage.getItem('user_data');
         const userData = JSON.parse(userStatus);
-
-        // console.log('virendra', userData);
-        // console.log('useEffect run sdldkfldmfsld');
 
         if (userStatus) {
           setUserType(userData.user_type);
@@ -110,6 +111,10 @@ const Remedies12SecondComponent = () => {
             url: 'products-collection',
           }),
         );
+
+        //  set cartItem Qutantity in redux state
+        //  dispatch(totalCartQuantity(totalQuantity))
+        //  console.log(cartTotalQuantity)
       } catch (error) {
         console.log('Error checking login status:', error);
       }
@@ -223,7 +228,7 @@ const Remedies12SecondComponent = () => {
   const increment = async item => {
     const userStatus = await AsyncStorage.getItem('user_data');
     const userData = JSON.parse(userStatus);
-    console.log(userStatus);
+
     if (userStatus) {
       await handleUpdateCartData(
         userData?.user_id,
@@ -243,6 +248,7 @@ const Remedies12SecondComponent = () => {
         );
         setCartItemList(updatedData);
         await AsyncStorage.setItem('cartItems', JSON.stringify(updatedData));
+        // dispatch(updateCartQuantity(isLoggedIn ? cartDataList : cartItemList))
       } catch (error) {
         console.log(error);
       }
@@ -273,6 +279,7 @@ const Remedies12SecondComponent = () => {
 
         setCartItemList(updatedData);
         await AsyncStorage.setItem('cartItems', JSON.stringify(updatedData));
+        // dispatch(updateCartQuantity(isLoggedIn ? cartDataList : cartItemList))
       } catch (error) {
         console.log(error);
       }
@@ -341,8 +348,11 @@ const Remedies12SecondComponent = () => {
 
   const {subtotal, savings} = calculateSubtotalAndSavings();
 
-  console.log(`Subtotal: ${subtotal}, Savings: ${savings}`);
- 
+  const totalQuantity = (isLoggedIn ? cartDataList : cartItemList).reduce(
+    (sum, item) => sum + (item?.qty || 0),
+    0,
+  );
+
   const data2 = [
     {
       id: '1',
@@ -418,7 +428,6 @@ const Remedies12SecondComponent = () => {
 
   const renderItem = ({item}) => (
     <View style={styles.viewinner}>
-      {console.log(item)}
       {isLoggedIn ? (
         <Image
           source={
@@ -515,7 +524,10 @@ const Remedies12SecondComponent = () => {
         </View>
         <TouchableOpacity
           onPress={() => navigation.navigate('Home', {screen: 'MyCart'})}
-          style={styles.bagIcon}>
+          style={styles.bagBtn}>
+          <View style={styles.itemCount}>
+            <Text style={styles.countText}>{totalQuantity}</Text>
+          </View>
           <Image source={require('../../../assets/image/Group.png')} />
         </TouchableOpacity>
       </View>
@@ -541,103 +553,127 @@ const Remedies12SecondComponent = () => {
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll}>
-        {isLoggedIn ? (
-          <View style={styles.viewDeliver}>
-            <View style={styles.toview}>
-              <Text style={styles.textDeliver}>Deliver To:</Text>
-              <Text style={styles.texttejash}>
-                {defaultAddress?.name}, {defaultAddress?.zip_code}
-              </Text>
-            </View>
-            <View style={styles.loremview}>
-              <Text style={styles.loremtext}>
-                {defaultAddress?.apartment}, {defaultAddress?.address}.{' '}
-                {defaultAddress?.city}, {defaultAddress?.state}...
-              </Text>
-              <TouchableOpacity
-                onPress={() => navigation.navigate('AddressList')}>
-                <Text style={styles.change}>Change</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        ) : null}
+      {(isLoggedIn ? cartDataList.length > 0 : cartItemList.length > 0) ? (
+        <>
+          <ScrollView contentContainerStyle={styles.scroll}>
+            {/* {console.log(cartDataList, 'sandeep sdmfdkjfds 1')}
+            {console.log(cartItemList, 'sandeep sdmfsdmflsdkfm')} */}
 
-        {/* {cartItemList?.length == 0 ? null : ( */}
-        {/* <Text style={[styles.viewinner1,styles.third,{textAlign:"center"}]}>Cart is Empty !</Text> */}
-        <FlatList
-          data={isLoggedIn ? cartDataList : cartItemList}
-          keyExtractor={item => item.id}
-          renderItem={renderItem}
-          contentContainerStyle={styles.viewinner1}
-        />
-        {/* )} */}
-
-        <View style={styles.main}>
-          <Text style={styles.header1}>You May Also Like</Text>
-          <FlatList
-            data={LikeItemList}
-            renderItem={renderItem2}
-            horizontal
-            keyExtractor={item => item?.id}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{marginBottom: 15}}
-          />
-        </View>
-      </ScrollView>
-      <View style={styles.subtotalsavingyview}>
-        <View style={styles.summaryview}>
-          <Text style={styles.subtotaltext1}>Price Summary</Text>
-        </View>
-
-        <View style={styles.horizontalLine} />
-
-        <View style={[styles.direction1, {marginBottom: -10}]}>
-          <Text style={styles.subtotaltext}>SubTotal</Text>
-          <View style={styles.rupees}>
-            {/* <FontAwesome name="rupee" size={12} color="#324356" /> */}
-            <Text style={styles.rupeestext}>₹ {subtotal}</Text>
-          </View>
-        </View>
-
-        {savings > 0 && subtotal !== savings ? (
-          <>
-            <View style={styles.direction1}>
-              <Text style={[styles.subtotaltext, {paddingBottom: 10}]}>
-                Saving:
-              </Text>
-              <View style={styles.rupees}>
-                <Text style={styles.rupeestext}>₹ {savings}</Text>
+            {isLoggedIn && defaultAddress ? (
+              <View style={styles.viewDeliver}>
+                <View style={styles.toview}>
+                  <Text style={styles.textDeliver}>Deliver To:</Text>
+                  <Text style={styles.texttejash}>
+                    {defaultAddress?.name}, {defaultAddress?.zip_code}
+                  </Text>
+                </View>
+                <View style={styles.loremview}>
+                  <Text style={styles.loremtext}>
+                    {defaultAddress?.apartment}, {defaultAddress?.address}.{' '}
+                    {defaultAddress?.city}, {defaultAddress?.state}...
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('AddressList')}>
+                    <Text style={styles.change}>Change</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
+            ) : null}
+
+            {/* {cartItemList?.length == 0 ? null : ( */}
+            {/* <Text style={[styles.viewinner1,styles.third,{textAlign:"center"}]}>Cart is Empty !</Text> */}
+            <FlatList
+              data={isLoggedIn ? cartDataList : cartItemList}
+              keyExtractor={item => item.id}
+              renderItem={renderItem}
+              contentContainerStyle={styles.viewinner1}
+            />
+            {/* )} */}
+
+            <View style={styles.main}>
+              <Text style={styles.header1}>You May Also Like</Text>
+              <FlatList
+                data={LikeItemList}
+                renderItem={renderItem2}
+                horizontal
+                keyExtractor={item => item?.id}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{marginBottom: 15}}
+              />
+            </View>
+          </ScrollView>
+          <View style={styles.subtotalsavingyview}>
+            <View style={styles.summaryview}>
+              <Text style={styles.subtotaltext1}>Price Summary</Text>
             </View>
 
             <View style={styles.horizontalLine} />
-          </>
-        ) : null}
 
-        <View style={styles.direction1}>
-          <Text style={[styles.subtotaltext1, {paddingBottom: 5}]}>
-            Grand Total :
-          </Text>
-          <View style={styles.rupees}>
-            {/* <FontAwesome name="rupee" size={12} color="#324356" /> */}
-            <Text style={styles.rupeestext}>
-              {' '}
-              ₹ {subtotal !== savings ? subtotal - savings : subtotal}
-            </Text>
+            <View style={[styles.direction1, {marginBottom: -10}]}>
+              <Text style={styles.subtotaltext}>SubTotal</Text>
+              <View style={styles.rupees}>
+                {/* <FontAwesome name="rupee" size={12} color="#324356" /> */}
+                <Text style={styles.rupeestext}>₹ {subtotal}</Text>
+              </View>
+            </View>
+
+            {savings > 0 && subtotal !== savings ? (
+              <>
+                <View style={styles.direction1}>
+                  <Text style={[styles.subtotaltext, {paddingBottom: 10}]}>
+                    Saving:
+                  </Text>
+                  <View style={styles.rupees}>
+                    <Text style={styles.rupeestext}>₹ {savings}</Text>
+                  </View>
+                </View>
+
+                <View style={styles.horizontalLine} />
+              </>
+            ) : null}
+
+            <View style={styles.direction1}>
+              <Text style={[styles.subtotaltext1, {paddingBottom: 5}]}>
+                Grand Total :
+              </Text>
+              <View style={styles.rupees}>
+                {/* <FontAwesome name="rupee" size={12} color="#324356" /> */}
+                <Text style={styles.rupeestext}>
+                  {' '}
+                  ₹ {subtotal !== savings ? subtotal - savings : subtotal}
+                </Text>
+              </View>
+            </View>
+
+            <TouchableOpacity
+              onPress={() => {
+                isLoggedIn
+                  ? navigation.navigate('AddressList', {
+                      item: cartDataList,
+                      ammount: calculateSubtotal(),
+                    })
+                  : navigation.navigate('Login', {from: 'MyCart'});
+              }}
+              style={styles.book}>
+              <Text style={styles.btext1}>PLACE ORDER</Text>
+            </TouchableOpacity>
           </View>
+        </>
+      ) : (
+        <View style={{flex: 1, justifyContent: 'center'}}>
+          <Image
+            source={require('../../../assets/image/continue_shopping.png')}
+            style={styles.continueShoppingImg}
+          />
+          <TouchableOpacity
+            onPress={() => {
+                navigation.navigate('Home1', {screen: 'Remedie12'})
+            }}
+            style={[styles.book, {width: '90%', marginHorizontal: 'auto'}]}>
+            <Text style={styles.btext1}>Continue Shopping</Text>
+          </TouchableOpacity>
         </View>
-
-        <TouchableOpacity
-          onPress={() => {
-            isLoggedIn
-              ? navigation.navigate('AddressList',{item:cartDataList,ammount:calculateSubtotal()})
-              : navigation.navigate('Login', {from: 'MyCart'});
-          }}
-          style={styles.book}>
-          <Text style={styles.btext1}>PLACE ORDER</Text>
-        </TouchableOpacity>
-      </View>
+      )}
     </View>
   );
 };

@@ -202,8 +202,28 @@ export default StyleSheet.create({
     marginRight: 20,
   },
   bagBtn: {
-    height: wp(4),
-    width: wp(4),
-    resizeMode: 'contain',
+    // height: wp(4),
+    // width: wp(4),
+    // marginTop:-5,
+    // resizeMode: 'contain',
+  },
+  itemCount: {
+    backgroundColor: '#EF6024',
+    borderRadius: 10,
+    zIndex: 1,
+    bottom: -10,
+    left: 7,
+    height: 13,
+    width: 13,
+    display:"flex",
+    justifyContent:"center",
+    alignItems:"center"
+    // paddingVertical:.5
+  },
+  countText: {
+    textAlign:"center",
+    fontFamily: 'Poppins-Regular',
+    color: colors.white,
+    fontSize: fontSize.Ten,
   },
 });

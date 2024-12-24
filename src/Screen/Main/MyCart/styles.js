@@ -9,7 +9,7 @@ import {colors} from '../../../Component/colors';
 export default StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F6F6F6",
+    backgroundColor: '#F6F6F6',
   },
   header: {
     flexDirection: 'row',
@@ -41,8 +41,7 @@ export default StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     // marginBottom: hp(1),
-    paddingTop:10,
-    
+    paddingTop: 10,
   },
   subtotalsavingyview: {
     paddingHorizontal: 10,
@@ -65,8 +64,8 @@ export default StyleSheet.create({
   },
   main: {
     // borderWidth:1,
-    backgroundColor:colors.white,
-    marginTop:hp(1),
+    backgroundColor: colors.white,
+    marginTop: hp(1),
     paddingHorizontal: 10,
   },
   rupees: {
@@ -106,10 +105,10 @@ export default StyleSheet.create({
     width: wp(40),
     borderRadius: 20,
     marginBottom: hp(2),
-    resizeMode:"contain"
+    resizeMode: 'contain',
   },
   textContainer: {
-    backgroundColor:colors.ordercolor,
+    backgroundColor: colors.ordercolor,
     paddingHorizontal: wp(2),
   },
   title: {
@@ -148,7 +147,7 @@ export default StyleSheet.create({
     marginBottom: hp(1),
     backgroundColor: colors.white,
     width: '100%',
-    elevation:5
+    elevation: 5,
   },
   image: {
     height: hp(15),
@@ -273,15 +272,15 @@ export default StyleSheet.create({
     width: wp(44.5),
     borderRadius: 10, // Border radius scaled with wp
     backgroundColor: colors.white,
-    borderWidth:0.5,
-    borderColor:colors.lightGrey,
+    borderWidth: 0.5,
+    borderColor: colors.lightGrey,
     // shadowColor: colors.black,
     // shadowOffset: { width: 0, height: wp(0.5) }, // Shadow offset with wp
     // shadowOpacity: 0.1,
     // shadowRadius: 10,
     elevation: 1,
     margin: 5,
-    overflow:"hidden"
+    overflow: 'hidden',
   },
   image: {
     width: '100%',
@@ -289,7 +288,7 @@ export default StyleSheet.create({
     borderRadius: 10,
   },
 
-   buttonstyle: {
+  buttonstyle: {
     color: colors.white,
     fontSize: fontSize.Twelve,
     fontFamily: 'Poppins-Regular',
@@ -315,15 +314,13 @@ export default StyleSheet.create({
   },
   buttonstylefirst: {
     backgroundColor: colors.orange,
-    width: "70%",
+    width: '70%',
     borderRadius: 10,
     height: wp(9),
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 10,
-  
   },
-
 
   direction: {
     marginLeft: 0,
@@ -345,15 +342,15 @@ export default StyleSheet.create({
 
   book: {
     backgroundColor: colors.orange,
-    justifyContent:"center",
+    justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
     borderRadius: 10,
     height: wp(13),
     marginTop: hp(2),
-    shadowColor: "#ad3803",
-    shadowOffset: {width: 0, height: 6}, 
-    shadowOpacity: 0.8, 
+    shadowColor: '#ad3803',
+    shadowOffset: {width: 0, height: 6},
+    shadowOpacity: 0.8,
     shadowRadius: 10,
 
     elevation: 8,
@@ -372,5 +369,31 @@ export default StyleSheet.create({
     width: wp(2.3),
     resizeMode: 'stretch',
     marginRight: 20,
+  },
+
+  continueShoppingImg: {
+    marginHorizontal: 'auto',
+    width: '70%',
+    resizeMode: 'contain',
+  },
+
+  itemCount: {
+    backgroundColor: '#EF6024',
+    borderRadius: 10,
+    zIndex: 1,
+    bottom: -10,
+    left: 7,
+    height: 13,
+    width: 13,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    // paddingVertical:.5
+  },
+  countText: {
+    textAlign: 'center',
+    fontFamily: 'Poppins-Regular',
+    color: colors.white,
+    fontSize: fontSize.Ten,
   },
 });
