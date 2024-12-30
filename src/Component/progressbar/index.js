@@ -1,92 +1,72 @@
-import { useNavigation } from '@react-navigation/native';
-import React, { useState, useEffect } from 'react';
-import { View, Animated, Dimensions, Easing, StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Animated, Dimensions, StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 const { width } = Dimensions.get('window');
 
 const AnimatedLine = () => {
-    const navigation = useNavigation();
-    const [lineWidth, setLineWidth] = useState(0);
-    const translateX = new Animated.Value(0); // Shared value for animation
+  const translateX = new Animated.Value(-width); 
 
-    useEffect(() => {
-        // Start the animation and loop it indefinitely
-        Animated.loop(
-            Animated.timing(translateX, {
-                toValue: 1,
-                duration: 100, // Adjust duration for speed (this controls how fast the line moves)
-                easing: Easing.linear,
-                useNativeDriver: true,
-            })
-        ).start();
-    }, []);
+  useEffect(() => {
+    // Start the continuous animation
+    Animated.loop(
+      Animated.timing(translateX, {
+        toValue: width, 
+        duration: 500,
+        useNativeDriver: true, 
+      })
+    ).start();
+  }, [translateX]);
 
-    const handleLayout = (event) => {
-        const { width } = event.nativeEvent.layout;
-        setLineWidth(width);
-    };
+  return (
+    <View style={styles.lineContainer}>
+      <Animated.View
+        style={[
+          styles.animatedLine,
+          {
+            transform: [
+              {
+                translateX: translateX.interpolate({
+                  inputRange: [0, width],
+                  outputRange: [-width, 1], 
+                }),
+              },
+            ],
+          },
+        ]}
+      >
+        <LinearGradient
+        //  colors={['#F5A623', '#32CD32', '#90ee90', '#F5A623']} // Gradient colors
+         colors={['#F5A623', '#32CD32', '#90ee90', '#F5A623']}
 
-    return (
-        <View>
-            <View
-                style={styles.container}
-                onLayout={handleLayout}
-            >
-                <View style={styles.fixedBackground} />
-
-                <Animated.View
-                    style={[
-                        styles.animatedView,
-                        {
-                            transform: [
-                                {
-                                    translateX: translateX.interpolate({
-                                        inputRange: [0, 1],
-                                        outputRange: [-lineWidth, width], // Keep moving from left to right
-                                    }),
-                                },
-                            ],
-                        },
-                    ]}
-                >
-                    <LinearGradient
-                        colors={['#F5A623', '#32CD32', '#90ee90', '#F5A623']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                        style={styles.gradient}
-                    />
-                </Animated.View>
-            </View>
-        </View>
-    );
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.gradient}
+        />
+      </Animated.View>
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        width: '100%',
-        height: 3,
-        overflow: 'hidden',
-        position: 'relative',
-    },
-    fixedBackground: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: '#F6A400',
-        borderRadius: 5,
-    },
-    animatedView: {
-        position: 'absolute',
-        height: '100%',
-        width: '100%', // Double the width to create the illusion of continuous movement
-    },
-    gradient: {
-        flex: 1,
-        borderRadius: 5,
-    },
+  lineContainer: {
+    
+       height: 3.5,
+    width: '150%',
+    borderRadius: 9,
+    backgroundColor: '#E5E2FF',
+    // backgroundColor:'#949494',
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  animatedLine: {
+    position: 'absolute',
+    height: '100%', 
+    width: width * 2, 
+  },
+  gradient: {
+    flex: 1, 
+  },
 });
 
 export default AnimatedLine;

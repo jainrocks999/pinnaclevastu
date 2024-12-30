@@ -153,7 +153,7 @@ const CourceListDownload = ({navigation}) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
           <Image
             style={styles.backBtn}
             source={require('../../../assets/drawer/Back1.png')}
@@ -177,7 +177,13 @@ const CourceListDownload = ({navigation}) => {
    
          <View style={styles.searchContainer}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Image source={require('../../../assets/image/SearchIcon.png')} />
+            <TouchableOpacity onPress={()=>console.log('khlkljh')
+            }
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+ <Image source={require('../../../assets/image/SearchIcon.png')} />
+            </TouchableOpacity>
+           
             <TextInput
               placeholder="Search..."
               style={styles.searchInput}

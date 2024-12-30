@@ -177,6 +177,7 @@ const Appointment = ({ navigation }) => {
         <View style={styles.headerview}>
           <TouchableOpacity
             style={{ height: 20, width: 30 }}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             // onPress={() =>
             //   navigation.reset({
             //     index: 0,

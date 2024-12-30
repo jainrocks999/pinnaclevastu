@@ -11,7 +11,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } fr
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 import { colors } from "../Component/colors";
 import { moderateScale } from "../Component/Meterscale";
-import TabBarButton from "../Component/TabBarButton";
+import TabBarButton from "../Component/TabBarbutton/TabBarButton";
 
 // Import SVG icons
 import Home from "../assets/svg/home.svg";
@@ -115,8 +115,8 @@ const TabBar = ({ state, descriptors, navigation }) => {
               bottom: 0,
               padding: 35,
               borderTopWidth: 3,
-              borderColor: '#f1651f',
-              // opacity: 0.9,
+              borderColor: '#FFFFFF',
+              
               backgroundColor: "rgba(173, 216, 230, 0.15)",
             },
           ]}
@@ -124,11 +124,8 @@ const TabBar = ({ state, descriptors, navigation }) => {
         {state.routes.map((route, index) => {
           const isFocused = state.index === index;
 
-
           const tabBarLabel =
             descriptors[route.key].options.tabBarLabel || route.name;
-
-
           const RenderIcon = Icon[route.name]
             ? Icon[route.name](isFocused)
             : null;
@@ -148,6 +145,7 @@ const TabBar = ({ state, descriptors, navigation }) => {
 
           return (
             <TabBarButton
+
               key={route.key}
               onPress={onPress}
               isFocused={isFocused}

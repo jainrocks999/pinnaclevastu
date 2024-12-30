@@ -13,8 +13,8 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
-import { fontSize } from '../Component/fontsize';
-import { colors } from '../Component/colors';
+import { fontSize } from '../fontsize/index';
+import { colors } from '../colors/index';
 const TabBarButton = ({
   onPress,
   isFocused,

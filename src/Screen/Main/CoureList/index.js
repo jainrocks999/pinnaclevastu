@@ -31,6 +31,7 @@ const CoureList = ({navigation}) => {
         //       routes: [{name: 'UserProfile'}],
         //     })}
          onPress={() => navigation.goBack()}
+         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
           <Image
             style={styles.backBtn}
@@ -45,7 +46,13 @@ const CoureList = ({navigation}) => {
       <ScrollView contentContainerStyle={{margin: 20, paddingBottom:heightPercent(8)}}>
         <View style={styles.searchContainer}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Image source={require('../../../assets/image/SearchIcon.png')} />
+
+            <TouchableOpacity
+             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+     <Image source={require('../../../assets/image/SearchIcon.png')} />
+            </TouchableOpacity>
+       
             <TextInput
               placeholder="Search..."
               style={styles.searchInput}

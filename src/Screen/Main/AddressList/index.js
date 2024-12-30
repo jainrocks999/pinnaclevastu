@@ -22,14 +22,16 @@ const DeliveryAddress = ({route}) => {
   const item=route?.params
   const  navigation =useNavigation();
   const isLoading=useSelector(state=>state.address.loading);
-  const addresstoget=useSelector(state=>state.address?.getaData?.data);
-  console.log('fkglkf',addresstoget);
-  
+  const addresstoget=useSelector(state=>state.address?.getaData);
+// console.log('fgfgjfg',addresstoget)
+
+  const [selectedId, setSelectedId] = useState(null);
   const [addresstoget1, setAddresstoget] = useState(addresstoget); // Address list
-  const [defaultAddress, setDefaultAddress] = useState(null); 
+  const [defaultAddress, setDefaultAddress] = useState(1); 
    const dispatch = useDispatch()
    const focus=useIsFocused();
  useEffect(()=>{
+  // setSelectedId(null);
  if(focus){
    AddressList();
  }
@@ -51,20 +53,27 @@ const DeliveryAddress = ({route}) => {
 
 
  useEffect(() => {
-  // Set initial default address
-  const defaultItem = addresstoget1?.find((item) => item?.is_default === 1);
-  setDefaultAddress(defaultItem);
-}, [addresstoget1]);
+  // Check for the default item in the address list
+  const defaultItem = addresstoget?.find((item) => item?.is_default == 1);
+  
+  if (defaultItem) {
+    setDefaultAddress(defaultItem); // Set the default address
+    setSelectedId(defaultItem.is_default); // Set the selected ID to the default item's ID
+  }
+}, [addresstoget]);
 
 const toggleDefaultAddress = (item) => {
  
-  const updatedAddresses = addresstoget1.map((addr) =>
-    addr.id === item.id
-      ? { ...addr, is_default: 1 }
-      : { ...addr, is_default: 0 }
-  );
-  setAddresstoget(updatedAddresses);
   setDefaultAddress(item);
+    setSelectedId(item?.is_default);
+
+  // const updatedAddresses = addresstoget.map((addr) =>
+  //   addr.id === item.id
+  //     ? { ...addr, is_default: 1 }
+  //     : { ...addr, is_default: 0 }
+  // );
+  // setAddresstoget(updatedAddresses);
+ 
   console.log('Default address saved locally:', item);
 };
 
@@ -109,12 +118,12 @@ const toggleDefaultAddress = (item) => {
           <Text style={styles.cardPhone}>{item.phone}</Text>
         </View>
       </View>
-    {  addresstoget1?.length==1?null:(
+    {/* {  addresstoget?.length==1?null:( */}
       <View style={styles.direction1}>
         <View style={styles.radioButtonWrapper}>
           <RadioButton
             value={item.id}
-            status={item.is_default==1 ? 'checked' : 'unchecked'}
+            status={selectedId==item?.is_default ? 'checked' : 'unchecked'}
             onPress={() => toggleDefaultAddress(item)}
             color={colors.Headertext}
             uncheckedColor={colors.light_gr}
@@ -124,7 +133,7 @@ const toggleDefaultAddress = (item) => {
           <Text style={styles.maketext}>{'Make this my default address'}</Text>
         </View>
       </View>
-    )}
+    {/* )} */}
     </View>
   );
 
@@ -132,7 +141,7 @@ const toggleDefaultAddress = (item) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerview}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
             <Image
               style={styles.backBtn}
               source={require('../../../assets/drawer/Back1.png')}
@@ -143,12 +152,20 @@ const toggleDefaultAddress = (item) => {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollview}>
-      {isLoading?<Loader/>:null}
-        <FlatList
-          data={addresstoget1==null? addresstoget:addresstoget1}
+      {/* {isLoading?<Loader/>:null} */}
+       {addresstoget?.length !=0?
+       
+       (<FlatList
+          data={addresstoget? addresstoget:[]}
           renderItem={renderItem}
           keyExtractor={item => item.id}
-        />
+        />):
+        (<View style={{}}>
+        <Text>
+          No Address Found
+        </Text>
+        </View>)
+      }
  
 
 

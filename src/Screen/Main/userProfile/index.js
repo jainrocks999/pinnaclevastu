@@ -78,7 +78,7 @@ useEffect(() => {
   ];
 
   const renderItem = ({item}) => (
-    <TouchableOpacity style={styles.actionItem}>
+    <TouchableOpacity  hitSlop={{top:10,bottom:10,left:10,right:10}}  style={styles.actionItem}>
       <View style={styles.actionContent}>
         <Image source={item.image} style={styles.actionIcon} />
         <Text style={styles.actionText}>{item.title}</Text>
@@ -97,7 +97,7 @@ useEffect(() => {
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backBtn}
-          onPress={() => navigation.goBack()}>
+          onPress={() => navigation.goBack()}  hitSlop={{top:10,bottom:10,left:10,right:10}}>
           <Image
             style={styles.backIcon}
             source={require('../../../assets/drawer/Back1.png')}
@@ -108,7 +108,7 @@ useEffect(() => {
           <Text style={styles.logoText}>My Profile</Text>
         </View>
 
-        <TouchableOpacity style={styles.settingsButton}>
+        <TouchableOpacity style={styles.settingsButton}  hitSlop={{top:10,bottom:10,left:10,right:10}}>
           <Image
             style={styles.settingsIcon}
             source={require('../../../assets/otherApp/shutdown.png')}
@@ -127,7 +127,7 @@ useEffect(() => {
           +91 123456789
         </Text>
         <TouchableOpacity
-          onPress={() => navigation.navigate('EditProfile')}
+          onPress={() => navigation.navigate('EditProfile')}  hitSlop={{top:10,bottom:10,left:10,right:10}}
           style={styles.editProfileButton}>
           <Text style={styles.editProfileText}>Edit My Profile</Text>
         </TouchableOpacity>
@@ -136,7 +136,8 @@ useEffect(() => {
       <ScrollView style={styles.scrollContent}>
         <View style={styles.statsSection}>
           <TouchableOpacity
-           onPress={()=>navigation.navigate( "Home1",{screen:'MyProfile',params:{screen:'MyOrder'}})}
+           onPress={()=>navigation.navigate( "Home1",{screen:'MyProfile',params:{screen:'MyOrder'}})} 
+           hitSlop={{top:10,bottom:10,left:10,right:10}}
             style={styles.statItem}>
             <Text style={styles.statValue}>25</Text>
             <View style={styles.statLabelRow}>
@@ -148,7 +149,7 @@ useEffect(() => {
 
           <TouchableOpacity
                     onPress={()=>navigation.navigate("Home1",{screen:"MyProfile",params:{screen:"CoureList"}})} 
-
+                    hitSlop={{top:10,bottom:10,left:10,right:10}}
             style={styles.statItem}>
             <Text style={styles.statValue}>10</Text>
             <View style={styles.statLabelRow}>
@@ -160,7 +161,9 @@ useEffect(() => {
 
           <TouchableOpacity
              onPress={()=>navigation.navigate("Home1",{screen:"MyProfile",params:{screen:"Appointment"}})}
-            style={styles.statItem}>
+          
+             hitSlop={{top:10,bottom:10,left:10,right:10}}
+          style={styles.statItem}>
             <Text style={styles.statValue}>5</Text>
             <View style={styles.statLabelRow}>
               <Text style={styles.statLabel}>{'Appointments >'}</Text>

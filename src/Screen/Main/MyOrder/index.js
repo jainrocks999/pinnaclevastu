@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -10,73 +10,68 @@ import {
   Dimensions,
   ScrollView,
 } from 'react-native';
-import { colors } from '../../../Component/colors';
-import { fontSize } from '../../../Component/fontsize';
+import {colors} from '../../../Component/colors';
+import {fontSize} from '../../../Component/fontsize';
 
 import styles from './styles';
-import { heightPercent } from '../../../Component/ResponsiveScreen/responsive';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { useDispatch, useSelector } from 'react-redux';
+import {heightPercent} from '../../../Component/ResponsiveScreen/responsive';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { orderlistapi } from '../../../Redux/Slice/orderSclice';
+import {orderDetail, orderlistapi} from '../../../Redux/Slice/orderSclice';
+import Imagepath from '../../../Component/Imagepath';
+import Loader from '../../../Component/Loader';
 
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 
 const MyOrder = () => {
-const navigation =useNavigation();
+  const navigation = useNavigation();
 
+  const product = useSelector(state => state?.order?.orderList1?.data);
+  const loading1 = useSelector(state => state?.order?.loading);
 
+  const focus = useIsFocused();
+  const dispatch = useDispatch();
 
-const product = useSelector(state => state?.order?.orderList1?.data);
-const loading1 = useSelector(state => state?.order?.loading);
-console.log('jkfdkjhfdj',product?.data);
+  useEffect(() => {
+    if (focus) {
+      apicall();
+    }
+  }, [focus]);
 
-const focus = useIsFocused();
-const dispatch = useDispatch();
+  const apicall = async () => {
+    try {
+      // Retrieve token and user_id from AsyncStorage
+      const token = await AsyncStorage.getItem('Token');
+      const userid = await AsyncStorage.getItem('user_id');
 
-useEffect(() => {
-  if (focus) {
-    apicall();
-  }
-}, [focus]);
+      if (!token || !userid) {
+        console.error('Token or User ID is missing.');
+        return;
+      }
 
-const apicall = async () => {
-  try {
-    // Retrieve token and user_id from AsyncStorage
+      await dispatch(
+        orderlistapi({id: userid, token: token, url: 'fetch-order'}),
+      );
+    } catch (error) {
+      console.error('Error in API call:', error);
+    }
+  };
+
+  const OrderDetails = async item => {
     const token = await AsyncStorage.getItem('Token');
     const userid = await AsyncStorage.getItem('user_id');
-
-    if (!token || !userid) {
-      console.error('Token or User ID is missing.');
-      return;
-    }
-
     await dispatch(
-      orderlistapi({id: userid, token: token, url: 'fetch-order'}),
+      orderDetail({
+        id: userid,
+        token: token,
+        url: 'fetch-order-details',
+        orderid: item.id,
+        code: item?.code,
+        navigation,
+      }),
     );
-  } catch (error) {
-    console.error('Error in API call:', error);
-  }
-};
-
-const OrderDetails = async item => {
-  const token = await AsyncStorage.getItem('Token');
-  const userid = await AsyncStorage.getItem('user_id');
-  await dispatch(
-    orderDetail({
-      id: userid,
-      token: token,
-      url: 'fetch-order-details',
-      orderid: item.id,
-      code: item?.code,
-      navigation,
-    }),
-  );
-};
-
-
-
-
+  };
 
   const [selectedTab, setSelectedTab] = useState('Remedies');
 
@@ -107,25 +102,39 @@ const OrderDetails = async item => {
     },
   ];
 
-  const renderOrderItem = ({ item }) => (
+  const renderOrderItem = ({item}) => (
     <View style={styles.orderCard}>
       <Text style={styles.orderNo}>Order No: {item.code}</Text>
 
       <View style={styles.horizontalSeparator} />
       <View style={styles.productContainer}>
-        <Image source={
-          
-          require('../../../assets/otherApp/order3.png')}
-        
-        style={styles.productImage} />
+        <Image
+          source={
+            item?.products?.[0]?.product_image
+              ? {uri: `${Imagepath.Path}${item?.products?.[0]?.product_image}`}
+              : require('../../../assets/otherApp/order3.png')
+          }
+          style={styles.productImage}
+        />
         <View style={styles.productDetails}>
-          <Text style={styles.productName}>{item.productName}</Text>
-          <Text style={styles.productQuantity}>Quantity: {item?.qty}</Text>
+          <Text style={styles.productName}>
+            {item?.products?.[0]?.product_name}
+          </Text>
+          <Text style={styles.productQuantity}>
+            Total Quantity:{' '}
+            {item?.products?.reduce(
+              (sum, product) => sum + (product.qty || 0),
+              0,
+            )}
+          </Text>
           <Text style={styles.productName}>Total: ₹ {item?.amount}</Text>
         </View>
       </View>
       <TouchableOpacity
-        onPress={() => navigation.navigate('OrderDetail')}
+        onPress={
+          () => OrderDetails(item)
+          // navigation.navigate('OrderDetail')
+        }
         style={styles.detailsButton}>
         <Text style={styles.detailsButtonText}>Details</Text>
       </TouchableOpacity>
@@ -137,12 +146,14 @@ const OrderDetails = async item => {
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() =>
-            // navigation.reset({
-            //   index: 0,
-            //   routes: [{name: 'UserProfile'}],
-            // })}
-           navigation.goBack()}
-          >
+            navigation.reset({
+              index: 0,
+              routes: [{name: 'UserProfile'}],
+            })
+          }
+          //  navigation.goBack()}
+
+          hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
           <Image
             style={styles.backBtn}
             source={require('../../../assets/drawer/Back1.png')}
@@ -151,18 +162,25 @@ const OrderDetails = async item => {
 
         <Text style={styles.logoText}>My Orders</Text>
       </View>
-
-      <ScrollView contentContainerStyle={{ flexGrow: 1,paddingBottom:heightPercent(10)}}>
+      {/* {loading1?<Loader/>:null} */}
+      <ScrollView
+        contentContainerStyle={{flexGrow: 1, paddingBottom: heightPercent(10)}}>
         <View style={styles.searchContainer}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Image source={require('../../../assets/image/SearchIcon.png')} />
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <TouchableOpacity
+              hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+              <Image source={require('../../../assets/image/SearchIcon.png')} />
+            </TouchableOpacity>
+
             <TextInput
               placeholder="Search..."
               style={styles.searchInput}
               placeholderTextColor={colors.searchBarTextColor}
             />
           </View>
-          <TouchableOpacity style={styles.filterBtn}>
+          <TouchableOpacity
+            style={styles.filterBtn}
+            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
             <Image source={require('../../../assets/image/Vector.png')} />
           </TouchableOpacity>
         </View>
@@ -188,17 +206,14 @@ const OrderDetails = async item => {
         </View>
 
         <FlatList
-          data={product?.data}
+          data={product}
           keyExtractor={item => item.id}
           renderItem={renderOrderItem}
           contentContainerStyle={styles.ordersList}
         />
       </ScrollView>
-  
     </View>
   );
 };
 
 export default MyOrder;
-
-

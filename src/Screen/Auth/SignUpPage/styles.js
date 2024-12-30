@@ -54,6 +54,20 @@ export default StyleSheet.create({
     borderWidth: 0.5,
     borderColor: colors.lightGrey,
   },
+
+  selectedText: {
+    fontSize: fontSize.Sixteen,
+    fontFamily: 'Poppins-Regular',
+    color: colors.heading,
+  },
+  itemText: {
+    fontSize: fontSize.Sixteen,
+    fontFamily: 'Poppins-Regular',
+    color: colors.heading,
+  },
+
+
+
   input1: {
     // height: '100%',
     width: '60%',

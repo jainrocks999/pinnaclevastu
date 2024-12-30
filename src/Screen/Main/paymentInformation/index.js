@@ -14,63 +14,106 @@ import styles from './styles';
 import {colors} from '../../../Component/colors';
 import UserAddress from '../../../Component/userAddress/userAddress';
 import CourseInfoCard from '../../../Component/CourseInfoCard/CourseInfoCard';
-
-import CustomRadioButton from '../../../Component/RadioButton';
-import {fontSize} from '../../../Component/fontsize';
+import Toast from 'react-native-simple-toast';
 import {RadioButton} from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import constants from '../../../Redux/constant/constants';
 import axios from 'axios';
+import Loader from '../../../Component/Loader';
+import { shipmethod } from '../../../Redux/Slice/orderSclice';
+import { useDispatch, useSelector } from 'react-redux';
 
 const ResidentalScreen = ({route}) => {
   const nav = route.params;
- console.log('virerndrrfr',nav?.data?.item);
- 
 const navigation=useNavigation();
-
+const ship = useSelector(state => state?.order?.shipm?.shipping_method);
+console.log('fkjfgjkfgkf ,fifgigi',ship);
+const dispatch=useDispatch();
   const [radioActive, setRadioActive] = useState('');
-  const [loading,setLoading] =useState(false);
-
+  const [loading1,setLoading] =useState(false);
+  const [userType, setUserType] = useState('');
   const [totals, setTotals] = useState({ totalTaxAmount: '', totalAmount: '',totalPriceOnly:'' });
+  const amount = (parseFloat(totals?.totalAmount)) + (parseFloat(ship?.price));
 
-  // Function to calculate totals dynamically
-  const calculateTotals = (productList) => {
-    let totalTaxAmount = 0;
-    let totalAmount = 0;
-    let totalPriceOnly = 0; // New variable to store the total of all prices (price * qty)
+  console.log('dnslkns',amount,totals.totalAmount,ship?.price);
   
-    productList.forEach((product) => {
-      const { price, qty, option } = product;
-      const taxRate = option.taxRate || 0; // Default tax rate to 0 if not provided
-  
-      const itemPrice = price * qty; // Calculate item price only
-      const taxAmount = (itemPrice * taxRate) / 100; // Calculate tax for this product
-      const totalProductAmount = itemPrice + taxAmount; // Total amount for this product
-  
-      // Add to totals
-      totalTaxAmount += taxAmount;
-      totalAmount += totalProductAmount;
-      totalPriceOnly += itemPrice; // Add to the total price
-    });
-  
-    return {
-      totalTaxAmount: totalTaxAmount.toFixed(2),
-      totalAmount: totalAmount.toFixed(2),
-      totalPriceOnly: totalPriceOnly.toFixed(2), // Include the new total in the returned object
-    };
+ 
+  const getItems = async () => {
+    const token = await AsyncStorage.getItem('Token');
+    const userid = await AsyncStorage.getItem('user_id');
+    dispatch(
+    await  shipmethod({
+        url: 'fetch-shipment-method',
+        token: token,
+        user_id: userid,
+      }),
+    );
   };
+const calculateTotals = (productList, userType) => {
+  let totalTaxAmount = 0;
+  let totalAmount = 0;
+  let totalPriceOnly = 0;
+
+  productList.forEach((product) => {
+    const { sale_price, student_price, franchise_price, price, qty, option ,tax_amount} = product;
+    const taxRate = option.taxRate || 0;
+
+    const selectedPrice =
+      userType === 'customers' && sale_price
+        ? sale_price
+        : userType === 'student' && student_price
+        ? student_price
+        : userType === 'franchise' && franchise_price
+        ? franchise_price
+        : price;
+
+    const itemPrice = selectedPrice * qty;
+    const taxAmount = parseFloat(tax_amount);
+    const totalProductAmount = itemPrice + taxAmount;
+
+    totalTaxAmount += taxAmount;
+    totalAmount += totalProductAmount;
+    totalPriceOnly += itemPrice;
+  });
+
+  return {
+    totalTaxAmount: totalTaxAmount.toFixed(2),
+    totalAmount: totalAmount.toFixed(2),
+    totalPriceOnly: totalPriceOnly.toFixed(2),
+  };
+};
+
+// Fetch user type and calculate totals
+useEffect(() => {
+  setTotals('');
   
-  // Calculate totals whenever the products array changes
-  useEffect(() => {
-    if (nav?.data?.item && nav?.data?.item?.length > 0) {
-      setTotals(calculateTotals(nav?.data?.item));
-    }
-  }, [nav?.data?.item]);
+  const usercheck = async () => {
+    const userStatus = await AsyncStorage.getItem('user_data');
+    const userData = JSON.parse(userStatus);
+    setUserType(userData?.user_type || ''); // Handle null/undefined user type
+  };
+
+  usercheck();
+}, []);
+
+useEffect(() => {
+  getItems();
+  if (userType && nav?.data?.item?.length > 0) {
+    const calculatedTotals = calculateTotals(nav?.data?.item, userType);
+    
+    setTotals(calculatedTotals);
+  }
+}, [nav?.data?.item, userType]);
+  
   const data = {
-    shipping_option: '2',
+    shipping_option: ship?.shipping_method_id??'1',
     shipping_method: 'default',
-    shipping_amount: '0',
+    // shipping_method: ship?.name  ?? 'defalut',
+    shipping_amount: ship?.price??'',
+    shipping_type:"",
+    is_available_shipping:'1',
+    transaction_id: '79896585966',
     coupon_code: '',
     tax_amount: totals?.totalTaxAmount,
     sub_amount: totals?.totalPriceOnly,
@@ -87,7 +130,7 @@ const navigation=useNavigation();
       city: nav?.adress?.city ?? '',
       address:  nav?.adress?.address ?? '',
     },
-    amount: totals?.totalAmount,
+    amount: amount,
     currency: 'IND',
     customer_id:  nav?.adress?.customer_id,
     customer_type: 'Botble\\Ecommerce\\Models\\Customer',
@@ -102,7 +145,17 @@ const navigation=useNavigation();
     },
     user_id: nav?.adress?.customer_id,
     rowid:nav?.data?.item?.[0]?.rowid ,
-    transaction_id: '79896585966',
+     billing_status: nav?.adress?.billing_status??'',
+     billingAddress: {
+      // address_id:  nav?.adress?.id ?? '',
+      name: nav?.adress?.billing_address?.name ?? '',
+      email: nav?.adress?.billing_address?.email ?? '',
+      phone:  nav?.adress?.billing_address?.phone ?? '',
+      country:  nav?.adress?.billing_address?.country ?? '',
+      state:  nav?.adress?.billing_address?.state ?? '',
+      city:nav?.adress?.billing_address?.city ?? '',
+      address:  nav?.adress?.billing_address?.address ?? '',
+    },
   };
 
   const data5 = {
@@ -125,11 +178,11 @@ const navigation=useNavigation();
       city: nav?.adress?.city ?? '',
       address: nav?.adress?.address ?? '',
     },
-    amount: Number(nav?.data?.ammount) + Number(0),
+    amount: Number(nav?.data?.ammount) ,
     currency: 'IND',
     customer_id: nav?.adress?.customer_id,
     customer_type: 'Botble\\Ecommerce\\Models\\Customer',
-    payment_method: radioActive == 1 ? 'COD' : '',
+    payment_method: radioActive == 1 ? 'cod' : '',
     payment_status: 'pending',
     description: 'testing perpose',
     tax_information: {
@@ -148,7 +201,7 @@ const navigation=useNavigation();
       // Convert the dynamic object to a JSO stringN
       const jsonData = JSON.stringify(data);
       const token = await AsyncStorage.getItem('Token');
-      console.log('hghghh', jsonData);
+      console.log('create order request ', jsonData);
 
       let config = {
         method: 'post',
@@ -167,7 +220,11 @@ const navigation=useNavigation();
       if (response.data.status == 200) {
         setLoading(false);
         Toast.show(response.data.msg);
-        // navigation.navigate('Ordersucces');
+        navigation.navigate('Thankyou',{order:response?.data});
+      }
+      else{
+        setLoading(false);
+        Toast.show(response.data.msg);
       }
     } catch (error) {
       setLoading(false);
@@ -212,7 +269,20 @@ const navigation=useNavigation();
           {item.name}
         </Text>
         <Text style={[styles.third2, item.isBold && { fontWeight: 'bold' }]}>
-        ₹ {item.price?.toFixed(2)}
+
+
+        ₹  {
+                userType === 'customers' && item?.sale_price
+                  ? item?.sale_price
+                  : userType === 'student' && item?.student_price
+                  ? item?.student_price
+                  : userType === 'franchise' && item?.franchise_price
+                  ? item?.franchise_price
+                  : item?.price /* Default case when userType is null or undefined */
+              }
+
+       
+        {/* {item.price?.toFixed(2)} */}
         </Text>
       </View>
     );
@@ -226,7 +296,10 @@ const navigation=useNavigation();
       {/* Header */}
       <View style={styles.header}>
       <TouchableOpacity
-            onPress={() => navigation.goBack()}>
+            onPress={() => navigation.goBack()}
+            
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
             <Image
               style={styles.backBtn}
               source={require('../../../assets/drawer/Back1.png')}
@@ -237,7 +310,7 @@ const navigation=useNavigation();
           <Text style={styles.logoText}>Payment Information</Text>
         </View>
       </View>
-
+{loading1?<Loader/>:null}
       <ScrollView contentContainerStyle={styles.servicesContainer}>
         {nav?.data1 === 'Remedies' && (
           <View>
@@ -256,19 +329,28 @@ const navigation=useNavigation();
     keyExtractor={(item) => item.id?.toString()} // Ensure id is a string
     renderItem={renderItem}
   />
+    <View
+            style={[
+              styles.card45,
+              styles.borderBottom,
+              {paddingTop: 0, paddingBottom: 5},
+            ]}>
+            <Text style={styles.third2}>{ship?.name}</Text>
+            <Text style={[styles.third2]}>₹ {ship?.price}</Text>
+          </View>
       <View
             style={[
               styles.card45,
               styles.borderBottom,
               {paddingTop: 0, paddingBottom: 5},
             ]}>
-            <Text style={styles.third2}>{'TEXT'}</Text>
+            <Text style={styles.third2}>{'Tax'}</Text>
             <Text style={[styles.third2]}>₹ {totals?.totalTaxAmount}</Text>
           </View>
 
           <View style={styles.card45}>
             <Text style={styles.third3}>{'Total Payable Amount'}</Text>
-            <Text style={[styles.third2]}>₹ {totals?.totalAmount}</Text>
+            <Text style={[styles.third2]}>₹ {amount}</Text>
           </View>
     </View>
 
@@ -365,13 +447,13 @@ const navigation=useNavigation();
               style={styles.otherIcons}
               source={require('../../../assets/otherApp/paytm2.png')}
             /> */}
-            <Text style={styles.otherIconText}>Cash on Deleviry</Text>
+            <Text style={styles.otherIconText}>Cash on Delivery</Text>
 
             <View style={styles.radioBtnContainer}>
             <RadioButton
-                value="COD"
-                status={radioActive === 'COD' ? 'checked' : 'unchecked'}
-                onPress={() => setRadioActive('COD')}
+                value="cod"
+                status={radioActive === 'cod' ? 'checked' : 'unchecked'}
+                onPress={() => setRadioActive('cod')}
                 color="#009FDF"
                 uncheckedColor="#B7B7B7"
                 style={styles.radio}
@@ -445,7 +527,56 @@ const navigation=useNavigation();
           />
         </Text>
 
+
         <TouchableOpacity
+      onPress={() => {
+        if (radioActive) {
+          createbyord();
+          // navigation.navigate('Succes');
+        }
+      }}
+      disabled={!radioActive} // Disable the button if COD is not active
+      style={[
+        styles.book,
+        {
+          backgroundColor: radioActive
+            ? nav?.data1 === 'Remedies'
+              ? colors.orange
+              : colors.lightGrey
+            : nav?.data1 === 'Remedies'
+            ? colors.lightGrey
+            : colors.orange, // Opposite color logic
+          shadowColor: radioActive
+            ? nav?.data1 === 'Remedies'
+              ? '#ad3803'
+              : 'black'
+            : nav?.data1 === 'Remedies'
+            ? 'black'
+            : '#ad3803', // Opposite shadow color
+        },
+      ]}
+    >
+      <Text
+        style={[
+          styles.btext1,
+          // {
+          //   color: radioActive
+          //     ? nav?.data1 === 'Remedies'
+          //       ? 'white'
+          //       : 'black'
+          //     : nav?.data1 === 'Remedies'
+          //     ? 'black'
+          //     : 'white', // Opposite text color
+          // },
+        ]}
+      >
+        PROCEED TO PAY
+      </Text>
+    </TouchableOpacity>
+
+
+
+        {/* <TouchableOpacity
           onPress={() =>createbyord()
             //  navigation.navigate('Succes')
             }
@@ -459,7 +590,7 @@ const navigation=useNavigation();
             },
           ]}>
           <Text style={styles.btext1}>PROCEED TO PAY</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </ScrollView>
   
     </View>

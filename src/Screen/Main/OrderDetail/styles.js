@@ -59,6 +59,18 @@ export default StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     gap: 13,
+  //  borderWidth:1,
+    marginTop:6,
+    // borderWidth: 1,
+    borderRadius:10,
+    // borderColor: '#D8E3E980',
+    // shadowColor: '#bdc3c7',
+    // shadowOffset: {width: 0, height: 1},
+    // shadowOpacity: 0.5,
+    // shadowRadius: 12,
+    //  elevation: 0.3,
+    // paddingHorizontal: 15,
+    // paddingVertical:20
 
   },
   cardImg: {

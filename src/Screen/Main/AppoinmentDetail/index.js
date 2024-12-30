@@ -19,7 +19,9 @@ const AppointmentDetails = ({ navigation }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerView}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity onPress={() => navigation.goBack()}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
             <Image
               style={styles.backBtn}
               source={require('../../../assets/drawer/Back1.png')}

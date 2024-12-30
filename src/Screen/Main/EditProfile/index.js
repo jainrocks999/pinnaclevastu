@@ -211,7 +211,10 @@ const EditProfile = () => {
         <TouchableOpacity onPress={() => 
           
           navigation.goBack()
-          }>
+          }
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          
+          >
           <Image
             style={styles.backBtn}
             source={require('../../../assets/drawer/Back1.png')}

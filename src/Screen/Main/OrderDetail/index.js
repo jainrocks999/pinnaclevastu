@@ -1,11 +1,28 @@
-import {View, Text, TouchableOpacity, ScrollView, Image} from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+  FlatList,
+  TextInput,
+} from 'react-native';
 import React, {useState} from 'react';
 import styles from './styles';
 import {Dropdown} from 'react-native-element-dropdown';
 import StepIndicator from 'react-native-step-indicator';
 
-import {heightPercent, widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
-import { fontSize } from '../../../Component/fontsize';
+import {
+  heightPercent,
+  widthPrecent as wp,
+} from '../../../Component/ResponsiveScreen/responsive';
+import {fontSize} from '../../../Component/fontsize';
+import {useNavigation} from '@react-navigation/native';
+import {useDispatch, useSelector} from 'react-redux';
+import Imagepath from '../../../Component/Imagepath';
+import Collapsible from 'react-native-collapsible';
+import { cancelorders, orderDetail } from '../../../Redux/Slice/orderSclice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const labels = [
   'Order Received',
@@ -33,10 +50,79 @@ const customStyles = {
   currentStepLabelColor: '#02A883',
 };
 
-const OrderDetail = ({navigation}) => {
-  const [currentPosition, setCurrentPosition] = useState(4);
+const OrderDetail = () => {
+  const navigation = useNavigation();
+  const data2 = useSelector(state => state?.order?.orderD);
+  const loading1 = useSelector(state => state?.order?.loading);
+  const [visible, setVisible] = useState(false);
+  const [reason, setReason] = useState('');
+  const dispatch=useDispatch();
+  const [currentPosition, setCurrentPosition] = useState(1);
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isCollapsed1, setIsCollapsed1] = useState(true);
+  const toggleCollapse = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+  const toggleCollapse1 = () => {
+    setIsCollapsed1(!isCollapsed1);
+  };
+  const cancelorder = async () => {
+    const token = await AsyncStorage.getItem('Token');
+    const userid = await AsyncStorage.getItem('user_id');
+    let data = {
+      user_id: userid,
+      order_id: JSON.stringify(data2.id),
+      order_number: data2.code,
+      description: reason,
+    };
+
+    // setVisible(false);
+
+    await dispatch(
+      cancelorders({
+        token: token,
+        url: 'cancel-customer-order',
+        data1: data,
+        navigation,
+      }),
+    );
+    OrderDetails();
+  };
+
+  const OrderDetails = async () => {
+    const token = await AsyncStorage.getItem('Token');
+    const userid = await AsyncStorage.getItem('user_id');
+    await dispatch(
+      orderDetail({
+        id: userid,
+        token: token,
+        url: 'fetch-order-details',
+        orderid: JSON.stringify(data2.id),
+        code: data2.code,
+        navigation,
+      }),
+    );
+  };
+
+
+
+
+
+
+  const getdata = qty => {
+    let value = {label: '1', value: '1'};
+    let array1 = [value];
+    if (qty == 1) {
+      return array1;
+    }
+    let array = [];
+    for (let i = 1; i <= qty; i++) {
+      array.push({label: i.toString(), value: i.toString()});
+    }
+    return array;
+  };
 
   const data = [
     {label: '1', value: '1'},
@@ -53,11 +139,80 @@ const OrderDetail = ({navigation}) => {
   //   setCurrentPosition(position);
   // };
 
+  const renderItem = ({item}) => (
+    <View style={styles.card}>
+      <Image
+        style={styles.cardImg}
+        source={
+          item?.product_image
+            ? {uri: `${Imagepath.Path}${item?.product_image}`}
+            : require('../../../assets/otherApp/itemImg.png')
+        }
+      />
+      <View style={styles.cardInfo}>
+        <Text style={[styles.productName, {marginBottom: 10}]}>
+          {item.product_name}
+        </Text>
+
+        <View style={styles.quantitySection}>
+          <Text style={styles.productName}>Quantity:</Text>
+
+          <Text style={styles.productQuantity}>{item?.qty}</Text>
+          {/* <Dropdown
+            style={[styles.dropdown, isFocus]}
+            selectedTextStyle={styles.productQuantity}
+            data={getdata(parseInt(item?.qty))}
+            maxHeight={200}
+            labelField="label"
+            valueField="value"
+            itemContainerStyle={{marginBottom: -20}}
+            placeholder={value ? value : item?.qty}
+            value={item?.qty}
+            onFocus={() => setIsFocus(true)}
+            onBlur={() => setIsFocus(false)}
+            onChange={item => {
+              setValue(item.value);
+              setIsFocus(false);
+            }}
+          /> */}
+        </View>
+
+        <Text style={styles.productName}>Total: ₹ {item?.price}</Text>
+        <TouchableOpacity onPress={()=>  visible ? cancelorder() : setVisible(true)} >
+          <Text style={styles.cancleBtn}>Cancel</Text>
+        </TouchableOpacity>
+        {visible && (
+        <View style={styles.reasonContainer}>
+          <Text style={styles.label}>Reason for Cancellation:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your reason here"
+            value={reason}
+            onChangeText={(text)=>setReason(text)}
+          />
+        </View>
+      )}
+=
+      </View>
+    </View>
+  );
+  const getCurrentPosition = () => {
+    const position = data2?.shipment?.shipment_status;
+    if (position == 'pending') return 0;
+    if (position == 'approved') return 1;
+    if (position == 'arrange_shipment') return 2;
+    if (position == 'ready_to_be_shipped_out') return 3;
+    if (position == 'delivered') return 5;
+    if (position == 'not_delivered') return 4;
+    if (position == 'canceled') return 7;
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerRow}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity onPress={() => navigation.goBack()} 
+             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
             <Image
               style={styles.backBtn}
               source={require('../../../assets/drawer/Back1.png')}
@@ -65,7 +220,7 @@ const OrderDetail = ({navigation}) => {
           </TouchableOpacity>
           <Text style={styles.logoText}>Orders detail</Text>
         </View>
-        <Text style={styles.logoText}>Order No: IN324576</Text>
+        <Text style={styles.logoText}>{`Order No: ${data2?.code}`}</Text>
       </View>
 
       <ScrollView
@@ -73,10 +228,10 @@ const OrderDetail = ({navigation}) => {
           paddingHorizontal: 15,
           paddingVertical: 10,
           gap: 10,
-          paddingBottom:heightPercent(10)
+          paddingBottom: heightPercent(10),
         }}>
         <View style={styles.section}>
-          {currentPosition >= 1 ? (
+          {getCurrentPosition() >= 7 ? (
             <View style={styles.OrderstatusMsgContainer}>
               <Image
                 style={styles.cancleOrderImg}
@@ -85,16 +240,23 @@ const OrderDetail = ({navigation}) => {
               <Text style={styles.StatusMsgText}>
                 <Text
                   style={{
-                    color: currentPosition !== 4 ? '#FF0000' : '#02A883',
+                    color: getCurrentPosition() == 7 ? '#FF0000' : '#02A883',
                   }}>
-                  {currentPosition !== 4 ? 'CANCELLED ' : 'DELIVERED '}
+                  {getCurrentPosition() == 7 ? 'CANCELLED ' : 'DELIVERED '}
                 </Text>
                 on 20 Nov 2024
               </Text>
             </View>
           ) : null}
 
-          <View style={styles.card}>
+          <FlatList
+            data={data2?.products}
+            keyExtractor={item => item.id.toString()}
+            renderItem={renderItem}
+            contentContainerStyle={styles.listContainer}
+          />
+
+          {/* <View style={styles.card}>
             <Image
               style={styles.cardImg}
               source={require('../../../assets/otherApp/itemImg.png')}
@@ -132,7 +294,7 @@ const OrderDetail = ({navigation}) => {
                 <Text style={styles.cancleBtn}>Cancel</Text>
               </TouchableOpacity>
             </View>
-          </View>
+          </View> */}
         </View>
 
         <View style={styles.OrderTrackcontainer}>
@@ -140,18 +302,18 @@ const OrderDetail = ({navigation}) => {
 
           <StepIndicator
             customStyles={customStyles}
-            currentPosition={currentPosition}
+            currentPosition={getCurrentPosition()}
             direction="vertical"
             labels={labels}
             renderStepIndicator={({position}) => (
               <View
                 style={[
                   styles.stepCircle,
-                  position < currentPosition && styles.activeStepCircle,
-                  position === currentPosition && styles.activeStepCircle,
+                  position < getCurrentPosition() && styles.activeStepCircle,
+                  position === getCurrentPosition() && styles.activeStepCircle,
                 ]}>
                 {/* Checkmark Icon for finished steps */}
-                {position === currentPosition && position === 4 && (
+                {position === getCurrentPosition() && position === 4 && (
                   <Image
                     source={require('../../../assets/otherApp/checkedIcon.png')}
                     style={styles.checkedIcon}
@@ -167,9 +329,9 @@ const OrderDetail = ({navigation}) => {
                     fontSize: customStyles.labelSize,
                     // fontFamily: 'YourCustomFontFamily',
                     color:
-                      position < currentPosition
+                      position < getCurrentPosition()
                         ? customStyles.finishedStepLabelColor
-                        : position === currentPosition
+                        : position == getCurrentPosition()
                         ? customStyles.currentStepLabelColor
                         : customStyles.unfinishedStepLabelColor,
                   },
@@ -200,27 +362,30 @@ const OrderDetail = ({navigation}) => {
           <View
             style={[
               styles.listRow,
-              {borderTopWidth: 1, borderColor: '#DFE7EF',
-                marginBottom:-10
-              },
+              {borderTopWidth: 1, borderColor: '#DFE7EF', marginBottom: -10},
             ]}>
             <Text style={styles.rowLabel}>Subtotal</Text>
-            <Text style={styles.rowLabel}>₹1450.00</Text>
+            <Text style={styles.rowLabel}>{`₹ ${data2?.sub_total}`}</Text>
           </View>
           <View
             style={[
               styles.listRow,
               {borderBottomWidth: 1, borderColor: '#DFE7EF'},
             ]}>
-            <Text style={styles.rowLabel}>Shipping</Text>
-            <Text style={styles.rowLabel}>Free Delivery</Text>
+            <Text style={styles.rowLabel}>Shipping charges</Text>
+            <Text style={styles.rowLabel}>{`₹ ${data2?.shipping_amount}`}</Text>
           </View>
 
-          <View style={[styles.listRow, {marginVertical: 5}]}>
+          <View
+            style={[
+              styles.listRow,
+              
+            ]}>
             <Text style={styles.TaxText}>
-              GST <Text style={{fontSize: fontSize.Thirteen}}>(3.0%)</Text>
+              Tax
+              {/* <Text style={{fontSize: fontSize.Thirteen}}>(3.0%)</Text> */}
             </Text>
-            <Text style={styles.rowLabel}>₹50.00</Text>
+            <Text style={styles.rowLabel}>{`₹ ${data2?.tax_amount}`}</Text>
           </View>
           <View
             style={[
@@ -228,7 +393,7 @@ const OrderDetail = ({navigation}) => {
               {borderTopWidth: 1, borderColor: '#DFE7EF'},
             ]}>
             <Text style={styles.totalText}>Total Payable Amount</Text>
-            <Text style={styles.rowLabel}>₹ 1450.00</Text>
+            <Text style={styles.rowLabel}>{`₹ ${data2?.amount}`}</Text>
           </View>
         </View>
 
@@ -243,29 +408,103 @@ const OrderDetail = ({navigation}) => {
                 paddingBottom: 10,
               },
             ]}>
-            <Text style={styles.sectionTitle}>Shipping Address</Text>
-            <Text style={styles.customerName}>Tejas Shah</Text>
+            <TouchableOpacity
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+              onPress={toggleCollapse}>
+              <Text style={styles.sectionTitle}>Shipping Address</Text>
 
-            <Text style={[styles.addressText, {marginVertical: 5}]}>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. - 123456
-            </Text>
-            <Text style={styles.addressText}> +91 1234567890</Text>
+              <Image
+                source={
+                  !isCollapsed
+                    ? require('../../../assets/otherApp/updown.png')
+                    : require('../../../assets/image/arrow_icon.png')
+                }
+                style={[
+                  styles.toggleIcon2,{marginLeft:wp(-10)},
+                  // !isCollapsed ? {resizeMode: 'contain'} : null,
+                ]}
+              />
+            </TouchableOpacity>
+
+            {/* Collapsible View */}
+            <Collapsible collapsed={isCollapsed}>
+              <Text style={styles.customerName}>
+                {data2?.shipping_address?.name}
+              </Text>
+              {data2?.shipping_address?.address && (
+                <Text style={[styles.addressText, {marginVertical: 0}]}>
+                  {`${data2.shipping_address.address} `}
+                  {data2?.shipping_address?.city &&
+                    `${data2.shipping_address.city} `}
+                  {data2?.shipping_address?.zip_code &&
+                    `- (${data2.shipping_address.zip_code})`}
+                </Text>
+              )}
+              <Text style={styles.addressText}>
+                {data2?.shipping_address?.state}{' '}
+                {data2?.shipping_address?.country}
+              </Text>
+              <Text style={styles.addressText}>
+                {' '}
+                +91 {data2?.shipping_address?.phone}
+              </Text>
+            </Collapsible>
           </View>
 
           <View style={styles.addressSection}>
-            <Text style={styles.sectionTitle}>Billing Address</Text>
-            <Text style={styles.customerName}>Tejas Shah</Text>
+          
+            <TouchableOpacity
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+              onPress={toggleCollapse1}>
+               <Text style={styles.sectionTitle}>Billing Address</Text>
 
-            <Text style={[styles.addressText, {marginVertical: 5}]}>
-              LoDummy text Lorem Ipsum is simply dummy text of the printing and
-              typesetting industry. - 123456
+              <Image
+                source={
+                  !isCollapsed1
+                    ? require('../../../assets/otherApp/updown.png')
+                    : require('../../../assets/image/arrow_icon.png')
+                }
+                style={[
+                  styles.toggleIcon2,{marginLeft:wp(-10)},
+                  // !isCollapsed ? {resizeMode: 'contain'} : null,
+                ]}
+              />
+            </TouchableOpacity>
+            <Collapsible collapsed={isCollapsed1}>
+            <Text style={styles.customerName}>
+              {' '}
+              {data2?.billing_address?.name}
             </Text>
-            <Text style={styles.addressText}> +91 1234567890</Text>
+
+            {data2?.billing_address?.address && (
+              <Text style={[styles.addressText, {marginVertical: 0}]}>
+                {data2?.billing_address?.address &&
+                  `${data2.billing_address.address} `}
+                {data2?.billing_address?.city &&
+                  `${data2.billing_address.city} `}
+                {data2?.billing_address?.zip_code &&
+                  `- (${data2.billing_address.zip_code})`}
+              </Text>
+            )}
+            <Text style={styles.addressText}>
+              {data2?.billing_address?.state} {data2?.billing_address?.country}
+            </Text>
+            <Text style={styles.addressText}>
+              {' '}
+              +91 {data2?.billing_address?.phone}
+            </Text>
+            </Collapsible>
           </View>
         </View>
       </ScrollView>
-     
     </View>
   );
 };

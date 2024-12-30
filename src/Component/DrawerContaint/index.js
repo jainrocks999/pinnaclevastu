@@ -11,49 +11,40 @@ import {
   Linking,
 } from 'react-native';
 
-import {useNavigation, DrawerActions, useIsFocused} from '@react-navigation/native';
+import {
+  useNavigation,
+  DrawerActions,
+  useIsFocused,
+} from '@react-navigation/native';
 import {fontSize} from '../fontsize';
 import {colors} from '../colors';
 import styles from './styles';
-import { useDispatch, useSelector } from 'react-redux';
-import { DrawerApi } from '../../Redux/Slice/HomeSlice';
+import {useDispatch, useSelector} from 'react-redux';
+import {DrawerApi} from '../../Redux/Slice/HomeSlice';
 import Imagepath from '../Imagepath';
-
 
 const Drawer = props => {
   const navigation = useNavigation();
   const [loader, setLoader] = useState(false);
   const [visible, setVisibles] = useState(false);
   const [name, setName] = useState('');
-  const dispatch =useDispatch();
- const  data =useSelector(state=>state.home?.Drawerdata?.services)
-console.log('drawer data ',data);
-
-
-  const focus = useIsFocused();
-
+  const dispatch = useDispatch();
+  const data = useSelector(state => state.home?.Drawerdata?.services);
   useEffect(() => {
-    if (focus) {
-      apicall();
-    }
-  }, [focus]);
+    apicall();
+  }, []);
 
   const apicall = async () => {
     await dispatch(DrawerApi({url: 'draw-menu'}));
-    
   };
-
-
-
 
   const openApp = async (url, fallbackUrl) => {
     try {
-      const supported = await Linking.canOpenURL(url); 
+      const supported = await Linking.canOpenURL(url);
       if (supported) {
         await Linking.openURL(url);
       } else {
         if (fallbackUrl) {
-         
           await Linking.openURL(fallbackUrl);
         } else {
           Alert.alert(
@@ -63,7 +54,7 @@ console.log('drawer data ',data);
         }
       }
     } catch (error) {
-      Alert.alert('Error', `An error occurred: ${error.message}`);
+      // Alert.alert('Error', `An error occurred: ${error.message}`);
     }
   };
 
@@ -71,8 +62,8 @@ console.log('drawer data ',data);
     // navigation.dispatch(DrawerActions.closeDrawer());
     navigation.navigate('Home', {
       screen: 'Home1',
-       params: {screen: 'Consultancy'},
-    })
+      params: {screen: 'Consultancy'},
+    });
   };
   const manageDashboard1 = () => {
     // navigation.dispatch(DrawerActions.closeDrawer());
@@ -96,15 +87,18 @@ console.log('drawer data ',data);
     );
   };
 
-
-  const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.listRow}
+  const renderItem = ({item}) => (
+    <TouchableOpacity
+      style={styles.listRow}
       // style={true ? styles.specialListRow : styles.listRow}
       // onPress={item.onPress ? item.onPress : null}
-      >
+    >
       {/* <View style={styles.rowContent}> */}
-        <Image style={styles.icon}  source={{uri: `${Imagepath.Path}${item?.logo}`}} />
-        <Text style={styles.listText}>{item.services_name}</Text>
+      <Image
+        style={styles.icon}
+        source={{uri: `${Imagepath.Path}${item?.logo}`}}
+      />
+      <Text style={styles.listText}>{item.services_name}</Text>
       {/* </View> */}
       {/* {item.isSpecial && (
         <Image source={require('../../assets/drawer/right.png')} />
@@ -112,15 +106,13 @@ console.log('drawer data ',data);
     </TouchableOpacity>
   );
 
-
-
   return (
     <View style={styles.container}>
       <View style={styles.topSection}>
         <Image source={require('../../assets/image/header.png')} />
         <TouchableOpacity
           style={{marginRight: -3}}
-          onPress={() => props.navigation.closeDrawer()}>
+          onPress={() => props.navigation.closeDrawer()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
           <Image source={require('../../assets/drawer/close.png')} />
         </TouchableOpacity>
       </View>
@@ -197,14 +189,14 @@ console.log('drawer data ',data);
           </TouchableOpacity>
         </View> */}
 
-<View style={styles.listContainer}>
-      <FlatList
-        data={data?data:[]}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-        showsVerticalScrollIndicator={false}
-      />
-      <TouchableOpacity style={styles.specialListRow}>
+        <View style={styles.listContainer}>
+          <FlatList
+            data={data ? data : []}
+            renderItem={renderItem}
+            keyExtractor={item => item.id}
+            showsVerticalScrollIndicator={false}
+          />
+          <TouchableOpacity style={styles.specialListRow}>
             <View
               style={{
                 flexDirection: 'row',
@@ -217,8 +209,7 @@ console.log('drawer data ',data);
             </View>
             <Image source={require('../../assets/drawer/right.png')} />
           </TouchableOpacity>
-    </View>
-
+        </View>
 
         <TouchableOpacity style={styles.coursesListRow}>
           <View

@@ -40,114 +40,116 @@ export const orderlistapi = createAsyncThunk(
   },
 );
 
-// export const orderDetail = createAsyncThunk(
-//   'Order1/orderDetail',
-//   async ({id, token, url, orderid, code, navigation}, {rejectWithValue}) => {
-//     console.log('detail order action ', url, id, token, orderid, code);
+export const orderDetail = createAsyncThunk(
+  'Order1/orderDetail',
+  async ({id, token, url, orderid, code, navigation}, {rejectWithValue}) => {
+    console.log('detail order action ', url, id, token, orderid, code);
 
-//     try {
-//       const config = {
-//         method: 'get',
-//         maxBodyLength: Infinity,
-//         url: `${constant.mainUrl}${url}?user_id=${id}&order_id=${orderid}&order_code=${code}`,
-//         headers: {
-//           Authorization: `Bearer ${token}`,
-//         },
-//       };
+    try {
+      const config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: `${constants.mainUrl}${url}?user_id=${id}&order_id=${orderid}&order_code=${code}`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
 
-//       const response = await axios.request(config);
+      const response = await axios.request(config);
+     console.log('order detail response  ',response.data);
      
-//       if (response.data.status == 200) {
+      if (response.data.status == 200) {
         
 
-//         Toast.show(response.data.msg);
-//         navigation.navigate('OrderDetails');
-//         return response?.data?.data;
-//       } else {
-//         Toast.show(response.data.msg);
-//       }
-//     } catch (error) {
-//       //  Toast.show(error);
-//       return rejectWithValue(
-//         error.response ? error.response.data : error.message,
-//       );
-//     }
-//   },
-// );
+        Toast.show(response.data.msg);
+        navigation.navigate('OrderDetail');
+        return response?.data?.data;
+      } else {
+        Toast.show(response.data.msg);
+      }
+    } catch (error) {
+      //  Toast.show(error);
+      return rejectWithValue(
+        error.response ? error.response.data : error.message,
+      );
+    }
+  },
+);
 
-// export const shipmethod = createAsyncThunk(
-//   'Order1/shipmethod',
-//   async ({user_id, token, url}, {rejectWithValue}) => {
-//     console.log('detail order action ', url, token);
+export const shipmethod = createAsyncThunk(
+  'Order1/shipmethod',
+  async ({user_id, token, url}, {rejectWithValue}) => {
+    console.log('shipment ffgdfg ', url, token);
 
-//     try {
-//       const config = {
-//         method: 'get',
-//         maxBodyLength: Infinity,
-//         url: `${constant.mainUrl}${url}?user_id=${user_id}`,
-//         headers: {
-//           Authorization: `Bearer ${token}`,
-//         },
-//       };
+    try {
+      const config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: `${constants.mainUrl}${url}?user_id=${user_id}`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
 
-//       const response = await axios.request(config);
+      const response = await axios.request(config);
      
-//       if (response.data.status == 200) {
-//         Toast.show(response.data.msg);
-//         return response?.data?.data;
-//       } else {
-//         Toast.show(response.data.msg);
-//       }
-//     } catch (error) {
-//       // Toast.show(error);
+      if (response.data.status == 200) {
+        Toast.show(response.data.msg);
+        return response?.data?.data;
+      } else {
+        Toast.show(response.data.msg);
+      }
+    } catch (error) {
+      // Toast.show(error);
 
-//       return rejectWithValue(
-//         error.response ? error.response.data : error.message,
-//       );
-//     }
-//   },
-// );
+      return rejectWithValue(
+        error.response ? error.response.data : error.message,
+      );
+    }
+  },
+);
 
-// export const cancelorders = createAsyncThunk(
-//   'address/cancelorders',
-//   async ({url, token, data1, navigation}, {rejectWithValue}) => {
-//     console.log('cancel ord  hgfghhg ', url, JSON.stringify(data1));
-//     let data2 = {
-//       user_id: data1.user_id,
-//       order_id: data1.order_id,
-//       order_number: data1.order_number,
-//       description: data1.description,
-//     };
-//     let config = {
-//       method: 'post',
-//       maxBodyLength: Infinity,
-//       url: `${constants.mainUrl}${url}`,
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//         'Content-Type': 'application/json',
-//       },
-//       data: JSON.stringify(data2),
-//     };
+export const cancelorders = createAsyncThunk(
+  'address/cancelorders',
+  async ({url, token, data1, navigation}, {rejectWithValue}) => {
+    console.log('cancel ord  hgfghhg ', url, JSON.stringify(data1));
+    let data2 = {
+      user_id: data1.user_id,
+      order_id: data1.order_id,
+      order_number: data1.order_number,
+      description: data1.description,
+    };
+    let config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: `${constants.mainUrl}${url}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      data: JSON.stringify(data2),
+    };
    
 
-//     try {
-//       const response = await axios.request(config);
+    try {
+      const response = await axios.request(config);
+      console.log('resdponse .fata ',response.data);
       
-//       if (response.data.status == 200) {
-//         // Toast.show(response.data.msg);
-//         return response.data;
-//       } else {
-//         Toast.show(response.data.msg);
-//       }
+      if (response.data.status == 200) {
+        // Toast.show(response.data.msg);
+        return response.data;
+      } else {
+        Toast.show(response.data.msg);
+      }
 
       
-//     } catch (error) {
-//       console.log('error', error);
+    } catch (error) {
+      console.log('error', error);
 
-//       return rejectWithValue(error.response?.data || error.message);
-//     }
-//   },
-// );
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  },
+);
 
 // export const conatctus = createAsyncThunk(
 //   'address/conatctus',
@@ -361,7 +363,7 @@ const orderSclice = createSlice({
   initialState: {
     orderD: [],
     orderList1: [],
-    shipm: [],
+    shipm: {},
     cancelOr: [],
     Contact: [],
     TermsC: {},
@@ -392,44 +394,44 @@ const orderSclice = createSlice({
         state.error = action.payload; 
       })
 
-    //   .addCase(orderDetail.pending, state => {
-    //     state.loading = true;
-    //     state.error = null;
-    //   })
-    //   .addCase(orderDetail.fulfilled, (state, action) => {
-    //     state.loading = false;
-    //     state.orderD = action.payload; 
-    //   })
-    //   .addCase(orderDetail.rejected, (state, action) => {
-    //     state.loading = false;
-    //     state.error = action.payload; 
-    //   })
+      .addCase(orderDetail.pending, state => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(orderDetail.fulfilled, (state, action) => {
+        state.loading = false;
+        state.orderD = action.payload; 
+      })
+      .addCase(orderDetail.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload; 
+      })
 
-    //   .addCase(shipmethod.pending, state => {
-    //     state.loading = true;
-    //     state.error = null;
-    //   })
-    //   .addCase(shipmethod.fulfilled, (state, action) => {
-    //     state.loading = false;
-    //     state.shipm = action.payload; 
-    //   })
-    //   .addCase(shipmethod.rejected, (state, action) => {
-    //     state.loading = false;
-    //     state.error = action.payload; 
-    //   })
+      .addCase(shipmethod.pending, state => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(shipmethod.fulfilled, (state, action) => {
+        state.loading = false;
+        state.shipm = action.payload; 
+      })
+      .addCase(shipmethod.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload; 
+      })
 
-    //   .addCase(cancelorders.pending, state => {
-    //     state.loading = true;
-    //     state.error = null;
-    //   })
-    //   .addCase(cancelorders.fulfilled, (state, action) => {
-    //     state.loading = false;
-    //     state.cancelOr = action.payload;
-    //   })
-    //   .addCase(cancelorders.rejected, (state, action) => {
-    //     state.loading = false;
-    //     state.error = action.payload; 
-    //   })
+      .addCase(cancelorders.pending, state => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(cancelorders.fulfilled, (state, action) => {
+        state.loading = false;
+        state.cancelOr = action.payload;
+      })
+      .addCase(cancelorders.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload; 
+      })
 
     //   .addCase(conatctus.pending, state => {
     //     state.loading = true;

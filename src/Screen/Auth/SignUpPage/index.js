@@ -8,7 +8,7 @@ import {
   Modal,
   PermissionsAndroid,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import styles from './styles';
 import {colors} from '../../../Component/colors';
 import SelectModal from '../../../Component/dropdown';
@@ -19,6 +19,7 @@ import Toast from 'react-native-simple-toast';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {useDispatch} from 'react-redux';
 import {signupUser} from '../../../Redux/Slice/Authslice';
+import { Dropdown } from 'react-native-element-dropdown';
 
 const SignUpPage = () => {
   const dispatch = useDispatch();
@@ -30,6 +31,9 @@ const SignUpPage = () => {
 
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedname, setSelectedname] = useState(null);
+  const [selectedname1,setSelectedname1]= useState(null);
+  const [selectedImagetype, setSelectedImagetype] = useState(null);
 
   const navigation = useNavigation();
   const [gender, setGender] = useState('');
@@ -40,6 +44,8 @@ const SignUpPage = () => {
     setVisible(false);
   };
 
+
+  
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
@@ -76,7 +82,6 @@ const SignUpPage = () => {
     const strTime = `${hours}:${minutes} ${ampm}`;
     return strTime;
   };
-
   const requestCameraPermission = async () => {
     try {
       const granted = await PermissionsAndroid.request(
@@ -100,72 +105,90 @@ const SignUpPage = () => {
   };
 
   const openGallery = async () => {
+    setModalVisible(false);
     const options = {
       mediaType: 'photo',
       quality: 0.5,
       maxWidth: 1024,
       maxHeight: 1024,
+      includeBase64:true
     };
 
     launchImageLibrary(options, response => {
+    
       if (response.didCancel) {
         console.log('User cancelled image picker');
       } else if (response.error) {
         console.log('Image picker error: ', response.error);
       } else if (response.assets && response.assets.length > 0) {
-        const imageUri = response.assets[0].uri;
-        setSelectedImage(imageUri);
-
+        // const imageUri = response.assets[0].base64;
+        const base64Image = `data:${response.assets[0].type};base64,${response.assets[0].base64}`;
+       
+        setSelectedImage(base64Image);
+        setSelectedImagetype(response.assets[0]?.uri);
+        // setSelectedname(response.assets[0]?.fileName)
         // if (imageSize > 2000000) {
         //   compressImage(imageUri);
         // } else {
 
         // }
       }
-      toggleModal();
+     
     });
   };
-
-  // const compressImage = (uri) => {
-  //   const options = {
-  //     mediaType: 'photo',
-  //     quality: 0.5,
-  //     maxWidth: 1024,
-  //     maxHeight: 1024,
-  //   };
-
-  //   launchImageLibrary(options, response => {
-  //     if (!response.didCancel && !response.error && response.assets && response.assets.length > 0) {
-  //       const compressedUri = response.assets[0].uri;
-  //       const compressedSize = response.assets[0].fileSize;
-  //       console.log('Compressed Image URI:', compressedUri);
-  //       console.log(compressedSize ,"size")
-  //       setSelectedImage(compressedUri);
-  //     }
-  //   });
-  // };
-
   const openCamera = async () => {
-    await requestCameraPermission();
-    console.log('handleCamera');
+    setModalVisible(false); // Close modal immediately
+    await requestCameraPermission(); // Handle async logic
     const options = {
       mediaType: 'photo',
       maxHeight: 2000,
       maxWidth: 2000,
+      includeBase64: true,
     };
-
+  
     launchCamera(options, response => {
       if (response.didCancel) {
         console.log('User cancelled camera');
       } else if (response.error) {
         console.log('Camera error: ', response.error);
       } else if (response.assets) {
-        const imageUri = response.assets[0].uri;
-        setSelectedImage(imageUri);
+        const base64Image = `data:${response.assets[0].type};base64,${response.assets[0].base64}`;
+        setSelectedImage(base64Image);
+        setSelectedImagetype(response.assets[0]?.uri);
       }
-      toggleModal();
     });
   };
+  
+
+  // const openCamera = async () => {
+  //   await requestCameraPermission();
+  //   setModalVisible(false);
+  //   console.log('handleCamera');
+  //   const options = {
+  //     mediaType: 'photo',
+  //     maxHeight: 2000,
+  //     maxWidth: 2000,
+  //     includeBase64:true
+  //   };
+
+  //   launchCamera(options, response => {
+     
+  //     if (response.didCancel) {
+  //       console.log('User cancelled camera');
+  //     } else if (response.error) {
+  //       console.log('Camera error: ', response.error);
+  //     } else if (response.assets) {
+  //       // const imageUri = response.assets[0].base64;
+  //       const base64Image = `data:${response.assets[0].type};base64,${response.assets[0].base64}`;
+       
+  //       setSelectedImage(base64Image);
+  //       // setSelectedImagetype(response.assets[0].type);
+  //       // setSelectedname(response.assets[0]?.fileName)
+  //     }
+  //     console.log('sdklslgvgv;ls',isModalVisible);
+      
+  //   });
+  // };
 
   const handleInputChange = (name, value) => {
     setFormData({...formData, [name]: value});
@@ -187,7 +210,7 @@ const SignUpPage = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async() => {
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
 
     if (formData.name == '') {
@@ -218,19 +241,20 @@ const SignUpPage = () => {
       Toast.show('Please enter Birth Date');
       return;
     } else {
-      dispatch(
+     
+     await dispatch(
         signupUser({
           formData,
           gender,
-          date,
-          time,
-          selectedImage,
+          date:formatDate(date),
+          time:formatTime(time),
+       selectedImage:selectedImage,
           url: 'sign-up',
+          navigation,
         }),
       );
-   
     }
-    // console.log(formData);
+    //  console.log(formData);
   };
 
   const data = [
@@ -241,14 +265,6 @@ const SignUpPage = () => {
 
   return (
     <View style={styles.container}>
-      <SelectModal
-        search={search}
-        data={data}
-        setSearch={setSearch}
-        visible={visible}
-        onSelect={onSelect}
-        onClose={value => setVisible(value)}
-      />
       <ScrollView
         contentContainerStyle={styles.main1}
         keyboardShouldPersistTaps="handled">
@@ -298,7 +314,48 @@ const SignUpPage = () => {
               />
             </View>
           </View>
+
+
           <View style={styles.inputmain}>
+            <Text style={styles.title2}>Gender*</Text>
+          <Dropdown
+           style={[
+            styles.input,
+            styles.inputShadow,
+            {
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            },
+          ]}
+            data={data}
+            labelField="label"
+            valueField="value"
+            placeholder={'Gender'}
+            placeholderStyle={{
+              color: gender ? colors.heading:colors.placeholder,
+              fontSize: fontSize.Sixteen,
+              // marginTop: 2,
+              fontFamily: 'Poppins-Regular',
+            }}
+            selectedTextStyle={styles.selectedText}
+            itemTextStyle={styles.itemText}
+            value={gender}
+            onChange={text => setGender(text.value)}
+            renderRightIcon={() =>  <Image
+              style={{
+                height: 8,
+                width: 15,
+              }}
+              source={require('../../../assets/image/arrow_icon.png')}
+            />}
+          />
+        </View>
+
+
+
+
+          {/* <View style={styles.inputmain}>
             <Text style={styles.title2}>Gender*</Text>
 
             <TouchableOpacity
@@ -329,7 +386,7 @@ const SignUpPage = () => {
                 source={require('../../../assets/image/arrow_icon.png')}
               />
             </TouchableOpacity>
-          </View>
+          </View> */}
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Current City Pincode*</Text>
             <View style={[styles.input, styles.inputShadow]}>
@@ -390,62 +447,6 @@ const SignUpPage = () => {
             />
           </View>
 
-          {/* <View style={styles.inputmain}>
-          <Text style={styles.title2}>Date of Birth</Text>
-          <View
-            style={[
-              styles.input,
-              styles.inputShadow,
-              {
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              },
-            ]}>
-            <TextInput
-              style={styles.input1}
-              placeholder="Date of Birth"
-              placeholderTextColor={colors.placeholder}
-              keyboardType="number-pad"
-            />
-            <Image
-              style={{
-                height: 20,
-                width: 20,
-              }}
-              source={require('../../../assets/image/cale.png')}
-            />
-          </View>
-        </View> */}
-
-          {/* <View style={styles.inputmain}>
-          <Text style={styles.title2}>Time of Birth</Text>
-          <View
-            style={[
-              styles.input,
-              styles.inputShadow,
-              {
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              },
-            ]}>
-            <TextInput
-              style={styles.input1}
-              placeholder="Time of Birth"
-              placeholderTextColor={colors.placeholder}
-              keyboardType="number-pad"
-            />
-            <Image
-              style={{
-                height: 20,
-                width: 20,
-              }}
-              source={require('../../../assets/image/Layer.png')}
-            />
-          </View>
-        </View> */}
-
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Time of Birth</Text>
 
@@ -502,7 +503,7 @@ const SignUpPage = () => {
               />
             </View>
           </View>
-          <View style={styles.inputmain}>
+         <View style={styles.inputmain}>
             <Text style={styles.title2}>Upload Photo</Text>
             <View
               style={[
@@ -519,12 +520,12 @@ const SignUpPage = () => {
                 style={styles.input1}
                 placeholder="Upload Photo"
                 placeholderTextColor={colors.placeholder}
-                value={selectedImage}
+                value={selectedImagetype}
                 editable={false}
               />
 
               <TouchableOpacity
-                onPress={toggleModal}
+                onPress={()=>setModalVisible(true)}
                 style={styles.buttoncontainer1}>
                 <Text style={[styles.btext, {fontSize: fontSize.Fourteen}]}>
                   {'Browse'}
@@ -532,11 +533,11 @@ const SignUpPage = () => {
               </TouchableOpacity>
             </View>
             <Text style={styles.uppload}>Maximum upload file size 2mb.</Text>
-          </View>
+          </View> 
 
           <View>
             <TouchableOpacity
-              onPress={handleSubmit}
+              onPress={()=>handleSubmit()}
               style={styles.buttoncontainer}>
               <Text style={styles.btext}>{'SUBMIT'}</Text>
             </TouchableOpacity>
@@ -547,12 +548,12 @@ const SignUpPage = () => {
       <Modal
         transparent={true}
         animationType="fade"
-        visible={isModalVisible}
-        onRequestClose={toggleModal}>
+        visible={isModalVisible} 
+        onRequestClose={() => setModalVisible(false)}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Upload Profile Picture</Text>
-            <TouchableOpacity onPress={openCamera} style={[styles.modalBtn]}>
+            <TouchableOpacity onPress={()=>openCamera()} style={[styles.modalBtn]}>
               <Image
                 source={require('../../../assets/image/cameraIcon.png')}
                 style={styles.modalBtnIcon}
@@ -561,7 +562,7 @@ const SignUpPage = () => {
                 Camera
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={openGallery} style={[styles.modalBtn]}>
+            <TouchableOpacity onPress={()=>openGallery()} style={[styles.modalBtn]}>
               <Image
                 source={require('../../../assets/image/galleryIcon.png')}
                 style={styles.modalBtnIcon}
@@ -570,7 +571,7 @@ const SignUpPage = () => {
                 Gallery
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.closeBtn} onPress={toggleModal}>
+            <TouchableOpacity style={styles.closeBtn} onPress={()=>setModalVisible(false)}>
               <Image source={require('../../../assets/image/close.png')} />
             </TouchableOpacity>
           </View>
