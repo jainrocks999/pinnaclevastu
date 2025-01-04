@@ -271,7 +271,7 @@ export default StyleSheet.create({
     height: 'auto',
     // minHeight: 50,
     borderRadius:5,
-    borderColor: '#D8E3E980',
+    borderColor: colors.placeholder,
     paddingHorizontal:10,
     fontSize: fontSize.Twelve,
     color: colors.heading,

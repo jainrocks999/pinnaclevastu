@@ -98,7 +98,7 @@ export default StyleSheet.create({
   },
 
   titleText: {
-    minHeight: wp(10),
+    // minHeight: wp(10),
   },
   image1: {
     height: hp(15),
@@ -110,6 +110,7 @@ export default StyleSheet.create({
   textContainer: {
     backgroundColor: colors.ordercolor,
     paddingHorizontal: wp(2),
+    paddingTop:10
   },
   title: {
     fontSize: wp(4.5),
@@ -323,9 +324,12 @@ export default StyleSheet.create({
   },
 
   direction: {
-    marginLeft: 0,
+    minHeight:wp(6),
+    marginBlock: 5,
     alignSelf: 'flex-start',
-    paddingBottom: 20,
+    // marginLeft: 0,
+    // width: 70,
+    // paddingBottom: 20,
   },
 
   third: {

@@ -58,14 +58,14 @@ const Remedies12SecondComponent = () => {
   );
   const LikeItemList = useSelector(state => state?.home?.likeProductList);
   const addressData = useSelector(state => state.address?.getaData);
-  const [defaultAddress, setDefaultAddress] = useState(null);
+
+  const defaultAddress = addressData?.find(item => item?.is_default == 1);
 
   const [userType, setUserType] = useState('');
   const route = useRoute();
 
   const fromScreen = route?.params?.from;
 
-  
   useEffect(() => {
     console.log(cartDataList.length, 'cart length.....');
 
@@ -93,25 +93,23 @@ const Remedies12SecondComponent = () => {
               }
               // await AsyncStorage.removeItem('cartItems');
               dispatch(clearLocalCartData());
+              await dispatch(
+                getCartDataApi({
+                  token: userData.token,
+                  url: `cart?user_id=${userData.user_id}`,
+                }),
+              );
             }
+            await dispatch(
+              getAddress({
+                user_id: userData.user_id,
+                token: userData.token,
+
+                url: 'fetch-customer-address',
+                // navigation,
+              }),
+            );
           }
-          await dispatch(
-            getAddress({
-              user_id: userData.user_id,
-              token: userData.token,
-
-              url: 'fetch-customer-address',
-              // navigation,
-            }),
-          );
-
-          // await dispatch(
-          //   getCartDataApi({
-          //     token: userData.token,
-          //     url: `cart?user_id=${userData.user_id}`,
-          //   }),
-          // );
-
           setIsLoggedIn(true);
         } else {
           setIsLoggedIn(false);
@@ -131,42 +129,7 @@ const Remedies12SecondComponent = () => {
     checkLoginStatus();
   }, []);
 
-  useEffect(() => {
-    const checkAndSaveDefaultAddress = async () => {
-      try {
-        const savedAddress = await AsyncStorage.getItem('Address1');
-        const parsedAddress = savedAddress ? JSON.parse(savedAddress) : null;
-
-        let selectedAddress;
-
-        if (parsedAddress) {
-          // Find the saved address in the current address list
-          selectedAddress = addressData?.find(
-            item => item.id == parsedAddress.id,
-          );
-        }
-
-        // If no saved address or it doesn't exist in the list, use the default address
-        if (!selectedAddress) {
-          selectedAddress = addressData?.find(item => item.is_default == 1);
-        }
-
-        // Save the selected address to state and AsyncStorage
-        if (selectedAddress) {
-          setDefaultAddress(selectedAddress);
-          await AsyncStorage.setItem(
-            'Address1',
-            JSON.stringify(selectedAddress),
-          );
-        }
-      } catch (error) {
-        console.error('Error checking default address:', error);
-      }
-    };
-    checkAndSaveDefaultAddress();
-  }, [addressData]);
-
-  const handleUpdateCartData = async (user_id, rowid, qty, token,fromCart) => {
+  const handleUpdateCartData = async (user_id, rowid, qty, token, fromCart) => {
     try {
       await dispatch(
         updateCartApi({
@@ -175,7 +138,7 @@ const Remedies12SecondComponent = () => {
           qty: qty,
           token: token,
           currentQty: 1,
-          fromCartScreen:fromCart
+          fromCartScreen: fromCart,
         }),
       );
       await dispatch(
@@ -276,7 +239,7 @@ const Remedies12SecondComponent = () => {
             cartItem.rowid,
             quantityToUpdate,
             userData?.token,
-            false
+            false,
           );
         } else {
           await dispatch(
@@ -321,7 +284,7 @@ const Remedies12SecondComponent = () => {
         item?.rowid,
         item?.qty < 100 ? item?.qty + 1 : item?.qty,
         userData?.token,
-        true
+        true,
       );
       console.log('quantity decrement....');
     } else {
@@ -343,7 +306,7 @@ const Remedies12SecondComponent = () => {
         item?.rowid,
         item?.qty > 1 ? item?.qty - 1 : item.qty,
         userData?.token,
-        true
+        true,
       );
     } else {
       let updatedItem = {
@@ -467,7 +430,16 @@ const Remedies12SecondComponent = () => {
           />
         </TouchableOpacity>
         <View style={styles.textContainer}>
-          <Text style={[styles.third, styles.titleText]}>{item?.name}</Text>
+          {/* <Text style={[styles.third, styles.titleText]}>{item?.name}</Text> */}
+          <Text style={[styles.third, styles.titleText]}>
+            {' '}
+            {item.name
+              ? item.name.length > 20
+                ? `${item.name.substring(0, 20)}...`
+                : item.name
+              : ' '}
+          </Text>
+
           <Text style={[styles.third, {marginTop: 10}]}>₹ {item?.price}</Text>
 
           <View style={styles.direction}>
