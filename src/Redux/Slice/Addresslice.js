@@ -21,7 +21,7 @@ export const createAddress = createAsyncThunk(
     };
     try {
       const response = await axios.request(config);
-     console.log('kjgolfjgoldfjgofd',response.data);
+     console.log('addd address list dataa ',response.data);
      
       if (response.data.status == 200) {
         Toast.show(response.data.msg);
@@ -58,7 +58,7 @@ export const getAddress = createAsyncThunk(
       const response = await axios.request(config);
 
       if (response.data.status == 200) {
-        console.log('fsllgkfsg',response.data);
+       
         
         // Toast.show(response.data.msg);
         return response?.data?.data;

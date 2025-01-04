@@ -134,7 +134,7 @@ const LoginScreen = ({route,navigation}) => {
           </View>
           <TouchableOpacity
             onPress={() => LoginAPi()}
-            style={styles.buttoncontainer}>
+            style={styles.buttoncontainer} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
             <View style={styles.touch}>
               <View />
               <Text style={styles.btext}>GET OTP</Text>

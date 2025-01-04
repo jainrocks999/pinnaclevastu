@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -10,76 +10,117 @@ import {
   Dimensions,
   ScrollView,
 } from 'react-native';
-import { colors } from '../../../Component/colors';
-import { fontSize } from '../../../Component/fontsize';
+import {colors} from '../../../Component/colors';
+import {fontSize} from '../../../Component/fontsize';
 
 import styles from './styles';
-import { heightPercent } from '../../../Component/ResponsiveScreen/responsive';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { useDispatch, useSelector } from 'react-redux';
+import {heightPercent} from '../../../Component/ResponsiveScreen/responsive';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { orderDetail, orderlistapi } from '../../../Redux/Slice/orderSclice';
+import {courceorderDetail, orderDetail, orderlistapi, orderlistcource} from '../../../Redux/Slice/orderSclice';
 import Imagepath from '../../../Component/Imagepath';
 import Loader from '../../../Component/Loader';
 
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 
-const MyOrder = () => {
-const navigation =useNavigation();
+const MyOrder = ({route}) => {
+  const navigation = useNavigation();
+
+  const product = useSelector(state => state?.order?.orderList1?.data);
+  
+  const cource =useSelector(state => state?.order?.orderCource?.data);
 
 
-
-const product = useSelector(state => state?.order?.orderList1?.data);
-const loading1 = useSelector(state => state?.order?.loading);
-
-const focus = useIsFocused();
-const dispatch = useDispatch();
+  const loading1 = useSelector(state => state?.order?.loading); 
+  const [selectedTab, setSelectedTab] = useState('Remedies');
+  const focus = useIsFocused();
+  const dispatch = useDispatch();
+  const placeholderText = "Search"; 
+  const [displayedText, setDisplayedText] = useState(''); 
 
 useEffect(() => {
-  if (focus) {
-    apicall();
-  }
-}, [focus]);
+    let currentIndex = 0;
+  
+    const startAnimation = () => {
+      const intervalId = setInterval(() => {
+        if (currentIndex < placeholderText.length) {
+          
+          setDisplayedText(placeholderText.slice(0, currentIndex + 1)); 
+          currentIndex++;
+        } else {
+          
+          currentIndex = 0; 
+          setDisplayedText(''); 
+        }
+      }, 300); 
+  
+      return intervalId;
+    };
+  
+    const intervalId = startAnimation();
+  
+    return () => clearInterval(intervalId); 
+  }, [placeholderText]);
+  useEffect(() => {
+   
+    if (focus) {
+      apicall();
+    }
+  }, [focus]);
 
-const apicall = async () => {
-  try {
-    // Retrieve token and user_id from AsyncStorage
+  const apicall = async () => {
+  
+    try {
+      // Retrieve token and user_id from AsyncStorage
+      const token = await AsyncStorage.getItem('Token');
+      const userid = await AsyncStorage.getItem('user_id');
+
+      if (!token || !userid) {
+        console.error('Token or User ID is missing.');
+        return;
+      }
+       await dispatch(
+        orderlistcource({id: userid, token: token, url: 'fetch-courses-order'}),
+      );
+      await dispatch(
+        orderlistapi({id: userid, token: token, url: 'fetch-order'}),
+      );
+    } catch (error) {
+      console.error('Error in API call:', error);
+    }
+  };
+
+  const OrderDetails = async item => {
     const token = await AsyncStorage.getItem('Token');
     const userid = await AsyncStorage.getItem('user_id');
-
-    if (!token || !userid) {
-      console.error('Token or User ID is missing.');
-      return;
-    }
-
     await dispatch(
-      orderlistapi({id: userid, token: token, url: 'fetch-order'}),
+      orderDetail({
+        id: userid,
+        token: token,
+        url: 'fetch-order-details',
+        orderid: item.id,
+        code: item?.code,
+        navigation,
+      }),
     );
-  } catch (error) {
-    console.error('Error in API call:', error);
-  }
-};
+  };
+  const OrderDetails1 = async item => {
+    const token = await AsyncStorage.getItem('Token');
+    const userid = await AsyncStorage.getItem('user_id');
+    await dispatch(
+      courceorderDetail({
+        id: userid,
+        token: token,
+        url: 'fetch-courses-order-details',
+        orderid: item.id,
+        navigation,
+      }),
+    );
+  };
 
-const OrderDetails = async item => {
-  const token = await AsyncStorage.getItem('Token');
-  const userid = await AsyncStorage.getItem('user_id');
-  await dispatch(
-    orderDetail({
-      id: userid,
-      token: token,
-      url: 'fetch-order-details',
-      orderid: item.id,
-      code: item?.code,
-      navigation,
-    }),
-  );
-};
+ 
 
-
-
-
-
-  const [selectedTab, setSelectedTab] = useState('Remedies');
 
   const orders = [
     {
@@ -108,48 +149,133 @@ const OrderDetails = async item => {
     },
   ];
 
-  const renderOrderItem = ({ item }) => (
+  const renderOrderItem = ({item}) => (
     <View style={styles.orderCard}>
       <Text style={styles.orderNo}>Order No: {item.code}</Text>
 
       <View style={styles.horizontalSeparator} />
       <View style={styles.productContainer}>
-        <Image source={
-           
-           item?.products?.[0]?.product_image?
-           {uri:`${Imagepath.Path}${item?.products?.[0]?.product_image}`}:
-
-          require('../../../assets/otherApp/order3.png')}
-        
-        style={styles.productImage} />
+        <Image
+          source={
+            item?.products?.[0]?.product_image
+              ? {uri: `${Imagepath.Path}${item?.products?.[0]?.product_image}`}
+              : require('../../../assets/otherApp/order3.png')
+          }
+          style={styles.productImage}
+        />
         <View style={styles.productDetails}>
-          <Text style={styles.productName}>{item?.products?.[0]?.product_name}</Text>
-          <Text style={styles.productQuantity}>Total Quantity: {item?.products?.reduce((sum, product) => sum + (product.qty||0), 0)}</Text>
+          <Text style={styles.productName}>
+            {item?.products?.[0]?.product_name}
+          </Text>
+          <Text style={styles.productQuantity}>
+            Total Quantity:{' '}
+            {item?.products?.reduce(
+              (sum, product) => sum + (product.qty || 0),
+              0,
+            )}
+          </Text>
           <Text style={styles.productName}>Total: ₹ {item?.amount}</Text>
         </View>
       </View>
+      {item?.status?.label ? (
+        <Text
+          style={[
+            styles.statusText,
+            {
+              color:
+                item?.status?.value == 'processing'
+                  ? '#4299e1'
+                  : item?.status?.value == 'canceled'
+                  ? '#d63939'
+                  : item?.status?.value == 'completed'
+                  ? '#2fb344'
+                  : null,
+            },
+          ]}>
+          {item?.status?.label}
+        </Text>
+      ) : null}
       <TouchableOpacity
-        onPress={() =>
-          OrderDetails(item)
+        onPress={
+          () => OrderDetails(item)
           // navigation.navigate('OrderDetail')
-          }
+        }
         style={styles.detailsButton}>
         <Text style={styles.detailsButtonText}>Details</Text>
       </TouchableOpacity>
     </View>
   );
+  const renderOrderItem1 = ({item}) => (
+    <View style={styles.orderCard}>
+      <Text style={styles.orderNo}>Order No: {item.code}</Text>
 
+      <View style={styles.horizontalSeparator} />
+      <View style={styles.productContainer}>
+        <Image
+          source={
+            item?.course?.image
+              ? {uri: `${Imagepath.Path}${item?.course?.image}`}
+              : require('../../../assets/otherApp/order3.png')
+          }
+          resizeMode='center'
+          style={[styles.productImage,{  marginRight: 0,}]}
+        />
+        <View style={styles.productDetails}>
+          <Text style={styles.productName}>
+            {item?.course_title}
+          </Text>
+          {/* <Text style={styles.productQuantity}>
+           Total Quantity:{' '}
+            {item?.products?.reduce(
+              (sum, product) => sum + (product.qty || 0),
+              0,
+            )}
+            {''}
+          </Text> */}
+          <Text style={styles.productName}>Total: ₹ {item?.amount}</Text>
+        </View>
+      </View>
+      {item?.status? (
+        <Text
+          style={[
+            styles.statusText,
+            {
+              color:
+                item?.status == 'processing'
+                  ? '#4299e1'
+                  : item?.status == 'canceled'
+                  ? '#d63939'
+                  : item?.status == 'completed'
+                  ? '#2fb344'
+                  :item?.status == 'pending'?'#f6ad55':null ,
+            },
+          ]}>
+          {item?.status}
+        </Text>
+      ) : null}
+      <TouchableOpacity
+        onPress={
+          () => OrderDetails1(item)
+          // navigation.navigate('OrderDetail')
+        }
+        style={styles.detailsButton}>
+        <Text style={styles.detailsButtonText}>Details</Text>
+      </TouchableOpacity>
+    </View>
+  );
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity
+          hitSlop={{bottom:10,top:10,left:10,right:10}}
           onPress={() =>
-            // navigation.reset({
-            //   index: 0,
-            //   routes: [{name: 'UserProfile'}],
-            // })}
-           navigation.goBack()}
-          >
+            navigation.reset({
+              index: 0,
+              routes: [{name: 'UserProfile'}],
+            })
+          }
+          //  navigation.goBack()}
+        >
           <Image
             style={styles.backBtn}
             source={require('../../../assets/drawer/Back1.png')}
@@ -158,18 +284,21 @@ const OrderDetails = async item => {
 
         <Text style={styles.logoText}>My Orders</Text>
       </View>
-{loading1?<Loader/>:null}
-      <ScrollView contentContainerStyle={{ flexGrow: 1,paddingBottom:heightPercent(10)}}>
+      {/* {loading1?<Loader/>:null} */}
+      <ScrollView
+        contentContainerStyle={{flexGrow: 1, paddingBottom: heightPercent(10)}}>
         <View style={styles.searchContainer}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Image source={require('../../../assets/image/SearchIcon.png')} />
-            <TextInput
-              placeholder="Search..."
-              style={styles.searchInput}
-              placeholderTextColor={colors.searchBarTextColor}
-            />
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <TouchableOpacity   hitSlop={{bottom:10,top:10,left:10,right:10}}>
+                          <Image source={require('../../../assets/image/SearchIcon.png')} />
+          </TouchableOpacity>
+          <TextInput
+                    style={styles.searchInput}
+                    placeholder={displayedText} 
+                    placeholderTextColor={colors.searchBarTextColor}
+                  />
           </View>
-          <TouchableOpacity style={styles.filterBtn}>
+          <TouchableOpacity style={styles.filterBtn}   hitSlop={{bottom:10,top:10,left:10,right:10}}>
             <Image source={require('../../../assets/image/Vector.png')} />
           </TouchableOpacity>
         </View>
@@ -193,19 +322,32 @@ const OrderDetails = async item => {
             </TouchableOpacity>
           ))}
         </View>
-
-        <FlatList
+       {selectedTab=='Remedies'?
+       ( <FlatList
           data={product}
           keyExtractor={item => item.id}
           renderItem={renderOrderItem}
           contentContainerStyle={styles.ordersList}
+        />):
+        
+        selectedTab=='Courses'?
+
+        (
+          
+          <FlatList
+          data={cource}
+          keyExtractor={item => item.id}
+          renderItem={renderOrderItem1}
+          contentContainerStyle={styles.ordersList}
         />
+      
+      ):(<Text>Deepu</Text>)
+        
+        }
       </ScrollView>
-  
+      {/* {console.log(product, 'sandeep...')} */}
     </View>
   );
 };
 
 export default MyOrder;
-
-

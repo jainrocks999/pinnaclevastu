@@ -5,11 +5,13 @@ import {
   ScrollView,
   Image,
   FlatList,
+  TextInput,
 } from 'react-native';
 import React, {useState} from 'react';
 import styles from './styles';
 import {Dropdown} from 'react-native-element-dropdown';
 import StepIndicator from 'react-native-step-indicator';
+import Toast from 'react-native-simple-toast';
 
 import {
   heightPercent,
@@ -17,8 +19,11 @@ import {
 } from '../../../Component/ResponsiveScreen/responsive';
 import {fontSize} from '../../../Component/fontsize';
 import {useNavigation} from '@react-navigation/native';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import Imagepath from '../../../Component/Imagepath';
+import Collapsible from 'react-native-collapsible';
+import {cancelorders, orderDetail} from '../../../Redux/Slice/orderSclice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const labels = [
   'Order Received',
@@ -27,7 +32,7 @@ const labels = [
   'Out For Delivery',
   'Delivered',
 ];
-
+ 
 const customStyles = {
   stepIndicatorSize: wp(5),
   stepStrokeWidth: 0,
@@ -50,11 +55,70 @@ const OrderDetail = () => {
   const navigation = useNavigation();
   const data2 = useSelector(state => state?.order?.orderD);
   const loading1 = useSelector(state => state?.order?.loading);
-  console.log('detaillkfglkdgldfk', data2);
-
-  const [currentPosition, setCurrentPosition] = useState(4);
+  // const [visible, setVisible] = useState(false);
+  const [visibleItemId, setVisibleItemId] = useState(null);
+  const [reason, setReason] = useState('');
+  const dispatch = useDispatch();
+  const [currentPosition, setCurrentPosition] = useState(1);
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isCollapsed1, setIsCollapsed1] = useState(true);
+  const toggleCollapse = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+  const toggleCollapse1 = () => {
+    setIsCollapsed1(!isCollapsed1);
+  };
+
+  // console.log(data2, 'sandeep...');
+  const cancelorder = async () => {
+    if (!reason.trim()) {
+      Toast.show('Reason for cancellation is required');
+      return;
+    } else {
+      try {
+        const token = await AsyncStorage.getItem('Token');
+        const userid = await AsyncStorage.getItem('user_id');
+        let data = {
+          user_id: userid,
+          order_id: JSON.stringify(data2.id),
+          order_number: data2.code,
+          description: reason,
+        };
+
+        // setVisible(false);
+
+        await dispatch(
+          cancelorders({
+            token: token,
+            url: 'cancel-customer-order',
+            data1: data,
+            navigation,
+          }),
+        );
+        OrderDetails();
+        setVisibleItemId(null);
+      } catch (error) {
+        console.error('Error in cancelorder function:', error);
+      }
+    }
+  };
+
+  const OrderDetails = async item => {
+    const token = await AsyncStorage.getItem('Token');
+    const userid = await AsyncStorage.getItem('user_id');
+    await dispatch(
+      orderDetail({
+        id: userid,
+        token: token,
+        url: 'fetch-order-details',
+        orderid: JSON.stringify(data2.id),
+        code: data2.code,
+        navigation,
+      }),
+    );
+  };
 
   const getdata = qty => {
     let value = {label: '1', value: '1'};
@@ -67,6 +131,16 @@ const OrderDetail = () => {
       array.push({label: i.toString(), value: i.toString()});
     }
     return array;
+  };
+
+  const formatDate = () => {
+    const date = new Date(data2?.updated_at);
+
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = date.toLocaleString('en-GB', {month: 'short'});
+    const year = date.getFullYear();
+
+    return `${day} ${month} ${year}`;
   };
 
   const data = [
@@ -86,6 +160,7 @@ const OrderDetail = () => {
 
   const renderItem = ({item}) => (
     <View style={styles.card}>
+      {console.log(item)}
       <Image
         style={styles.cardImg}
         source={
@@ -98,10 +173,11 @@ const OrderDetail = () => {
         <Text style={[styles.productName, {marginBottom: 10}]}>
           {item.product_name}
         </Text>
-
         <View style={styles.quantitySection}>
           <Text style={styles.productName}>Quantity:</Text>
-          <Dropdown
+
+          <Text style={styles.productQuantity}>{item?.qty}</Text>
+          {/* <Dropdown
             style={[styles.dropdown, isFocus]}
             selectedTextStyle={styles.productQuantity}
             data={getdata(parseInt(item?.qty))}
@@ -117,22 +193,59 @@ const OrderDetail = () => {
               setValue(item.value);
               setIsFocus(false);
             }}
-          />
+          /> */}
         </View>
-
         <Text style={styles.productName}>Total: ₹ {item?.price}</Text>
-        <TouchableOpacity>
-          <Text style={styles.cancleBtn}>Cancel</Text>
-        </TouchableOpacity>
+        {data2?.status?.value !== 'canceled' &&
+        data2?.status?.value !== 'completed' &&
+        data2?.shipment?.shipment_status !== 'not_delivered' &&
+        visibleItemId !== item.id ? (
+          <TouchableOpacity onPress={() => setVisibleItemId(item.id)}>
+            {console.log(visibleItemId, item.id, 'sandeep sdjkosdkmfomkdofs')}
+            <Text style={styles.cancleBtn}>Cancel</Text>
+          </TouchableOpacity>
+        ) : null}
+        {visibleItemId === item.id && (
+          <View style={styles.reasonContainer}>
+            <Text style={[styles.productName, {marginBottom: 10}]}>
+              Reason for Cancellation:
+            </Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your reason here"
+              value={reason}
+              onChangeText={text => setReason(text)}
+              multiline={true}
+              textAlignVertical="top" // Ensures text starts from the top of the input
+              numberOfLines={4}
+            />
+            <TouchableOpacity onPress={() => cancelorder()}>
+              <Text style={styles.cancleBtn}>submit</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        =
       </View>
     </View>
   );
+  const getCurrentPosition = () => {
+    const position = data2?.shipment?.shipment_status;
+    if (position == 'pending' || position == 'canceled') return null;
+    if (position == 'approved') return 0;
+    if (position == 'arrange_shipment') return 1;
+    if (position == 'ready_to_be_shipped_out') return 2;
+    if (position == 'delivering') return 3;
+    if (position == 'delivered') return 4;
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerRow}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity onPress={() => navigation.goBack()}
+            
+            hitSlop={{bottom:10,top:10,left:10,right:10}}
+            >
             <Image
               style={styles.backBtn}
               source={require('../../../assets/drawer/Back1.png')}
@@ -151,8 +264,12 @@ const OrderDetail = () => {
           paddingBottom: heightPercent(10),
         }}>
         <View style={styles.section}>
-          {/* {currentPosition >= 1 ? (
+          {/* {getCurrentPosition() >= 7 ? ( */}
+          {data2?.status?.value == 'canceled' ||
+          data2?.status?.value == 'completed' ||
+          data2?.shipment?.shipment_status == 'not_delivered' ? (
             <View style={styles.OrderstatusMsgContainer}>
+              {console.log(data2?.status?.value)}
               <Image
                 style={styles.cancleOrderImg}
                 source={require('../../../assets/otherApp/orderCencelled.png')}
@@ -160,14 +277,25 @@ const OrderDetail = () => {
               <Text style={styles.StatusMsgText}>
                 <Text
                   style={{
-                    color: currentPosition !== 1 ? '#FF0000' : '#02A883',
+                    color:
+                      data2?.status?.value === 'canceled'
+                        ? '#FF0000'
+                        : data2?.status?.value === 'completed'
+                        ? '#02A883'
+                        : '#FFA500',
                   }}>
-                  {currentPosition !== 2 ? 'CANCELLED ' : 'DELIVERED '}
+                  {data2?.status?.value === 'canceled'
+                    ? 'CANCELLED '
+                    : data2?.status?.value === 'completed'
+                    ? 'DELIVERED '
+                    : data2?.shipment?.shipment_status === 'not_delivered'
+                    ? 'NOT DELIVERED '
+                    : ''}
                 </Text>
-                on 20 Nov 2024
+                on {formatDate()}
               </Text>
             </View>
-          ) : null} */}
+          ) : null}
 
           <FlatList
             data={data2?.products}
@@ -222,18 +350,18 @@ const OrderDetail = () => {
 
           <StepIndicator
             customStyles={customStyles}
-            currentPosition={currentPosition}
+            currentPosition={getCurrentPosition()}
             direction="vertical"
             labels={labels}
             renderStepIndicator={({position}) => (
               <View
                 style={[
                   styles.stepCircle,
-                  position < currentPosition && styles.activeStepCircle,
-                  position === currentPosition && styles.activeStepCircle,
+                  position < getCurrentPosition() && styles.activeStepCircle,
+                  position === getCurrentPosition() && styles.activeStepCircle,
                 ]}>
                 {/* Checkmark Icon for finished steps */}
-                {position === currentPosition && position === 4 && (
+                {position === getCurrentPosition() && position === 4 && (
                   <Image
                     source={require('../../../assets/otherApp/checkedIcon.png')}
                     style={styles.checkedIcon}
@@ -249,9 +377,9 @@ const OrderDetail = () => {
                     fontSize: customStyles.labelSize,
                     // fontFamily: 'YourCustomFontFamily',
                     color:
-                      position < currentPosition
+                      position < getCurrentPosition()
                         ? customStyles.finishedStepLabelColor
-                        : position === currentPosition
+                        : position == getCurrentPosition()
                         ? customStyles.currentStepLabelColor
                         : customStyles.unfinishedStepLabelColor,
                   },
@@ -261,7 +389,7 @@ const OrderDetail = () => {
             )}
           />
         </View>
-        {currentPosition === 4 ? (
+        {getCurrentPosition() == 4 ? (
           <View style={[styles.section, styles.trakIdSection]}>
             <View style={styles.trakIdSection}>
               <Text style={styles.tarkIdText}>AWB No:</Text>
@@ -292,11 +420,11 @@ const OrderDetail = () => {
               styles.listRow,
               {borderBottomWidth: 1, borderColor: '#DFE7EF'},
             ]}>
-            <Text style={styles.rowLabel}>Shipping</Text>
-            <Text style={styles.rowLabel}>Free Delivery</Text>
+            <Text style={styles.rowLabel}>Shipping charges</Text>
+            <Text style={styles.rowLabel}>{`₹ ${data2?.shipping_amount}`}</Text>
           </View>
 
-          <View style={[styles.listRow, {marginVertical: 5}]}>
+          <View style={[styles.listRow]}>
             <Text style={styles.TaxText}>
               Tax
               {/* <Text style={{fontSize: fontSize.Thirteen}}>(3.0%)</Text> */}
@@ -324,37 +452,102 @@ const OrderDetail = () => {
                 paddingBottom: 10,
               },
             ]}>
-            <Text style={styles.sectionTitle}>Shipping Address</Text>
-            <Text style={styles.customerName}>
-              {data2?.shipping_address?.name}
-            </Text>
-            {data2?.shipping_address?.address &&<Text style={[styles.addressText, {marginVertical: 5}]}>
-              {data2?.shipping_address?.address &&
-                `${data2.shipping_address.address} `}
-              {data2?.shipping_address?.city &&
-                `${data2.shipping_address.city} `}
-              {data2?.shipping_address?.zip_code &&
-                `- (${data2.shipping_address.zip_code})`}
-            </Text>}
-            <Text style={styles.addressText}>
-              {data2?.shipping_address?.state}{' '}
-              {data2?.shipping_address?.country}
-            </Text>
-            <Text style={styles.addressText}>
-              {' '}
-              +91 {data2?.shipping_address?.phone}
-            </Text>
+            <TouchableOpacity
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+              onPress={toggleCollapse}>
+              <Text style={styles.sectionTitle}>Shipping Address</Text>
+
+              <Image
+                source={
+                  !isCollapsed
+                    ? require('../../../assets/otherApp/updown.png')
+                    : require('../../../assets/image/arrow_icon.png')
+                }
+                style={[
+                  styles.toggleIcon2,
+                  {marginLeft: wp(-10)},
+                  // !isCollapsed ? {resizeMode: 'contain'} : null,
+                ]}
+              />
+            </TouchableOpacity>
+
+            {/* Collapsible View */}
+            <Collapsible collapsed={isCollapsed}>
+              <Text style={styles.customerName}>
+                {data2?.shipping_address?.name}
+              </Text>
+              {data2?.shipping_address?.address && (
+                <Text style={[styles.addressText, {marginVertical: 0}]}>
+                  {`${data2.shipping_address.address} `}
+                  {data2?.shipping_address?.city &&
+                    `${data2.shipping_address.city} `}
+                  {data2?.shipping_address?.zip_code &&
+                    `- (${data2.shipping_address.zip_code})`}
+                </Text>
+              )}
+              <Text style={styles.addressText}>
+                {data2?.shipping_address?.state}{' '}
+                {data2?.shipping_address?.country}
+              </Text>
+              <Text style={styles.addressText}>
+                {' '}
+                +91 {data2?.shipping_address?.phone}
+              </Text>
+            </Collapsible>
           </View>
 
           <View style={styles.addressSection}>
-            <Text style={styles.sectionTitle}>Billing Address</Text>
-            <Text style={styles.customerName}>Tejas Shah</Text>
+            <TouchableOpacity
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+              onPress={toggleCollapse1}>
+              <Text style={styles.sectionTitle}>Billing Address</Text>
 
-            <Text style={[styles.addressText, {marginVertical: 5}]}>
-              LoDummy text Lorem Ipsum is simply dummy text of the printing and
-              typesetting industry. - 123456
-            </Text>
-            <Text style={styles.addressText}> +91 1234567890</Text>
+              <Image
+                source={
+                  !isCollapsed1
+                    ? require('../../../assets/otherApp/updown.png')
+                    : require('../../../assets/image/arrow_icon.png')
+                }
+                style={[
+                  styles.toggleIcon2,
+                  {marginLeft: wp(-10)},
+                  // !isCollapsed ? {resizeMode: 'contain'} : null,
+                ]}
+              />
+            </TouchableOpacity>
+            <Collapsible collapsed={isCollapsed1}>
+              <Text style={styles.customerName}>
+                {' '}
+                {data2?.billing_address?.name}
+              </Text>
+
+              {data2?.billing_address?.address && (
+                <Text style={[styles.addressText, {marginVertical: 0}]}>
+                  {data2?.billing_address?.address &&
+                    `${data2.billing_address.address} `}
+                  {data2?.billing_address?.city &&
+                    `${data2.billing_address.city} `}
+                  {data2?.billing_address?.zip_code &&
+                    `- (${data2.billing_address.zip_code})`}
+                </Text>
+              )}
+              <Text style={styles.addressText}>
+                {data2?.billing_address?.state}{' '}
+                {data2?.billing_address?.country}
+              </Text>
+              <Text style={styles.addressText}>
+                {' '}
+                +91 {data2?.billing_address?.phone}
+              </Text>
+            </Collapsible>
           </View>
         </View>
       </ScrollView>

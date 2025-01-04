@@ -8,20 +8,26 @@ import {
   FlatList,
   Alert,
   Linking,
+  Dimensions,
+  Animated,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import Collapsible from 'react-native-collapsible';
 import styles from './styles';
 import {colors} from '../../../Component/colors';
 import {useSelector} from 'react-redux';
 import Imagepath from '../../../Component/Imagepath';
-import { widthPrecent } from '../../../Component/ResponsiveScreen/responsive';
+import {widthPrecent} from '../../../Component/ResponsiveScreen/responsive';
+import RenderHTML from 'react-native-render-html';
+import Video from 'react-native-video';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+const {width} = Dimensions.get('window');
 
 const CourseDetail = ({navigation}) => {
+  const [userType, setUserType] = useState('');
   const CourceDetailA = useSelector(state => state?.home?.CourceDetailA);
   const isLoading = useSelector(state => state.home?.loading);
- 
-
+  const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
   const images = [
     require('../../../assets/otherApp/reviewslider.png'),
     require('../../../assets/otherApp/reviewslider.png'),
@@ -86,6 +92,17 @@ const CourseDetail = ({navigation}) => {
     },
   ];
 
+  useEffect(() => {
+    getUserType();
+  }, []);
+
+  const getUserType = async () => {
+    const userStatus = await AsyncStorage.getItem('user_data');
+    const userData = userStatus ? JSON.parse(userStatus) : null;
+    const userType = userData?.user_type;
+    setUserType(userType);
+  };
+
   const toggleCollapsed = index => {
     setCollapsedStates(prevStates => {
       const newStates = [...prevStates];
@@ -102,12 +119,88 @@ const CourseDetail = ({navigation}) => {
   };
 
   const [expandedSection, setExpandedSection] = useState(null);
+  const videoData = CourceDetailA?.demo_video
+    ? JSON.parse(CourceDetailA.demo_video)
+    : [];
+
+  let videoFileName = null;
+
+  // Find the video file or URL
+  videoData.forEach(videoItem => {
+    if (!videoFileName) {
+      const fileItem = videoItem.find(
+        item => item.key === 'file' && item.value !== null,
+      );
+      const urlItem = videoItem.find(
+        item => item.key === 'url' && item.value !== null,
+      );
+
+      if (fileItem) {
+        videoFileName = `${Imagepath.Path}${fileItem.value}`; // Prepend Imagepath for files
+      } else if (urlItem) {
+        videoFileName = urlItem.value; // Use URL directly
+      }
+    }
+  });
+
+  const videoDat = CourceDetailA?.course_video
+    ? JSON.parse(CourceDetailA.course_video)
+    : [];
+
+  let videoFileName1 = null;
+
+  // Find the video file or URL
+  videoDat.forEach(videoItem => {
+    if (!videoFileName1) {
+      const fileItem = videoItem.find(
+        item => item.key === 'file' && item.value !== null,
+      );
+      const urlItem = videoItem.find(
+        item => item.key === 'url' && item.value !== null,
+      );
+
+      // If a file is found, assign its path with Imagepath
+      if (fileItem) {
+        videoFileName1 = `${Imagepath.Path}${fileItem.value}`; // Prepend Imagepath for files
+      }
+      // If a URL is found, assign the URL directly
+      else if (urlItem) {
+        videoFileName1 = urlItem.value;
+      }
+    }
+  });
+
+  // console.log(CourceDetailA, 'virendra sir....');
 
   const toggleSection = sectionId => {
     setExpandedSection(prevSection =>
       prevSection === sectionId ? null : sectionId,
     );
   };
+
+  const handleJoinCourse = () => {
+    Animated.sequence([
+      Animated.timing(buttonAnimatedValue, {
+        toValue: 0.94, 
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(buttonAnimatedValue, {
+        toValue: 1, 
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+     
+      if (userType) {
+        navigation.navigate('PaymentCourse', { data1: CourceDetailA });
+      } else {
+        navigation.navigate('Login', { from: 'CourseDetails' });
+      }
+    });
+  };
+
+
   const renderItem = ({item}) => (
     <View style={styles.itemContainer}>
       <Image source={item.icon} style={styles.icon} />
@@ -138,7 +231,7 @@ const CourseDetail = ({navigation}) => {
         <Image
           source={
             expandedSection === item.id
-              ? require('../../../assets/otherApp/updown.png')
+              ? require('../../../assets/otherApp/updown1.png')
               : require('../../../assets/image/arrow_icon.png')
           }
           style={styles.toggleIcon2}
@@ -157,8 +250,7 @@ const CourseDetail = ({navigation}) => {
     </View>
   );
 
-
-  const phoneNumber = '+919153300111'; // Ensure this is in the international E.164 format
+  const phoneNumber = '+919153300111';
 
   const openWhatsApp = async () => {
     const appUrl = `whatsapp://send?phone=${phoneNumber}`;
@@ -168,12 +260,12 @@ const CourseDetail = ({navigation}) => {
       // Check if WhatsApp is installed
       const supported = await Linking.canOpenURL(appUrl);
       if (supported) {
-        console.log('appUrl ...',appUrl);
+        console.log('appUrl ...', appUrl);
         await Linking.openURL(appUrl);
       } else {
         // Fallback to WhatsApp Web
-        console.log('ghghdghdio',webUrl);
-        
+        console.log('ghghdghdio', webUrl);
+
         await Linking.openURL(webUrl);
       }
     } catch (error) {
@@ -183,13 +275,12 @@ const CourseDetail = ({navigation}) => {
     }
   };
 
-  
-
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
           <Image
             style={styles.backBtn}
             source={require('../../../assets/drawer/Back1.png')}
@@ -202,24 +293,64 @@ const CourseDetail = ({navigation}) => {
       </View>
       <ScrollView contentContainerStyle={styles.scrollview}>
         <View style={styles.firstimgview}>
-          <Image
+          <Video
+            source={{
+              uri: videoFileName1,
+            }}
+            style={styles.img1}
+            resizeMode="contain"
+            controls={true}
+            onError={error => console.error('Video Error:', error)} // Debug video errors
+          />
+          {/* <Image
             source={
               CourceDetailA?.image
                 ? {uri: `${Imagepath.Path}${CourceDetailA?.image}`}
                 : require('../../../assets/otherApp/coursedetail.png')
             }
             style={styles.img1}
-          />
+          /> */}
         </View>
         <View style={styles.advanceview}>
           <Text style={styles.advancetext}>{CourceDetailA?.title} </Text>
           {/* Advance Vastu Course */}
 
           <Text style={styles.learntext}>
-            Learn The Most Effective Numero Vastu Techniques
+            {CourceDetailA?.short_description != null
+              ? CourceDetailA?.short_description
+              : 'Learn The Most Effective Numero Vastu Techniques'}
           </Text>
           <View style={styles.direction}>
-            <Text style={styles.ruppestext}>{`₹ ${CourceDetailA?.price}`}</Text>
+            {/* <Text style={styles.ruppestext}>{`₹ ${CourceDetailA?.price}`}</Text> */}
+            <View style={{flexDirection: 'row', gap: 10}}>
+              {userType &&
+              (CourceDetailA?.sale_price < CourceDetailA?.price ||
+                CourceDetailA?.student_price < CourceDetailA?.price ||
+                CourceDetailA?.franchise_price < CourceDetailA?.price) &&
+              (CourceDetailA?.sale_price ||
+                CourceDetailA?.student_price ||
+                CourceDetailA?.franchise_price) ? (
+                <Text
+                  style={[
+                    styles.ruppestext,
+                    {textDecorationLine: 'line-through', color: 'gray'},
+                  ]}>
+                  ₹ {CourceDetailA?.price}
+                </Text>
+              ) : null}
+
+              <Text style={[styles.ruppestext]}>
+                {`₹ ${
+                  userType === 'customers' && CourceDetailA?.sale_price
+                    ? CourceDetailA?.sale_price
+                    : userType === 'student' && CourceDetailA?.student_price
+                    ? CourceDetailA?.student_price
+                    : userType === 'franchise' && CourceDetailA?.franchise_price
+                    ? CourceDetailA?.franchise_price
+                    : CourceDetailA?.price
+                }`}
+              </Text>
+            </View>
             <Image
               source={require('../../../assets/otherApp/share.png')}
               style={styles.shareimage}
@@ -270,42 +401,52 @@ const CourseDetail = ({navigation}) => {
         </View>
 
         <FlatList
-          data={dummyData}
-          keyExtractor={item => item.id}
+          data={CourceDetailA?.desc_data?.filter(
+            item => item.description !== null && item.label !== null,
+          )}
+          keyExtractor={item => item.desc_data_id.toString()}
           renderItem={({item, index}) => (
             <View style={styles.paddings}>
               <TouchableOpacity
-                onPress={() => toggleSection(item.id)}
+                onPress={() => toggleSection(item.desc_data_id)}
                 style={[
                   styles.courseToggle1,
-                  expandedSection === item.id && styles.activeCourseToggle,
+                  expandedSection === item.desc_data_id &&
+                    styles.activeCourseToggle,
                 ]}>
                 <View style={styles.direction1}>
                   <Text
                     style={[
                       styles.coursetext2,
-                      expandedSection === item.id && styles.activeTitleColor,
+                      expandedSection === item.desc_data_id &&
+                        styles.activeTitleColor,
                     ]}>
-                    {item.title}
+                    {item.label}
                   </Text>
                 </View>
                 <Image
                   source={
-                    expandedSection === item.id
-                      ? require('../../../assets/otherApp/updown.png')
+                    expandedSection === item.desc_data_id
+                      ? require('../../../assets/otherApp/updown1.png')
                       : require('../../../assets/image/arrow_icon.png')
                   }
-                  style={styles.toggleIcon2}
+                  style={[
+                    styles.toggleIcon2,
+                    // expandedSection !== item.desc_data_id
+                    //   ? {resizeMode: 'contain'}
+                    //   : null,
+                  ]}
                 />
               </TouchableOpacity>
 
-              <Collapsible collapsed={expandedSection !== item.id}>
+              <Collapsible collapsed={expandedSection !== item.desc_data_id}>
                 <View style={styles.subItemContainer}>
-                  {item.subItems.map((subItem, subIndex) => (
-                    <Text key={subIndex} style={styles.subItemText}>
-                      {subItem}
-                    </Text>
-                  ))}
+                  <RenderHTML
+                    contentWidth={width}
+                    source={{
+                      html: item.description,
+                    }}
+                  />
                 </View>
               </Collapsible>
             </View>
@@ -320,17 +461,19 @@ const CourseDetail = ({navigation}) => {
         </View>
 
         <View style={styles.whatsview}>
-          <TouchableOpacity onPress={()=>openWhatsApp()} style={styles.whatsapp}>
+          <TouchableOpacity
+            onPress={() => openWhatsApp()}
+            style={styles.whatsapp}>
             <Image source={require('../../../assets/otherApp/whatsapp.png')} />
             <Text style={styles.textnumber}>+91 915 330 01 11</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={()=>
-            {
-              Linking.openURL(`tel:${'+919056611064'}`).catch((err) =>
-                console.error('Error opening dialer:', err)
+          <TouchableOpacity
+            onPress={() => {
+              Linking.openURL(`tel:${'+919056611064'}`).catch(err =>
+                console.error('Error opening dialer:', err),
               );
-            }
-          } style={styles.call}>
+            }}
+            style={styles.call}>
             <Image source={require('../../../assets/otherApp/call.png')} />
             <Text style={styles.textnumber}>+91 905 661 10 64</Text>
           </TouchableOpacity>
@@ -338,15 +481,73 @@ const CourseDetail = ({navigation}) => {
 
         <View style={styles.firstimgview}>
           <Text style={styles.demotext}>Demo Lecture</Text>
-          <Image
+          <Video
+            source={{
+              uri: videoFileName,
+            }}
+            style={styles.img1}
+            resizeMode="contain"
+            controls={true}
+            onError={error => console.error('Video Error:', error)} // Debug video errors
+          />
+
+          {/* <Image
             source={require('../../../assets/otherApp/coursedetail.png')}
             style={styles.img1}
-          />
+          /> */}
         </View>
         <FlatList
-          data={dummyDatas}
-          keyExtractor={item => item.id}
-          renderItem={renderItems}
+          data={CourceDetailA?.desc_demo_data?.filter(
+            item => item.description !== null && item.label !== null,
+          )}
+       
+          keyExtractor={item => item?.desc_data_id.toString()}
+          renderItem={({item, index}) => (
+            <View style={styles.paddings}>
+              <TouchableOpacity
+                onPress={() => toggleSection(item.desc_data_id)}
+                style={[
+                  styles.courseToggle1,
+                  expandedSection === item.desc_data_id &&
+                    styles.activeCourseToggle,
+                ]}>
+                <View style={styles.direction1}>
+                  <Text
+                    style={[
+                      styles.coursetext2,
+                      expandedSection === item.desc_data_id &&
+                        styles.activeTitleColor,
+                    ]}>
+                    {item.label}
+                  </Text>
+                </View>
+                <Image
+                  source={
+                    expandedSection === item.desc_data_id
+                      ? require('../../../assets/otherApp/updown1.png')
+                      : require('../../../assets/image/arrow_icon.png')
+                  }
+                  style={[
+                    styles.toggleIcon2,
+                    // expandedSection !== item.desc_data_id
+                    //   ? {resizeMode: 'contain'}
+                    //   : null,
+                  ]}
+                />
+              </TouchableOpacity>
+
+              <Collapsible collapsed={expandedSection !== item.desc_data_id}>
+                <View style={styles.subItemContainer}>
+                  <RenderHTML
+                    contentWidth={width}
+                    source={{
+                      html: item.description,
+                    }}
+                  />
+                </View>
+              </Collapsible>
+            </View>
+          )}
         />
 
         <View style={styles.trainerview}>
@@ -356,22 +557,30 @@ const CourseDetail = ({navigation}) => {
         <View style={styles.knowview}>
           <View style={styles.acharyaview}>
             <Image
-              source={require('../../../assets/otherApp/trainer.png')}
+              source={
+                CourceDetailA?.trainer?.image
+                  ? {uri: `${Imagepath.Path}${CourceDetailA?.trainer?.image}`}
+                  : require('../../../assets/otherApp/trainer.png')
+              }
               style={styles.imgtrainer}
             />
           </View>
           <View>
-            <Text style={styles.acharya}>Acharya Vikul Bansal,</Text>
+            <Text style={styles.acharya}>{CourceDetailA?.trainer?.title}</Text>
             <Text style={styles.acharya1}>
-              an exceptionally driven passionate individual who is constantly in
-              pursuit to bring out and serve best with authenticity when it
-              comes to occultism.
+              {CourceDetailA?.trainer?.subtitle}
             </Text>
           </View>
         </View>
 
         <View style={styles.journeyview}>
-          <Text style={styles.journeytext}>
+          <RenderHTML
+            contentWidth={width}
+            source={{
+              html: CourceDetailA?.trainer?.description,
+            }}
+          />
+          {/* <Text style={styles.journeytext}>
             His journey of occultism began in year 2012 which gradually acted as
             a gamechanger when he realized the potential of occult field.
           </Text>
@@ -400,7 +609,7 @@ const CourseDetail = ({navigation}) => {
             gamechanger when he realized the potential of occult field occultism
             began in year 2012 which gradually acted as a gamechanger when he
             realized the potential of occult field.
-          </Text>
+          </Text> */}
         </View>
         <View style={styles.courseview}>
           <Text style={styles.demotext}>Course Review By Student</Text>
@@ -415,9 +624,11 @@ const CourseDetail = ({navigation}) => {
             )}
             horizontal
             showsHorizontalScrollIndicator={false}
-            onMomentumScrollEnd={(e) => {
+            onMomentumScrollEnd={e => {
               const contentOffsetX = e.nativeEvent.contentOffset.x;
-              const currentIndex = Math.round(contentOffsetX / widthPrecent(70)); // Calculate index based on item width
+              const currentIndex = Math.round(
+                contentOffsetX / widthPrecent(70),
+              ); // Calculate index based on item width
               setCurrentIndex(currentIndex); // Update the current index state
             }}
           />
@@ -444,15 +655,56 @@ const CourseDetail = ({navigation}) => {
         </View>
 
         <View style={styles.listItem}>
-          <Text style={styles.listItemText}>Advance Vastu Course at</Text>
-          <Text style={styles.listitem1}>₹ 3200.00</Text>
+          <Text style={styles.listItemText}>{CourceDetailA?.title}</Text>
+          {/* <Text style={styles.listitem1}>₹ {CourceDetailA.price}</Text> */}
+          {/* {userType &&
+          (CourceDetailA?.sale_price < CourceDetailA?.price ||
+            CourceDetailA?.student_price < CourceDetailA?.price ||
+            CourceDetailA?.franchise_price < CourceDetailA?.price) &&
+          (CourceDetailA?.sale_price ||
+            CourceDetailA?.student_price ||
+            CourceDetailA?.franchise_price) ? (
+            <Text
+              style={[
+                styles.listitem1,
+                {textDecorationLine: 'line-through', color: 'gray'},
+              ]}>
+              ₹ {CourceDetailA?.price}
+            </Text>
+          ) : null} */}{' '}
+          <Text style={[styles.listitem1]}>
+            {`₹ ${
+              userType === 'customers' && CourceDetailA?.sale_price
+                ? CourceDetailA?.sale_price
+                : userType === 'student' && CourceDetailA?.student_price
+                ? CourceDetailA?.student_price
+                : userType === 'franchise' && CourceDetailA?.franchise_price
+                ? CourceDetailA?.franchise_price
+                : CourceDetailA?.price
+            }`}
+          </Text>
         </View>
-        {/* Join Course Button */}
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Payment', {data1: 'Cources'})}
+        <Animated.View
+          style={[
+            
+            {
+              transform: [{ scale: buttonAnimatedValue }], // स्केल एनिमेशन
+            },
+          ]}
+        >
+          <TouchableOpacity onPress={handleJoinCourse} style={styles.book}>
+            <Text style={styles.btext1}>Join Course</Text>
+          </TouchableOpacity>
+        </Animated.View>
+        {/* <TouchableOpacity
+          onPress={() => {
+            userType
+              ? navigation.navigate('PaymentCourse', {data1: CourceDetailA})
+              : navigation.navigate('Login', {from: 'CourseDetails'});
+          }}
           style={styles.book}>
           <Text style={styles.btext1}>Join Course</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </ScrollView>
     </View>
   );

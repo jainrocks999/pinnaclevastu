@@ -8,7 +8,7 @@ const screenWidth = Dimensions.get('screen').width;
 export default StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor:colors.white
+    backgroundColor: colors.white,
   },
   header: {
     flexDirection: 'row',
@@ -59,19 +59,27 @@ export default StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     gap: 13,
-    // borderWidth:1,
-    marginTop:6
-
+    //  borderWidth:1,
+    marginTop: 6,
+    // borderWidth: 1,
+    borderRadius: 10,
+    // borderColor: '#D8E3E980',
+    // shadowColor: '#bdc3c7',
+    // shadowOffset: {width: 0, height: 1},
+    // shadowOpacity: 0.5,
+    // shadowRadius: 12,
+    //  elevation: 0.3,
+    // paddingHorizontal: 15,
+    // paddingVertical:20
   },
   cardImg: {
-
     borderRadius: 5,
     width: wp(34),
     resizeMode: 'contain',
     height: '85%',
   },
   cardInfo: {
-    width:"55%"
+    width: '55%',
   },
   productName: {
     fontSize: fontSize.Twelve,
@@ -81,15 +89,15 @@ export default StyleSheet.create({
   quantitySection: {
     flexDirection: 'row',
     gap: 10,
-    marginBottom:5
+    marginBottom: 5,
   },
   productQuantity: {
-    fontSize:fontSize.Twelve,
+    fontSize: fontSize.Twelve,
     color: colors.heading,
-    fontFamily:'Poppins-Medium'
+    fontFamily: 'Poppins-Medium',
   },
   cancleBtn: {
-    marginTop:8,
+    marginTop: 8,
     color: colors.white,
     fontSize: fontSize.Twelve,
     backgroundColor: colors.orange,
@@ -122,7 +130,7 @@ export default StyleSheet.create({
     paddingVertical: 5,
     borderBottomWidth: 1,
     borderColor: '#DFE7EF',
-    marginBottom:10
+    marginBottom: 10,
   },
   lebleText: {
     width: 200,
@@ -257,5 +265,16 @@ export default StyleSheet.create({
     width: wp(2.3),
     resizeMode: 'stretch',
     marginRight: 20,
+  },
+  input: {
+    borderWidth: 1,
+    height: 'auto',
+    // minHeight: 50,
+    borderRadius:5,
+    borderColor: '#D8E3E980',
+    paddingHorizontal:10,
+    fontSize: fontSize.Twelve,
+    color: colors.heading,
+    fontFamily: 'Poppins-Medium',
   },
 });

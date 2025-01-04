@@ -170,13 +170,13 @@ const ResidentalScreen = ({ navigation }) => {
 
     Animated.sequence([
       Animated.timing(buttonAnimatedValue, {
-        toValue: 0.96,
-        duration: 200,
+        toValue: 0.94,
+        duration: 500,
         useNativeDriver: true,
       }),
       Animated.timing(buttonAnimatedValue, {
         toValue: 1,
-        duration: 100,
+        duration: 300,
         useNativeDriver: true,
       }),
     ]).start(() => {
@@ -228,7 +228,9 @@ const ResidentalScreen = ({ navigation }) => {
     <View style={styles.container}>
 
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => navigation.goBack()}
+           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
           <Image
             style={styles.backBtn}
             source={require('../../../assets/drawer/Back1.png')}

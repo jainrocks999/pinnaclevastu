@@ -33,6 +33,7 @@ export default StyleSheet.create({
     width: wp(2.3),
     resizeMode: 'stretch',
     marginRight: 20,
+    marginTop:-5
   },
   
   title: {

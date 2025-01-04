@@ -224,6 +224,7 @@
 // ];
 
 
+
 import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
@@ -243,6 +244,7 @@ import { widthPrecent as wp } from '../../../Component/ResponsiveScreen/responsi
 const ResidentalScreen = ({ navigation }) => {
   const [textAnim] = useState(new Animated.Value(0));
   const [scaleAnim] = useState(new Animated.Value(1));
+  const [scaleAnims, setScaleAnims] = useState({});
   const [currentIndex, setCurrentIndex] = useState(0);
   const animatedValue = useRef(new Animated.Value(1)).current;
   const bgAnim = useRef(new Animated.Value(0)).current;
@@ -252,6 +254,10 @@ const ResidentalScreen = ({ navigation }) => {
     { text: 'Unlock Prosperity with Vastu!', color: '#E195AB' },
     { text: 'Transform Space, Elevate Success', color: '#FFE7A7' },
   ];
+
+
+  const placeholderText = "Search"; 
+  const [displayedText, setDisplayedText] = useState(''); 
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -276,6 +282,30 @@ const ResidentalScreen = ({ navigation }) => {
       ])
     ).start();
   }, [animatedValue]);
+
+  useEffect(() => {
+    let currentIndex = 0;
+  
+    const startAnimation = () => {
+      const intervalId = setInterval(() => {
+        if (currentIndex < placeholderText.length) {
+          
+          setDisplayedText(placeholderText.slice(0, currentIndex + 1)); 
+          currentIndex++;
+        } else {
+          
+          currentIndex = 0; 
+          setDisplayedText(''); 
+        }
+      }, 300); 
+  
+      return intervalId;
+    };
+  
+    const intervalId = startAnimation();
+  
+    return () => clearInterval(intervalId); 
+  }, [placeholderText]);
 
   const slideText = (direction) => {
     const newIndex =
@@ -317,39 +347,60 @@ const ResidentalScreen = ({ navigation }) => {
     outputRange: textItems.map((item) => item.color),
   });
 
-  const renderItem3 = ({ item }) => {
-    const scaleAnim = new Animated.Value(1);
+ 
 
-    const handlePress = () => {
+  const handlePress = (index) => {
+  
+      const newScaleAnims = { ...scaleAnims };
+  
+    
+      if (!newScaleAnims[index]) {
+        newScaleAnims[index] = new Animated.Value(1);
+      }
+      
+      setScaleAnims(newScaleAnims);
+  
+     
       Animated.sequence([
-        Animated.timing(scaleAnim, {
-          toValue: 0.9,
-          duration: 200,
+        Animated.timing(newScaleAnims[index], {
+          toValue: 0.97,
+          duration: 500,
           useNativeDriver: true,
         }),
-        Animated.timing(scaleAnim, {
-          toValue: 0.9,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-        Animated.timing(scaleAnim, {
-          toValue: 1,
-          duration: 200,
+        Animated.timing(newScaleAnims[index], {
+          toValue: 1, 
+          duration: 500,
           useNativeDriver: true,
         }),
       ]).start(() => {
         navigation.navigate('profile');
       });
+  
+  
     };
+  const renderItem3 = ({ item, index }) => {
+    const itemScaleAnim = scaleAnims[index] || new Animated.Value(1);
+
+  
 
     return (
-      <TouchableOpacity onPress={handlePress} style={[styles.cardContainer2]}>
+      <Animated.View
+          style={[
+            styles.cardContainer2,
+            {
+              transform: [{ scale: itemScaleAnim }], 
+            },
+          ]}
+        >
+
+     
+      <TouchableOpacity onPress={() => handlePress(index)} >
         <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
           <View style={styles.imgContainer}>
-            <Animated.Image
+            <Image
               style={[
                 styles.cardImage,
-                { transform: [{ scale: scaleAnim }] },
+                
               ]}
               source={item.image}
             />
@@ -380,13 +431,14 @@ const ResidentalScreen = ({ navigation }) => {
           />
         </View>
       </TouchableOpacity>
+      </Animated.View>
     );
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{top:10,bottom:10,left:10,right:10}}>
           <Image
             style={styles.backBtn}
             source={require('../../../assets/drawer/Back1.png')}
@@ -401,14 +453,18 @@ const ResidentalScreen = ({ navigation }) => {
       <ScrollView contentContainerStyle={styles.servicesContainer}>
         <View style={styles.searchContainer}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <TouchableOpacity hitSlop={{top:10,bottom:10,left:10,right:10}}>
+         
             <Image source={require('../../../assets/image/SearchIcon.png')} />
+            </TouchableOpacity>
+           
             <TextInput
-              placeholder="Search..."
-              style={styles.searchInput}
-              placeholderTextColor={colors.searchBarTextColor}
-            />
+        style={styles.searchInput}
+        placeholder={displayedText} 
+        placeholderTextColor={colors.searchBarTextColor}
+      />
           </View>
-          <TouchableOpacity style={styles.filterBtn}>
+          <TouchableOpacity style={styles.filterBtn}  hitSlop={{top:10,bottom:10,left:10,right:10}}>
             <Image source={require('../../../assets/image/Vector.png')} />
           </TouchableOpacity>
         </View>
@@ -418,6 +474,7 @@ const ResidentalScreen = ({ navigation }) => {
             onPress={() => slideText('right')}
             activeOpacity={0.6}
             style={styles.arrowButton}
+            hitSlop={{top:10,bottom:10,left:10,right:10}}
           >
             <Image
               style={styles.arrowIcon}
@@ -442,6 +499,7 @@ const ResidentalScreen = ({ navigation }) => {
             onPress={() => slideText('left')}
             activeOpacity={0.6}
             style={styles.arrowButton}
+            hitSlop={{top:10,bottom:10,left:10,right:10}}
           >
             <Image
               style={styles.arrowIcon}

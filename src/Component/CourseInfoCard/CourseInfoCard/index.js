@@ -1,24 +1,37 @@
 import {View, Text, Image} from 'react-native';
 import React, {useState} from 'react';
 import styles from './styles';
+import Imagepath from '../../Imagepath';
 
-const CourseInfoCard = () => {
+const CourseInfoCard = ({data}) => {
   return (
     <View style={styles.section}>
+
+     
+    
       <Image
         style={styles.image}
-        source={require('../../../assets//otherApp/courseCard1.png')}
+
+        source={
+          data?.image
+            ? {uri: `${Imagepath.Path}${data?.image}`}
+            : require('../../../assets//otherApp/courseCard1.png')
+        }
+        
       />
       <View style={styles.infoSection}>
-        <Text style={styles.TitleText}>Live Course</Text>
+        <Text style={styles.TitleText}>{data?.category?.name}</Text>
         <View>
           <Text style={styles.subHeadText}>Date</Text>
-          <Text style={styles.regularText}>20 Nov 2024</Text>
+          <Text style={styles.regularText}>{data?.start_date}</Text>
         </View>
         <View>
+          {data?.start_time?(
+            <>
           <Text style={styles.subHeadText}>Time</Text>
-          <Text style={styles.regularText}>6:40 to 8:30 PM</Text>
-        </View>
+          <Text style={styles.regularText}>{`${data?.start_time} to ${data?.end_time}`}</Text>
+          </>  ) :null}
+          </View>
       </View>
     </View>
   );

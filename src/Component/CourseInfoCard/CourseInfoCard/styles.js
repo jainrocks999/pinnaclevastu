@@ -24,7 +24,7 @@ export default StyleSheet.create({
   image: {
     height:"90%",
     width: '55%',
-    resizeMode: 'contain',
+    //  resizeMode: 'center',
   },
   infoSection: {
     marginTop: wp(2),

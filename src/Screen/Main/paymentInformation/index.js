@@ -16,38 +16,51 @@ import UserAddress from '../../../Component/userAddress/userAddress';
 import CourseInfoCard from '../../../Component/CourseInfoCard/CourseInfoCard';
 import Toast from 'react-native-simple-toast';
 import {RadioButton} from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import constants from '../../../Redux/constant/constants';
 import axios from 'axios';
 import Loader from '../../../Component/Loader';
+import { shipmethod } from '../../../Redux/Slice/orderSclice';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearcartdata } from '../../../Redux/Slice/CartSlice';
 
 const ResidentalScreen = ({route}) => {
   const nav = route.params;
- console.log('virerndrrfr',nav?.data?.item);
- 
 const navigation=useNavigation();
-
+const isLoading = useSelector(state => state?.order?.loading);
+const ship = useSelector(state => state?.order?.shipm?.shipping_method);
+console.log('fkjfgjkfgkf ,fifgigi',ship);
+const dispatch=useDispatch();
   const [radioActive, setRadioActive] = useState('');
-  const [loading,setLoading] =useState(false);
+  const [loading1,setLoading] =useState(false);
   const [userType, setUserType] = useState('');
   const [totals, setTotals] = useState({ totalTaxAmount: '', totalAmount: '',totalPriceOnly:'' });
-console.log('dfl;gldfgldfg',totals);
+  const amount = (isNaN(parseFloat(totals?.totalAmount)) ? 0 : parseFloat(totals?.totalAmount)) + (parseFloat(ship?.price ?? '0'));
+
+ 
+  
+ 
+  const getItems = async () => {
+    const token = await AsyncStorage.getItem('Token');
+    const userid = await AsyncStorage.getItem('user_id');
 
   
-useEffect(() => {
-  console.log('Updated userType :', userType);
-  console.log('Product List:', nav?.data?.item);
-}, [userType, nav?.data?.item]);
-
-// Function to calculate totals dynamically
+    dispatch(
+    await  shipmethod({
+        url: 'fetch-shipment-method',
+        token: token,
+        user_id: userid,
+      }),
+    );
+  };
 const calculateTotals = (productList, userType) => {
   let totalTaxAmount = 0;
   let totalAmount = 0;
   let totalPriceOnly = 0;
 
   productList.forEach((product) => {
-    const { sale_price, student_price, franchise_price, price, qty, option } = product;
+    const { sale_price, student_price, franchise_price, price, qty, option ,tax_amount} = product;
     const taxRate = option.taxRate || 0;
 
     const selectedPrice =
@@ -60,7 +73,7 @@ const calculateTotals = (productList, userType) => {
         : price;
 
     const itemPrice = selectedPrice * qty;
-    const taxAmount = (itemPrice * taxRate) / 100; // Use itemPrice for tax calculation
+    const taxAmount = parseFloat(tax_amount);
     const totalProductAmount = itemPrice + taxAmount;
 
     totalTaxAmount += taxAmount;
@@ -77,6 +90,8 @@ const calculateTotals = (productList, userType) => {
 
 // Fetch user type and calculate totals
 useEffect(() => {
+  setTotals('');
+  
   const usercheck = async () => {
     const userStatus = await AsyncStorage.getItem('user_data');
     const userData = JSON.parse(userStatus);
@@ -87,23 +102,29 @@ useEffect(() => {
 }, []);
 
 useEffect(() => {
+  getItems();
   if (userType && nav?.data?.item?.length > 0) {
     const calculatedTotals = calculateTotals(nav?.data?.item, userType);
-    console.log('Calculated Totals:', calculatedTotals);
+    
     setTotals(calculatedTotals);
   }
 }, [nav?.data?.item, userType]);
   
   const data = {
-    shipping_option: '2',
+    shipping_option: ship?.shipping_method_id??'1',
     shipping_method: 'default',
-    shipping_amount: '0',
+    // shipping_method: ship?.name  ?? 'defalut',
+    shipping_amount: ship?.price??'',
+    shipping_type:"",
+    is_available_shipping:'1',
+    transaction_id: '79896585966',
     coupon_code: '',
     tax_amount: totals?.totalTaxAmount,
     sub_amount: totals?.totalPriceOnly,
     discount_amount: '0',
     discount_description: 'order create',
     note: 'order note testing',
+    customer_address_id: nav?.adress?.id ?? '',
     address: {
       address_id:  nav?.adress?.id ?? '',
       name: nav?.adress?.name ?? '',
@@ -114,11 +135,11 @@ useEffect(() => {
       city: nav?.adress?.city ?? '',
       address:  nav?.adress?.address ?? '',
     },
-    amount: totals?.totalAmount,
+    amount: amount,
     currency: 'IND',
     customer_id:  nav?.adress?.customer_id,
     customer_type: 'Botble\\Ecommerce\\Models\\Customer',
-    payment_method: 'cod',
+    payment_method: radioActive  ? 'cod' : '',
     payment_status: 'pending',
     description: 'testing perpose',
     tax_information: {
@@ -129,48 +150,20 @@ useEffect(() => {
     },
     user_id: nav?.adress?.customer_id,
     rowid:nav?.data?.item?.[0]?.rowid ,
-    transaction_id: '79896585966',
-     shipping_type:"free-shipping",
-     is_available_shipping:1
+     billing_status: nav?.adress?.billing_status??'',
+     billingAddress: {
+      // address_id:  nav?.adress?.id ?? '',
+      name: nav?.adress?.billing_address?.name ?? '',
+      email: nav?.adress?.billing_address?.email ?? '',
+      phone:  nav?.adress?.billing_address?.phone ?? '',
+      country:  nav?.adress?.billing_address?.country ?? '',
+      state:  nav?.adress?.billing_address?.state ?? '',
+      city:nav?.adress?.billing_address?.city ?? '',
+      address:  nav?.adress?.billing_address?.address ?? '',
+    },
   };
 
-  const data5 = {
-    shipping_option: 2,
-    shipping_method: 'default',
-    shipping_amount: 0.00,
-    coupon_code: '',
-    tax_amount:'',
-    sub_amount:'',
-    discount_amount:'',
-    discount_description:'',
-    note:'',
-    address: {
-      address_id: nav?.adress?.id ?? '',
-      name: nav?.adress?.name ?? '',
-      email: nav?.adress?.email ?? '',
-      phone: nav?.adress?.phone ?? '',
-      country: nav?.adress?.country ?? '',
-      state: nav?.adress?.state ?? '',
-      city: nav?.adress?.city ?? '',
-      address: nav?.adress?.address ?? '',
-    },
-    amount: Number(nav?.data?.ammount) + Number(0),
-    currency: 'IND',
-    customer_id: nav?.adress?.customer_id,
-    customer_type: 'Botble\\Ecommerce\\Models\\Customer',
-    payment_method: radioActive == 1 ? 'cod' : '',
-    payment_status: 'pending',
-    description: 'testing perpose',
-    tax_information: {
-      company_name: '',
-      company_address: '',
-      company_tax_code: '',
-      company_email: '',
-    },
-    user_id: JSON.stringify(nav?.adress?.customer_id),
-    transaction_id: '2354648586',
-    rowid:''
-  };
+
   const createbyord = async () => {
     try {
       setLoading(true);
@@ -196,7 +189,12 @@ useEffect(() => {
       if (response.data.status == 200) {
         setLoading(false);
         Toast.show(response.data.msg);
-        navigation.navigate('Thankyou',{order:response?.data});
+        dispatch(clearcartdata());
+        navigation.navigate('Thankyou',{order:response?.data,data:'Remedies'});
+      }
+      else{
+        setLoading(false);
+        Toast.show(response.data.msg);
       }
     } catch (error) {
       setLoading(false);
@@ -268,7 +266,10 @@ useEffect(() => {
       {/* Header */}
       <View style={styles.header}>
       <TouchableOpacity
-            onPress={() => navigation.goBack()}>
+            onPress={() => navigation.goBack()}
+            
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
             <Image
               style={styles.backBtn}
               source={require('../../../assets/drawer/Back1.png')}
@@ -279,25 +280,29 @@ useEffect(() => {
           <Text style={styles.logoText}>Payment Information</Text>
         </View>
       </View>
-{loading?<Loader/>:null}
+{loading1 || isLoading?<Loader/>:null}
       <ScrollView contentContainerStyle={styles.servicesContainer}>
         {nav?.data1 === 'Remedies' && (
           <View>
             <UserAddress data={nav?.adress} />
           </View>
         )}
-        {nav?.data1 === 'Cources' && (
-          <View>
-            <CourseInfoCard />
-          </View>
-        )}
-
+       
 <View style={styles.cardContainer2}>
 <FlatList
     data={nav?.data?.item}
     keyExtractor={(item) => item.id?.toString()} // Ensure id is a string
     renderItem={renderItem}
   />
+    <View
+            style={[
+              styles.card45,
+              styles.borderBottom,
+              {paddingTop: 0, paddingBottom: 5},
+            ]}>
+            <Text style={styles.third2}>{'Shipping Charges'}</Text>
+            <Text style={[styles.third2]}>₹ {ship?.price}</Text>
+          </View>
       <View
             style={[
               styles.card45,
@@ -310,7 +315,7 @@ useEffect(() => {
 
           <View style={styles.card45}>
             <Text style={styles.third3}>{'Total Payable Amount'}</Text>
-            <Text style={[styles.third2]}>₹ {totals?.totalAmount}</Text>
+            <Text style={[styles.third2]}>₹ {amount}</Text>
           </View>
     </View>
 

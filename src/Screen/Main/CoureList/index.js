@@ -7,7 +7,7 @@ import {
   TextInput,
   FlatList,
 } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './styles';
 import {colors} from '../../../Component/colors';
 import { heightPercent } from '../../../Component/ResponsiveScreen/responsive';
@@ -20,7 +20,32 @@ const CoureList = ({navigation}) => {
     {id: 3, image: require('../../../assets/otherApp/courseCard1.png')},
     {id: 4, image: require('../../../assets/otherApp/courseCard2.png')},
   ];
+  const placeholderText = "Search"; 
+  const [displayedText, setDisplayedText] = useState(''); 
 
+useEffect(() => {
+  let currentIndex = 0;
+
+  const startAnimation = () => {
+    const intervalId = setInterval(() => {
+      if (currentIndex < placeholderText.length) {
+        
+        setDisplayedText(placeholderText.slice(0, currentIndex + 1)); 
+        currentIndex++;
+      } else {
+        
+        currentIndex = 0; 
+        setDisplayedText(''); 
+      }
+    }, 300); 
+
+    return intervalId;
+  };
+
+  const intervalId = startAnimation();
+
+  return () => clearInterval(intervalId); 
+}, [placeholderText]);
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -31,6 +56,7 @@ const CoureList = ({navigation}) => {
         //       routes: [{name: 'UserProfile'}],
         //     })}
          onPress={() => navigation.goBack()}
+         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
           <Image
             style={styles.backBtn}
@@ -45,12 +71,18 @@ const CoureList = ({navigation}) => {
       <ScrollView contentContainerStyle={{margin: 20, paddingBottom:heightPercent(8)}}>
         <View style={styles.searchContainer}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Image source={require('../../../assets/image/SearchIcon.png')} />
+
+            <TouchableOpacity
+             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+     <Image source={require('../../../assets/image/SearchIcon.png')} />
+            </TouchableOpacity>
+       
             <TextInput
-              placeholder="Search..."
-              style={styles.searchInput}
-              placeholderTextColor={colors.searchBarTextColor}
-            />
+                    style={styles.searchInput}
+                    placeholder={displayedText} 
+                    placeholderTextColor={colors.searchBarTextColor}
+                  />
           </View>
         </View>
         <Text style={[styles.headingText, {marginVertical: 8}]}>

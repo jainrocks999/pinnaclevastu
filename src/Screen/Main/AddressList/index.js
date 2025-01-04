@@ -7,8 +7,9 @@ import {
   Alert,
   ScrollView,
   Image,
+  Animated,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import styles from './styles';
 import {RadioButton} from 'react-native-paper';
 import {colors} from '../../../Component/colors';
@@ -22,14 +23,17 @@ const DeliveryAddress = ({route}) => {
   const item=route?.params
   const  navigation =useNavigation();
   const isLoading=useSelector(state=>state.address.loading);
-  const addresstoget=useSelector(state=>state.address?.getaData?.data);
-  console.log('fkglkf',addresstoget);
-  
+  const addresstoget=useSelector(state=>state.address?.getaData);
+// console.log('fgfgjfg',addresstoget)
+const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
+  const [selectedId, setSelectedId] = useState(null);
   const [addresstoget1, setAddresstoget] = useState(addresstoget); // Address list
-  const [defaultAddress, setDefaultAddress] = useState(null); 
+  const [defaultAddress, setDefaultAddress] = useState(''); 
+  const [sortedAddresses, setSortedAddresses] = useState([]);
    const dispatch = useDispatch()
    const focus=useIsFocused();
  useEffect(()=>{
+  // setSelectedId(null);
  if(focus){
    AddressList();
  }
@@ -51,22 +55,63 @@ const DeliveryAddress = ({route}) => {
 
 
  useEffect(() => {
-  // Set initial default address
-  const defaultItem = addresstoget1?.find((item) => item?.is_default === 1);
-  setDefaultAddress(defaultItem);
-}, [addresstoget1]);
+  // Check for the default item in the address list
+  const defaultItem = addresstoget?.find((item) => item?.is_default == 1);
 
-const toggleDefaultAddress = (item) => {
+  if (defaultItem) {
+    setDefaultAddress(defaultItem); // Set the default address
+    setSelectedId(defaultItem.is_default); // Set the selected ID to the default item's ID
+  }
+
+
+  const sortedData = [...addresstoget]?.sort((a, b) => b.is_default - a.is_default);
+  
+    setSortedAddresses(sortedData);
  
-  const updatedAddresses = addresstoget1.map((addr) =>
-    addr.id === item.id
-      ? { ...addr, is_default: 1 }
-      : { ...addr, is_default: 0 }
-  );
-  setAddresstoget(updatedAddresses);
+}, [addresstoget]);
+
+
+
+
+const toggleDefaultAddress = async(item) => {
+
+ 
   setDefaultAddress(item);
-  console.log('Default address saved locally:', item);
+    setSelectedId(item?.is_default);
+   
+   
 };
+
+
+
+
+
+
+
+
+const handleConformPayment = () => {
+  Animated.sequence([
+    Animated.timing(buttonAnimatedValue, {
+      toValue: 0.94, 
+      duration: 500,
+      useNativeDriver: true,
+    }),
+    Animated.timing(buttonAnimatedValue, {
+      toValue: 1, 
+      duration: 300,
+      useNativeDriver: true,
+    }),
+  ]).start(() => {
+    navigation.navigate('Payment', {
+      data1: 'Remedies',
+      data: item,
+      adress: defaultAddress,
+    });
+  });
+};
+
+
+
 
  
   const cartRemove = async item => {
@@ -86,10 +131,10 @@ const toggleDefaultAddress = (item) => {
   };
 
   const renderItem = ({item}) => (
-    <View style={styles.card}>
+    <TouchableOpacity onPress={()=>toggleDefaultAddress(item)} style={[styles.card,{ borderColor:selectedId==item?.is_default?colors?.orange: '#DFE7EF',  }]}>
      
-      
-      <View style={styles.cardContentWrapper}>
+    
+      <View  style={styles.cardContentWrapper}>
         <View style={styles.textWrapper}>
           <View style={styles.direction}>
             <Text style={styles.cardTitle}>{item.name}</Text>
@@ -106,15 +151,15 @@ const toggleDefaultAddress = (item) => {
             </View>
           </View>
           <Text style={styles.cardDescription}>{item?.address} {item.apartment}  {item?.city} ({item?.zip_code})</Text>
-          <Text style={styles.cardPhone}>{item.phone}</Text>
+          <Text style={styles.cardPhone}>{`Mobile :${item.phone}`}</Text>
         </View>
       </View>
-    {  addresstoget1?.length==1?null:(
-      <View style={styles.direction1}>
+   
+      {/* <View style={styles.direction1}>
         <View style={styles.radioButtonWrapper}>
           <RadioButton
             value={item.id}
-            status={item.is_default==1 ? 'checked' : 'unchecked'}
+            status={selectedId==item?.is_default ? 'checked' : 'unchecked'}
             onPress={() => toggleDefaultAddress(item)}
             color={colors.Headertext}
             uncheckedColor={colors.light_gr}
@@ -123,16 +168,17 @@ const toggleDefaultAddress = (item) => {
         <View style={styles.makeview}>
           <Text style={styles.maketext}>{'Make this my default address'}</Text>
         </View>
-      </View>
-    )}
-    </View>
+      </View> */}
+    
+    </TouchableOpacity>
   );
 
   return (
     <View style={styles.container}>
+        {isLoading?<Loader/>:null}
       <View style={styles.header}>
         <View style={styles.headerview}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
             <Image
               style={styles.backBtn}
               source={require('../../../assets/drawer/Back1.png')}
@@ -141,33 +187,59 @@ const toggleDefaultAddress = (item) => {
           <Text style={styles.logoText}>Select Delivery Address</Text>
         </View>
       </View>
-
+     
       <ScrollView contentContainerStyle={styles.scrollview}>
-      {isLoading?<Loader/>:null}
-        <FlatList
-          data={addresstoget1==null? addresstoget:addresstoget1}
+      <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center',paddingHorizontal:3,marginBottom:15}}>
+      <Text style={styles.cardTitle}>{'Saved Address'}</Text>
+      <TouchableOpacity hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}  onPress={() =>
+            navigation.navigate('Address', {data: true, item: {}})}>
+      <Text style={[styles.cardTitle,{color:colors.orange}]}>
+        <Text style ={styles.fabText}>+</Text>
+        {'Add New Address'}</Text>
+      </TouchableOpacity>
+      </View>
+       {sortedAddresses?.length !=0?
+      
+       (<FlatList
+          data={sortedAddresses? sortedAddresses:[]}
           renderItem={renderItem}
           keyExtractor={item => item.id}
-        />
+        />):
+        (<View style={{}}>
+        <Text>
+          No Address Found
+        </Text>
+        </View>)
+      }
  
 
 
        
       </ScrollView>
-      <TouchableOpacity
+      {/* <TouchableOpacity
           style={styles.fab}
           onPress={() =>
             navigation.navigate('Address', {data: true, item: {}})}
           // navigation.navigate('Address')}
           >
           <Text style={styles.fabText}>+</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       <View style={styles.scrollview1}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Payment', {data1: 'Remedies',data: item, adress: defaultAddress})}
-          style={styles.book}>
-          <Text style={styles.btext}>CONIFORM PAYMENT</Text>
-        </TouchableOpacity>
+      <Animated.View
+  style={[
+    {
+      transform: [{ scale: buttonAnimatedValue }], 
+    },
+    { marginTop: 15 },
+  ]}
+>
+  <TouchableOpacity
+    onPress={handleConformPayment} 
+    style={styles.book}
+  >
+    <Text style={styles.btext}>CONFORM PAYMENT</Text>
+  </TouchableOpacity>
+</Animated.View>
       </View>
     </View>
   );

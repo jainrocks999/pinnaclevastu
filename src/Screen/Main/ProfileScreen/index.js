@@ -14,7 +14,7 @@ import { Rating } from 'react-native-ratings';
 import { widthPrecent as wp } from '../../../Component/ResponsiveScreen/responsive';
 import { useNavigation } from '@react-navigation/native';
 const ResidentalScreen = ({ navigation }) => {
-
+ const [scaleAnims, setScaleAnims] = useState({});
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
   const data2 = [
     {
@@ -36,20 +36,47 @@ const ResidentalScreen = ({ navigation }) => {
   const handlePress = () => {
     Animated.sequence([
       Animated.timing(buttonAnimatedValue, {
-        toValue: 0.96,
-        duration: 200,
+        toValue: 0.94,
+        duration: 500,
         useNativeDriver: true,
       }),
       Animated.timing(buttonAnimatedValue, {
         toValue: 1,
-        duration: 100,
+        duration: 500,
         useNativeDriver: true,
       }),
     ]).start(() => {
       navigation.navigate('Appoiment');
     });
   };
-  const renderItem = ({ item }) => {
+
+   const handleItemClick = (index) => {
+      const newScaleAnims = { ...scaleAnims };
+      
+      // Create the animated value for the clicked item if not already present
+      if (!newScaleAnims[index]) {
+        newScaleAnims[index] = new Animated.Value(1);
+      }
+      
+      setScaleAnims(newScaleAnims);
+  
+      // Trigger the animation sequence for the clicked item
+      Animated.sequence([
+        Animated.timing(newScaleAnims[index], {
+          toValue: 0.96, // Shrink to 30% of the original size
+          duration: 400,
+          useNativeDriver: true,
+        }),
+        Animated.timing(newScaleAnims[index], {
+          toValue: 1, // Return to original size
+          duration: 400,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    };
+
+
+  const renderItem = ({ item, index }) => {
     let backgroundColor;
 
 
@@ -62,12 +89,21 @@ const ResidentalScreen = ({ navigation }) => {
     } else {
       backgroundColor = colors.card3;
     }
-
+ const itemScaleAnim = scaleAnims[index] || new Animated.Value(1);
     return (
-      <TouchableOpacity style={[styles.cardContainer, { backgroundColor }]}>
+        <Animated.View
+            style={[
+              // styles.cardContainer,
+              {
+                transform: [{ scale: itemScaleAnim }], // Apply scale animation to the view
+              },
+            ]}
+          >
+      <TouchableOpacity style={[styles.cardContainer, { backgroundColor }]} onPress={() => handleItemClick(index)}>
         <Image source={item.image} style={styles.image} />
         <Text style={styles.text}>{item.name}</Text>
       </TouchableOpacity>
+      </Animated.View>
     );
   };
   const renderItem3 = ({ item }) => {
@@ -100,9 +136,9 @@ const ResidentalScreen = ({ navigation }) => {
   };
   return (
     <View style={styles.container}>
-      {/* Header */}
+     
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => navigation.goBack()}  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
           <Image
             style={styles.backBtn}
             source={require('../../../assets/drawer/Back1.png')}
@@ -231,11 +267,11 @@ const ResidentalScreen = ({ navigation }) => {
               source={require('../../../assets/drawer/copy.png')}
             />
           </View>
-          {/* <View style={styles.smallBtnShadow}> */}
+        
           <TouchableOpacity style={styles.button}>
             <Text style={styles.btext}>Write a Review</Text>
           </TouchableOpacity>
-          {/* </View> */}
+         
         </View>
 
         <View style={styles.reviewSection}>
@@ -267,7 +303,7 @@ const ResidentalScreen = ({ navigation }) => {
           </Animated.View>
         </TouchableOpacity>
       </ScrollView>
-      {/* <ButtomTab /> */}
+    
     </View>
   );
 };

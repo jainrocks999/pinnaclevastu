@@ -6,8 +6,10 @@ import {
   ScrollView,
   TouchableOpacity,
   FlatList,
+  Animated,
+  Modal,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import styles from './styles';
 import {colors} from '../../../Component/colors';
@@ -17,41 +19,56 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-simple-toast';
 
 import {useDispatch, useSelector} from 'react-redux';
+import {likedProductListApi} from '../../../Redux/Slice/HomeSlice';
 import {
   addToCartApi,
-  getCartDataApi,
-  likedProductListApi,
   removeCartItemApi,
-  totalCartQuantity,
-  updateCartDataApi,
+  getCartDataApi,
+  removeFromCart,
+  addToCart,
   updateCartQuantity,
-} from '../../../Redux/Slice/HomeSlice';
+  clearLocalCartData,
+  updateCartApi,
+} from '../../../Redux/Slice/CartSlice';
 import axios from 'axios';
 import constants from '../../../Redux/constant/constants';
 import {useRoute} from '@react-navigation/native';
 import Imagepath from '../../../Component/Imagepath';
 import {getAddress} from '../../../Redux/Slice/Addresslice';
+import {shipmethod} from '../../../Redux/Slice/orderSclice';
+import Loader from '../../../Component/Loader';
 
 const Remedies12SecondComponent = () => {
   const dispatch = useDispatch();
-  const focus = useIsFocused();
+
   const navigation = useNavigation();
-  const [cartItemList, setCartItemList] = useState([]);
+  // const [cartItemList, setCartItemList] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const cartDataList = useSelector(state => state?.home?.CartData);
-  // const cartTotalQuantity = useSelector(state => state?.home?.cartTotalQuantity);
+  const cartisLoading = useSelector(state => state.cart?.loading);
+  const isLoading = useSelector(state => state.address?.loading);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [itemToRemove, setItemToRemove] = useState(null);
+  const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
+  const cartDataList = useSelector(state => state?.cart?.CartData);
+  const localCartDataList = useSelector(
+    state => state?.cart?.localStorageCartData,
+  );
+  const cartTotalQuantity = useSelector(
+    state => state?.cart?.cartTotalQuantity,
+  );
   const LikeItemList = useSelector(state => state?.home?.likeProductList);
-  const addressData = useSelector(state => state.address?.getaData?.data);
-  const defaultAddress = addressData?.find(ob => ob.is_default === 1);
+  const addressData = useSelector(state => state.address?.getaData);
+  const [defaultAddress, setDefaultAddress] = useState(null);
 
   const [userType, setUserType] = useState('');
   const route = useRoute();
 
   const fromScreen = route?.params?.from;
 
-  console.log("cartRun !!!")
-
+  
   useEffect(() => {
+    console.log(cartDataList.length, 'cart length.....');
+
     const checkLoginStatus = async () => {
       try {
         const userStatus = await AsyncStorage.getItem('user_data');
@@ -59,13 +76,10 @@ const Remedies12SecondComponent = () => {
 
         if (userStatus) {
           setUserType(userData.user_type);
-          // logged user come from OTP Screen
-          if (fromScreen) {
-            const cartData = await AsyncStorage.getItem('cartItems');
-            const parsedCartData = cartData ? JSON.parse(cartData) : [];
 
-            if (parsedCartData.length > 0) {
-              for (const item of parsedCartData) {
+          if (fromScreen) {
+            if (localCartDataList.length > 0) {
+              for (const item of localCartDataList) {
                 await dispatch(
                   addToCartApi({
                     user_id: userData.user_id,
@@ -77,7 +91,8 @@ const Remedies12SecondComponent = () => {
                   }),
                 );
               }
-              await AsyncStorage.removeItem('cartItems');
+              // await AsyncStorage.removeItem('cartItems');
+              dispatch(clearLocalCartData());
             }
           }
           await dispatch(
@@ -90,18 +105,15 @@ const Remedies12SecondComponent = () => {
             }),
           );
 
-          await dispatch(
-            getCartDataApi({
-              token: userData.token,
-              url: `cart?user_id=${userData.user_id}`,
-            }),
-          );
+          // await dispatch(
+          //   getCartDataApi({
+          //     token: userData.token,
+          //     url: `cart?user_id=${userData.user_id}`,
+          //   }),
+          // );
 
-          setCartItemList(cartDataList);
-          // console.log(cartDataList, 'sandeep');
           setIsLoggedIn(true);
         } else {
-          getCartData();
           setIsLoggedIn(false);
         }
 
@@ -111,114 +123,188 @@ const Remedies12SecondComponent = () => {
             url: 'products-collection',
           }),
         );
-
-        //  set cartItem Qutantity in redux state
-        //  dispatch(totalCartQuantity(totalQuantity))
-        //  console.log(cartTotalQuantity)
       } catch (error) {
         console.log('Error checking login status:', error);
       }
     };
 
     checkLoginStatus();
-  }, [focus]);
+  }, []);
 
-  const handleUpdateCartData = async (user_id, rowid, qty, token) => {
-    try {
-      let data = {
-        user_id: user_id,
-        rowid: rowid,
-        qty: qty,
-      };
-      const config = {
-        method: 'post',
-        maxBodyLength: Infinity,
-        url: `${constants.mainUrl}update-to-cart`,
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        data: JSON.stringify(data),
-      };
+  useEffect(() => {
+    const checkAndSaveDefaultAddress = async () => {
+      try {
+        const savedAddress = await AsyncStorage.getItem('Address1');
+        const parsedAddress = savedAddress ? JSON.parse(savedAddress) : null;
 
-      const response = await axios.request(config);
+        let selectedAddress;
 
-      if (response?.data?.status == 200) {
-        // console.log(response.data, 'response.data Virendra dfgmkdflgkdflg');
-        await dispatch(
-          getCartDataApi({
-            token: token,
-            url: `cart?user_id=${user_id}`,
-          }),
-        );
+        if (parsedAddress) {
+          // Find the saved address in the current address list
+          selectedAddress = addressData?.find(
+            item => item.id == parsedAddress.id,
+          );
+        }
+
+        // If no saved address or it doesn't exist in the list, use the default address
+        if (!selectedAddress) {
+          selectedAddress = addressData?.find(item => item.is_default == 1);
+        }
+
+        // Save the selected address to state and AsyncStorage
+        if (selectedAddress) {
+          setDefaultAddress(selectedAddress);
+          await AsyncStorage.setItem(
+            'Address1',
+            JSON.stringify(selectedAddress),
+          );
+        }
+      } catch (error) {
+        console.error('Error checking default address:', error);
       }
+    };
+    checkAndSaveDefaultAddress();
+  }, [addressData]);
+
+  const handleUpdateCartData = async (user_id, rowid, qty, token,fromCart) => {
+    try {
+      await dispatch(
+        updateCartApi({
+          user_id: user_id,
+          rowid: rowid,
+          qty: qty,
+          token: token,
+          currentQty: 1,
+          fromCartScreen:fromCart
+        }),
+      );
+      await dispatch(
+        getCartDataApi({
+          token: token,
+          url: `cart?user_id=${user_id}`,
+        }),
+      );
     } catch (error) {
       console.log('cart Quantity error ', error);
     }
   };
 
-  const getCartData = async () => {
-    try {
-      const cartData = await AsyncStorage.getItem('cartItems');
-      const parsedCartData = cartData ? JSON.parse(cartData) : [];
+  // const handleUpdateCartData = async (user_id, rowid, qty, token) => {
+  //   try {
+  //     let data = {
+  //       user_id: user_id,
+  //       rowid: rowid,
+  //       qty: qty,
+  //     };
+  //     const config = {
+  //       method: 'post',
+  //       maxBodyLength: Infinity,
+  //       url: `${constants.mainUrl}update-to-cart`,
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //         'Content-Type': 'application/json',
+  //       },
+  //       data: JSON.stringify(data),
+  //     };
 
-      setCartItemList(parsedCartData);
+  //     const response = await axios.request(config);
 
-      // console.log(cartItemList, 'Retrieved cart data');
-    } catch (error) {
-      console.error('Error retrieving cart data:', error);
-    }
+  //     if (response?.data?.status == 200) {
+  //       await dispatch(
+  //         getCartDataApi({
+  //           token: token,
+  //           url: `cart?user_id=${user_id}`,
+  //         }),
+  //       );
+  //     }
+  //   } catch (error) {
+  //     console.log('cart Quantity error ', error);
+  //   }
+  // };
+
+  const handlePlaceOrder = () => {
+    Animated.sequence([
+      Animated.timing(buttonAnimatedValue, {
+        toValue: 0.94,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(buttonAnimatedValue, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      if (isLoggedIn) {
+        navigation.navigate('AddressList', {
+          item: cartDataList,
+          ammount: totalAmount,
+        });
+      } else {
+        navigation.navigate('Login', {from: 'MyCart'});
+      }
+    });
+  };
+
+  const handleContinueShopping = () => {
+    Animated.sequence([
+      Animated.timing(buttonAnimatedValue, {
+        toValue: 0.94,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(buttonAnimatedValue, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      navigation.navigate('Home1', {screen: 'Remedie12'});
+    });
   };
 
   const Addtocart = async item => {
     try {
       const userStatus = await AsyncStorage.getItem('user_data');
       const userData = JSON.parse(userStatus);
-      if (userStatus) {
-        await dispatch(
-          addToCartApi({
-            user_id: userData.user_id,
-            itemId: item.id,
-            qty: 1,
-            user_type: userData.user_type,
+      if (userData) {
+        const cartItem = cartDataList.find(prod => prod.product_id === item.id);
+        const quantityToUpdate = cartItem ? cartItem.qty + 1 : 1;
+        if (cartItem) {
+          await handleUpdateCartData(
+            userData?.user_id,
+            cartItem.rowid,
+            quantityToUpdate,
+            userData?.token,
+            false
+          );
+        } else {
+          await dispatch(
+            addToCartApi({
+              user_id: userData.user_id,
+              itemId: item.id,
+              qty: 1,
+              user_type: userData.user_type,
+              token: userData?.token,
+              url: 'add-to-cart',
+            }),
+          );
+          await dispatch(
+            getCartDataApi({
+              token: userData?.token,
+              url: `cart?user_id=${userData?.user_id}`,
+            }),
+          );
+        }
+        dispatch(
+          await shipmethod({
+            url: 'fetch-shipment-method',
             token: userData?.token,
-            url: 'add-to-cart',
-          }),
-        );
-        await dispatch(
-          getCartDataApi({
-            token: userData?.token,
-            url: `cart?user_id=${userData?.user_id}`,
+            user_id: userData?.user_id,
           }),
         );
       } else {
-        const existingCart = await AsyncStorage.getItem('cartItems');
-
-        let cartItems = existingCart ? JSON.parse(existingCart) : [];
-
-        const itemWithId = {
-          ...item,
-          qty: 1,
-          // uniqueId: uniqueId,
-          addedAt: new Date().toISOString(),
-        };
-
-        let existingItemIndex = cartItems.findIndex(
-          cartItem => cartItem.id === item.id,
-        );
-
-        if (existingItemIndex !== -1) {
-          cartItems[existingItemIndex] = {
-            ...cartItems[existingItemIndex],
-            ...itemWithId,
-          };
-          Toast.show('Item is already added to cart ! ');
-        } else {
-          cartItems.push(itemWithId);
-          Toast.show('Item added to cart successfully');
-        }
-        await AsyncStorage.setItem('cartItems', JSON.stringify(cartItems));
-        getCartData();
+        dispatch(addToCart(item));
       }
     } catch (error) {
       console.error('Error adding item to cart:', error);
@@ -235,23 +321,15 @@ const Remedies12SecondComponent = () => {
         item?.rowid,
         item?.qty < 100 ? item?.qty + 1 : item?.qty,
         userData?.token,
+        true
       );
+      console.log('quantity decrement....');
     } else {
-      try {
-        const updatedData = cartItemList.map(prod =>
-          prod.id === item.id
-            ? {
-                ...prod,
-                qty: prod.qty < 100 ? prod.qty + 1 : prod.qty,
-              }
-            : prod,
-        );
-        setCartItemList(updatedData);
-        await AsyncStorage.setItem('cartItems', JSON.stringify(updatedData));
-        // dispatch(updateCartQuantity(isLoggedIn ? cartDataList : cartItemList))
-      } catch (error) {
-        console.log(error);
-      }
+      let updatedItem = {
+        id: item.id,
+        operation: 'increase',
+      };
+      dispatch(updateCartQuantity(updatedItem));
     }
   };
 
@@ -265,25 +343,20 @@ const Remedies12SecondComponent = () => {
         item?.rowid,
         item?.qty > 1 ? item?.qty - 1 : item.qty,
         userData?.token,
+        true
       );
     } else {
-      try {
-        const updatedData = cartItemList.map(prod =>
-          prod.id === item.id
-            ? {
-                ...prod,
-                qty: prod.qty > 1 ? prod.qty - 1 : prod.qty,
-              }
-            : prod,
-        );
-
-        setCartItemList(updatedData);
-        await AsyncStorage.setItem('cartItems', JSON.stringify(updatedData));
-        // dispatch(updateCartQuantity(isLoggedIn ? cartDataList : cartItemList))
-      } catch (error) {
-        console.log(error);
-      }
+      let updatedItem = {
+        id: item.id,
+        operation: 'decrease',
+      };
+      dispatch(updateCartQuantity(updatedItem));
     }
+  };
+
+  const confirmRemoveItem = item => {
+    setItemToRemove(item);
+    setIsModalVisible(true); // Show modal
   };
 
   const removerItem = async item => {
@@ -291,6 +364,7 @@ const Remedies12SecondComponent = () => {
     const userData = JSON.parse(userStatus);
 
     if (userStatus) {
+      setIsModalVisible(false);
       await dispatch(
         removeCartItemApi({
           user_id: userData?.user_id,
@@ -305,23 +379,17 @@ const Remedies12SecondComponent = () => {
         }),
       );
     } else {
-      try {
-        const updatedData = cartItemList.filter(prod => prod.id !== item.id);
-        setCartItemList(updatedData);
-
-        await AsyncStorage.setItem('cartItems', JSON.stringify(updatedData));
-        Toast.show('Cart item remove successfully.');
-      } catch (error) {
-        console.log(error);
-      }
+      setIsModalVisible(false);
+      dispatch(removeFromCart(item.id));
     }
   };
 
   const calculateSubtotalAndSavings = () => {
     let subtotal = 0;
     let savings = 0;
+    let Tax = 0;
 
-    const dataList = isLoggedIn ? cartDataList : cartItemList;
+    const dataList = isLoggedIn ? cartDataList : localCartDataList;
 
     dataList?.forEach(item => {
       const discountedPrice =
@@ -338,20 +406,16 @@ const Remedies12SecondComponent = () => {
         discountedPrice > 0 ? discountedPrice : item?.price;
 
       subtotal += item?.price * item.qty;
-
+      Tax += parseFloat(item?.tax_amount || 0);
       // Calculate savings only if discountedPrice is non-negative and lower than item price
       savings += (item?.price - validDiscountedPrice) * item.qty;
     });
 
-    return {subtotal, savings};
+    return {subtotal, savings, Tax};
   };
-
-  const {subtotal, savings} = calculateSubtotalAndSavings();
-
-  const totalQuantity = (isLoggedIn ? cartDataList : cartItemList).reduce(
-    (sum, item) => sum + (item?.qty || 0),
-    0,
-  );
+  const {subtotal, savings, Tax} = calculateSubtotalAndSavings();
+  const totalAmount =
+    subtotal !== savings ? subtotal + Tax - savings : subtotal + Tax;
 
   const data2 = [
     {
@@ -387,16 +451,17 @@ const Remedies12SecondComponent = () => {
       reviewCount: 2,
     },
   ];
-
   const renderItem2 = ({item}) => (
     <View>
       <View style={styles.slide}>
-        <TouchableOpacity onPress={() => navigation.navigate('ProductDetail')}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('ProductDetail', {data: item})}
+          style={{flex: 1}}>
           <Image
             source={
               item?.image
                 ? {uri: `${Imagepath.Path}${item?.image}`}
-                : require('../../../assets/image/Remedies/ab.png')
+                : require('../../../assets/image/Remedies/Image-not.png')
             }
             style={styles.image}
           />
@@ -406,15 +471,17 @@ const Remedies12SecondComponent = () => {
           <Text style={[styles.third, {marginTop: 10}]}>₹ {item?.price}</Text>
 
           <View style={styles.direction}>
-            <Rating
-              type="custom"
-              tintColor={colors.ordercolor}
-              ratingCount={5}
-              imageSize={wp(4)}
-              startingValue={item?.rating}
-              ratingColor="#52B1E9"
-              ratingBackgroundColor={colors.lightGrey} // Unfilled star color
-            />
+            {item?.rating ? (
+              <Rating
+                type="custom"
+                tintColor={colors.ordercolor}
+                ratingCount={5}
+                imageSize={wp(4)}
+                startingValue={item?.rating}
+                ratingColor="#52B1E9"
+                ratingBackgroundColor={colors.lightGrey} // Unfilled star color
+              />
+            ) : null}
           </View>
           <TouchableOpacity
             style={styles.buttonstylefirst}
@@ -428,30 +495,49 @@ const Remedies12SecondComponent = () => {
 
   const renderItem = ({item}) => (
     <View style={styles.viewinner}>
-      {isLoggedIn ? (
-        <Image
-          source={
-            item?.option?.image
-              ? {uri: `${Imagepath.Path}${item.option.image}`}
-              : require('../../../assets/image/Remedies/ab.png')
-          }
-          style={styles.image1}
-        />
-      ) : (
-        <Image
-          source={
-            item?.image
-              ? {uri: `${Imagepath.Path}${item.image}`}
-              : require('../../../assets/image/Remedies/ab.png')
-          }
-          style={styles.image1}
-        />
-      )}
+      {/* {console.log('fsdfdsfsd;lfsd', item)} */}
+
+      <TouchableOpacity
+        onPress={() => navigation.navigate('ProductDetail', {data: item})}>
+        {isLoggedIn ? (
+          <Image
+            source={
+              item?.option?.image
+                ? {uri: `${Imagepath.Path}${item.option.image}`}
+                : require('../../../assets/image/Remedies/Image-not.png')
+            }
+            style={styles.image1}
+          />
+        ) : (
+          <Image
+            source={
+              item?.image
+                ? {uri: `${Imagepath.Path}${item.image}`}
+                : require('../../../assets/image/Remedies/Image-not.png')
+            }
+            style={styles.image1}
+          />
+        )}
+      </TouchableOpacity>
       <View style={styles.contentContainer}>
         <Text style={styles.textstyle}>{item?.name}</Text>
         <View style={styles.ruupebutton}>
           <View style={styles.rupees}>
             {/* <Text style={styles.rupeestext}>₹ {item?.price}</Text> */}
+
+            <Text style={styles.rupeestext}>
+              ₹{' '}
+              {
+                userType === 'customers' && item?.sale_price
+                  ? item?.sale_price
+                  : userType === 'student' && item?.student_price
+                  ? item?.student_price
+                  : userType === 'franchise' && item?.franchise_price
+                  ? item?.franchise_price
+                  : item?.price /* Default case when userType is null or undefined */
+              }
+            </Text>
+
             {isLoggedIn &&
             (item?.sale_price < item?.price ||
               item?.student_price < item?.price ||
@@ -467,19 +553,6 @@ const Remedies12SecondComponent = () => {
                 ₹ {item?.price}
               </Text>
             ) : null}
-
-            <Text style={styles.rupeestext}>
-              ₹{' '}
-              {
-                userType === 'customers' && item?.sale_price
-                  ? item?.sale_price
-                  : userType === 'student' && item?.student_price
-                  ? item?.student_price
-                  : userType === 'franchise' && item?.franchise_price
-                  ? item?.franchise_price
-                  : item?.price /* Default case when userType is null or undefined */
-              }
-            </Text>
           </View>
           <View style={[styles.headerview, styles.quantitySection]}>
             <TouchableOpacity
@@ -501,7 +574,7 @@ const Remedies12SecondComponent = () => {
       <TouchableOpacity
         style={styles.crossIcon}
         onPress={() => {
-          removerItem(item);
+          confirmRemoveItem(item);
         }}>
         <View style={styles.closeButton}>
           <Text style={styles.closeIcon}>+</Text>
@@ -512,9 +585,13 @@ const Remedies12SecondComponent = () => {
 
   return (
     <View style={styles.container}>
+      {/* {cartisLoading || isLoading ? <Loader /> : null}  */}
+
       <View style={styles.header}>
         <View style={styles.headerview}>
-          <TouchableOpacity onPress={() => navigation.openDrawer()}>
+          <TouchableOpacity
+            onPress={() => navigation.openDrawer()}
+            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
             <Image source={require('../../../assets/image/Drawer.png')} />
           </TouchableOpacity>
           <Image
@@ -524,10 +601,13 @@ const Remedies12SecondComponent = () => {
         </View>
         <TouchableOpacity
           onPress={() => navigation.navigate('Home', {screen: 'MyCart'})}
+          hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
           style={styles.bagBtn}>
-          <View style={styles.itemCount}>
-            <Text style={styles.countText}>{totalQuantity}</Text>
-          </View>
+          {cartTotalQuantity > 0 && (
+            <View style={styles.itemCount}>
+              <Text style={styles.countText}>{cartTotalQuantity}</Text>
+            </View>
+          )}
           <Image source={require('../../../assets/image/Group.png')} />
         </TouchableOpacity>
       </View>
@@ -541,7 +621,9 @@ const Remedies12SecondComponent = () => {
             backgroundColor: '#fff',
           },
         ]}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
           <Image
             style={styles.backBtn}
             source={require('../../../assets/drawer/Back1.png')}
@@ -552,13 +634,13 @@ const Remedies12SecondComponent = () => {
           <Text style={styles.logoText}>My Cart</Text>
         </View>
       </View>
-
-      {(isLoggedIn ? cartDataList.length > 0 : cartItemList.length > 0) ? (
+      {cartisLoading || isLoading ? (
+        <Loader />
+      ) : (
+          isLoggedIn ? cartDataList.length > 0 : localCartDataList.length > 0
+        ) ? (
         <>
           <ScrollView contentContainerStyle={styles.scroll}>
-            {/* {console.log(cartDataList, 'sandeep sdmfdkjfds 1')}
-            {console.log(cartItemList, 'sandeep sdmfsdmflsdkfm')} */}
-
             {isLoggedIn && defaultAddress ? (
               <View style={styles.viewDeliver}>
                 <View style={styles.toview}>
@@ -570,10 +652,17 @@ const Remedies12SecondComponent = () => {
                 <View style={styles.loremview}>
                   <Text style={styles.loremtext}>
                     {defaultAddress?.apartment}, {defaultAddress?.address}.{' '}
-                    {defaultAddress?.city}, {defaultAddress?.state}...
+                    {defaultAddress?.city}, {defaultAddress?.state}{' '}
+                    {`Mobile: ${defaultAddress?.phone}`}...
                   </Text>
                   <TouchableOpacity
-                    onPress={() => navigation.navigate('AddressList')}>
+                    onPress={() =>
+                      navigation.navigate('AddressList', {
+                        item: cartDataList,
+                        ammount: totalAmount,
+                        data: defaultAddress,
+                      })
+                    }>
                     <Text style={styles.change}>Change</Text>
                   </TouchableOpacity>
                 </View>
@@ -583,7 +672,7 @@ const Remedies12SecondComponent = () => {
             {/* {cartItemList?.length == 0 ? null : ( */}
             {/* <Text style={[styles.viewinner1,styles.third,{textAlign:"center"}]}>Cart is Empty !</Text> */}
             <FlatList
-              data={isLoggedIn ? cartDataList : cartItemList}
+              data={isLoggedIn ? cartDataList : localCartDataList}
               keyExtractor={item => item.id}
               renderItem={renderItem}
               contentContainerStyle={styles.viewinner1}
@@ -616,7 +705,13 @@ const Remedies12SecondComponent = () => {
                 <Text style={styles.rupeestext}>₹ {subtotal}</Text>
               </View>
             </View>
-
+            <View style={[styles.direction1, {marginBottom: -10}]}>
+              <Text style={styles.subtotaltext}>Tax</Text>
+              <View style={styles.rupees}>
+                {/* <FontAwesome name="rupee" size={12} color="#324356" /> */}
+                <Text style={styles.rupeestext}>₹ {Tax}</Text>
+              </View>
+            </View>
             {savings > 0 && subtotal !== savings ? (
               <>
                 <View style={styles.direction1}>
@@ -638,22 +733,24 @@ const Remedies12SecondComponent = () => {
               </Text>
               <View style={styles.rupees}>
                 {/* <FontAwesome name="rupee" size={12} color="#324356" /> */}
-                <Text style={styles.rupeestext}>
-                  {' '}
-                  ₹ {subtotal !== savings ? subtotal - savings : subtotal}
-                </Text>
+                <Text style={styles.rupeestext}> ₹ {totalAmount}</Text>
               </View>
             </View>
-
-            <TouchableOpacity
-          onPress={() => {
-            isLoggedIn
-              ? navigation.navigate('AddressList',{item:cartDataList,ammount:subtotal !== savings ? subtotal - savings : subtotal})
-              : navigation.navigate('Login', {from: 'MyCart'});
-          }}
-          style={styles.book}>
-          <Text style={styles.btext1}>PLACE ORDER</Text>
-        </TouchableOpacity>
+            <Text style={[styles.subtotaltext, {color: colors?.grey}]}>
+              {' '}
+              Shipping charges will be calculated in the next step.
+            </Text>
+            <Animated.View
+              style={[
+                {
+                  transform: [{scale: buttonAnimatedValue}], // स्केल एनिमेशन
+                },
+                {marginTop: 15},
+              ]}>
+              <TouchableOpacity onPress={handlePlaceOrder} style={styles.book}>
+                <Text style={styles.btext1}>PLACE ORDER</Text>
+              </TouchableOpacity>
+            </Animated.View>
           </View>
         </>
       ) : (
@@ -662,15 +759,51 @@ const Remedies12SecondComponent = () => {
             source={require('../../../assets/image/continue_shopping.png')}
             style={styles.continueShoppingImg}
           />
-          <TouchableOpacity
-            onPress={() => {
-                navigation.navigate('Home1', {screen: 'Remedie12'})
-            }}
-            style={[styles.book, {width: '90%', marginHorizontal: 'auto'}]}>
-            <Text style={styles.btext1}>Continue Shopping</Text>
-          </TouchableOpacity>
+          <Animated.View
+            style={[
+              {
+                transform: [{scale: buttonAnimatedValue}],
+              },
+              {marginTop: 15},
+            ]}>
+            <TouchableOpacity
+              onPress={handleContinueShopping}
+              style={[styles.book, {width: '90%', marginHorizontal: 'auto'}]}>
+              <Text style={styles.btext1}>Continue Shopping</Text>
+            </TouchableOpacity>
+          </Animated.View>
         </View>
       )}
+
+      <Modal
+        transparent={true}
+        animationType="fade"
+        visible={isModalVisible}
+        onRequestClose={() => setIsModalVisible(false)}
+        // onCancel={() => setIsModalVisible(false)}
+        // onConfirm={() => removerItem(itemToRemove)}
+      >
+        <View style={styles.modalOverlay} pointerEvents="box-none">
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Remove Item</Text>
+            <Text style={styles.modalMessage}>
+              Are you sure you want to remove this item from your cart?
+            </Text>
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => setIsModalVisible(false)}>
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.confirmButton}
+                onPress={() => removerItem(itemToRemove)}>
+                <Text style={styles.buttonText}>Remove</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -690,5 +823,4 @@ const data = [
     price: '₹ 725.00',
     image: require('../../../assets/image/Remedies/ab.png'),
   },
-  // Add more items as needed
 ];

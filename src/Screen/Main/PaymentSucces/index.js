@@ -7,7 +7,7 @@ const PaymentApp = ({ navigation }) => {
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.closeBtn}
-        onPress={() => navigation.goBack()}>
+        onPress={() => navigation.goBack()}  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
         <Image
           style={{ height: "100%", width: "100%" }}
           source={require('../../../assets/image/lightClose.png')}

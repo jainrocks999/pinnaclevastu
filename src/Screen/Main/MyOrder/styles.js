@@ -112,6 +112,7 @@ export default StyleSheet.create({
     shadowRadius: 10, 
     
     elevation: 5,
+    overflow:"hidden",
   },
   orderNo: {
     fontSize: fontSize.Fourteen,
@@ -130,7 +131,7 @@ export default StyleSheet.create({
     borderRadius: 8,
     marginRight: '5%',
     resizeMode: 'contain',
-    borderWidth:1.3,
+    borderWidth:0.5,
     borderColor:colors.lightGrey
   },
   productDetails: {
@@ -183,4 +184,15 @@ export default StyleSheet.create({
     // resizeMode: 'stretch',
     marginRight: 20,
   },
+  statusText:{
+    position:"absolute",
+    fontSize: fontSize.Ten,
+    // color: colors.white,
+    fontFamily: 'Poppins-Regular',
+    top:0,
+    right:0,
+    paddingVertical:5,
+    paddingHorizontal:8,
+    // borderBottomLeftRadius:10
+  }
 });

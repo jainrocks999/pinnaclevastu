@@ -20,29 +20,24 @@ const ThankyouPage = ({route}) => {
         // navigation.navigate('Home',{screen:'Home1'})
        
        
-    
-        navigation.reset({
-          index: 0,
-          routes: [
-            {
-              name: 'Home',
-              state: {
-                routes: [
-                  {
-                    name: 'Home1',
-                    state: {
-                      routes: [
-                        {name: 'MyProfile',params:{screen:'MyOrder'}},
-                      ],
-                    },
-                  },
-                ],
-              },
+        // navigation.push('Home', {
+        //   screen: 'Home1',
+        //   params: {
+        //     screen: 'MyProfile',
+        //     params: {
+        //       screen: 'MyOrder',
+        //     },
+        //   },
+        // })
+        navigation.navigate('Home', {
+          screen: 'Home1',
+          params: {
+            screen: 'MyProfile',
+            params: {
+              screen: 'MyOrder',params:{data:route?.params?.data}
             },
-          ],
+          },
         })
-       
-        
         
       
         } style={styles.book}>

@@ -81,7 +81,7 @@ const BannerSlider = ({
               height: '100%',
               width: '100%',
               borderRadius: 10,
-              borderWidth: 0.3,
+              // borderWidth: 0.2,
               // resizeMode: 'center',
             },
           ]}

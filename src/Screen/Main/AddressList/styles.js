@@ -68,7 +68,7 @@ export default StyleSheet.create({
     backgroundColor: colors.white,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#DFE7EF',
+   
     padding: 15,
     marginBottom: 10,
     elevation: 3,
@@ -154,13 +154,13 @@ export default StyleSheet.create({
     position:'absolute',
     // marginTop: hp(25),
     alignSelf: 'flex-end',
-    zIndex:100,
+    zIndex:1,
     bottom:hp(16),
     right:wp(4)
   },
   fabText: {
-    color: '#FFFFFF',
-    fontSize: wp(7),
+    color: colors.orange,
+    fontSize:fontSize.Sixteen,
   },
 
   placeOrderButton: {

@@ -260,7 +260,7 @@ export default StyleSheet.create({
   },
   acharya1: {
     lineHeight: wp(6),
-    width: '17%',
+    width: '15.5%',
     fontSize: fontSize.Fourteen,
     color: colors.heading,
     fontFamily: 'Poppins-Medium',
