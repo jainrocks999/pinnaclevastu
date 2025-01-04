@@ -20,7 +20,11 @@ import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive
 import {useDispatch, useSelector} from 'react-redux';
 import Imagepath from '../../../Component/Imagepath';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
-import {clearRemeiesDetail1, productDetail1, RemediesCategory} from '../../../Redux/Slice/HomeSlice';
+import {
+  clearRemeiesDetail1,
+  productDetail1,
+  RemediesCategory,
+} from '../../../Redux/Slice/HomeSlice';
 import {
   addToCart,
   addToCartApi,
@@ -52,31 +56,29 @@ const RemediesProductList = ({route}) => {
   const [masterDataSource, setMasterDataSource] = useState([]);
   const win = Dimensions.get('window');
 
-  const placeholderText = "Search"; 
-    const [displayedText, setDisplayedText] = useState(''); 
+  const placeholderText = 'Search';
+  const [displayedText, setDisplayedText] = useState('');
 
- useEffect(() => {
+  useEffect(() => {
     let currentIndex = 0;
-  
+
     const startAnimation = () => {
       const intervalId = setInterval(() => {
         if (currentIndex < placeholderText.length) {
-          
-          setDisplayedText(placeholderText.slice(0, currentIndex + 1)); 
+          setDisplayedText(placeholderText.slice(0, currentIndex + 1));
           currentIndex++;
         } else {
-          
-          currentIndex = 0; 
-          setDisplayedText(''); 
+          currentIndex = 0;
+          setDisplayedText('');
         }
-      }, 300); 
-  
+      }, 450);
+
       return intervalId;
     };
-  
+
     const intervalId = startAnimation();
-  
-    return () => clearInterval(intervalId); 
+
+    return () => clearInterval(intervalId);
   }, [placeholderText]);
 
   useEffect(() => {
@@ -124,7 +126,7 @@ const RemediesProductList = ({route}) => {
 
     getUserType();
     RemediesProductcategory();
-  }, [focus, cartDataList]); 
+  }, [focus, cartDataList]);
 
   const RemediesProductcategory = async () => {
     await dispatch(
@@ -135,11 +137,10 @@ const RemediesProductList = ({route}) => {
     );
   };
   const PRoductDeta = async item => {
-    console.log('fgfdglkd',item);
-    
-      dispatch(clearRemeiesDetail1())
-    navigation.navigate('ProductDetail', {data: item})
+    console.log('fgfdglkd', item);
 
+    dispatch(clearRemeiesDetail1());
+    navigation.navigate('ProductDetail', {data: item});
   };
 
   const Addtocard = async item => {
@@ -147,14 +148,13 @@ const RemediesProductList = ({route}) => {
       const userStatus = await AsyncStorage.getItem('user_data');
       const userData = JSON.parse(userStatus);
 
-
       if (userStatus) {
-        console.log(cartDataList, "Current cart data...");
+        console.log(cartDataList, 'Current cart data...');
 
         const existingCartItem = cartDataList.find(
           cartItem => cartItem.product_id === item.id,
         );
-        console.log(existingCartItem,"sandeep......")
+        console.log(existingCartItem, 'sandeep......');
         if (existingCartItem) {
           const newQuantity = existingCartItem.qty + 1;
 
@@ -164,8 +164,8 @@ const RemediesProductList = ({route}) => {
               rowid: existingCartItem.rowid,
               qty: newQuantity,
               token: userData.token,
-              currentQty:1,
-              fromCartScreen:false
+              currentQty: 1,
+              fromCartScreen: false,
             }),
           );
           console.log(`Item quantity updated: ${newQuantity}`);
@@ -197,8 +197,7 @@ const RemediesProductList = ({route}) => {
   };
   const renderItem = ({item}) => (
     <View style={styles.slide}>
-      <TouchableOpacity
-        onPress={() => PRoductDeta(item)}>
+      <TouchableOpacity onPress={() => PRoductDeta(item)}>
         <View style={styles.image}>
           <Image
             source={
@@ -212,18 +211,13 @@ const RemediesProductList = ({route}) => {
 
         <View style={styles.textContainer}>
           <Text style={[styles.third, styles.titleText]}>
-            
-          {
- item.name
-    ? item.name.length > 20
-      ? `${item.name.substring(0, 20)}...`
-      : item.name
-    : ' '
-}
-           </Text>
+            {item.name
+              ? item.name.length > 20
+                ? `${item.name.substring(0, 20)}...`
+                : item.name
+              : ' '}
+          </Text>
           <View style={styles.priceText}>
-           
-
             <Text style={[styles.third]}>
               {`₹ ${
                 userType === 'customers' && item?.sale_price
@@ -250,16 +244,17 @@ const RemediesProductList = ({route}) => {
           </View>
 
           <View style={styles.direction}>
-            {item?.rating?
-            <Rating
-              type="custom"
-              tintColor={colors.ordercolor}
-              ratingCount={5}
-              imageSize={item?.rating ? 16 : 20}
-              startingValue={item?.rating}
-              ratingColor="#52B1E9"
-              ratingBackgroundColor={colors.lightGrey} // Unfilled star color
-            />:null}
+            {item?.rating ? (
+              <Rating
+                type="custom"
+                tintColor={colors.ordercolor}
+                ratingCount={5}
+                imageSize={item?.rating ? 16 : 20}
+                startingValue={item?.rating}
+                ratingColor="#52B1E9"
+                ratingBackgroundColor={colors.lightGrey} // Unfilled star color
+              />
+            ) : null}
           </View>
           <TouchableOpacity
             onPress={() => Addtocard(item)}
@@ -299,7 +294,7 @@ const RemediesProductList = ({route}) => {
           onPress={() => {
             navigation.navigate('Home', {screen: 'MyCart'});
           }}>
-           {cartTotalQuantity > 0 && (
+          {cartTotalQuantity > 0 && (
             <View style={styles.itemCount}>
               <Text style={styles.countText}>{cartTotalQuantity}</Text>
             </View>

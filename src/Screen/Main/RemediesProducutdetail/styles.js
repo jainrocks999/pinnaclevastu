@@ -14,7 +14,7 @@ export default StyleSheet.create({
   },
 
   titleText: {
-    minHeight: wp(10),
+    // minHeight: wp(10),
   },
   header: {
     flexDirection: 'row',
@@ -419,6 +419,7 @@ export default StyleSheet.create({
   textContainer: {
     backgroundColor: colors.ordercolor,
     paddingHorizontal: 10, // Horizontal padding based on width
+    paddingTop:10
   },
 
   price: {
@@ -443,10 +444,12 @@ export default StyleSheet.create({
   },
 
   direction: {
-    marginLeft: 0,
-    // width: 70,
+    minHeight:wp(6),
+    marginBlock: 5,
     alignSelf: 'flex-start',
-    paddingBottom: 20,
+    // marginLeft: 0,
+    // width: 70,
+    // paddingBottom: 20,
   },
 
   thirdCard: {
@@ -530,22 +533,23 @@ export default StyleSheet.create({
     resizeMode: 'stretch',
     marginRight: 10,
   },
-  bagBtn: {
-    // height: wp(4),
-    // width: wp(4),
-    // marginTop: -5,
-    resizeMode: 'contain',
-    // position:"absolute",
-    top:-10,
-  },
+  // bagBtn: {
+  //   // height: wp(4),
+  //   // width: wp(4),
+  //   // marginTop: -5,
+  //   resizeMode: 'contain',
+  //   // position:"absolute",
+  //   top:-10,
+  // },
  
   itemCount: {
     backgroundColor: '#EF6024',
     borderRadius: 10,
     zIndex: 1,
-    top:-5,
+    bottom: -10,
     left: 7,
     height: 15,
+    marginTop:-15,
     width: 13,
     display: 'flex',
     justifyContent: 'center',
@@ -558,7 +562,6 @@ export default StyleSheet.create({
     color: colors.white,
     fontSize: fontSize.Ten,
   },
-
   sevicesImg: {
     width: wp(10),
     height: wp(10),

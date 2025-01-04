@@ -103,7 +103,7 @@ const HomeScreen = () => {
           currentIndex = 0;
           setDisplayedText('');
         }
-      }, 300);
+      }, 450);
 
       return intervalId;
     };

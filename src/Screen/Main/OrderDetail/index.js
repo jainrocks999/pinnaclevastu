@@ -24,6 +24,7 @@ import Imagepath from '../../../Component/Imagepath';
 import Collapsible from 'react-native-collapsible';
 import {cancelorders, orderDetail} from '../../../Redux/Slice/orderSclice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { colors } from '../../../Component/colors';
 
 const labels = [
   'Order Received',
@@ -213,6 +214,7 @@ const OrderDetail = () => {
             <TextInput
               style={styles.input}
               placeholder="Enter your reason here"
+              placeholderTextColor={colors.placeholder}
               value={reason}
               onChangeText={text => setReason(text)}
               multiline={true}

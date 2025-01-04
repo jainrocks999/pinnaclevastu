@@ -597,9 +597,13 @@ const RemediesProductDetail = ({route}) => {
           }
           style={styles.image}
         />
-      </TouchableOpacity>
+  
       <View style={styles.textContainer}>
-        <Text style={[styles.thirdCard, styles.titleText]}>{item.name}</Text>
+        <Text style={[styles.thirdCard, styles.titleText]}> {item.name
+              ? item.name.length > 20
+                ? `${item.name.substring(0, 20)}...`
+                : item.name
+              : ' '}</Text>
         <Text style={[styles.thirdCard, {marginTop: 10}]}>₹ {item.price}</Text>
 
         <View style={styles.direction}>
@@ -621,6 +625,7 @@ const RemediesProductDetail = ({route}) => {
           <Text style={styles.buttonstyle}>Add to Cart</Text>
         </TouchableOpacity>
       </View>
+      </TouchableOpacity>
     </View>
   );
 
@@ -706,7 +711,7 @@ const RemediesProductDetail = ({route}) => {
 
           <Image source={require('../../../assets/image/Group.png')} />
         </View>
-        {isLoading ? <AnimatedLine /> : null}
+        {!Detail ? <AnimatedLine /> : null}
       </View>
     );
   }
