@@ -59,8 +59,8 @@ const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
   const defaultItem = addresstoget?.find((item) => item?.is_default == 1);
 
   if (defaultItem) {
-    setDefaultAddress(defaultItem); // Set the default address
-    setSelectedId(defaultItem.is_default); // Set the selected ID to the default item's ID
+    setDefaultAddress(defaultItem); 
+    setSelectedId(defaultItem.id);
   }
 
 
@@ -77,7 +77,7 @@ const toggleDefaultAddress = async(item) => {
 
  
   setDefaultAddress(item);
-    setSelectedId(item?.is_default);
+    setSelectedId(item?.id);
    
    
 };
@@ -131,7 +131,7 @@ const handleConformPayment = () => {
   };
 
   const renderItem = ({item}) => (
-    <TouchableOpacity onPress={()=>toggleDefaultAddress(item)} style={[styles.card,{ borderColor:selectedId==item?.is_default?colors?.orange: '#DFE7EF',  }]}>
+    <TouchableOpacity onPress={()=>toggleDefaultAddress(item)} style={[styles.card,{ borderColor:selectedId == item?.id?colors?.orange: '#DFE7EF',  }]}>
      
     
       <View  style={styles.cardContentWrapper}>

@@ -27,7 +27,7 @@ export default StyleSheet.create({
     //  resizeMode: 'center',
   },
   infoSection: {
-    marginTop: wp(2),
+     marginTop: -7,
     padding: 5,
     gap:3
   },
@@ -35,7 +35,8 @@ export default StyleSheet.create({
     color: colors.heading,
     fontSize: fontSize.Twenty,
     fontFamily:'Poppins-Medium',
-    marginLeft:8
+    marginLeft:8,
+    width:'90%'
   },
   subHeadText: {
     color: colors.heading,

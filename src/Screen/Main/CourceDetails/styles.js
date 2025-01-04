@@ -46,7 +46,7 @@ export default StyleSheet.create({
     marginBottom: 20,
   },
   img1: {
-    width: '100%',
+    // width: '100%',
     height: wp(50),
     borderRadius: 15,
   },
@@ -260,7 +260,7 @@ export default StyleSheet.create({
   },
   acharya1: {
     lineHeight: wp(6),
-    width: '15.5%',
+    width: '15%',
     fontSize: fontSize.Fourteen,
     color: colors.heading,
     fontFamily: 'Poppins-Medium',

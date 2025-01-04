@@ -58,8 +58,8 @@ const Remedies12SecondComponent = () => {
   );
   const LikeItemList = useSelector(state => state?.home?.likeProductList);
   const addressData = useSelector(state => state.address?.getaData);
-  const [defaultAddress, setDefaultAddress] = useState(null);
-
+ 
+ const defaultAddress= addressData?.find(item => item.is_default == 1);
   const [userType, setUserType] = useState('');
   const route = useRoute();
 
@@ -131,40 +131,7 @@ const Remedies12SecondComponent = () => {
     checkLoginStatus();
   }, []);
 
-  useEffect(() => {
-    const checkAndSaveDefaultAddress = async () => {
-      try {
-        const savedAddress = await AsyncStorage.getItem('Address1');
-        const parsedAddress = savedAddress ? JSON.parse(savedAddress) : null;
 
-        let selectedAddress;
-
-        if (parsedAddress) {
-          // Find the saved address in the current address list
-          selectedAddress = addressData?.find(
-            item => item.id == parsedAddress.id,
-          );
-        }
-
-        // If no saved address or it doesn't exist in the list, use the default address
-        if (!selectedAddress) {
-          selectedAddress = addressData?.find(item => item.is_default == 1);
-        }
-
-        // Save the selected address to state and AsyncStorage
-        if (selectedAddress) {
-          setDefaultAddress(selectedAddress);
-          await AsyncStorage.setItem(
-            'Address1',
-            JSON.stringify(selectedAddress),
-          );
-        }
-      } catch (error) {
-        console.error('Error checking default address:', error);
-      }
-    };
-    checkAndSaveDefaultAddress();
-  }, [addressData]);
 
   const handleUpdateCartData = async (user_id, rowid, qty, token,fromCart) => {
     try {
