@@ -23,6 +23,7 @@ import RenderHTML from 'react-native-render-html';
 import Video from 'react-native-video';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
+
 const {width} = Dimensions.get('window');
 
 const CourseDetail = ({route}) => {
@@ -32,7 +33,13 @@ const CourseDetail = ({route}) => {
   const [userType, setUserType] = useState('');
   const CourceDetailA = useSelector(state => state?.home?.CourceDetailA);
   const isLoading = useSelector(state => state.home?.loading);
+  const [videoPlay, setVideoPlay] = useState(true);
+  const [videoState, setVideoState] = useState({
+    isPlaying: true,
+    controlsVisible: false,
+  });
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
+
   const images = [
     require('../../../assets/otherApp/reviewslider.png'),
     require('../../../assets/otherApp/reviewslider.png'),
@@ -99,6 +106,11 @@ const CourseDetail = ({route}) => {
 
   useEffect(() => {
     getUserType();
+    // setVideoPlay(false
+    setVideoState(prevState => ({
+      ...prevState,
+      isPlaying: false,
+    }));
   }, []);
 
   const getUserType = async () => {
@@ -298,6 +310,12 @@ const CourseDetail = ({route}) => {
     } catch (error) {
       console.error('Error sharing content: ', error.message);
     }
+    const handleVideoPress = () => {
+      setVideoState(prevState => ({
+        isPlaying: !prevState.isPlaying,
+        controlsVisible: !prevState.controlsVisible,
+      }));
+    };
   };
 
   return (
@@ -317,14 +335,18 @@ const CourseDetail = ({route}) => {
         </View>
       </View>
       <ScrollView contentContainerStyle={styles.scrollview}>
-        <View style={styles.firstimgview}>
+        <TouchableOpacity
+          onPress={handleVideoPress}
+          style={styles.firstimgview}>
           <Video
             source={{
               uri: videoFileName1,
             }}
             style={styles.img1}
             resizeMode="contain"
-            controls={true}
+            controls={videoState.controlsVisible}
+            paused={videoState.isPlaying}
+            repeat={true}
             onError={error => console.error('Video Error:', error)} // Debug video errors
           />
           {/* <Image
@@ -334,8 +356,8 @@ const CourseDetail = ({route}) => {
                 : require('../../../assets/otherApp/coursedetail.png')
             }
             style={styles.img1}
-          /> */}
-        </View>
+            /> */}
+        </TouchableOpacity>
         <View style={styles.advanceview}>
           <Text style={styles.advancetext}>{CourceDetailA?.title} </Text>
           {/* Advance Vastu Course */}
@@ -524,7 +546,7 @@ const CourseDetail = ({route}) => {
           {/* <Image
             source={require('../../../assets/otherApp/coursedetail.png')}
             style={styles.img1}
-          /> */}
+            /> */}
         </View>
         <FlatList
           data={CourceDetailA?.desc_demo_data?.filter(
@@ -612,33 +634,33 @@ const CourseDetail = ({route}) => {
           {/* <Text style={styles.journeytext}>
             His journey of occultism began in year 2012 which gradually acted as
             a gamechanger when he realized the potential of occult field.
-          </Text>
-          <Text style={styles.journeytext}>
+            </Text>
+            <Text style={styles.journeytext}>
             His journey of occultism began in year 2012 which gradually acted as
             a gamechanger when he realized the potential of occult field began
             in year 2012 which gradually acted as a gamechanger when he realized
             the potential of occult field.
-          </Text>
-          <Text style={styles.journeytext}>
+            </Text>
+            <Text style={styles.journeytext}>
             His journey of occultism began in year 2012 which gradually acted as
             a gamechanger when he realized the potential of occult field.
-          </Text>
-          <Text style={styles.journeytext}>
+            </Text>
+            <Text style={styles.journeytext}>
             His journey of occultism began in year 2012 which gradually acted as
             a gamechanger when he realized began in year 2012 which gradually
             acted as a gamechanger when he realized the potential of occult
             field the potential of occult field.
-          </Text>
-          <Text style={styles.journeytext}>
+            </Text>
+            <Text style={styles.journeytext}>
             His journey of occultism began in year 2012 which gradually acted as
             a gamechanger when he realized the potential of occult field.
-          </Text>
-          <Text style={styles.journeytext}>
+            </Text>
+            <Text style={styles.journeytext}>
             His journey of began in year 2012 which gradually acted as a
             gamechanger when he realized the potential of occult field occultism
             began in year 2012 which gradually acted as a gamechanger when he
             realized the potential of occult field.
-          </Text> */}
+            </Text> */}
         </View>
         <View style={styles.courseview}>
           <Text style={styles.demotext}>Course Review By Student</Text>
@@ -693,25 +715,26 @@ const CourseDetail = ({route}) => {
           <Text style={styles.btext1}>Join Course</Text>
         </TouchableOpacity> */}
       </ScrollView>
+
       <View style={styles.scrollview}>
         <View style={styles.listItem}>
           <Text style={styles.listItemText}>{CourceDetailA?.title}</Text>
           {/* <Text style={styles.listitem1}>₹ {CourceDetailA.price}</Text> */}
           {/* {userType &&
           (CourceDetailA?.sale_price < CourceDetailA?.price ||
-            CourceDetailA?.student_price < CourceDetailA?.price ||
+          CourceDetailA?.student_price < CourceDetailA?.price ||
             CourceDetailA?.franchise_price < CourceDetailA?.price) &&
-          (CourceDetailA?.sale_price ||
+            (CourceDetailA?.sale_price ||
             CourceDetailA?.student_price ||
             CourceDetailA?.franchise_price) ? (
-            <Text
+              <Text
               style={[
                 styles.listitem1,
                 {textDecorationLine: 'line-through', color: 'gray'},
-              ]}>
-              ₹ {CourceDetailA?.price}
-            </Text>
-          ) : null} */}{' '}
+                ]}>
+                ₹ {CourceDetailA?.price}
+                </Text>
+                ) : null} */}{' '}
           <Text style={[styles.listitem1]}>
             {`₹ ${
               userType === 'customers' && CourceDetailA?.sale_price

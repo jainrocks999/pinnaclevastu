@@ -425,7 +425,7 @@ const Address = ({route}) => {
             placeholder="Phone"
             placeholderTextColor={colors.paymenttext}
             maxLength={10}
-            keyboardType="numeric"
+            keyboardType="phone-pad"
             value={formData.phoneNumber}
             onChangeText={text => handleInputChange('phoneNumber', text)}
           />
@@ -568,7 +568,7 @@ const Address = ({route}) => {
             placeholder="Phone"
             placeholderTextColor={colors.paymenttext}
             maxLength={10}
-            keyboardType="numeric"
+            keyboardType="phone-pad"
             value={billingData.phoneNumber}
             onChangeText={text => handleInputChange('phoneNumber', text,true)}
           />

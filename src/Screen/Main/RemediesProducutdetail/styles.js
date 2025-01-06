@@ -603,7 +603,16 @@ export default StyleSheet.create({
     marginLeft:20
   },
 
-
+  book1:{
+    backgroundColor: colors.orange,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    height: wp(13),
+    marginBottom: 10,
+    marginHorizontal: 15,
+    elevation: 10,
+  },
 
 });
 

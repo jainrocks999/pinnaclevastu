@@ -6,6 +6,7 @@ import {
   FlatList,
   Image,
   ScrollView,
+  Animated,
   Alert,
   BackHandler,
 } from 'react-native';
@@ -13,6 +14,7 @@ import styles from './styles';
 
 import { Rating } from 'react-native-ratings';
 import { heightPercent } from '../../../Component/ResponsiveScreen/responsive';
+
 
 const upcomingAppointments = [
   {
@@ -75,6 +77,38 @@ const Appointment = ({ navigation }) => {
   const [selectedTab, setSelectedTab] = useState('Upcoming');
   const [appointmentsData, setAppointmentsData] = useState(upcomingAppointments);
   const [sessionOver, setSessionOver] = useState(true);
+  const [scaleAnims, setScaleAnims] = useState({});
+
+
+  const handlePress = (index) => {
+
+    const newScaleAnims = { ...scaleAnims };
+
+
+    if (!newScaleAnims[index]) {
+      newScaleAnims[index] = new Animated.Value(1);
+    }
+
+    setScaleAnims(newScaleAnims);
+
+
+    Animated.sequence([
+      Animated.timing(newScaleAnims[index], {
+        toValue: 0.97,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(newScaleAnims[index], {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      navigation.navigate('AppoinmentDetail');
+    });
+
+
+  };
 
   const handleTabClick = tab => {
     setSelectedTab(tab);
@@ -86,90 +120,178 @@ const Appointment = ({ navigation }) => {
   };
 
 
-  const renderAppointment = ({ item }) => (
-    <TouchableOpacity
-      style={styles.appointmentContainer}
-      onPress={() => navigation.navigate('AppoinmentDetail')}
-    >
-      <Image source={item.image} style={styles.appointmentImage} />
-      <View style={styles.appointmentDetails}>
-        <Text
-          style={[
-            styles.appointmentTitle,
-            selectedTab === 'Upcoming' && styles.upcomingTitleStyle, 
-          ]}
-        >
-          {item.title}
-        </Text>
-        <Text
-          style={[
-            styles.appointmentTitle1,
-            selectedTab === 'Upcoming' && styles.upcomingTitle1Style, // Conditional style
-          ]}
-        >
-          {item.title1}
-        </Text>
-        <View style={styles.direction1}>
-          <Image
-            source={require('../../../assets/image/cale.png')}
-            style={styles.dateimg}
-          />
-          <Text
-            style={[
-              styles.appointmentDate,
-              selectedTab === 'Completed' && styles.redText,
-              selectedTab === 'Upcoming' && styles.upcomingDateStyle, // Conditional styling for date
-            ]}
-          >
-            {item.date}
-          </Text>
-        </View>
-        <View style={styles.direction1}>
-          <Image
-            source={require('../../../assets/image/Layer.png')}
-            style={styles.dateimg}
-          />
-          <Text
-            style={[
-              styles.appointmentTime,
-              selectedTab === 'Completed' && styles.redText,
-              selectedTab === 'Upcoming' && styles.upcomingTimeStyle, // Conditional styling for time
-            ]}
-          >
-            {item.time}
-          </Text>
-        </View>
-        {selectedTab === 'Completed' && (
-          <View style={styles.reviewContainer}>
-          {sessionOver ? (
-              <View style={styles.cardStar}>
-                <Rating
-                  type="custom"
-                  ratingColor="#52B1E9"
-                  // readonly={true} 
-                  startingValue={5}
-                  tintColor='#fff'
-                  imageSize={12}
-                  style={styles.starContainer}
-                />
-                <Text style={styles.ratingText}> 5 reviews</Text>
+  // const renderAppointment = ({ item }) => (
+  //   <TouchableOpacity
+  //     style={styles.appointmentContainer}
+  //     onPress={() => navigation.navigate('AppoinmentDetail')}
+  //   >
+  //     <Image source={item.image} style={styles.appointmentImage} />
+  //     <View style={styles.appointmentDetails}>
+  //       <Text
+  //         style={[
+  //           styles.appointmentTitle,
+  //           selectedTab === 'Upcoming' && styles.upcomingTitleStyle, 
+  //         ]}
+  //       >
+  //         {item.title}
+  //       </Text>
+  //       <Text
+  //         style={[
+  //           styles.appointmentTitle1,
+  //           selectedTab === 'Upcoming' && styles.upcomingTitle1Style, // Conditional style
+  //         ]}
+  //       >
+  //         {item.title1}
+  //       </Text>
+  //       <View style={styles.direction1}>
+  //         <Image
+  //           source={require('../../../assets/image/cale.png')}
+  //           style={styles.dateimg}
+  //         />
+  //         <Text
+  //           style={[
+  //             styles.appointmentDate,
+  //             selectedTab === 'Completed' && styles.redText,
+  //             selectedTab === 'Upcoming' && styles.upcomingDateStyle, // Conditional styling for date
+  //           ]}
+  //         >
+  //           {item.date}
+  //         </Text>
+  //       </View>
+  //       <View style={styles.direction1}>
+  //         <Image
+  //           source={require('../../../assets/image/Layer.png')}
+  //           style={styles.dateimg}
+  //         />
+  //         <Text
+  //           style={[
+  //             styles.appointmentTime,
+  //             selectedTab === 'Completed' && styles.redText,
+  //             selectedTab === 'Upcoming' && styles.upcomingTimeStyle, // Conditional styling for time
+  //           ]}
+  //         >
+  //           {item.time}
+  //         </Text>
+  //       </View>
+  //       {selectedTab === 'Completed' && (
+  //         <View style={styles.reviewContainer}>
+  //         {sessionOver ? (
+  //             <View style={styles.cardStar}>
+  //               <Rating
+  //                 type="custom"
+  //                 ratingColor="#52B1E9"
+  //                 // readonly={true} 
+  //                 startingValue={5}
+  //                 tintColor='#fff'
+  //                 imageSize={12}
+  //                 style={styles.starContainer}
+  //               />
+  //               <Text style={styles.ratingText}> 5 reviews</Text>
+  //             </View>
+  //           ) : null}
+  //         </View>
+  //       )}
+  //     </View>
+  //     <View style={styles.arrowButton}>
+  //       <Image
+  //         source={require('../../../assets/otherApp/arrowcom.png')}
+  //         // style={styles.arrowIcon}
+  //         style={[
+  //           styles.arrowIcon,
+  //           selectedTab === 'Upcoming' && styles.arrowIconup, 
+  //         ]}
+  //       />
+  //     </View>
+  //   </TouchableOpacity>
+  // );
+
+  const renderAppointment = ({ item, index }) => {
+
+    const itemScaleAnim = scaleAnims[index] || new Animated.Value(1);
+
+    return (
+      <Animated.View
+        style={[
+
+          {
+            transform: [{ scale: itemScaleAnim }],
+          },
+        ]}
+      >
+        <TouchableOpacity onPress={() => handlePress(index)} style={styles.appointmentContainer}>
+          <Image source={item.image} style={styles.appointmentImage} />
+          <View style={styles.appointmentDetails}>
+            <Text
+              style={[
+                styles.appointmentTitle,
+                selectedTab === 'Upcoming' && styles.upcomingTitleStyle,
+              ]}
+            >
+              {item.title}
+            </Text>
+            <Text
+              style={[
+                styles.appointmentTitle1,
+                selectedTab === 'Upcoming' && styles.upcomingTitle1Style, // Conditional style
+              ]}
+            >
+              {item.title1}
+            </Text>
+            <View style={styles.direction1}>
+              <Image source={require('../../../assets/image/cale.png')} style={styles.dateimg} />
+              <Text
+                style={[
+                  styles.appointmentDate,
+                  selectedTab === 'Completed' && styles.redText,
+                  selectedTab === 'Upcoming' && styles.upcomingDateStyle, // Conditional styling for date
+                ]}
+              >
+                {item.date}
+              </Text>
+            </View>
+            <View style={styles.direction1}>
+              <Image source={require('../../../assets/image/Layer.png')} style={styles.dateimg} />
+              <Text
+                style={[
+                  styles.appointmentTime,
+                  selectedTab === 'Completed' && styles.redText,
+                  selectedTab === 'Upcoming' && styles.upcomingTimeStyle, // Conditional styling for time
+                ]}
+              >
+                {item.time}
+              </Text>
+            </View>
+            {selectedTab === 'Completed' && (
+              <View style={styles.reviewContainer}>
+                {sessionOver ? (
+                  <View style={styles.cardStar}>
+                    <Rating
+                      type="custom"
+                      ratingColor="#52B1E9"
+                      startingValue={5}
+                      tintColor="#fff"
+                      imageSize={12}
+                      style={styles.starContainer}
+                    />
+                    <Text style={styles.ratingText}> 5 reviews</Text>
+                  </View>
+                ) : null}
               </View>
-            ) : null}
+            )}
           </View>
-        )}
-      </View>
-      <View style={styles.arrowButton}>
-        <Image
-          source={require('../../../assets/otherApp/arrowcom.png')}
-          // style={styles.arrowIcon}
-          style={[
-            styles.arrowIcon,
-            selectedTab === 'Upcoming' && styles.arrowIconup, 
-          ]}
-        />
-      </View>
-    </TouchableOpacity>
-  );
+          <View style={styles.arrowButton}>
+            <Image
+              source={require('../../../assets/otherApp/arrowcom.png')}
+              style={[
+                styles.arrowIcon,
+                selectedTab === 'Upcoming' && styles.arrowIconup,
+              ]}
+            />
+          </View>
+        </TouchableOpacity>
+      </Animated.View>
+    );
+  };
 
   return (
     <View style={styles.container}>

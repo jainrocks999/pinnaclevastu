@@ -5,23 +5,44 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
+  Animated
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import styles from './styles';
 import {Rating} from 'react-native-ratings';
 
 import {widthPrecent} from '../../../Component/ResponsiveScreen/responsive';
 
-const AppointmentDetails = ({ navigation }) => {
+const AppointmentDetails = ({navigation}) => {
   const [sessionOver, setSessionOver] = useState(true);
+
+  const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
+
+  const handlePress = () => {
+    Animated.sequence([
+      Animated.timing(buttonAnimatedValue, {
+        toValue: 0.94,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(buttonAnimatedValue, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      // navigation.navigate('Appoiment');
+    });
+  };
+
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerView}>
-          <TouchableOpacity onPress={() => navigation.goBack()}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            >
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
             <Image
               style={styles.backBtn}
               source={require('../../../assets/drawer/Back1.png')}
@@ -146,13 +167,18 @@ const AppointmentDetails = ({ navigation }) => {
               />
             </View>
 
-            <TouchableOpacity style={styles.submitBtn}>
-              <Text style={styles.btext1}>SUBMIT</Text>
-            </TouchableOpacity>
+            <Animated.View
+              style={[{transform: [{scale: buttonAnimatedValue}]}]}>
+              <TouchableOpacity
+                style={styles.submitBtn}
+                onPress={handlePress}
+                activeOpacity={1}>
+                <Text style={styles.btext1}>SUBMIT</Text>
+              </TouchableOpacity>
+            </Animated.View>
           </View>
         ) : null}
       </ScrollView>
-     
     </View>
   );
 };

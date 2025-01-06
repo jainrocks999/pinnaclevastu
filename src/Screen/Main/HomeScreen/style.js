@@ -11,7 +11,7 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
-     paddingBottom: hp(7),
+    //  paddingBottom: hp(7),
   },
   header: {
     flexDirection: 'row',
@@ -85,6 +85,7 @@ export default StyleSheet.create({
     padding: 4,
     marginHorizontal: 15,
     marginTop: wp(6),
+    marginBottom: hp(7),
   },
   bottomCard: {
     // backgroundColor: '#E2E3E580',
@@ -136,7 +137,7 @@ export default StyleSheet.create({
     width: wp(46), // Adjust to fit your design
     height: wp(40),
     borderRadius: 10,
-    borderWidth:0.4,
+    borderWidth: 0.4,
     margin: 5,
     overflow: 'hidden',
   },
@@ -144,7 +145,7 @@ export default StyleSheet.create({
     width: wp(90),
     // height: wp(35),
     backgroundColor: colors.white,
-    padding:6,
+    padding: 6,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#DFE7EF',
@@ -220,7 +221,7 @@ export default StyleSheet.create({
   },
   text1: {
     marginTop: hp(1),
-    width:'90%',
+    width: '90%',
     fontSize: fontSize.Seventeen,
     fontFamily: 'Poppins-SemiBold',
     color: colors.white,
@@ -265,8 +266,8 @@ export default StyleSheet.create({
   cardImg: {
     // width: '100%',
     // height: wp(50),
-    borderTopLeftRadius:10,
-    borderTopRightRadius:10,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
     //  resizeMode: 'contain',
     // marginTop: -wp(2),
   },
@@ -281,8 +282,8 @@ export default StyleSheet.create({
     fontFamily: 'Poppins-Medium',
   },
   titleText: {
-    minHeight:wp(11),
-    marginTop:-6,
+    minHeight: wp(11),
+    marginTop: -6,
     fontSize: fontSize.Fourteen,
     color: colors.heading,
     fontFamily: 'Poppins-SemiBold',
@@ -334,29 +335,28 @@ export default StyleSheet.create({
     backgroundColor: '#FBF5F2',
     padding: wp(2),
     borderRadius: 10,
-    marginBottom:wp(3)
+    marginBottom: wp(3),
   },
-  button: {
-  },
-  
+  button: {},
+
   switchBtn: {
     flex: 1,
-    marginHorizontal: 2, 
-    justifyContent:"center",
-    alignItems:"center",
+    marginHorizontal: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingVertical: wp(2),
   },
-  switchText:{
+  switchText: {
     textAlign: 'center',
-    fontSize: fontSize.Sixteen, 
-    color: colors.recorded, 
+    fontSize: fontSize.Sixteen,
+    color: colors.recorded,
     fontFamily: 'Poppins-Regular',
   },
   activeBtn: {
-    backgroundColor: colors.orange, 
+    backgroundColor: colors.orange,
     color: colors.white,
     borderRadius: wp(2),
-    shadowColor: "#D87C51", 
+    shadowColor: '#D87C51',
     shadowOffset: {width: 0, height: 6},
     shadowOpacity: 0.12,
     shadowRadius: 8,
@@ -369,7 +369,7 @@ export default StyleSheet.create({
 
   itemCount: {
     backgroundColor: '#EF6024',
-    marginTop:-15,
+    marginTop: -15,
     borderRadius: 10,
     zIndex: 1,
     bottom: -10,
@@ -387,7 +387,6 @@ export default StyleSheet.create({
     color: colors.white,
     fontSize: fontSize.Ten,
   },
-
 
   consultationSection: {
     backgroundColor: '#F1FBFF',
@@ -449,13 +448,9 @@ export default StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    marginBottom:10
+    marginBottom: 10,
   },
 });
-
-
-
-
 
 // import {Dimensions, StyleSheet} from 'react-native';
 // import {fontSize} from '../../../Component/fontsize';
@@ -796,25 +791,25 @@ export default StyleSheet.create({
 //   },
 //   button: {
 //   },
-  
+
 //   switchBtn: {
 //     flex: 1,
-//     marginHorizontal: 2, 
+//     marginHorizontal: 2,
 //     justifyContent:"center",
 //     alignItems:"center",
 //     paddingVertical: wp(2),
 //   },
 //   switchText:{
 //     textAlign: 'center',
-//     fontSize: fontSize.Sixteen, 
-//     color: colors.recorded, 
+//     fontSize: fontSize.Sixteen,
+//     color: colors.recorded,
 //     fontFamily: 'Poppins-Regular',
 //   },
 //   activeBtn: {
-//     backgroundColor: colors.orange, 
+//     backgroundColor: colors.orange,
 //     color: colors.white,
 //     borderRadius: wp(2),
-//     shadowColor: "#D87C51", 
+//     shadowColor: "#D87C51",
 //     shadowOffset: {width: 0, height: 6},
 //     shadowOpacity: 0.12,
 //     shadowRadius: 8,

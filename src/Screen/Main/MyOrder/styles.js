@@ -125,12 +125,27 @@ export default StyleSheet.create({
     alignItems: 'center',
     marginTop: 8,
   },
+  productContainer1: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical:8,
+    height:"75%"
+  },
   productImage: {
     width: '40%',
     height: '100%',
     borderRadius: 8,
     marginRight: '5%',
     resizeMode: 'contain',
+    borderWidth:0.5,
+    borderColor:colors.lightGrey
+  },
+  productImage1: {
+    width: '40%',
+    height: '100%',
+    borderRadius: 8,
+    marginRight: '5%',
+    // resizeMode: 'contain',
     borderWidth:0.5,
     borderColor:colors.lightGrey
   },
