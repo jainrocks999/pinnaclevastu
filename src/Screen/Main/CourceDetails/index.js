@@ -21,13 +21,20 @@ import {widthPrecent} from '../../../Component/ResponsiveScreen/responsive';
 import RenderHTML from 'react-native-render-html';
 import Video from 'react-native-video';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const {width} = Dimensions.get('window');
 
 const CourseDetail = ({navigation}) => {
   const [userType, setUserType] = useState('');
   const CourceDetailA = useSelector(state => state?.home?.CourceDetailA);
   const isLoading = useSelector(state => state.home?.loading);
+  const [videoPlay, setVideoPlay] = useState(true);
+  const [videoState, setVideoState] = useState({
+    isPlaying: true,
+    controlsVisible: false,
+  });
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
+
   const images = [
     require('../../../assets/otherApp/reviewslider.png'),
     require('../../../assets/otherApp/reviewslider.png'),
@@ -94,6 +101,11 @@ const CourseDetail = ({navigation}) => {
 
   useEffect(() => {
     getUserType();
+    // setVideoPlay(false
+    setVideoState(prevState => ({
+      ...prevState,
+      isPlaying: false,
+    }));
   }, []);
 
   const getUserType = async () => {
@@ -181,25 +193,23 @@ const CourseDetail = ({navigation}) => {
   const handleJoinCourse = () => {
     Animated.sequence([
       Animated.timing(buttonAnimatedValue, {
-        toValue: 0.94, 
+        toValue: 0.94,
         duration: 500,
         useNativeDriver: true,
       }),
       Animated.timing(buttonAnimatedValue, {
-        toValue: 1, 
+        toValue: 1,
         duration: 300,
         useNativeDriver: true,
       }),
     ]).start(() => {
-     
       if (userType) {
-        navigation.navigate('PaymentCourse', { data1: CourceDetailA });
+        navigation.navigate('PaymentCourse', {data1: CourceDetailA});
       } else {
-        navigation.navigate('Login', { from: 'CourseDetails' });
+        navigation.navigate('Login', {from: 'CourseDetails'});
       }
     });
   };
-
 
   const renderItem = ({item}) => (
     <View style={styles.itemContainer}>
@@ -275,6 +285,13 @@ const CourseDetail = ({navigation}) => {
     }
   };
 
+  const handleVideoPress = () => {
+    setVideoState(prevState => ({
+      isPlaying: !prevState.isPlaying, 
+      controlsVisible: !prevState.controlsVisible,
+    }));
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -292,14 +309,18 @@ const CourseDetail = ({navigation}) => {
         </View>
       </View>
       <ScrollView contentContainerStyle={styles.scrollview}>
-        <View style={styles.firstimgview}>
+        <TouchableOpacity
+        onPress={handleVideoPress}
+        style={styles.firstimgview}>
           <Video
             source={{
               uri: videoFileName1,
             }}
             style={styles.img1}
             resizeMode="contain"
-            controls={true}
+            controls={videoState.controlsVisible}
+            paused={videoState.isPlaying}
+            repeat={true}
             onError={error => console.error('Video Error:', error)} // Debug video errors
           />
           {/* <Image
@@ -309,8 +330,8 @@ const CourseDetail = ({navigation}) => {
                 : require('../../../assets/otherApp/coursedetail.png')
             }
             style={styles.img1}
-          /> */}
-        </View>
+            /> */}
+        </TouchableOpacity>
         <View style={styles.advanceview}>
           <Text style={styles.advancetext}>{CourceDetailA?.title} </Text>
           {/* Advance Vastu Course */}
@@ -494,13 +515,12 @@ const CourseDetail = ({navigation}) => {
           {/* <Image
             source={require('../../../assets/otherApp/coursedetail.png')}
             style={styles.img1}
-          /> */}
+            /> */}
         </View>
         <FlatList
           data={CourceDetailA?.desc_demo_data?.filter(
             item => item.description !== null && item.label !== null,
           )}
-       
           keyExtractor={item => item?.desc_data_id.toString()}
           renderItem={({item, index}) => (
             <View style={styles.paddings}>
@@ -583,33 +603,33 @@ const CourseDetail = ({navigation}) => {
           {/* <Text style={styles.journeytext}>
             His journey of occultism began in year 2012 which gradually acted as
             a gamechanger when he realized the potential of occult field.
-          </Text>
-          <Text style={styles.journeytext}>
+            </Text>
+            <Text style={styles.journeytext}>
             His journey of occultism began in year 2012 which gradually acted as
             a gamechanger when he realized the potential of occult field began
             in year 2012 which gradually acted as a gamechanger when he realized
             the potential of occult field.
-          </Text>
-          <Text style={styles.journeytext}>
+            </Text>
+            <Text style={styles.journeytext}>
             His journey of occultism began in year 2012 which gradually acted as
             a gamechanger when he realized the potential of occult field.
-          </Text>
-          <Text style={styles.journeytext}>
+            </Text>
+            <Text style={styles.journeytext}>
             His journey of occultism began in year 2012 which gradually acted as
             a gamechanger when he realized began in year 2012 which gradually
             acted as a gamechanger when he realized the potential of occult
             field the potential of occult field.
-          </Text>
-          <Text style={styles.journeytext}>
+            </Text>
+            <Text style={styles.journeytext}>
             His journey of occultism began in year 2012 which gradually acted as
             a gamechanger when he realized the potential of occult field.
-          </Text>
-          <Text style={styles.journeytext}>
+            </Text>
+            <Text style={styles.journeytext}>
             His journey of began in year 2012 which gradually acted as a
             gamechanger when he realized the potential of occult field occultism
             began in year 2012 which gradually acted as a gamechanger when he
             realized the potential of occult field.
-          </Text> */}
+            </Text> */}
         </View>
         <View style={styles.courseview}>
           <Text style={styles.demotext}>Course Review By Student</Text>
@@ -659,19 +679,19 @@ const CourseDetail = ({navigation}) => {
           {/* <Text style={styles.listitem1}>₹ {CourceDetailA.price}</Text> */}
           {/* {userType &&
           (CourceDetailA?.sale_price < CourceDetailA?.price ||
-            CourceDetailA?.student_price < CourceDetailA?.price ||
+          CourceDetailA?.student_price < CourceDetailA?.price ||
             CourceDetailA?.franchise_price < CourceDetailA?.price) &&
-          (CourceDetailA?.sale_price ||
+            (CourceDetailA?.sale_price ||
             CourceDetailA?.student_price ||
             CourceDetailA?.franchise_price) ? (
-            <Text
+              <Text
               style={[
                 styles.listitem1,
                 {textDecorationLine: 'line-through', color: 'gray'},
-              ]}>
-              ₹ {CourceDetailA?.price}
-            </Text>
-          ) : null} */}{' '}
+                ]}>
+                ₹ {CourceDetailA?.price}
+                </Text>
+                ) : null} */}{' '}
           <Text style={[styles.listitem1]}>
             {`₹ ${
               userType === 'customers' && CourceDetailA?.sale_price
@@ -686,12 +706,10 @@ const CourseDetail = ({navigation}) => {
         </View>
         <Animated.View
           style={[
-            
             {
-              transform: [{ scale: buttonAnimatedValue }], // स्केल एनिमेशन
+              transform: [{scale: buttonAnimatedValue}], // स्केल एनिमेशन
             },
-          ]}
-        >
+          ]}>
           <TouchableOpacity onPress={handleJoinCourse} style={styles.book}>
             <Text style={styles.btext1}>Join Course</Text>
           </TouchableOpacity>
@@ -699,12 +717,12 @@ const CourseDetail = ({navigation}) => {
         {/* <TouchableOpacity
           onPress={() => {
             userType
-              ? navigation.navigate('PaymentCourse', {data1: CourceDetailA})
-              : navigation.navigate('Login', {from: 'CourseDetails'});
-          }}
-          style={styles.book}>
-          <Text style={styles.btext1}>Join Course</Text>
-        </TouchableOpacity> */}
+            ? navigation.navigate('PaymentCourse', {data1: CourceDetailA})
+            : navigation.navigate('Login', {from: 'CourseDetails'});
+            }}
+            style={styles.book}>
+            <Text style={styles.btext1}>Join Course</Text>
+            </TouchableOpacity> */}
       </ScrollView>
     </View>
   );

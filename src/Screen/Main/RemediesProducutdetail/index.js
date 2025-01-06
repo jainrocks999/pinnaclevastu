@@ -58,6 +58,15 @@ const RemediesProductDetail = ({route}) => {
   const [currentItemInCart, setCurrentItemInCart] = useState();
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
 
+
+  const animation = useRef(new Animated.Value(0)).current;
+  const [buttonText, setButtonText] = useState("ADD TO CART");
+
+  const halfFlipInterpolate = animation.interpolate({
+    inputRange: [0, 90],
+    outputRange: ["0deg", "90deg"], // Rotate only up to 90 degrees
+  });
+
   useEffect(() => {
     PRoductDeta();
   }, []);
@@ -211,40 +220,40 @@ const RemediesProductDetail = ({route}) => {
     }
   };
 
-  const handleGoToCartAnimation = () => {
-    Animated.sequence([
-      Animated.timing(buttonAnimatedValue, {
-        toValue: 0.94,
-        duration: 500,
-        useNativeDriver: true,
-      }),
-      Animated.timing(buttonAnimatedValue, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      navigation.navigate('Home', {screen: 'MyCart'});
-    });
-  };
+  // const handleGoToCartAnimation = () => {
+  //   Animated.sequence([
+  //     Animated.timing(buttonAnimatedValue, {
+  //       toValue: 0.94,
+  //       duration: 500,
+  //       useNativeDriver: true,
+  //     }),
+  //     Animated.timing(buttonAnimatedValue, {
+  //       toValue: 1,
+  //       duration: 300,
+  //       useNativeDriver: true,
+  //     }),
+  //   ]).start(() => {
+  //     navigation.navigate('Home', {screen: 'MyCart'});
+  //   });
+  // };
 
-  const handleAddToCart = async prod => {
-    Animated.sequence([
-      Animated.timing(buttonAnimatedValue, {
-        toValue: 0.94,
-        duration: 500,
-        useNativeDriver: true,
-      }),
-      Animated.timing(buttonAnimatedValue, {
-        toValue: 1, // वापस बड़ा करें
-        duration: 300,
-        useNativeDriver: true,
-      }),
-    ]).start(async () => {
-      // Addtocart(prod);
-      Addtocart(prod, {qty: quantity});
-    });
-  };
+  // const handleAddToCart = async prod => {
+  //   Animated.sequence([
+  //     Animated.timing(buttonAnimatedValue, {
+  //       toValue: 0.94,
+  //       duration: 500,
+  //       useNativeDriver: true,
+  //     }),
+  //     Animated.timing(buttonAnimatedValue, {
+  //       toValue: 1, // वापस बड़ा करें
+  //       duration: 300,
+  //       useNativeDriver: true,
+  //     }),
+  //   ]).start(async () => {
+  //     // Addtocart(prod);
+  //     Addtocart(prod, {qty: quantity});
+  //   });
+  // };
 
   // const Addtocart = async item => {
   //   try {
@@ -282,6 +291,52 @@ const RemediesProductDetail = ({route}) => {
   //     console.error('Error adding item to cart:', error);
   //   }
   // };
+ 
+  const handleGoToCartAnimation = () => {
+    if (isInCart) {
+      navigation.navigate('Home', { screen: 'MyCart' });
+    }
+  };
+
+  const handleAddToCart = async (Detail) => {
+    try {
+      // Extract `prod` from `Detail`
+      const prod = Detail || {}; // Use Detail as prod if exists, otherwise fallback to empty object
+  
+      if (!prod || Object.keys(prod).length === 0) {
+        console.error("Error: Product details are missing!");
+        return;
+      }
+  
+      // Start animation to flip halfway
+      Animated.timing(animation, {
+        toValue: 90,
+        duration: 300,
+        useNativeDriver: true,
+      }).start(() => {
+        // Change button text after halfway point
+        setButtonText((prevText) =>
+          prevText === "ADD TO CART" ? "GO TO CART" : "ADD TO CART"
+        );
+  
+        // Call Addtocart function here
+        Addtocart(prod, { qty: quantity });
+        console.log("Added to cart:", prod);
+  
+        // Complete animation back to 0 degrees
+        Animated.timing(animation, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }).start(() => {
+          setIsInCart(true); // Update state after animation completes
+        });
+      });
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
+  };
+
   const Addtocart = async (item, {qty}) => {
     // console.log(qty,"sandeepdfmgdlfkgl.........")
     try {
@@ -920,60 +975,117 @@ const RemediesProductDetail = ({route}) => {
               </View>
             </View>
             {isInCart ? (
+              // <Animated.View
+              //   style={[
+              //     {
+              //       transform: [{scale: buttonAnimatedValue}],
+              //     },
+              //     styles.book,
+              //     {marginTop: 15},
+              //   ]}>
+              //   <TouchableOpacity
+              //     onPress={() => {
+              //       handleGoToCartAnimation();
+              //       // navigation.navigate('Home', {screen: 'MyCart'});
+              //     }}
+              //     style={{
+              //       position: 'absolute',
+              //       top: 0,
+              //       left: 0,
+              //       right: 0,
+              //       bottom: 0,
+              //       justifyContent: 'center',
+              //       alignItems: 'center',
+              //     }}>
+              //     <Text style={styles.btext1}>GO TO CART</Text>
+              //   </TouchableOpacity>
+              // </Animated.View>
               <Animated.View
-                style={[
-                  {
-                    transform: [{scale: buttonAnimatedValue}],
-                  },
-                  styles.book,
-                  {marginTop: 15},
-                ]}>
-                <TouchableOpacity
-                  onPress={() => {
-                    handleGoToCartAnimation();
-                    // navigation.navigate('Home', {screen: 'MyCart'});
-                  }}
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}>
-                  <Text style={styles.btext1}>GO TO CART</Text>
-                </TouchableOpacity>
-              </Animated.View>
+              style={[
+               
+                { transform: [{ rotateX: halfFlipInterpolate }] },
+                styles.book1,
+                { marginTop: 15 },
+              ]}
+            >
+              <TouchableOpacity
+                onPress={() => {
+                  handleGoToCartAnimation();
+                  // navigation.navigate('Home', {screen: 'MyCart'});
+                }}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+               
+                <Animated.Text style={[styles.btext1]}>
+                  GO TO CART
+                </Animated.Text>
+              </TouchableOpacity>
+            </Animated.View>
             ) : (
+
+
+              <Animated.View
+              style={[
+                // styles.card,
+                { transform: [{ rotateX: halfFlipInterpolate }] },
+                styles.book1,
+                { marginTop: 15 },
+              ]}
+            >
+              <TouchableOpacity
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+                onPress={() => handleAddToCart(Detail)}>
+                {/* {/ <Text style={styles.btext1}>ADD TO CART</Text> /} */}
+                <Animated.Text style={[styles.btext1,]}>
+                  ADD TO CART
+                </Animated.Text>
+              </TouchableOpacity>
+            </Animated.View>
+
               // <TouchableOpacity
               //   onPress={() => navigation.navigate('Home', {screen: 'MyCart'})}
               //   style={[styles.book, {marginTop: 15}]}>
               //   <Text style={styles.btext1}>GO TO CART</Text>
               // </TouchableOpacity>
-              <Animated.View
-                style={[
-                  {
-                    transform: [{scale: buttonAnimatedValue}],
-                  },
-                  styles.book,
-                  {marginTop: 15},
-                ]}>
-                <TouchableOpacity
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}
-                  onPress={() => handleAddToCart(Detail)}>
-                  <Text style={styles.btext1}>ADD TO CART</Text>
-                </TouchableOpacity>
-              </Animated.View>
+              // <Animated.View
+              //   style={[
+              //     {
+              //       transform: [{scale: buttonAnimatedValue}],
+              //     },
+              //     styles.book,
+              //     {marginTop: 15},
+              //   ]}>
+              //   <TouchableOpacity
+              //     style={{
+              //       position: 'absolute',
+              //       top: 0,
+              //       left: 0,
+              //       right: 0,
+              //       bottom: 0,
+              //       justifyContent: 'center',
+              //       alignItems: 'center',
+              //     }}
+              //     onPress={() => handleAddToCart(Detail)}>
+              //     <Text style={styles.btext1}>ADD TO CART</Text>
+              //   </TouchableOpacity>
+              // </Animated.View>
 
+  
               // <TouchableOpacity
               //   onPress={() => handleAddToCart(Detail)}
               //   style={[styles.book, {marginTop: 15}]}>

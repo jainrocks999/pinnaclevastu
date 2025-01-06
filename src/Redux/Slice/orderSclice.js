@@ -5,9 +5,6 @@ import Toast from 'react-native-simple-toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import constants from '../constant/constants';
 
-
-
-
 export const orderlistcource = createAsyncThunk(
   'Order1/orderlistcource',
   async ({id, token, url}, {rejectWithValue}) => {

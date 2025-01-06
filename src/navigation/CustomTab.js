@@ -109,14 +109,22 @@ const TabBar = ({ state, descriptors, navigation }) => {
           style={[
             animateStyle,
             {
-              position: "absolute",
-              height: 55,
-              top: -0.20,
-              bottom: 0,
-              padding: 35,
+              // position: "absolute",
+              // height: 55,
+              // top: -0.20,
+              // bottom: 0,
+              // padding: 35,
+              // borderTopWidth: 3,
+              // borderColor: '#FFFFFF',
+              
+              // backgroundColor: "rgba(173, 216, 230, 0.15)",
               borderTopWidth: 3,
               borderColor: '#FFFFFF',
-              
+              position: "absolute",
+              height: 55,
+              bottom: 0,
+              width: buttonWidth, 
+              top: -0.20,
               backgroundColor: "rgba(173, 216, 230, 0.15)",
             },
           ]}

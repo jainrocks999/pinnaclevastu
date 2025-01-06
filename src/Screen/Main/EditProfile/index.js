@@ -7,8 +7,10 @@ import {
   Image,
   Modal,
   PermissionsAndroid,
+  Animated,
+  Vibration,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import styles from './styles';
 import {colors} from '../../../Component/colors';
 import SelectModal from '../../../Component/dropdown';
@@ -19,6 +21,7 @@ import DatePicker from 'react-native-date-picker';
 import Toast from 'react-native-simple-toast';
 
 const EditProfile = () => {
+  const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
 
   const [visible, setVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState({
@@ -45,7 +48,23 @@ const EditProfile = () => {
     mobile: '',
     cityPincode: '',
     birthPlace: '',
+    gender: '',
+    cityPincode: '',
   });
+
+  const [shakeAnimation, setShakeAnimation] = useState({
+    name: new Animated.Value(0),
+    email: new Animated.Value(0),
+    mobile: new Animated.Value(0),
+    cityPincode: new Animated.Value(0),
+    gender: new Animated.Value(0),
+    // date: new Animated.Value(0),
+    birthPlace: new Animated.Value(0), // New animated value for Place of Birth
+    // additionalInfo: new Animated.Value(0),
+    // time: new Animated.Value(0),
+    // services: new Animated.Value(0),
+  });
+  const scrollViewRef = useRef(null);
 
   const [date, setDate] = useState('');
   const [open, setOpen] = useState(false);
@@ -157,7 +176,6 @@ const EditProfile = () => {
       mobileRegex.test(numericValue)
         ? setFormData({...formData, mobile: numericValue})
         : Toast.show('Invalid mobile number.');
-
     } else if (name === 'cityPincode') {
       const numericValue = value.replace(/[^0-9]/g, '');
       const pinCodeRegex = /^[0-9]{0,6}$/;
@@ -168,53 +186,115 @@ const EditProfile = () => {
     }
   };
 
+  // Shake animation function
+  const shake = field => {
+    Vibration.vibrate(100); // Vibration for 100 milliseconds
+    Animated.sequence([
+      Animated.timing(shakeAnimation[field], {
+        toValue: 5, // how far the input will shake
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnimation[field], {
+        toValue: -5,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnimation[field], {
+        toValue: 5,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnimation[field], {
+        toValue: -5,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnimation[field], {
+        toValue: 0,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+  const scrollToField = fieldName => {
+    const fieldOffsets = {
+      services: 0,
+      name: 0,
+      email: 100,
+      mobile: 200,
+      gender: 300,
+      cityPincode: 400,
+      date: 500,
+      time: 600,
+      birthPlace: 700,
+      additionalInfo: 800,
+    };
+    scrollViewRef.current.scrollTo({
+      y: fieldOffsets[fieldName],
+      animated: true,
+    });
+  };
+
   const handleSubmit = () => {
+    Animated.sequence([
+      Animated.timing(buttonAnimatedValue, {
+        toValue: 0.94,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(buttonAnimatedValue, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start();
 
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
 
-    if (formData.name == '') {
-      Toast.show('Please enter name');
+    if (formData.name === '') {
+      shake('name');
+      scrollToField('name');
       return;
-    } else if (formData.email == '') {
-      Toast.show('Please enter email');
+    } else if (formData.email === '') {
+      shake('email');
+      scrollToField('email');
       return;
     } else if (!emailRegex.test(formData.email)) {
-      Toast.show('Please valid Email');
+      shake('email');
+      scrollToField('email');
       return;
-    } else if (formData.mobile == '') {
-      Toast.show('Please enter mobile Number');
+    } else if (formData.mobile === '') {
+      shake('mobile');
+      scrollToField('mobile');
       return;
     } else if (formData.mobile.length < 10) {
-      Toast.show('Mobile number should be at least 10 digits');
+      shake('mobile');
+      scrollToField('mobile');
       return;
-    } else if (gender == '') {
-      Toast.show('Please enter gender');
+    } else if (gender === '') {
+      shake('gender');
+      scrollToField('gender');
       return;
-    } else if (formData.cityPincode == '') {
-      Toast.show('Please enter city pincode');
+    } else if (formData.cityPincode === '') {
+      shake('cityPincode');
+      scrollToField('cityPincode');
       return;
     } else if (formData.cityPincode.length < 6) {
-      Toast.show('Pincode should be at least 6 digits');
-      return;
-    } else if (date == '') {
-      Toast.show('Please enter Birth Date');
+      shake('cityPincode');
+      scrollToField('cityPincode');
       return;
     } else {
       navigation.navigate('OTP');
     }
-    console.log(formData);
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => 
-          
-          navigation.goBack()
-          }
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          
-          >
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
           <Image
             style={styles.backBtn}
             source={require('../../../assets/drawer/Back1.png')}
@@ -232,83 +312,99 @@ const EditProfile = () => {
         onClose={value => setVisible(value)}
       />
       <ScrollView
+        ref={scrollViewRef}
         contentContainerStyle={styles.main1} // Added to fix scrolling
         keyboardShouldPersistTaps="handled" // Dismisses keyboard on tap outside
       >
         <View style={styles.inputmain}>
-          <Text style={styles.title2}>Full Name*</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Name"
-            placeholderTextColor={colors.placeholder}
-            value={formData.name}
-            onChangeText={text => handleInputChange('name', text)}
-          />
+          <Text style={styles.title2}>Full Name*</Text>\
+          <Animated.View
+            style={[{transform: [{translateX: shakeAnimation.name}]}]}>
+            <TextInput
+              style={styles.input}
+              placeholder="Name"
+              placeholderTextColor={colors.placeholder}
+              value={formData.name}
+              onChangeText={text => handleInputChange('name', text)}
+            />
+          </Animated.View>
         </View>
         <View style={styles.inputmain}>
           <Text style={styles.title2}>Email*</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            placeholderTextColor={colors.placeholder}
-            keyboardType="email-address"
-            value={formData.email}
-            onChangeText={text => handleInputChange('email', text)}
-          />
+          <Animated.View
+            style={[{transform: [{translateX: shakeAnimation.email}]}]}>
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              placeholderTextColor={colors.placeholder}
+              keyboardType="email-address"
+              value={formData.email}
+              onChangeText={text => handleInputChange('email', text)}
+            />
+          </Animated.View>
         </View>
         <View style={styles.inputmain}>
           <Text style={styles.title2}>Mobile Number*</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Mobile Number"
-            placeholderTextColor={colors.placeholder}
-            keyboardType="numeric"
-            maxLength={10}
-            value={formData.mobile}
-            onChangeText={text => handleInputChange('mobile', text)}
-          />
+          <Animated.View
+            style={[{transform: [{translateX: shakeAnimation.mobile}]}]}>
+            <TextInput
+              style={styles.input}
+              placeholder="Mobile Number"
+              placeholderTextColor={colors.placeholder}
+              keyboardType="phone-pad"
+              maxLength={10}
+              value={formData.mobile}
+              onChangeText={text => handleInputChange('mobile', text)}
+            />
+          </Animated.View>
         </View>
         <View style={styles.inputmain}>
           <Text style={styles.title2}>Gender*</Text>
+          <Animated.View
+            style={[{transform: [{translateX: shakeAnimation.gender}]}]}>
+            <TouchableOpacity
+              onPress={() => setVisible(true)}
+              style={[
+                styles.input,
+                {
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
 
-          <TouchableOpacity
-            onPress={() => setVisible(true)}
-            style={[
-              styles.input,
-              {
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              },
-            ]}>
-            <Text
-              style={{
-                color: gender ? colors.heading : colors.placeholder,
-                fontSize: fontSize.Sixteen,
-                // marginTop: 2,
-                fontFamily: 'Poppins-Regular',
-              }}>
-              {gender ? gender : 'Gender'}
-            </Text>
-            <Image
-              style={{
-                height: 8,
-                width: 15,
-              }}
-              source={require('../../../assets/image/arrow_icon.png')}
-            />
-          </TouchableOpacity>
+                  alignItems: 'center',
+                },
+              ]}>
+              <Text
+                style={{
+                  color: gender ? colors.heading : colors.placeholder,
+                  fontSize: fontSize.Sixteen,
+                  // marginTop: 2,
+                  fontFamily: 'Poppins-Regular',
+                }}>
+                {gender ? gender : 'Gender'}
+              </Text>
+              <Image
+                style={{
+                  height: 8,
+                  width: 15,
+                }}
+                source={require('../../../assets/image/arrow_icon.png')}
+              />
+            </TouchableOpacity>
+          </Animated.View>
         </View>
         <View style={styles.inputmain}>
           <Text style={styles.title2}>Current City Pincode*</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Current City Pincode"
-            placeholderTextColor={colors.placeholder}
-            keyboardType="numeric"
-            value={formData.cityPincode}
-            onChangeText={text => handleInputChange('cityPincode', text)}
-          />
+          <Animated.View
+            style={[{transform: [{translateX: shakeAnimation.cityPincode}]}]}>
+            <TextInput
+              style={styles.input}
+              placeholder="Current City Pincode"
+              placeholderTextColor={colors.placeholder}
+              keyboardType="numeric"
+              value={formData.cityPincode}
+              onChangeText={text => handleInputChange('cityPincode', text)}
+            />
+          </Animated.View>
         </View>
 
         <View style={styles.inputmain}>
@@ -432,9 +528,7 @@ const EditProfile = () => {
           </View>
           <Text style={styles.uppload}>Maximum upload file size 2mb.</Text>
         </View>
-        <TouchableOpacity
-          onPress={handleSubmit}
-          style={styles.buttoncontainer}>
+        <TouchableOpacity onPress={handleSubmit} style={styles.buttoncontainer}>
           <Text style={styles.btext}>{'UPDATE PROFILE'}</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -476,4 +570,3 @@ const EditProfile = () => {
 };
 
 export default EditProfile;
- 

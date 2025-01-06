@@ -115,7 +115,7 @@ export const updateCartApi = createAsyncThunk(
         if (!fromCartScreen) {
           Toast.show(
             `This item is already in your cart, we have increased the quantity by ${currentQty}`,
-            Toast.LONG,
+            Toast.LONG
           );
         }
       }
@@ -219,36 +219,31 @@ const cartSlice = createSlice({
       const item = action.payload;
       const qty = item.qty !== undefined ? item.qty : 1;
 
-      // Find the index of the item if it exists in the cart
       const existingItemIndex = state.localStorageCartData.findIndex(
         cartItem => cartItem.id === item.id,
       );
 
       if (existingItemIndex !== -1) {
-        // state.localStorageCartData[existingItemIndex].qty += 1;
 
-        // Increase the quantity by its current value (if it's already 1, increase by 1)
         state.localStorageCartData[existingItemIndex].qty += qty;
-        // Toast.show(`Item quantity updated successfully!`);
+
         Toast.show(
           `This item is already in your cart, we have increased the quantity by ${qty}`,
         );
       } else {
         state.localStorageCartData.push({
           ...item,
-          qty: 1, // Initial quantity for new items
+          qty: 1,
           addedAt: new Date().toISOString(),
         });
-        Toast.show('Item added to cart!');
+        Toast.show('Item added to cart!',Toast.LONG);
       }
 
-      // Save the updated cart to AsyncStorage
       AsyncStorage.setItem(
         'cartItems',
         JSON.stringify(state.localStorageCartData),
       );
 
-      // Update the total quantity in the cart
       state.cartTotalQuantity = calculateTotalQuantity(
         state.localStorageCartData,
       );

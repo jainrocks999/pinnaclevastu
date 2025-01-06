@@ -31,7 +31,6 @@ const MyOrder = ({route}) => {
   
   const cource =useSelector(state => state?.order?.orderCource?.data);
 
-
   const loading1 = useSelector(state => state?.order?.loading); 
   const [selectedTab, setSelectedTab] = useState('Remedies');
   const focus = useIsFocused();
@@ -210,15 +209,15 @@ useEffect(() => {
       <Text style={styles.orderNo}>Order No: {item.code}</Text>
 
       <View style={styles.horizontalSeparator} />
-      <View style={styles.productContainer}>
+      <View style={styles.productContainer1}>
         <Image
           source={
             item?.course?.image
               ? {uri: `${Imagepath.Path}${item?.course?.image}`}
               : require('../../../assets/otherApp/order3.png')
           }
-          resizeMode='center'
-          style={[styles.productImage,{  marginRight: 0,}]}
+          resizeMode='contain'
+          style={styles.productImage1}
         />
         <View style={styles.productDetails}>
           <Text style={styles.productName}>

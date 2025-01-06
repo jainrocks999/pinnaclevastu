@@ -1,4 +1,3 @@
-
 // import { Image, ImageBackground, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 // import React from 'react'
 // import styles from './styles'
@@ -54,11 +53,9 @@
 // export default LoginScreen
 
 import {
-  Alert,
   Image,
   ImageBackground,
   Keyboard,
-  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
@@ -70,20 +67,20 @@ import {colors} from '../../../Component/colors';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Toast from 'react-native-simple-toast';
 import {useDispatch, useSelector} from 'react-redux';
-import { loginUser } from '../../../Redux/Slice/Authslice';
+import {loginUser} from '../../../Redux/Slice/Authslice';
 import Loader from '../../../Component/Loader';
 
-
-const LoginScreen = ({route,navigation}) => {
+const LoginScreen = ({route, navigation}) => {
   const [mobile, setMobile] = useState('');
- const  isLoading =useSelector(state=>state.Auth?.loading)
- 
+
+  const isLoading = useSelector(state => state.Auth?.loading);
+
   const dispatch = useDispatch();
+
   const handleInputChange = text => {
     const numericText = text.replace(/[^0-9]/g, '');
 
     const mobileRegex = /^[0-9]{0,10}$/;
-
     if (mobileRegex.test(numericText)) {
       setMobile(numericText);
     } else {
@@ -98,7 +95,7 @@ const LoginScreen = ({route,navigation}) => {
       Toast.show('Mobile number should be at least 10 digits');
       return;
     } else {
-      dispatch(loginUser({mobile, navigation, url: 'login',route}));
+      dispatch(loginUser({mobile, navigation, url: 'login', route}));
       // navigation.navigate('OTP');
     }
   };
@@ -112,8 +109,7 @@ const LoginScreen = ({route,navigation}) => {
       <ImageBackground
         style={styles.imgbcg}
         source={require('../../../assets/image/Group1.png')}>
-
-          {isLoading?<Loader/>:null}
+        {isLoading ? <Loader /> : null}
         <View style={styles.main}>
           <View style={styles.subt}>
             <Text style={styles.title}>Login</Text>
@@ -127,14 +123,15 @@ const LoginScreen = ({route,navigation}) => {
               value={mobile}
               placeholder="Enter Mobile Number"
               placeholderTextColor={colors.placeholder}
-              keyboardType="numeric"
+              keyboardType="phone-pad"
               maxLength={10}
-              onChangeText={handleInputChange}
+              onChangeText={text => handleInputChange(text)}
             />
           </View>
           <TouchableOpacity
             onPress={() => LoginAPi()}
-            style={styles.buttoncontainer} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+            style={styles.buttoncontainer}
+            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
             <View style={styles.touch}>
               <View />
               <Text style={styles.btext}>GET OTP</Text>

@@ -7,8 +7,10 @@ import {
   Image,
   Modal,
   PermissionsAndroid,
+  Animated,
+  Vibration,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import styles from './styles';
 import {colors} from '../../../Component/colors';
 import SelectModal from '../../../Component/dropdown';
@@ -19,21 +21,23 @@ import Toast from 'react-native-simple-toast';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {useDispatch, useSelector} from 'react-redux';
 import {signupUser} from '../../../Redux/Slice/Authslice';
-import { Dropdown } from 'react-native-element-dropdown';
+import {Dropdown} from 'react-native-element-dropdown';
 import Loader from '../../../Component/Loader';
 
 const SignUpPage = () => {
+  const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
+
   const dispatch = useDispatch();
   const [visible, setVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState({
     label: '',
     value: '',
   });
-  const  isLoading =useSelector(state=>state.Auth?.loading)
+  const isLoading = useSelector(state => state.Auth?.loading);
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedname, setSelectedname] = useState(null);
-  const [selectedname1,setSelectedname1]= useState(null);
+  const [selectedname1, setSelectedname1] = useState(null);
   const [selectedImagetype, setSelectedImagetype] = useState(null);
 
   const navigation = useNavigation();
@@ -45,8 +49,6 @@ const SignUpPage = () => {
     setVisible(false);
   };
 
-
-  
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
@@ -54,12 +56,24 @@ const SignUpPage = () => {
   const [date, setDate] = useState('');
   const [open, setOpen] = useState(false);
 
+  const [shakeAnimation, setShakeAnimation] = useState({
+    name: new Animated.Value(0),
+    email: new Animated.Value(0),
+    mobile: new Animated.Value(0),
+    cityPincode: new Animated.Value(0),
+    gender: new Animated.Value(0),
+    date: new Animated.Value(0),
+  });
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     mobile: '',
     cityPincode: '',
     birthPlace: '',
+    gender: '',
+    cityPincode: '',
+    date: '',
   });
 
   const formatDate = date => {
@@ -112,11 +126,10 @@ const SignUpPage = () => {
       quality: 0.5,
       maxWidth: 1024,
       maxHeight: 1024,
-      includeBase64:true
+      includeBase64: true,
     };
 
     launchImageLibrary(options, response => {
-    
       if (response.didCancel) {
         console.log('User cancelled image picker');
       } else if (response.error) {
@@ -124,7 +137,7 @@ const SignUpPage = () => {
       } else if (response.assets && response.assets.length > 0) {
         // const imageUri = response.assets[0].base64;
         const base64Image = `data:${response.assets[0].type};base64,${response.assets[0].base64}`;
-       
+
         setSelectedImage(base64Image);
         setSelectedImagetype(response.assets[0]?.uri);
         // setSelectedname(response.assets[0]?.fileName)
@@ -134,7 +147,6 @@ const SignUpPage = () => {
 
         // }
       }
-     
     });
   };
   const openCamera = async () => {
@@ -146,7 +158,7 @@ const SignUpPage = () => {
       maxWidth: 2000,
       includeBase64: true,
     };
-  
+
     launchCamera(options, response => {
       if (response.didCancel) {
         console.log('User cancelled camera');
@@ -159,7 +171,6 @@ const SignUpPage = () => {
       }
     });
   };
-  
 
   // const openCamera = async () => {
   //   await requestCameraPermission();
@@ -173,7 +184,7 @@ const SignUpPage = () => {
   //   };
 
   //   launchCamera(options, response => {
-     
+
   //     if (response.didCancel) {
   //       console.log('User cancelled camera');
   //     } else if (response.error) {
@@ -181,15 +192,17 @@ const SignUpPage = () => {
   //     } else if (response.assets) {
   //       // const imageUri = response.assets[0].base64;
   //       const base64Image = `data:${response.assets[0].type};base64,${response.assets[0].base64}`;
-       
+
   //       setSelectedImage(base64Image);
   //       // setSelectedImagetype(response.assets[0].type);
   //       // setSelectedname(response.assets[0]?.fileName)
   //     }
   //     console.log('sdklslgvgv;ls',isModalVisible);
-      
+
   //   });
   // };
+
+  const scrollViewRef = useRef(null);
 
   const handleInputChange = (name, value) => {
     setFormData({...formData, [name]: value});
@@ -210,46 +223,117 @@ const SignUpPage = () => {
         : Toast.show('Invalid city pincode.');
     }
   };
+  // Shake animation function
+  const shake = field => {
+    Vibration.vibrate(100); // Vibration for 100 milliseconds
+    Animated.sequence([
+      Animated.timing(shakeAnimation[field], {
+        toValue: 5, // how far the input will shake
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnimation[field], {
+        toValue: -5,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnimation[field], {
+        toValue: 5,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnimation[field], {
+        toValue: -5,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnimation[field], {
+        toValue: 0,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      scrollToField(field); // Scroll to the field after shake animation completes
+    });
+  };
+  const scrollToField = fieldName => {
+    const fieldOffsets = {
+      services: 0,
+      name: 0,
+      email: 100,
+      mobile: 200,
+      gender: 300,
+      cityPincode: 400,
+      date: 500,
+      time: 600,
+      birthPlace: 700,
+      additionalInfo: 800,
+    };
+    scrollViewRef.current.scrollTo({
+      y: fieldOffsets[fieldName],
+      animated: true,
+    });
+  };
 
-  const handleSubmit = async() => {
+  const handleSubmit = async () => {
+    Animated.sequence([
+      Animated.timing(buttonAnimatedValue, {
+        toValue: 0.94,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(buttonAnimatedValue, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start();
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
 
-    if (formData.name == '') {
-      Toast.show('Please enter name');
+    if (formData.name === '') {
+      shake('name');
+      scrollToField('name');
       return;
-    } else if (formData.email == '') {
-      Toast.show('Please enter email');
+    } else if (formData.email === '') {
+      shake('email');
+      scrollToField('email');
       return;
     } else if (!emailRegex.test(formData.email)) {
-      Toast.show('Please valid Email');
+      shake('email');
+      scrollToField('email');
       return;
-    } else if (formData.mobile == '') {
-      Toast.show('Please enter mobile Number');
+    } else if (formData.mobile === '') {
+      shake('mobile');
+      scrollToField('mobile');
       return;
     } else if (formData.mobile.length < 10) {
-      Toast.show('Mobile number should be at least 10 digits');
+      shake('mobile');
+      scrollToField('mobile');
       return;
-    } else if (gender == '') {
-      Toast.show('Please enter gender');
+    } else if (gender === '') {
+      shake('gender');
+      scrollToField('gender');
       return;
-    } else if (formData.cityPincode == '') {
-      Toast.show('Please enter city pincode');
+    } else if (formData.cityPincode === '') {
+      shake('cityPincode');
+      scrollToField('cityPincode');
       return;
+      // } else if (formData.date === '') {
+      //   shake('date');
+      //   scrollToField('date');
+      //   return;
     } else if (formData.cityPincode.length < 6) {
-      Toast.show('Pincode should be at least 6 digits');
-      return;
-    } else if (date == '') {
-      Toast.show('Please enter Birth Date');
+      shake('cityPincode');
+      scrollToField('cityPincode');
       return;
     } else {
-     
-     await dispatch(
+      await dispatch(
         signupUser({
           formData,
           gender,
-          date:formatDate(date),
-          time:formatTime(time),
-       selectedImage:selectedImage,
+          date: formatDate(date),
+          time: formatTime(time),
+          selectedImage: selectedImage,
           url: 'sign-up',
           navigation,
         }),
@@ -266,8 +350,9 @@ const SignUpPage = () => {
 
   return (
     <View style={styles.container}>
-       {isLoading?<Loader/>:null}
+      {isLoading ? <Loader /> : null}
       <ScrollView
+        ref={scrollViewRef}
         contentContainerStyle={styles.main1}
         keyboardShouldPersistTaps="handled">
         <View style={styles.subt}>
@@ -280,86 +365,95 @@ const SignUpPage = () => {
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Full Name*</Text>
             <View style={[styles.input, styles.inputShadow]}>
-              <TextInput
-                style={styles.inputText}
-                placeholder="Name"
-                placeholderTextColor={colors.placeholder}
-                value={formData.name}
-                onChangeText={text => handleInputChange('name', text)}
-              />
+              <Animated.View
+                style={[{transform: [{translateX: shakeAnimation.name}]}]}>
+                <TextInput
+                  style={styles.inputText}
+                  placeholder="Name"
+                  placeholderTextColor={colors.placeholder}
+                  value={formData.name}
+                  onChangeText={text => handleInputChange('name', text)}
+                />
+              </Animated.View>
             </View>
           </View>
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Email*</Text>
             <View style={[styles.input, styles.inputShadow]}>
-              <TextInput
-                style={styles.inputText}
-                placeholder="Email"
-                placeholderTextColor={colors.placeholder}
-                keyboardType="email-address"
-                value={formData.email}
-                onChangeText={text => handleInputChange('email', text)}
-              />
+              <Animated.View
+                style={[{transform: [{translateX: shakeAnimation.email}]}]}>
+                <TextInput
+                  style={styles.inputText}
+                  placeholder="Email"
+                  placeholderTextColor={colors.placeholder}
+                  keyboardType="email-address"
+                  value={formData.email}
+                  onChangeText={text => handleInputChange('email', text)}
+                />
+              </Animated.View>
             </View>
           </View>
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Mobile Number*</Text>
             <View style={[styles.input, styles.inputShadow]}>
-              <TextInput
-                style={styles.inputText}
-                placeholder="Mobile Number"
-                placeholderTextColor={colors.placeholder}
-                keyboardType="numeric"
-                value={formData.mobile}
-                maxLength={10}
-                onChangeText={text => handleInputChange('mobile', text)}
-              />
+              <Animated.View
+                style={[{transform: [{translateX: shakeAnimation.mobile}]}]}>
+                <TextInput
+                  style={styles.inputText}
+                  placeholder="Mobile Number"
+                  placeholderTextColor={colors.placeholder}
+                  keyboardType="phone-pad"
+                  value={formData.mobile}
+                  maxLength={10}
+                  onChangeText={text => handleInputChange('mobile', text)}
+                />
+              </Animated.View>
             </View>
           </View>
 
-
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Gender*</Text>
-          <Dropdown
-           style={[
-            styles.input,
-            styles.inputShadow,
-            {
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            },
-          ]}
-            data={data}
-            labelField="label"
-            valueField="value"
-            placeholder={'Gender'}
-            placeholderStyle={{
-              color: gender ? colors.heading:colors.placeholder,
-              fontSize: fontSize.Sixteen,
-              // marginTop: 2,
-              fontFamily: 'Poppins-Regular',
-            }}
-            selectedTextStyle={styles.selectedText}
-            itemTextStyle={styles.itemText}
-            value={gender}
-            onChange={text => setGender(text.value)}
-            renderRightIcon={() =>  <Image
-              style={{
-                height: 8,
-                width: 15,
-              }}
-              source={require('../../../assets/image/arrow_icon.png')}
-            />}
-          />
-        </View>
-
-
-
+            <Animated.View
+              style={[{transform: [{translateX: shakeAnimation.gender}]}]}>
+              <Dropdown
+                style={[
+                  styles.input,
+                  styles.inputShadow,
+                  {
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  },
+                ]}
+                data={data}
+                labelField="label"
+                valueField="value"
+                placeholder={'Gender'}
+                placeholderStyle={{
+                  color: gender ? colors.heading : colors.placeholder,
+                  fontSize: fontSize.Sixteen,
+                  // marginTop: 2,
+                  fontFamily: 'Poppins-Regular',
+                }}
+                selectedTextStyle={styles.selectedText}
+                itemTextStyle={styles.itemText}
+                value={gender}
+                onChange={text => setGender(text.value)}
+                renderRightIcon={() => (
+                  <Image
+                    style={{
+                      height: 8,
+                      width: 15,
+                    }}
+                    source={require('../../../assets/image/arrow_icon.png')}
+                  />
+                )}
+              />
+            </Animated.View>
+          </View>
 
           {/* <View style={styles.inputmain}>
             <Text style={styles.title2}>Gender*</Text>
-
             <TouchableOpacity
               onPress={() => setVisible(true)}
               style={[
@@ -392,49 +486,55 @@ const SignUpPage = () => {
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Current City Pincode*</Text>
             <View style={[styles.input, styles.inputShadow]}>
-              <TextInput
-                style={styles.inputText}
-                placeholder="Current City Pincode"
-                placeholderTextColor={colors.placeholder}
-                keyboardType="numeric"
-                maxLength={6}
-                value={formData.cityPincode}
-                onChangeText={text => handleInputChange('cityPincode', text)}
-              />
+              <Animated.View
+                style={[
+                  {transform: [{translateX: shakeAnimation.cityPincode}]},
+                ]}>
+                <TextInput
+                  style={styles.inputText}
+                  placeholder="Current City Pincode"
+                  placeholderTextColor={colors.placeholder}
+                  keyboardType="numeric"
+                  maxLength={6}
+                  value={formData.cityPincode}
+                  onChangeText={text => handleInputChange('cityPincode', text)}
+                />
+              </Animated.View>
             </View>
           </View>
 
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Date of Birth*</Text>
-
-            <TouchableOpacity
-              onPress={() => setOpen(true)}
-              style={[
-                styles.input,
-                styles.inputShadow,
-                {
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                },
-              ]}>
-              <Text
+            <Animated.View
+              style={[{transform: [{translateX: shakeAnimation.date}]}]}>
+              <TouchableOpacity
+                onPress={() => setOpen(true)}
                 style={[
-                  styles.input1,
-                  {color: date === '' ? colors.placeholder : colors.heading},
+                  styles.input,
+                  styles.inputShadow,
+                  {
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  },
                 ]}>
-                {formatDate(date)}
-              </Text>
+                <Text
+                  style={[
+                    styles.input1,
+                    {color: date === '' ? colors.placeholder : colors.heading},
+                  ]}>
+                  {formatDate(date)}
+                </Text>
 
-              <Image
-                style={{
-                  height: 20,
-                  width: 20,
-                }}
-                source={require('../../../assets/image/cale.png')}
-              />
-            </TouchableOpacity>
-
+                <Image
+                  style={{
+                    height: 20,
+                    width: 20,
+                  }}
+                  source={require('../../../assets/image/cale.png')}
+                />
+              </TouchableOpacity>
+            </Animated.View>
             <DatePicker
               modal
               open={open}
@@ -505,7 +605,7 @@ const SignUpPage = () => {
               />
             </View>
           </View>
-         <View style={styles.inputmain}>
+          <View style={styles.inputmain}>
             <Text style={styles.title2}>Upload Photo</Text>
             <View
               style={[
@@ -527,7 +627,7 @@ const SignUpPage = () => {
               />
 
               <TouchableOpacity
-                onPress={()=>setModalVisible(true)}
+                onPress={() => setModalVisible(true)}
                 style={styles.buttoncontainer1}>
                 <Text style={[styles.btext, {fontSize: fontSize.Fourteen}]}>
                   {'Browse'}
@@ -535,27 +635,29 @@ const SignUpPage = () => {
               </TouchableOpacity>
             </View>
             <Text style={styles.uppload}>Maximum upload file size 2mb.</Text>
-          </View> 
+          </View>
 
-          <View>
+          <Animated.View style={[{transform: [{scale: buttonAnimatedValue}]}]}>
             <TouchableOpacity
-              onPress={()=>handleSubmit()}
+              onPress={() => handleSubmit()}
               style={styles.buttoncontainer}>
               <Text style={styles.btext}>{'SUBMIT'}</Text>
             </TouchableOpacity>
-          </View>
+          </Animated.View>
         </View>
       </ScrollView>
 
       <Modal
         transparent={true}
         animationType="fade"
-        visible={isModalVisible} 
+        visible={isModalVisible}
         onRequestClose={() => setModalVisible(false)}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Upload Profile Picture</Text>
-            <TouchableOpacity onPress={()=>openCamera()} style={[styles.modalBtn]}>
+            <TouchableOpacity
+              onPress={() => openCamera()}
+              style={[styles.modalBtn]}>
               <Image
                 source={require('../../../assets/image/cameraIcon.png')}
                 style={styles.modalBtnIcon}
@@ -564,7 +666,9 @@ const SignUpPage = () => {
                 Camera
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={()=>openGallery()} style={[styles.modalBtn]}>
+            <TouchableOpacity
+              onPress={() => openGallery()}
+              style={[styles.modalBtn]}>
               <Image
                 source={require('../../../assets/image/galleryIcon.png')}
                 style={styles.modalBtnIcon}
@@ -573,7 +677,9 @@ const SignUpPage = () => {
                 Gallery
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.closeBtn} onPress={()=>setModalVisible(false)}>
+            <TouchableOpacity
+              style={styles.closeBtn}
+              onPress={() => setModalVisible(false)}>
               <Image source={require('../../../assets/image/close.png')} />
             </TouchableOpacity>
           </View>
