@@ -1,13 +1,7 @@
-import {
-  View,
-  Text,
-  Image,
-  SafeAreaView,
-  TouchableOpacity,
-} from 'react-native';
-import React, { useState, useEffect } from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { moderateScale } from '../Component/Meterscale';
+import {View, Text, Image, SafeAreaView, TouchableOpacity} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {moderateScale} from '../Component/Meterscale';
 import Chat from '../assets/svg/chat.svg';
 import Chat1 from '../assets/svg/chat1.svg';
 import Laye from '../assets/svg/Laye.svg';
@@ -17,15 +11,15 @@ import Group1 from '../assets/svg/Group1.svg';
 import Home from '../assets/svg/home.svg';
 import Icon from '../assets/svg/Icon.svg';
 import Icon1 from '../assets/svg/Icon1.svg';
-import { fontSize } from '../Component/fontsize';
-import { colors } from '../Component/colors';
+import {fontSize} from '../Component/fontsize';
+import {colors} from '../Component/colors';
 import HomeScreen from '../Screen/Main/HomeScreen';
 import Remedie from './Remediesstack';
 import CoureList from '../Screen/Main/Courses';
 import MyProfile from './Profilestack';
 import ResidentalScreen from '../Screen/Main/ResidentalVastu';
 import CustomTab from './CustomTab';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 import Loader from '../Component/Loader';
 const Tab = createBottomTabNavigator();
 export default function BottomTab() {
@@ -35,20 +29,20 @@ export default function BottomTab() {
   const cartisLoading = useSelector(state => state.cart?.loading);
   const addressisLoading = useSelector(state => state.address?.loading);
   const orderisLoading = useSelector(state => state.order?.loading);
-  const handleTabPress = (tab) => {
+  const handleTabPress = tab => {
     setCircleVisible(tab);
     setActiveTab(tab);
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
- {isLoading || cartisLoading || addressisLoading || orderisLoading ? (
+    <SafeAreaView style={{flex: 1}}>
+      {isLoading || cartisLoading || addressisLoading || orderisLoading ? (
         <Loader />
       ) : null}
       <Tab.Navigator
-        tabBar={(props) => <CustomTab {...props} />}
+        tabBar={props => <CustomTab {...props} />}
         initialRouteName="MainStack"
-        screenOptions={({ route }) => ({
+        screenOptions={({route}) => ({
           animationEnabled: false,
           activeTintColor: 'green',
           inactiveTintColor: 'grey',
@@ -63,7 +57,7 @@ export default function BottomTab() {
             borderTopRightRadius: 10,
             paddingHorizontal: moderateScale(1),
             shadowColor: '#000',
-            shadowOffset: { width: 0, height: -2 },
+            shadowOffset: {width: 0, height: -2},
             shadowOpacity: 0.1,
             shadowRadius: 10,
             elevation: 5,
@@ -71,10 +65,7 @@ export default function BottomTab() {
             bottom: -5,
             overflow: 'hidden',
           },
-
-        })}
-
-      >
+        })}>
         <Tab.Screen
           name="MainStack"
           component={HomeScreen}
@@ -82,14 +73,21 @@ export default function BottomTab() {
             headerShown: false,
             tabBarLabel: 'Home',
             tabBarShowLabel: false,
-            tabBarIcon: ({ focused }) => (
+            tabBarIcon: ({focused}) => (
               <View
                 style={{
                   alignItems: 'center',
                   justifyContent: 'center',
                   flex: 1,
                 }}>
-                {focused ? <Home /> : <Image style={{ height: 20, width: 20 }} source={require('../assets/otherApp/homeIcon.png')} />}
+                {focused ? (
+                  <Home />
+                ) : (
+                  <Image
+                    style={{height: 20, width: 20}}
+                    source={require('../assets/otherApp/homeIcon.png')}
+                  />
+                )}
                 <Text
                   style={{
                     color: colors.white,
@@ -101,7 +99,7 @@ export default function BottomTab() {
                 </Text>
               </View>
             ),
-            tabBarButton: (props) => (
+            tabBarButton: props => (
               <TouchableOpacity
                 {...props}
                 style={{
@@ -111,7 +109,10 @@ export default function BottomTab() {
                   marginTop: moderateScale(4),
                 }}
                 activeOpacity={0.2}
-                onPress={() => { handleTabPress('MainStack'); props.onPress() }}
+                onPress={() => {
+                  handleTabPress('MainStack');
+                  props.onPress();
+                }}
               />
             ),
           }}
@@ -123,7 +124,7 @@ export default function BottomTab() {
             headerShown: false,
             tabBarLabel: 'Consultancy',
             tabBarShowLabel: false,
-            tabBarIcon: ({ focused }) => (
+            tabBarIcon: ({focused}) => (
               <View
                 style={{
                   alignItems: 'center',
@@ -142,7 +143,7 @@ export default function BottomTab() {
                 </Text>
               </View>
             ),
-            tabBarButton: (props) => (
+            tabBarButton: props => (
               <TouchableOpacity
                 {...props}
                 style={{
@@ -152,7 +153,10 @@ export default function BottomTab() {
                   marginTop: moderateScale(4),
                 }}
                 activeOpacity={0.2}
-                onPress={() => { handleTabPress('Consultancy'); props.onPress() }}
+                onPress={() => {
+                  handleTabPress('Consultancy');
+                  props.onPress();
+                }}
               />
             ),
           }}
@@ -164,7 +168,7 @@ export default function BottomTab() {
             headerShown: false,
             tabBarLabel: 'Remedies',
             tabBarShowLabel: false,
-            tabBarIcon: ({ focused }) => (
+            tabBarIcon: ({focused}) => (
               <View
                 style={{
                   alignItems: 'center',
@@ -183,7 +187,7 @@ export default function BottomTab() {
                 </Text>
               </View>
             ),
-            tabBarButton: (props) => (
+            tabBarButton: props => (
               <TouchableOpacity
                 {...props}
                 style={{
@@ -193,7 +197,10 @@ export default function BottomTab() {
                   marginTop: moderateScale(4),
                 }}
                 activeOpacity={0.2}
-                onPress={() => { handleTabPress('Remedie12'); props.onPress() }} // Handle tab press
+                onPress={() => {
+                  handleTabPress('Remedie12');
+                  props.onPress();
+                }} // Handle tab press
               />
             ),
           }}
@@ -205,7 +212,7 @@ export default function BottomTab() {
             headerShown: false,
             tabBarLabel: 'Courses',
             tabBarShowLabel: false,
-            tabBarIcon: ({ focused }) => (
+            tabBarIcon: ({focused}) => (
               <View
                 style={{
                   alignItems: 'center',
@@ -225,7 +232,7 @@ export default function BottomTab() {
                 </Text>
               </View>
             ),
-            tabBarButton: (props) => (
+            tabBarButton: props => (
               <TouchableOpacity
                 {...props}
                 style={{
@@ -235,7 +242,10 @@ export default function BottomTab() {
                   marginTop: moderateScale(4),
                 }}
                 activeOpacity={0.2}
-                onPress={() => { handleTabPress('Cources'); props.onPress() }} // Handle tab press
+                onPress={() => {
+                  handleTabPress('Cources');
+                  props.onPress();
+                }} // Handle tab press
               />
             ),
           }}
@@ -247,7 +257,7 @@ export default function BottomTab() {
             headerShown: false,
             tabBarLabel: 'Profile',
             tabBarShowLabel: false,
-            tabBarIcon: ({ focused }) => (
+            tabBarIcon: ({focused}) => (
               <View
                 style={{
                   alignItems: 'center',
@@ -265,10 +275,9 @@ export default function BottomTab() {
                   }}>
                   Profile
                 </Text>
-
               </View>
             ),
-            tabBarButton: (props) => (
+            tabBarButton: props => (
               <TouchableOpacity
                 {...props}
                 style={{
@@ -278,7 +287,10 @@ export default function BottomTab() {
                   marginTop: moderateScale(4),
                 }}
                 activeOpacity={0.2}
-                onPress={() => { handleTabPress('MyProfile'); props.onPress() }} // Handle tab press
+                onPress={() => {
+                  handleTabPress('MyProfile');
+                  props.onPress();
+                }} // Handle tab press
               />
             ),
           }}
@@ -287,15 +299,6 @@ export default function BottomTab() {
     </SafeAreaView>
   );
 }
-
-
-
-
-
-
-
-
-
 
 // import {
 //   View,
@@ -331,12 +334,11 @@ export default function BottomTab() {
 // import MyProfile from './Profilestack';
 // import ResidentalScreen from '../Screen/Main/ResidentalVastu';
 // import {getFocusedRouteNameFromRoute, useNavigation, useNavigationState} from '@react-navigation/native';
-  
+
 // const Tab = createBottomTabNavigator();
 
 // export default function BottomTab() {
 
-  
 //   return (
 //     <SafeAreaView style={{flex: 1}}>
 
@@ -349,8 +351,6 @@ export default function BottomTab() {
 //     headerShown: false,
 //     tabBarStyle: [
 //       {
-        
-         
 
 //         display: shouldHideTabBar(route) ? 'none' : 'flex',
 //         backgroundColor: colors.orange,
@@ -373,8 +373,6 @@ export default function BottomTab() {
 //   })}
 // >
 
-
-
 //         <Tab.Screen
 //           name="MainStack"
 //           component={HomeScreen}
@@ -390,8 +388,7 @@ export default function BottomTab() {
 //                   justifyContent: 'center',
 //                   flex: 1,
 //                 }}>
-                
-                  
+
 //                 {focused ? (
 //                   <Home />
 //                 ) : (
@@ -483,14 +480,14 @@ export default function BottomTab() {
 //                     alignItems: 'center',
 //                     justifyContent: 'center',
 //                     flex: 1,
-                   
+
 //                   }}
 //               //  onPress={ ()=> navigation.navigate('Home1', {
 //               //          screen: 'Remedie12',
 //               //           params: {screen: 'Remedies'},
 //               //       })}
 //                     >
-                  
+
 //                 {focused ? <Group1 /> : <Group />}
 //                 <Text
 //                   style={{
@@ -501,7 +498,7 @@ export default function BottomTab() {
 //                   }}>
 //                   Remedies
 //                 </Text>
-               
+
 //                 {/* </TouchableOpacity> */}
 //                 </View>
 //               );
@@ -569,7 +566,7 @@ export default function BottomTab() {
 //             headerShown: false,
 //             tabBarLabel: 'Profile',
 //             tabBarShowLabel: false,
-           
+
 //             tabBarIcon: ({color, size, focused,route}) => (
 //               <View
 //                 style={{
@@ -577,7 +574,7 @@ export default function BottomTab() {
 //                   justifyContent: 'center',
 //                   flex: 1,
 //                 }}>
-                   
+
 //                  {focused ? <Layer /> : <Laye />}
 //                 <Text
 //                   style={{
@@ -604,7 +601,7 @@ export default function BottomTab() {
 //               />
 //             ),
 //           }}
-         
+
 //         />
 //       </Tab.Navigator>
 //     </SafeAreaView>
@@ -613,24 +610,19 @@ export default function BottomTab() {
 // function shouldHideTabBar(route) {
 //   const focusedRouteName = getFocusedRouteNameFromRoute(route);
 
-  
 //   if (route.name === 'MyProfile') {
-   
+
 //     if (!focusedRouteName) {
 //       return true;
 //     }
 
- 
 //     if (focusedRouteName === 'UserProfile' || focusedRouteName === 'EditProfile') {
 //       return true;
 //     }
 //   }
 
-//   return false; 
+//   return false;
 // }
-
-
-
 
 // const styles = StyleSheet.create({
 //   tabBarStyle: {
@@ -652,4 +644,3 @@ export default function BottomTab() {
 //     overflow: 'hidden',
 //   },
 // });
-

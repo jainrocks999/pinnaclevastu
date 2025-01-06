@@ -61,6 +61,7 @@ const Remedies12SecondComponent = () => {
 
   const defaultAddress = addressData?.find(item => item?.is_default == 1);
 
+ 
   const [userType, setUserType] = useState('');
   const route = useRoute();
 
@@ -127,7 +128,7 @@ const Remedies12SecondComponent = () => {
     };
 
     checkLoginStatus();
-  }, []);
+  }, [fromScreen]);
 
   const handleUpdateCartData = async (user_id, rowid, qty, token, fromCart) => {
     try {

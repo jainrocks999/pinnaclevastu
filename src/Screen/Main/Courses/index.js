@@ -209,6 +209,7 @@ const OtherCourses = ({navigation}) => {
         url: 'fetch-courses-details',
         course_id: item?.id,
         navigation,
+        isLiveCourse
       }),
     );
   };
@@ -239,11 +240,11 @@ const OtherCourses = ({navigation}) => {
   }, [placeholderText]);
 
   useEffect(() => {
-    if (focus) {
+   
       apicall();
       getUserType();
-    }
-  }, [focus]);
+  
+  }, []);
 
   const getUserType = async () => {
     const userStatus = await AsyncStorage.getItem('user_data');
@@ -291,7 +292,8 @@ const OtherCourses = ({navigation}) => {
         /> */}
 
           <View style={styles.cardInfo}>
-            <Text style={styles.DateText}>{item?.start_date}</Text>
+            { !isLiveCourse ?null:
+            <Text style={styles.DateText}>{item?.start_date}</Text>}
             <Text style={styles.titleText}>{item?.title}</Text>
             <Text style={styles.regularText}>
               {item?.short_description
@@ -302,18 +304,7 @@ const OtherCourses = ({navigation}) => {
             </Text>
             {/* <Text style={styles.price}>{`₹ ${item?.price}`}</Text> */}
             <View style={{flexDirection:"row",gap:10}}>
-              {userType &&
-              (item?.sale_price < item?.price ||
-                item?.student_price < item?.price ||
-                item?.franchise_price < item?.price) &&
-              (item?.sale_price ||
-                item?.student_price ||
-                item?.franchise_price) ? (
-                <Text
-                  style={[styles.price, {textDecorationLine: 'line-through',color:"gray"}]}>
-                  ₹ {item?.price}
-                </Text>
-              ) : null}
+            
 
               <Text style={[styles.price]}>
                 {`₹ ${
@@ -326,6 +317,18 @@ const OtherCourses = ({navigation}) => {
                     : item?.price
                 }`}
               </Text>
+              {userType &&
+              (item?.sale_price < item?.price ||
+                item?.student_price < item?.price ||
+                item?.franchise_price < item?.price) &&
+              (item?.sale_price ||
+                item?.student_price ||
+                item?.franchise_price) ? (
+                <Text
+                  style={[styles.price, {textDecorationLine: 'line-through',color:"gray"}]}>
+                  ₹ {item?.price}
+                </Text>
+              ) : null}
             </View>
 
             {/* <TouchableOpacity onPress={() => CouseDetail1(item)}> */}

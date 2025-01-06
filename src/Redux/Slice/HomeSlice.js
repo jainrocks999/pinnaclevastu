@@ -788,7 +788,7 @@ export const CourceLis = createAsyncThunk(
 
 export const CourceDetailApi = createAsyncThunk(
   'home/CourceDetailApi',
-  async ({url, course_id, navigation}, {rejectWithValue}) => {
+  async ({url, course_id, navigation,isLiveCourse}, {rejectWithValue}) => {
     console.log('CCourceDetailApih ', url, course_id);
 
     try {
@@ -802,7 +802,7 @@ export const CourceDetailApi = createAsyncThunk(
       const response = await axios.request(config);
 
       if (response?.data?.status == 200) {
-        navigation.navigate('CourseDetail');
+        navigation.navigate('CourseDetail',{coursetype:isLiveCourse});
         return response?.data?.data;
       } else {
         Toast.show(response?.data?.msg);

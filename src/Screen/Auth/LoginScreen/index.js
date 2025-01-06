@@ -79,16 +79,13 @@ const LoginScreen = ({route,navigation}) => {
  const  isLoading =useSelector(state=>state.Auth?.loading)
  
   const dispatch = useDispatch();
+
   const handleInputChange = text => {
+    // Remove any non-numeric characters
     const numericText = text.replace(/[^0-9]/g, '');
 
-    const mobileRegex = /^[0-9]{0,10}$/;
-
-    if (mobileRegex.test(numericText)) {
-      setMobile(numericText);
-    } else {
-      Toast.show('Invalid mobile number.');
-    }
+    // Update the state with valid numeric text only
+    setMobile(numericText);
   };
   const LoginAPi = () => {
     Keyboard.dismiss();
@@ -129,7 +126,7 @@ const LoginScreen = ({route,navigation}) => {
               placeholderTextColor={colors.placeholder}
               keyboardType="numeric"
               maxLength={10}
-              onChangeText={handleInputChange}
+              onChangeText={(text)=>handleInputChange(text)}
             />
           </View>
           <TouchableOpacity

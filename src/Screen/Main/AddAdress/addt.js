@@ -163,11 +163,11 @@ const Address = () => {
     value={saveInfo}
     onValueChange={() => setSaveInfo(!saveInfo)}
     tintColors={{
-      true: '#F1F1F1', // Border color with 80% opacity when selected
-      false: '#F1F1F1', // Border color with 50% opacity when unselected
+      true: '#F1F1F1',
+      false: '#F1F1F1', 
     }}
     boxType="square"
-    onCheckColor="#F1F1F1" // Fill color when selected
+    onCheckColor="#F1F1F1" 
     
   />
   <Text style={styles.checkboxText}>

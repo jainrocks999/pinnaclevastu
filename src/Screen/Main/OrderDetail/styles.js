@@ -269,6 +269,7 @@ export default StyleSheet.create({
   input: {
     borderWidth: 1,
     height: 'auto',
+    width:'95%',
     // minHeight: 50,
     borderRadius:5,
     borderColor: colors.placeholder,

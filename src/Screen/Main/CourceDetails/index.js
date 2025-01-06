@@ -10,6 +10,7 @@ import {
   Linking,
   Dimensions,
   Animated,
+  Share,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import Collapsible from 'react-native-collapsible';
@@ -21,9 +22,13 @@ import {widthPrecent} from '../../../Component/ResponsiveScreen/responsive';
 import RenderHTML from 'react-native-render-html';
 import Video from 'react-native-video';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useNavigation} from '@react-navigation/native';
 const {width} = Dimensions.get('window');
 
-const CourseDetail = ({navigation}) => {
+const CourseDetail = ({route}) => {
+  const navigation = useNavigation();
+  const coursetype = route?.params?.coursetype;
+
   const [userType, setUserType] = useState('');
   const CourceDetailA = useSelector(state => state?.home?.CourceDetailA);
   const isLoading = useSelector(state => state.home?.loading);
@@ -181,25 +186,23 @@ const CourseDetail = ({navigation}) => {
   const handleJoinCourse = () => {
     Animated.sequence([
       Animated.timing(buttonAnimatedValue, {
-        toValue: 0.94, 
+        toValue: 0.94,
         duration: 500,
         useNativeDriver: true,
       }),
       Animated.timing(buttonAnimatedValue, {
-        toValue: 1, 
+        toValue: 1,
         duration: 300,
         useNativeDriver: true,
       }),
     ]).start(() => {
-     
       if (userType) {
-        navigation.navigate('PaymentCourse', { data1: CourceDetailA });
+        navigation.navigate('PaymentCourse', {data1: CourceDetailA});
       } else {
-        navigation.navigate('Login', { from: 'CourseDetails' });
+        navigation.navigate('Login', {from: 'CourseDetails'});
       }
     });
   };
-
 
   const renderItem = ({item}) => (
     <View style={styles.itemContainer}>
@@ -275,6 +278,28 @@ const CourseDetail = ({navigation}) => {
     }
   };
 
+  const handleShare = async () => {
+    try {
+      const result = await Share.share({
+        message: 'Check out this awesome app!', // Text to share
+        url: 'https://example.com', // Optional URL to share
+        title: 'Share this App', // Title of the share dialog
+      });
+
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          console.log('Shared with activity type: ', result.activityType);
+        } else {
+          console.log('Shared successfully!');
+        }
+      } else if (result.action === Share.dismissedAction) {
+        console.log('Share dismissed!');
+      }
+    } catch (error) {
+      console.error('Error sharing content: ', error.message);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -323,6 +348,17 @@ const CourseDetail = ({navigation}) => {
           <View style={styles.direction}>
             {/* <Text style={styles.ruppestext}>{`₹ ${CourceDetailA?.price}`}</Text> */}
             <View style={{flexDirection: 'row', gap: 10}}>
+              <Text style={[styles.ruppestext]}>
+                {`₹ ${
+                  userType === 'customers' && CourceDetailA?.sale_price
+                    ? CourceDetailA?.sale_price
+                    : userType === 'student' && CourceDetailA?.student_price
+                    ? CourceDetailA?.student_price
+                    : userType === 'franchise' && CourceDetailA?.franchise_price
+                    ? CourceDetailA?.franchise_price
+                    : CourceDetailA?.price
+                }`}
+              </Text>
               {userType &&
               (CourceDetailA?.sale_price < CourceDetailA?.price ||
                 CourceDetailA?.student_price < CourceDetailA?.price ||
@@ -338,23 +374,13 @@ const CourseDetail = ({navigation}) => {
                   ₹ {CourceDetailA?.price}
                 </Text>
               ) : null}
-
-              <Text style={[styles.ruppestext]}>
-                {`₹ ${
-                  userType === 'customers' && CourceDetailA?.sale_price
-                    ? CourceDetailA?.sale_price
-                    : userType === 'student' && CourceDetailA?.student_price
-                    ? CourceDetailA?.student_price
-                    : userType === 'franchise' && CourceDetailA?.franchise_price
-                    ? CourceDetailA?.franchise_price
-                    : CourceDetailA?.price
-                }`}
-              </Text>
             </View>
-            <Image
-              source={require('../../../assets/otherApp/share.png')}
-              style={styles.shareimage}
-            />
+            <TouchableOpacity onPress={() => handleShare()}>
+              <Image
+                source={require('../../../assets/otherApp/share.png')}
+                style={styles.shareimage}
+              />
+            </TouchableOpacity>
           </View>
         </View>
         <View style={styles.horizontalLine} />
@@ -370,25 +396,29 @@ const CourseDetail = ({navigation}) => {
             <Text style={styles.languagetext1}>{CourceDetailA?.language}</Text>
           </View>
           <View style={styles.verticalLine} />
-          <View style={styles.cardItem}>
-            <Image
-              source={require('../../../assets/otherApp/cardimg1.png')}
-              style={styles.cardimg1}
-            />
-            <Text style={styles.languagetext}>Date</Text>
-            <Text style={styles.languagetext1}>
-              {CourceDetailA?.start_date}
-            </Text>
-          </View>
+          {coursetype ? (
+            <View style={styles.cardItem}>
+              <Image
+                source={require('../../../assets/otherApp/cardimg1.png')}
+                style={styles.cardimg1}
+              />
+              <Text style={styles.languagetext}>Date</Text>
+              <Text style={styles.languagetext1}>
+                {CourceDetailA?.start_date}
+              </Text>
+            </View>
+          ) : null}
           <View style={styles.verticalLine} />
-          <View style={styles.cardItem}>
-            <Image
-              source={require('../../../assets/otherApp/cardimg1.png')}
-              style={styles.cardimg1}
-            />
-            <Text style={styles.languagetext}>Time</Text>
-            <Text style={styles.languagetext1}>6:40 to 8:30</Text>
-          </View>
+          {coursetype ? (
+            <View style={styles.cardItem}>
+              <Image
+                source={require('../../../assets/otherApp/cardimg1.png')}
+                style={styles.cardimg1}
+              />
+              <Text style={styles.languagetext}>Time</Text>
+              <Text style={styles.languagetext1}>6:40 to 8:30</Text>
+            </View>
+          ) : null}
           <View style={styles.verticalLine} />
           <View style={styles.cardItem}>
             <Image
@@ -500,7 +530,6 @@ const CourseDetail = ({navigation}) => {
           data={CourceDetailA?.desc_demo_data?.filter(
             item => item.description !== null && item.label !== null,
           )}
-       
           keyExtractor={item => item?.desc_data_id.toString()}
           renderItem={({item, index}) => (
             <View style={styles.paddings}>
@@ -654,6 +683,17 @@ const CourseDetail = ({navigation}) => {
           />
         </View>
 
+        {/* <TouchableOpacity
+          onPress={() => {
+            userType
+              ? navigation.navigate('PaymentCourse', {data1: CourceDetailA})
+              : navigation.navigate('Login', {from: 'CourseDetails'});
+          }}
+          style={styles.book}>
+          <Text style={styles.btext1}>Join Course</Text>
+        </TouchableOpacity> */}
+      </ScrollView>
+      <View style={styles.scrollview}>
         <View style={styles.listItem}>
           <Text style={styles.listItemText}>{CourceDetailA?.title}</Text>
           {/* <Text style={styles.listitem1}>₹ {CourceDetailA.price}</Text> */}
@@ -686,26 +726,17 @@ const CourseDetail = ({navigation}) => {
         </View>
         <Animated.View
           style={[
-            
             {
-              transform: [{ scale: buttonAnimatedValue }], // स्केल एनिमेशन
+              transform: [{scale: buttonAnimatedValue}], // स्केल एनिमेशन
             },
-          ]}
-        >
+          ]}>
           <TouchableOpacity onPress={handleJoinCourse} style={styles.book}>
-            <Text style={styles.btext1}>Join Course</Text>
+            <Text style={styles.btext1}>
+              {coursetype ? 'Join Course' : 'Get An Instant Access Now'}
+            </Text>
           </TouchableOpacity>
         </Animated.View>
-        {/* <TouchableOpacity
-          onPress={() => {
-            userType
-              ? navigation.navigate('PaymentCourse', {data1: CourceDetailA})
-              : navigation.navigate('Login', {from: 'CourseDetails'});
-          }}
-          style={styles.book}>
-          <Text style={styles.btext1}>Join Course</Text>
-        </TouchableOpacity> */}
-      </ScrollView>
+      </View>
     </View>
   );
 };

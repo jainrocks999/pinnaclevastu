@@ -20,13 +20,18 @@ import {Rating} from 'react-native-ratings';
 import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
 import ImageSlider from '../../../Component/myBanner';
 import {useDispatch, useSelector} from 'react-redux';
-import {Banner, CourceDetailApi} from '../../../Redux/Slice/HomeSlice';
+import {
+  Banner,
+  clearRemedis,
+  CourceDetailApi,
+} from '../../../Redux/Slice/HomeSlice';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import Loader from '../../../Component/Loader';
 import Imagepath from '../../../Component/Imagepath';
 import LinearGradient from 'react-native-linear-gradient';
 import AutoHeightImage from 'react-native-auto-height-image';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getAddress } from '../../../Redux/Slice/Addresslice';
 let backPress = 0;
 const HomeScreen = () => {
   const flatListRef = useRef(null);
@@ -118,6 +123,15 @@ const HomeScreen = () => {
     const userData = userStatus ? JSON.parse(userStatus) : null;
     const userType = userData?.user_type;
     setUserType(userType);
+   if(userType) { await dispatch(
+                  getAddress({
+                    user_id: userData.user_id,
+                    token: userData.token,
+    
+                    url: 'fetch-customer-address',
+                    // navigation,
+                  }),
+                );}
   };
 
   const handleImageChange = index => {
@@ -214,11 +228,24 @@ const HomeScreen = () => {
   const renderItem2 = ({item}) => {
     return (
       <TouchableOpacity
-        onPress={() =>
-          navigation.navigate('Home1', {
-            screen: 'Remedie12',
-            params: {screen: 'ProductList', params: {item: item, Id: true}},
-          })
+        onPress={
+          () => {
+            dispatch(clearRemedis());
+            navigation.navigate('Home1', {
+              screen: 'Remedie12',
+              params: {
+                screen: 'ProductList',
+                params: {
+                  item: item,
+                  Id: true,
+                },
+              },
+            });
+          }
+          // navigation.navigate('Home1', {
+          //   screen: 'Remedie12',
+          //   params: {screen: 'ProductList', params: {item: item, Id: true}},
+          // })
         }
         style={[styles.cardContainer1]}>
         <ImageBackground
@@ -281,11 +308,20 @@ const HomeScreen = () => {
           style={[styles.cardContainer2]}
           onPress={() => handlePress(index)}>
           <View style={{flexDirection: 'row', gap: 10, alignItems: 'center'}}>
-            <Image source={item.image} style={styles.cardImage} />
+            <Image
+              source={
+                item.logo
+                  ? {uri: `${Imagepath.Path}${item?.logo}`}
+                  : require('../../../assets/image/Remedies/Image-not.png')
+              }
+              style={styles.cardImage}
+            />
             <View style={styles.infoSection}>
-              <Text style={styles.third}>{item.name}</Text>
-              <Text style={styles.third1}>{item.title}</Text>
-              <Text style={styles.third2}>{item.address}</Text>
+              <Text style={styles.third}>{item.franchise_name}</Text>
+              <Text style={styles.third1}>{item.specializations}</Text>
+              <Text style={styles.third2}>
+                {item?.franchise_services?.services_name}
+              </Text>
               <View style={styles.starContainer}>
                 <Rating
                   type="custom"
@@ -347,7 +383,7 @@ const HomeScreen = () => {
           style={styles.cardImg}
         />
         <View style={styles.cardInfo}>
-          <Text style={styles.DateText}>{item?.start_date}</Text>
+          {isLiveCourse?<Text style={styles.DateText}>{item?.start_date}</Text>:null}
           <Text style={styles.titleText}>{item?.title}</Text>
 
           <Text style={styles.regularText}>
@@ -360,6 +396,19 @@ const HomeScreen = () => {
           {/* <Text style={styles.price}>{`₹ ${item?.price}`}</Text> */}
 
           <View style={{flexDirection: 'row', gap: 10}}>
+       
+
+            <Text style={[styles.price]}>
+              {`₹ ${
+                userType === 'customers' && item?.sale_price
+                  ? item?.sale_price
+                  : userType === 'student' && item?.student_price
+                  ? item?.student_price
+                  : userType === 'franchise' && item?.franchise_price
+                  ? item?.franchise_price
+                  : item?.price
+              }`}
+            </Text>
             {userType &&
             (item?.sale_price < item?.price ||
               item?.student_price < item?.price ||
@@ -375,18 +424,6 @@ const HomeScreen = () => {
                 ₹ {item?.price}
               </Text>
             ) : null}
-
-            <Text style={[styles.price]}>
-              {`₹ ${
-                userType === 'customers' && item?.sale_price
-                  ? item?.sale_price
-                  : userType === 'student' && item?.student_price
-                  ? item?.student_price
-                  : userType === 'franchise' && item?.franchise_price
-                  ? item?.franchise_price
-                  : item?.price
-              }`}
-            </Text>
           </View>
 
           {/* <TouchableOpacity onPress={() => CouseDetail1(item)}> */}
@@ -646,7 +683,7 @@ const HomeScreen = () => {
             {/* <Text style={styles.service1}>VIEW ALL</Text> */}
           </View>
           <FlatList
-            data={data4}
+            data={Homebanner?.franchises}
             renderItem={renderItem3}
             keyExtractor={item => item.id}
             horizontal

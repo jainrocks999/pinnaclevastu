@@ -39,6 +39,7 @@ import constants from '../../../Redux/constant/constants';
 
 const RemediesProductList = ({route}) => {
   const name1 = route?.params;
+  console.log('virendra miahra category call api resposne  route ',name1?.item.id);
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [userType, setUserType] = useState('');
@@ -55,7 +56,7 @@ const RemediesProductList = ({route}) => {
   const [filteredDataSource, setFilteredDataSource] = useState([]);
   const [masterDataSource, setMasterDataSource] = useState([]);
   const win = Dimensions.get('window');
-
+ 
   const placeholderText = 'Search';
   const [displayedText, setDisplayedText] = useState('');
 
@@ -81,13 +82,17 @@ const RemediesProductList = ({route}) => {
     return () => clearInterval(intervalId);
   }, [placeholderText]);
 
+useEffect(()=>{
+  RemediesProductcategory();
+},[focus])
+
   useEffect(() => {
     if (focus) {
-      setMasterDataSource(RemediesCategor || []); // Update master data
-      setFilteredDataSource(RemediesCategor || []); // Reset filtered data
+      setMasterDataSource(RemediesCategor || []);
+      setFilteredDataSource(RemediesCategor || []);
       setSearch(''); // Clear search text
     }
-  }, [focus, RemediesCategor]);
+  }, [RemediesCategor]);
   const searchFilterFunction = text => {
     if (text) {
       const newData = masterDataSource?.filter(function (item) {
@@ -113,6 +118,7 @@ const RemediesProductList = ({route}) => {
   useEffect(() => {
     const getUserType = async () => {
       try {
+       
         // Get user data from AsyncStorage
         const userStatus = await AsyncStorage.getItem('user_data');
         const userData = userStatus ? JSON.parse(userStatus) : null;
@@ -125,10 +131,12 @@ const RemediesProductList = ({route}) => {
     };
 
     getUserType();
-    RemediesProductcategory();
+   
   }, [focus, cartDataList]);
 
   const RemediesProductcategory = async () => {
+    console.log('virendra miahra category call api resposne ',name1?.item.id);
+    
     await dispatch(
       RemediesCategory({
         url: 'remedies-by-product',
@@ -196,6 +204,9 @@ const RemediesProductList = ({route}) => {
     }
   };
   const renderItem = ({item}) => (
+
+ 
+    
     <View style={styles.slide}>
       <TouchableOpacity onPress={() => PRoductDeta(item)}>
         <View style={styles.image}>
@@ -208,7 +219,6 @@ const RemediesProductList = ({route}) => {
             style={{height: '100%', width: '100%', borderRadius: 10}}
           />
         </View>
-
         <View style={styles.textContainer}>
           <Text style={[styles.third, styles.titleText]}>
             {item.name
@@ -329,7 +339,7 @@ const RemediesProductList = ({route}) => {
           </TouchableOpacity>
         </View>
         <FlatList
-          data={filteredDataSource ? filteredDataSource : RemediesCategor}
+          data={filteredDataSource ? filteredDataSource : []}
           renderItem={renderItem}
           numColumns={2}
           keyExtractor={item => item.id}

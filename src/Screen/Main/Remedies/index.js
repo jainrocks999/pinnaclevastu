@@ -39,13 +39,22 @@ const Remedies = ({navigation}) => {
   const isLoading = useSelector(state => state.home?.loading);
   const dispatch = useDispatch();
 
-  const RemediesProductcategory = async item => {
+  const RemediesProductcategory = async item => {    
     dispatch(clearRemedis())
+    // navigation.navigate('Home1', {
+    //   screen: 'Remedie12',
+    //   params: {screen: 'ProductList',params: {item:item,Id:false}},
+    // });
     navigation.navigate('Home1', {
       screen: 'Remedie12',
-      params: {screen: 'ProductList',params: {item:item,Id:false}},
+      params: {
+        screen: 'ProductList',
+        params: {
+          item: item, 
+          Id: false,
+        },
+      },
     });
-  
   };
 
   const focus = useIsFocused();

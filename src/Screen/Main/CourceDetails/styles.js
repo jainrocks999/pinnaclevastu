@@ -427,7 +427,6 @@ export default StyleSheet.create({
 
   activeTitleColor: {
     color: colors.orange,
-    // fontSize: 14,
   },
   activeTitleColor1: {
     fontSize: 16,
@@ -472,7 +471,7 @@ export default StyleSheet.create({
   },
 
   coursetext2: {
-    fontSize: fontSize.Fourteen,
+    fontSize: fontSize.Sixteen,
     color: colors.heading,
     fontFamily: 'Poppins-SemiBold',
   },
