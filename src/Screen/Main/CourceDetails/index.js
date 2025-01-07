@@ -11,6 +11,7 @@ import {
   Dimensions,
   Animated,
   Share,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import Collapsible from 'react-native-collapsible';
@@ -23,6 +24,7 @@ import RenderHTML from 'react-native-render-html';
 import Video from 'react-native-video';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
+import WebView from 'react-native-webview';
 
 const {width} = Dimensions.get('window');
 
@@ -141,8 +143,6 @@ const CourseDetail = ({route}) => {
     : [];
 
   let videoFileName = null;
-
-  // Find the video file or URL
   videoData.forEach(videoItem => {
     if (!videoFileName) {
       const fileItem = videoItem.find(
@@ -153,42 +153,68 @@ const CourseDetail = ({route}) => {
       );
 
       if (fileItem) {
-        videoFileName = `${Imagepath.Path}${fileItem.value}`; // Prepend Imagepath for files
+        videoFileName = `${Imagepath.Path}${fileItem.value}`; 
       } else if (urlItem) {
-        videoFileName = urlItem.value; // Use URL directly
+        videoFileName = urlItem.value; 
+        
       }
     }
   });
+  const isYouTubeUrl1 = videoFileName?.includes('youtube.com') || videoFileName?.includes('youtu.be');
+  let finalUrl1 = videoFileName;
+  
+  if (isYouTubeUrl1) {
+    let videoId = videoFileName?.split('youtu.be/')[1]?.split('?')[0];
+    if (!videoId) {
+      videoId = videoFileName?.split('v=')[1]?.split('&')[0];
+    }
+    finalUrl1 = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=1&autohide=1&enablejsapi=1`;
+  }
+console.log('gdfjgkgd',finalUrl1);
+
 
   const videoDat = CourceDetailA?.course_video
     ? JSON.parse(CourceDetailA.course_video)
     : [];
 
-  let videoFileName1 = null;
+    let videoFileName1 = null;
 
-  // Find the video file or URL
-  videoDat.forEach(videoItem => {
-    if (!videoFileName1) {
-      const fileItem = videoItem.find(
-        item => item.key === 'file' && item.value !== null,
-      );
-      const urlItem = videoItem.find(
-        item => item.key === 'url' && item.value !== null,
-      );
-
-      // If a file is found, assign its path with Imagepath
-      if (fileItem) {
-        videoFileName1 = `${Imagepath.Path}${fileItem.value}`; // Prepend Imagepath for files
+ 
+    videoDat.forEach(videoItem => {
+      if (!videoFileName1) {
+        const fileItem = videoItem.find(
+          item => item.key === 'file' && item.value !== null,
+        );
+        const urlItem = videoItem.find(
+          item => item.key === 'url' && item.value !== null,
+        );
+        if (fileItem) {
+          videoFileName1 = `${Imagepath.Path}${fileItem.value}`; 
+        }
+     
+        else if (urlItem) {
+          videoFileName1 = urlItem.value;
+        }
       }
-      // If a URL is found, assign the URL directly
-      else if (urlItem) {
-        videoFileName1 = urlItem.value;
+    });
+    
+    const isYouTubeUrl = videoFileName1?.includes('youtube.com') || videoFileName1?.includes('youtu.be');
+    let finalUrl = videoFileName1;
+    
+    if (isYouTubeUrl) {
+      let videoId = videoFileName1?.split('youtu.be/')[1]?.split('?')[0];
+      if (!videoId) {
+        videoId = videoFileName1.split('v=')[1]?.split('&')[0];
       }
+      finalUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=1&autohide=1&enablejsapi=1`;
     }
-  });
+    
+   
+    const [loading, setLoading] = useState(true);  
 
-  // console.log(CourceDetailA, 'virendra sir....');
-
+    const handleLoadEnd = () => {
+      setLoading(false); 
+    };
   const toggleSection = sectionId => {
     setExpandedSection(prevSection =>
       prevSection === sectionId ? null : sectionId,
@@ -275,11 +301,11 @@ const CourseDetail = ({route}) => {
       // Check if WhatsApp is installed
       const supported = await Linking.canOpenURL(appUrl);
       if (supported) {
-        console.log('appUrl ...', appUrl);
+    
         await Linking.openURL(appUrl);
       } else {
         // Fallback to WhatsApp Web
-        console.log('ghghdghdio', webUrl);
+     
 
         await Linking.openURL(webUrl);
       }
@@ -310,14 +336,14 @@ const CourseDetail = ({route}) => {
     } catch (error) {
       console.error('Error sharing content: ', error.message);
     }
-    const handleVideoPress = () => {
-      setVideoState(prevState => ({
-        isPlaying: !prevState.isPlaying,
-        controlsVisible: !prevState.controlsVisible,
-      }));
-    };
+   
   };
-
+  const handleVideoPress = () => {
+    setVideoState(prevState => ({
+      isPlaying: !prevState.isPlaying,
+      controlsVisible: !prevState.controlsVisible,
+    }));
+  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -336,27 +362,36 @@ const CourseDetail = ({route}) => {
       </View>
       <ScrollView contentContainerStyle={styles.scrollview}>
         <TouchableOpacity
-          onPress={handleVideoPress}
+          // onPress={()=>handleVideoPress()}
           style={styles.firstimgview}>
-          <Video
-            source={{
-              uri: videoFileName1,
-            }}
-            style={styles.img1}
-            resizeMode="contain"
-            controls={videoState.controlsVisible}
-            paused={videoState.isPlaying}
-            repeat={true}
-            onError={error => console.error('Video Error:', error)} // Debug video errors
-          />
-          {/* <Image
+{finalUrl?
+         
+<WebView
+        source={{ uri: finalUrl?finalUrl:'' }}
+        style={styles.img1}
+        // resizeMode='contain'
+        javaScriptEnabled={true}
+        domStorageEnabled={true}
+        allowsFullscreenVideo={true}
+        // startInLoadingState={true} 
+        // onLoadEnd={handleLoadEnd} 
+        // renderLoading={() => (
+        //   loading && (
+        //     <View style={styles.loader}>
+        //       <ActivityIndicator size="large" color={colors.orange} />
+        //     </View>
+        //   )
+        // )}
+      />
+: <Image
             source={
               CourceDetailA?.image
                 ? {uri: `${Imagepath.Path}${CourceDetailA?.image}`}
-                : require('../../../assets/otherApp/coursedetail.png')
+                : require('../../../assets/image/Remedies/Image-not.png')
             }
             style={styles.img1}
-            /> */}
+            /> 
+          }
         </TouchableOpacity>
         <View style={styles.advanceview}>
           <Text style={styles.advancetext}>{CourceDetailA?.title} </Text>
@@ -533,7 +568,27 @@ const CourseDetail = ({route}) => {
 
         <View style={styles.firstimgview}>
           <Text style={styles.demotext}>Demo Lecture</Text>
-          <Video
+        { finalUrl1?
+          <WebView
+        source={{ uri: finalUrl1?finalUrl1:'' }}
+        style={styles.img1}
+        // resizeMode='contain'
+        javaScriptEnabled={true}
+        domStorageEnabled={true}
+        allowsFullscreenVideo={true}
+       
+      />
+: <Image
+            source={
+              CourceDetailA?.image
+                ? {uri: `${Imagepath.Path}${CourceDetailA?.image}`}
+                : require('../../../assets/image/Remedies/Image-not.png')
+            }
+            style={styles.img1}
+            /> 
+          }
+
+          {/* <Video
             source={{
               uri: videoFileName,
             }}
@@ -541,12 +596,9 @@ const CourseDetail = ({route}) => {
             resizeMode="contain"
             controls={true}
             onError={error => console.error('Video Error:', error)} // Debug video errors
-          />
+          /> */}
 
-          {/* <Image
-            source={require('../../../assets/otherApp/coursedetail.png')}
-            style={styles.img1}
-            /> */}
+          
         </View>
         <FlatList
           data={CourceDetailA?.desc_demo_data?.filter(

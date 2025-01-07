@@ -46,9 +46,9 @@ export default StyleSheet.create({
     marginBottom: 20,
   },
   img1: {
-    // width: '100%',
+     width: '100%',
     height: wp(50),
-    borderRadius: 15,
+    // borderRadius: 15,
   },
   advanceview: {
     marginTop: 10,
@@ -474,6 +474,16 @@ export default StyleSheet.create({
     fontSize: fontSize.Sixteen,
     color: colors.heading,
     fontFamily: 'Poppins-SemiBold',
+  },
+   loader: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
 
 });

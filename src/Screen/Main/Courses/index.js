@@ -275,22 +275,13 @@ const OtherCourses = ({navigation}) => {
         <TouchableOpacity onPress={() => CouseDetail1(item)} style={{flex: 1}}>
           <AutoHeightImage
             source={
-              item.image == null
-                ? require('../../../assets/otherApp/courseCard1.png')
+              item?.image == null
+                ? require('../../../assets/image/Remedies/Image-not.png')
                 : {uri: `${Imagepath.Path}${item?.image}`}
             }
             width={widthPrecent(45)}
             style={styles.cardImg}
           />
-          {/* <Image 
-          source={
-            item.image == null 
-              ? require('../../../assets/otherApp/courseCard1.png') 
-              : { uri: `${Imagepath.Path}${item?.image}` }
-          } 
-          style={styles.cardImg} 
-        /> */}
-
           <View style={styles.cardInfo}>
             { !isLiveCourse ?null:
             <Text style={styles.DateText}>{item?.start_date}</Text>}

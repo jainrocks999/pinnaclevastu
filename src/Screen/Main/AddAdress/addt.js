@@ -1,7 +1,7 @@
 import {StyleSheet, Text, TouchableOpacity, View, TextInput, ScrollView, Pressable} from 'react-native';
 import React, {useState} from 'react';
 import {Dropdown} from 'react-native-element-dropdown';
-import CheckBox from '@react-native-community/checkbox';
+
 const Address = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
