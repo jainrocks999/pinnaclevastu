@@ -39,7 +39,7 @@ import constants from '../../../Redux/constant/constants';
 
 const RemediesProductList = ({route}) => {
   const name1 = route?.params;
-  console.log('virendra miahra category call api resposne  route ',name1?.item.id);
+  // console.log('virendra miahra category call api resposne  route ',name1?.item.id);
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [userType, setUserType] = useState('');
@@ -135,7 +135,7 @@ useEffect(()=>{
   }, [focus, cartDataList]);
 
   const RemediesProductcategory = async () => {
-    console.log('virendra miahra category call api resposne ',name1?.item.id);
+    // console.log('virendra miahra category call api resposne ',name1?.item.id);
     
     await dispatch(
       RemediesCategory({

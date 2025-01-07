@@ -727,25 +727,60 @@ const Remedies12SecondComponent = () => {
           </View>
         </>
       ) : (
-        <View style={{flex: 1, justifyContent: 'center'}}>
-          <Image
-            source={require('../../../assets/image/continue_shopping.png')}
-            style={styles.continueShoppingImg}
-          />
-          <Animated.View
-            style={[
-              {
-                transform: [{scale: buttonAnimatedValue}],
-              },
-              {marginTop: 15},
-            ]}>
-            <TouchableOpacity
-              onPress={handleContinueShopping}
-              style={[styles.book, {width: '90%', marginHorizontal: 'auto'}]}>
-              <Text style={styles.btext1}>Continue Shopping</Text>
-            </TouchableOpacity>
-          </Animated.View>
-        </View>
+        // <View style={{flex: 1, justifyContent: 'center'}}>
+        //   <Image
+        //     source={require('../../../assets/image/continue_shopping.png')}
+        //     style={styles.continueShoppingImg}
+        //   />
+        //   <Animated.View
+        //     style={[
+        //       {
+        //         transform: [{scale: buttonAnimatedValue}],
+        //       },
+        //       {marginTop: 15},
+        //     ]}>
+        //     <TouchableOpacity
+        //       onPress={handleContinueShopping}
+        //       style={[styles.book, {width: '90%', marginHorizontal: 'auto'}]}>
+        //       <Text style={styles.btext1}>Continue Shopping</Text>
+        //     </TouchableOpacity>
+        //   </Animated.View>
+        // </View>
+        <View style={{ flex: 1, justifyContent: 'center' }}>
+        <Image
+          source={require('../../../assets/image/continue_shopping.png')}
+          style={styles.continueShoppingImg}
+        />
+        <Animated.View
+          style={[
+            {
+              transform: [{ scale: buttonAnimatedValue }],
+            },
+            { marginTop: 15 },
+          ]}>
+          <TouchableOpacity
+            onPress={() => {
+              Animated.sequence([
+                Animated.timing(buttonAnimatedValue, {
+                  toValue: 0.94,
+                  duration: 500,
+                  useNativeDriver: true,
+                }),
+                Animated.timing(buttonAnimatedValue, {
+                  toValue: 1,
+                  duration: 500,
+                  useNativeDriver: true,
+                }),
+              ]).start(() => {
+                // Navigate to the desired screen after animation
+                navigation.navigate('Home1', { screen: 'Remedie12' });
+              });
+            }}
+            style={styles.book}>
+            <Text style={styles.btext1}>Continue Shopping</Text>
+          </TouchableOpacity>
+        </Animated.View>
+      </View>
       )}
 
       <Modal

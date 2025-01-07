@@ -345,19 +345,13 @@ export default StyleSheet.create({
   },
 
   book: {
+    marginHorizontal:15,
     backgroundColor: colors.orange,
-    justifyContent: 'center',
     alignItems: 'center',
-    width: '100%',
-    borderRadius: 10,
     height: wp(13),
-    marginTop: hp(2),
-    shadowColor: '#ad3803',
-    shadowOffset: {width: 0, height: 6},
-    shadowOpacity: 0.8,
-    shadowRadius: 10,
-
-    elevation: 8,
+    borderRadius: 10,
+    justifyContent: "center",
+    marginTop: hp(1.3),
   },
   counterText: {
     fontSize: fontSize.TwentyTwo,

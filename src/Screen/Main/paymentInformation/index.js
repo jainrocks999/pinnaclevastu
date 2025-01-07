@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   ScrollView,
   FlatList,
   ImageBackground,
+  Animated,
 } from 'react-native';
 import styles from './styles';
 import {colors} from '../../../Component/colors';
@@ -35,11 +36,15 @@ const ResidentalScreen = ({route}) => {
   const [radioActive, setRadioActive] = useState('');
   const [loading1, setLoading] = useState(false);
   const [userType, setUserType] = useState('');
+
+  const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
+
   const [totals, setTotals] = useState({
     totalTaxAmount: '',
     totalAmount: '',
     totalPriceOnly: '',
   });
+
   const amount =
     (isNaN(parseFloat(totals?.totalAmount))
       ? 0
@@ -482,51 +487,54 @@ const ResidentalScreen = ({route}) => {
             source={require('../../../assets/otherApp/verify.png')}
           />
         </Text>
-
-        <TouchableOpacity
-          onPress={() => {
-            if (radioActive) {
-              createbyord();
-              // navigation.navigate('Succes');
-            }
-          }}
-          disabled={!radioActive} // Disable the button if COD is not active
+        <Animated.View
           style={[
-            styles.book,
-            {
-              backgroundColor: radioActive
-                ? nav?.data1 === 'Remedies'
-                  ? colors.orange
-                  : colors.lightGrey
-                : nav?.data1 === 'Remedies'
-                ? colors.lightGrey
-                : colors.orange, // Opposite color logic
-              shadowColor: radioActive
-                ? nav?.data1 === 'Remedies'
-                  ? '#ad3803'
-                  : 'black'
-                : nav?.data1 === 'Remedies'
-                ? 'black'
-                : '#ad3803', // Opposite shadow color
-            },
+            {transform: [{scale: buttonAnimatedValue}]},
+            {marginTop: 15},
           ]}>
-          <Text
+          <TouchableOpacity
+            onPress={() => {
+              if (radioActive) {
+                // Start the animation before calling the createbyord function
+                Animated.sequence([
+                  Animated.timing(buttonAnimatedValue, {
+                    toValue: 0.94,
+                    duration: 500,
+                    useNativeDriver: true,
+                  }),
+                  Animated.timing(buttonAnimatedValue, {
+                    toValue: 1,
+                    duration: 300,
+                    useNativeDriver: true,
+                  }),
+                ]).start(() => {
+                  createbyord(); // Call createbyord after animation is complete
+                });
+              }
+            }}
+            disabled={!radioActive} // Disable the button if COD is not active
             style={[
-              styles.btext1,
-              // {
-              //   color: radioActive
-              //     ? nav?.data1 === 'Remedies'
-              //       ? 'white'
-              //       : 'black'
-              //     : nav?.data1 === 'Remedies'
-              //     ? 'black'
-              //     : 'white', // Opposite text color
-              // },
+              styles.book,
+              {
+                backgroundColor: radioActive
+                  ? nav?.data1 === 'Remedies'
+                    ? colors.orange
+                    : colors.lightGrey
+                  : nav?.data1 === 'Remedies'
+                  ? colors.lightGrey
+                  : colors.orange, // Opposite color logic
+                shadowColor: radioActive
+                  ? nav?.data1 === 'Remedies'
+                    ? '#ad3803'
+                    : 'black'
+                  : nav?.data1 === 'Remedies'
+                  ? 'black'
+                  : '#ad3803', // Opposite shadow color
+              },
             ]}>
-            PROCEED TO PAY
-          </Text>
-        </TouchableOpacity>
-
+            <Text style={[styles.btext1]}>PROCEED TO PAY</Text>
+          </TouchableOpacity>
+        </Animated.View>
         {/* <TouchableOpacity
           onPress={() =>createbyord()
             //  navigation.navigate('Succes')

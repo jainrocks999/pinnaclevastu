@@ -194,4 +194,56 @@ export default StyleSheet.create({
   arrowl: {
     marginTop: 8,
   },
+  modalOverlay: {
+    zIndex:3,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Dimmed background
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    width: '80%',
+    // height: wp(40),
+  },
+  modalTitle: {
+    fontSize: 18,
+    marginBottom: wp(2),
+  },
+  modalMessage: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: fontSize.Fourteen,
+    textAlign: 'center',
+    marginBottom: wp(2),
+  },
+  modalButtons: {
+    marginTop: wp(2),
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    gap:20
+  },
+  cancelButton: {
+    flex: 1,
+    backgroundColor: '#ccc',
+    padding: 10,
+    borderRadius: 5,
+    marginRight: 10,
+    alignItems: 'center',
+  },
+  confirmButton: {
+    flex: 1,
+    backgroundColor: colors.orange,
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize:fontSize.Fourteen,
+    fontFamily: 'Poppins-Regular',
+  },
 });

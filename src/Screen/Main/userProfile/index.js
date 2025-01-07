@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,45 +8,85 @@ import {
   FlatList,
   Dimensions,
   ScrollView,
+  Modal,
 } from 'react-native';
 
 import {fontSize} from '../../../Component/fontsize';
 import {colors} from '../../../Component/colors';
 import {widthPrecent} from '../../../Component/ResponsiveScreen/responsive';
 import styles from './styles';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {clearcartdata} from '../../../Redux/Slice/CartSlice';
+import {useDispatch, useSelector} from 'react-redux';
+import Loader from '../../../Component/Loader';
+import Imagepath from '../../../Component/Imagepath';
+import {clearUserData, getUserDetailApi} from '../../../Redux/Slice/Authslice';
 
 const {width} = Dimensions.get('window');
 
 const MyProfile = () => {
-const navigation=useNavigation();
-const [isLoggedIn, setIsLoggedIn] = useState(false);
-const focus =useIsFocused();
-useEffect(() => {
-  const checkLoginStatus = async () => {
-    try {
-      const userStatus = await AsyncStorage.getItem('user_data');
-      const userData = JSON.parse(userStatus);
+  const navigation = useNavigation();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-      console.log('virendra', userData);
+  const dispatch = useDispatch();
+  const userDetail = useSelector(state => state?.Auth?.userData);
+  const isUserLoading = useSelector(state => state?.Auth?.loading);
+  const focus = useIsFocused();
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        const userStatus = await AsyncStorage.getItem('user_data');
+        const userData = JSON.parse(userStatus);
 
-      if (userStatus) {
-        // await AsyncStorage.clear();
-        setIsLoggedIn(true);
-      } else {
-       navigation.navigate('Login')
-        setIsLoggedIn(false);
-        // navigation.navigate('Login'); // Navigate to login screen if not logged in
+        console.log('virendra', userData);
+
+        if (userStatus) {
+          // await AsyncStorage.clear();
+          setIsLoggedIn(true);
+          if (userDetail.length === 0) {
+            await dispatch(
+              getUserDetailApi({
+                user_id: userData.user_id,
+                token: userData.token,
+                url: `profile-list?user_id=${userData.user_id}`,
+              }),
+            );
+          }
+        } else {
+          navigation.navigate('Login');
+          setIsLoggedIn(false);
+          // navigation.navigate('Login'); // Navigate to login screen if not logged in
+        }
+      } catch (error) {
+        console.log('Error checking login status:', error);
       }
+    };
+
+    checkLoginStatus();
+  }, [focus]);
+
+  // const confirmForLogout = () => {
+  //   setIsModalVisible(true);
+  // };
+
+  const handleLogout = async () => {
+    setIsLoading(true);
+    try {
+      dispatch(clearcartdata());
+      await AsyncStorage.clear();
+      // navigation.navigate('Home');
+      setIsLoading(false);
+      setIsModalVisible(false);
+      navigation.replace('Home');
+      dispatch(clearUserData());
     } catch (error) {
-      console.log('Error checking login status:', error);
+      setIsLoading(false);
+      console.log('Error in logout', error);
     }
   };
-
-  checkLoginStatus();
-}, [focus]);
-
 
   const actionItems = [
     {
@@ -78,7 +118,9 @@ useEffect(() => {
   ];
 
   const renderItem = ({item}) => (
-    <TouchableOpacity  hitSlop={{top:10,bottom:10,left:10,right:10}}  style={styles.actionItem}>
+    <TouchableOpacity
+      hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
+      style={styles.actionItem}>
       <View style={styles.actionContent}>
         <Image source={item.image} style={styles.actionIcon} />
         <Text style={styles.actionText}>{item.title}</Text>
@@ -94,10 +136,12 @@ useEffect(() => {
 
   return (
     <View style={styles.container}>
+      {isLoading || isUserLoading ? <Loader /> : null}
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backBtn}
-          onPress={() => navigation.goBack()}  hitSlop={{top:10,bottom:10,left:10,right:10}}>
+          onPress={() => navigation.goBack()}
+          hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
           <Image
             style={styles.backIcon}
             source={require('../../../assets/drawer/Back1.png')}
@@ -108,26 +152,44 @@ useEffect(() => {
           <Text style={styles.logoText}>My Profile</Text>
         </View>
 
-        <TouchableOpacity style={styles.settingsButton}  hitSlop={{top:10,bottom:10,left:10,right:10}}>
+        <TouchableOpacity
+          style={styles.settingsButton}
+          hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
+          onPress={() => setIsModalVisible(true)}>
           <Image
             style={styles.settingsIcon}
             source={require('../../../assets/otherApp/shutdown.png')}
           />
         </TouchableOpacity>
       </View>
+
       <View style={styles.profileSection}>
         <Image
-          source={require('../../../assets/otherApp/profile.png')} // Replace with actual profile picture URL
+          // source={require('../../../assets/otherApp/profile.png')} // Replace with actual profile picture URL
+          source={
+            userDetail?.avatar
+              ? {uri: `${Imagepath.Path}${userDetail?.avatar}`}
+              : require('../../../assets/image/Remedies/Image-not.png')
+          }
           style={styles.profileImage}
         />
-        <Text style={styles.profileName}>Tejash Shah</Text>
-        <Text style={styles.profileID}>ID: TEJ1234</Text>
-        <Text style={styles.profileEmail}>tejash@binaryic.in</Text>
-        <Text style={[styles.profileEmail, {marginBottom: 4}]}>
-          +91 123456789
+        <Text style={styles.profileName}>{userDetail?.name}</Text>
+        <Text
+          style={[
+            styles.profileID,
+            {opacity: userDetail.length === 0 ? 0 : 1},
+          ]}>
+          ID: {userDetail?.id}
+        </Text>
+        <Text style={styles.profileEmail}>{userDetail?.email}</Text>
+        <Text style={[styles.profileEmail, {marginBottom: 4},
+           { opacity: userDetail.length === 0 ? 0 : 1 }
+        ]}>
+          +91 {userDetail?.phone}
         </Text>
         <TouchableOpacity
-          onPress={() => navigation.navigate('EditProfile')}  hitSlop={{top:10,bottom:10,left:10,right:10}}
+          onPress={() => navigation.navigate('EditProfile')}
+          hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
           style={styles.editProfileButton}>
           <Text style={styles.editProfileText}>Edit My Profile</Text>
         </TouchableOpacity>
@@ -136,8 +198,13 @@ useEffect(() => {
       <ScrollView style={styles.scrollContent}>
         <View style={styles.statsSection}>
           <TouchableOpacity
-           onPress={()=>navigation.navigate( "Home1",{screen:'MyProfile',params:{screen:'MyOrder'}})} 
-           hitSlop={{top:10,bottom:10,left:10,right:10}}
+            onPress={() =>
+              navigation.navigate('Home1', {
+                screen: 'MyProfile',
+                params: {screen: 'MyOrder'},
+              })
+            }
+            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
             style={styles.statItem}>
             <Text style={styles.statValue}>25</Text>
             <View style={styles.statLabelRow}>
@@ -148,8 +215,13 @@ useEffect(() => {
           <View style={styles.withBorder} />
 
           <TouchableOpacity
-                    onPress={()=>navigation.navigate("Home1",{screen:"MyProfile",params:{screen:"CoureList"}})} 
-                    hitSlop={{top:10,bottom:10,left:10,right:10}}
+            onPress={() =>
+              navigation.navigate('Home1', {
+                screen: 'MyProfile',
+                params: {screen: 'CoureList'},
+              })
+            }
+            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
             style={styles.statItem}>
             <Text style={styles.statValue}>10</Text>
             <View style={styles.statLabelRow}>
@@ -160,10 +232,14 @@ useEffect(() => {
           <View style={styles.withBorder} />
 
           <TouchableOpacity
-             onPress={()=>navigation.navigate("Home1",{screen:"MyProfile",params:{screen:"Appointment"}})}
-          
-             hitSlop={{top:10,bottom:10,left:10,right:10}}
-          style={styles.statItem}>
+            onPress={() =>
+              navigation.navigate('Home1', {
+                screen: 'MyProfile',
+                params: {screen: 'Appointment'},
+              })
+            }
+            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
+            style={styles.statItem}>
             <Text style={styles.statValue}>5</Text>
             <View style={styles.statLabelRow}>
               <Text style={styles.statLabel}>{'Appointments >'}</Text>
@@ -184,7 +260,35 @@ useEffect(() => {
         />
         <View style={styles.horizontalSeparator} />
       </ScrollView>
-     
+      <Modal
+        transparent={true}
+        animationType="fade"
+        visible={isModalVisible}
+        onRequestClose={() => setIsModalVisible(false)}
+        // onCancel={() => setIsModalVisible(false)}
+        // onConfirm={() => removerItem(itemToRemove)}
+      >
+        <View style={styles.modalOverlay} pointerEvents="box-none">
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Log out</Text>
+            <Text style={styles.modalMessage}>
+              Are you sure you want to log out?
+            </Text>
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => setIsModalVisible(false)}>
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.confirmButton}
+                onPress={() => handleLogout()}>
+                <Text style={styles.buttonText}>Confirm</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };

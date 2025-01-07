@@ -60,8 +60,9 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Animated
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import styles from './styles';
 import {colors} from '../../../Component/colors';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -71,6 +72,10 @@ import {loginUser} from '../../../Redux/Slice/Authslice';
 import Loader from '../../../Component/Loader';
 
 const LoginScreen = ({route, navigation}) => {
+
+  const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
+
+
   const [mobile, setMobile] = useState('');
 
   const isLoading = useSelector(state => state.Auth?.loading);
@@ -129,19 +134,44 @@ const LoginScreen = ({route, navigation}) => {
               onChangeText={text => handleInputChange(text)}
             />
           </View>
-          <TouchableOpacity
-            onPress={() => LoginAPi()}
-            style={styles.buttoncontainer}
-            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-            <View style={styles.touch}>
-              <View />
-              <Text style={styles.btext}>GET OTP</Text>
-              <Image
-                style={{height: 7, width: 15, tintColor: '#fff'}}
-                source={require('../../../assets/image/aerow.png')}
-              />
-            </View>
-          </TouchableOpacity>
+          <Animated.View
+            style={[
+              {
+                transform: [{ scale: buttonAnimatedValue }],
+              },
+              { marginTop: 15 },
+            ]}
+          >
+            <TouchableOpacity
+              onPress={() => {
+                Animated.sequence([
+                  Animated.timing(buttonAnimatedValue, {
+                    toValue: 0.94,
+                    duration: 500,
+                    useNativeDriver: true,
+                  }),
+                  Animated.timing(buttonAnimatedValue, {
+                    toValue: 1,
+                    duration: 300,
+                    useNativeDriver: true,
+                  }),
+                ]).start(() => {
+                  LoginAPi();
+                });
+              }}
+              style={styles.buttoncontainer}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+              <View style={styles.touch}>
+                <View />
+                <Text style={styles.btext}>GET OTP</Text>
+                <Image
+                  style={{ height: 7, width: 15, tintColor: '#fff' }}
+                  source={require('../../../assets/image/aerow.png')}
+                />
+              </View>
+            </TouchableOpacity>
+          </Animated.View>
+
           <View style={styles.endview}>
             <Text style={styles.endtext}>
               {"Don't have an account ? "}
