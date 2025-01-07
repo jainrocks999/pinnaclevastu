@@ -41,7 +41,7 @@ const TabBarButton = ({
       top: top,
     };
   });
-  console.log("label",lable);
+  // console.log("label",lable);
 
 
   return (

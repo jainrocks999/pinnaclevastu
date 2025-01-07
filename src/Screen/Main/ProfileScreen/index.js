@@ -6,16 +6,27 @@ import {
   TouchableOpacity,
   ScrollView,
   FlatList,
-  Animated
+  Animated,
+  Linking,
+  Alert,
+  Share,
+  Clipboard
 } from 'react-native';
 import styles from './styles';
 import { colors } from '../../../Component/colors';
 import { Rating } from 'react-native-ratings';
 import { widthPrecent as wp } from '../../../Component/ResponsiveScreen/responsive';
 import { useNavigation } from '@react-navigation/native';
+import { consultationDetail1 } from '../../../Redux/Slice/HomeSlice';
+import { useSelector } from 'react-redux';
+
 const ResidentalScreen = ({ navigation }) => {
+
+  const data = useSelector(state => state?.home?.ConsultationDetail?.data)
+
  const [scaleAnims, setScaleAnims] = useState({});
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
+
   const data2 = [
     {
       id: '1',
@@ -33,6 +44,45 @@ const ResidentalScreen = ({ navigation }) => {
       name: 'Gemstone',
     },
   ];
+
+  const openApp = async (url, fallbackUrl) => {
+    try {
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        if (fallbackUrl) {
+          await Linking.openURL(fallbackUrl);
+        } else {
+          Alert.alert(
+            'App Not Installed',
+            'The app is not installed on your device.',
+          );
+        }
+      }
+    } catch (error) {
+      // Alert.alert('Error', `An error occurred: ${error.message}`);
+    }
+  };
+  const share = async () => {
+    try {
+      await Share.share({
+        message: 'Check out this amazing app: https://example.com',
+      });
+    } catch (error) {
+      console.error('Error sharing:', error);
+    }
+  };
+  const copyToClipboard = async () => {
+    // const textToCopy = "This is the text you want to copy"; // Replace with your desired text or URL
+    // try {
+    //   await Clipboard.setString(textToCopy);
+    //   Alert.alert("Copied to Clipboard", "Text has been copied successfully!");
+    // } catch (error) {
+    //   Alert.alert("Error", "Failed to copy text.");
+    // }
+  };
+
   const handlePress = () => {
     Animated.sequence([
       Animated.timing(buttonAnimatedValue, {
@@ -152,18 +202,25 @@ const ResidentalScreen = ({ navigation }) => {
 
       <ScrollView contentContainerStyle={styles.servicesContainer}>
 
-        <View style={styles.cardContainer1}>
+      <View style={styles.cardContainer1}>
           <View
             style={{
               flexDirection: 'row',
               alignItems: 'flex-start',
             }}>
             <View style={styles.imgContainer}>
-              <Image
+              {/* <Image
                 style={styles.cardImage}
                 source={require('../../../assets/image/Rectangle.png')}
+              /> */}
+              <Image
+                source={
+                  data?.logo
+                    ? { uri: `${Imagepath.Path}${data?.logo}` }
+                    : require('../../../assets/image/Remedies/Image-not.png')
+                }
+                style={styles.cardImage}
               />
-
               <View style={styles.direction}>
                 <Rating
                   type="custom"
@@ -177,15 +234,15 @@ const ResidentalScreen = ({ navigation }) => {
               </View>
             </View>
             <View style={styles.card}>
-              <Text style={styles.third1}>{'Shreni Rajbhandary'}</Text>
+              <Text style={styles.third1}>{data?.franchise_name}</Text>
 
               <Text style={[styles.third2, { marginBottom: 3 }]}>Services :
-                {' Residential Vastu, Industrial Vastu, Gemstone'}
+                {data?.franchise_services?.services_name}
               </Text>
-              <Text style={styles.third2}>{'Marathi, Hindi, English'}</Text>
-              <Text style={styles.third2}>Exp: {'6 Years'}</Text>
+              <Text style={styles.third2}>{data?.language}</Text>
+              <Text style={styles.third2}>Exp: {data?.experience_of_year}</Text>
               <Text style={styles.priceText}>
-                Price: {'₹ 500 to ₹ 25000'}
+                Price: {data?.franchise_services?.services_price}
               </Text>
             </View>
           </View>
@@ -248,24 +305,40 @@ const ResidentalScreen = ({ navigation }) => {
 
         <View style={styles.shareview}>
           <View style={styles.rowSection}>
-            <Image
+          <TouchableOpacity
               style={styles.shareIcon}
-              source={require('../../../assets/otherApp/share.png')}
-            />
+              onPress={() => share()}>
+              <Image
+                style={styles.shareIcon}
+                source={require('../../../assets/otherApp/share.png')}
+              />
+            </TouchableOpacity>
 
             <Text style={[styles.cont, { marginTop: 0 }]}>{'Share it :'}</Text>
-            <Image
+            {/* <Image
               style={styles.socialImg}
               source={require('../../..//assets/drawer/fb.png')}
-            />
-            <Image
-              style={styles.socialImg}
-              source={require('../../../assets/drawer/instagram.png')}
-            />
-            <Image
-              style={styles.socialImg}
-              source={require('../../../assets/drawer/copy.png')}
-            />
+            /> */}
+            <TouchableOpacity
+              onPress={() => openApp('fb://profile', 'https://facebook.com')}>
+              <Image
+                style={styles.socialImg}
+                source={require('../../..//assets/drawer/fb.png')} />
+            </TouchableOpacity>
+          
+            <TouchableOpacity
+              onPress={() => openApp('instagram://app', 'https://instagram.com')}>
+              <Image
+                style={styles.socialImg}
+                source={require('../../../assets/drawer/instagram.png')}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={copyToClipboard}>
+              <Image
+                style={styles.socialImg}
+                source={require('../../../assets/drawer/copy.png')}
+              />
+            </TouchableOpacity>
           </View>
         
           <TouchableOpacity style={styles.button}>

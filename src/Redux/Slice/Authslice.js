@@ -35,14 +35,22 @@ export const loginUser = createAsyncThunk(
         // AsyncStorage.setItem('user_id', JSON.stringify(response.data.user_id));
         // AsyncStorage.setItem('Token', response.data.token);
         Toast.show(response.data.msg);
-        if (route?.params?.from && route?.params.from == 'MyCart'){
-          navigation.replace('OTP', {data: response.data, item: mobile,from: 'MyCart'});
-        }else if(route?.params?.from && route?.params.from == 'CourseDetails'){
-          navigation.replace('OTP', {data: response.data, item: mobile,from: 'CourseDetails'});
-        }
-        
-        
-        else{
+        if (route?.params?.from && route?.params.from == 'MyCart') {
+          navigation.replace('OTP', {
+            data: response.data,
+            item: mobile,
+            from: 'MyCart',
+          });
+        } else if (
+          route?.params?.from &&
+          route?.params.from == 'CourseDetails'
+        ) {
+          navigation.replace('OTP', {
+            data: response.data,
+            item: mobile,
+            from: 'CourseDetails',
+          });
+        } else {
           navigation.replace('OTP', {data: response.data, item: mobile});
         }
         return response.data;
@@ -61,49 +69,22 @@ export const loginUser = createAsyncThunk(
 
 export const signupUser = createAsyncThunk(
   'auth/signupUser',
-  async (
-    {formData, gender, date, time, selectedImage, url,navigation},
-    {rejectWithValue},
-  ) => {
-     console.log(formData, gender, date, time, selectedImage);
-    data = {
-      name: formData.name,
-      email: formData.email,
-      phone: formData.mobile,
-      city_pincode:formData.cityPincode,
-       dob:date,
-      time_of_birth:time,
-      place_of_birth:formData.birthPlace,
-      gender:gender,
-      avatar:selectedImage
-    };
-
-
-    console.log('asdadsdaa',data)
-    
-    let config = {
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: `${constants.mainUrl}${url}`,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      data: JSON.stringify(data),
-    };
-console.log('shkshfskdfhsdf',data,config)
-
+  async ({formUserData, url, navigation}, {rejectWithValue}) => {
     try {
+      let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: `${constants.mainUrl}${url}`,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+
+        data: formUserData,
+      };
+      console.log('shkshfskdfhsdf', config);
+
       const response = await axios.request(config);
-      console.log('sfkjlsglksgsgs',response);
-      
-      // if (response.data.status == 200) {
-      //   console.log(response.data);
-      //   Toast.show(response.data.msg);
-      //   navigation.navigate('OTP');
-      //   return response.data;
-      // }
-
-
+      // console.log('sfkjlsglksgsgs', response);
 
       if (response.data.status == 200) {
         const responseDataString = JSON.stringify(response.data);
@@ -113,26 +94,52 @@ console.log('shkshfskdfhsdf',data,config)
         AsyncStorage.setItem('user_type', response.data.user_type);
         AsyncStorage.setItem('user_id', JSON.stringify(response.data.user_id));
         AsyncStorage.setItem('Token', response.data.token);
-        navigation.navigate('Home')
-        // Toast.show(response.data.msg);
-        // if (route?.params?.from && route?.params.from == 'MyCart'){
-        //   navigation.replace('OTP', {data: response.data, item: mobile,from: 'MyCart'});
-        // }else{
-        //   navigation.replace('OTP', {data: response.data, item: mobile});
-        // }
+        navigation.navigate('Home');
+
         return response.data;
       } else {
         Toast.show(response.data.msg);
         console.log('errrorroro', response.data);
         return rejectWithValue(error.response?.data || error.message);
       }
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  },
+);
 
+export const getUserDetailApi = createAsyncThunk(
+  'auth/getUserDetail',
+  async ({user_id, token, url}, {rejectWithValue}) => {
+    try {
+      let data = {
+        user_id: user_id,
+        token: token,
+      };
+      let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: `${constants.mainUrl}${url}`,
+        headers: {
+          'Content-Type': 'application/json',
+        },
 
+        data: data,
+      };
+      // console.log('shkshfskdfhsdf', config);
 
+      const response = await axios.request(config);
+      // console.log('sfkjlsglksgsgs', response.data);
 
-
-
-
+      if (response.data.status == 200) {
+        // const responseDataString = JSON.stringify(response.data)
+        // console.log(response.data.data, 'userData..........');
+        return response.data.data;
+      } else {
+        Toast.show(response.data.msg);
+        console.log('errrorroro', response.data);
+        return rejectWithValue(error.response?.data || error.message);
+      }
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }
@@ -144,12 +151,16 @@ const authSlice = createSlice({
   initialState: {
     userData: [],
     signupUserData: [],
+    loginUserData: [],
     loading: false,
     error: null,
   },
   reducers: {
     clearError: state => {
       state.error = null;
+    },
+    clearUserData: state => {
+      state.userData = [];
     },
   },
   extraReducers: builder => {
@@ -160,7 +171,7 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.userData = action.payload;
+        state.loginUserData = action.payload;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
@@ -178,10 +189,21 @@ const authSlice = createSlice({
       .addCase(signupUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(getUserDetailApi.pending, state => {
+        (state.loading = true), (state.error = null);
+      })
+      .addCase(getUserDetailApi.fulfilled, (state, action) => {
+        state.loading = false;
+        state.userData = action.payload;
+      })
+      .addCase(getUserDetailApi.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
 
-export const {clearError} = authSlice.actions;
+export const {clearError,clearUserData} = authSlice.actions;
 
 export default authSlice.reducer;

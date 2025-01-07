@@ -300,9 +300,9 @@
 //       const response = await axios.request(config);
 //       console.log(response.data.data, 'response.data Virendra dfgmkdflgkdflg');
 //       if (response?.data?.data?.status == 200) {
-       
+
 //          Toast.show(response?.data?.data.msg);
-//       } 
+//       }
 //     } catch (error) {
 //       console.log('cart error ', error);
 
@@ -561,9 +561,6 @@
 // //   }
 // // }
 
-
-
-
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import axios from 'axios';
 import constant from '../constant/constants';
@@ -663,7 +660,7 @@ export const Remedie = createAsyncThunk(
 export const RemediesCategory = createAsyncThunk(
   'home/RemediesCategory',
   async ({url, category_id}, {rejectWithValue}) => {
-    console.log('Remedies category', url, category_id,);
+    console.log('Remedies category', url, category_id);
 
     try {
       const config = {
@@ -674,7 +671,7 @@ export const RemediesCategory = createAsyncThunk(
       };
 
       const response = await axios.request(config);
-console.log('categoriyes response ',response.data);
+      console.log('categoriyes response ', response.data);
 
       if (response?.data?.status == 200) {
         return response?.data;
@@ -698,7 +695,7 @@ console.log('categoriyes response ',response.data);
         //     },
         //   ],
         // });
-        
+
         // navigation.navigate('Home1', {
         //   screen: 'Remedie12',
         //   params: {screen: 'ProductList',params: {name1: name, id: id}},
@@ -710,7 +707,6 @@ console.log('categoriyes response ',response.data);
         //     params: { name1:name, id:id },
         //   },
         // })
-       
       } else {
         Toast.show(response?.data?.msg);
       }
@@ -788,7 +784,7 @@ export const CourceLis = createAsyncThunk(
 
 export const CourceDetailApi = createAsyncThunk(
   'home/CourceDetailApi',
-  async ({url, course_id, navigation,isLiveCourse}, {rejectWithValue}) => {
+  async ({url, course_id, navigation, isLiveCourse}, {rejectWithValue}) => {
     console.log('CCourceDetailApih ', url, course_id);
 
     try {
@@ -802,7 +798,7 @@ export const CourceDetailApi = createAsyncThunk(
       const response = await axios.request(config);
 
       if (response?.data?.status == 200) {
-        navigation.navigate('CourseDetail',{coursetype:isLiveCourse});
+        navigation.navigate('CourseDetail', {coursetype: isLiveCourse});
         return response?.data?.data;
       } else {
         Toast.show(response?.data?.msg);
@@ -846,6 +842,33 @@ export const likedProductListApi = createAsyncThunk(
     }
   },
 );
+export const consultationDetail1 = createAsyncThunk(
+  'home/consultationDetail1',
+  async ({url, franchise_id, navigation}, {rejectWithValue}) => {
+    console.log('consultation detail00', url, franchise_id);
+    try {
+      const config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: `${constant.mainUrl}${url}?franchise_id=${franchise_id}`,
+        headers: {},
+      };
+      const response = await axios.request(config);
+      if (response?.data?.status == 200) {
+        console.log('response data consultation detail ', response.data);
+        navigation.navigate('profile');
+        return response?.data;
+      } else {
+        Toast.show(response?.data?.msg);
+      }
+    } catch (error) {
+      console.log('banner error ', error);
+      return rejectWithValue(
+        error.response ? error.response.data : error.message,
+      );
+    }
+  },
+);
 
 const homeSlice = createSlice({
   name: 'home',
@@ -858,6 +881,7 @@ const homeSlice = createSlice({
     Cource: [],
     CourceDetailA: [],
     likeProductList: [],
+    ConsultationDetail: [],
     loading: false,
     error: null,
   },
@@ -865,11 +889,11 @@ const homeSlice = createSlice({
     clearError: state => {
       state.error = null;
     },
-    clearRemedis:(state,action)=>{
-      state.RemeiesCat=[]
+    clearRemedis: (state, action) => {
+      state.RemeiesCat = [];
     },
-    clearRemeiesDetail1:(state ,action)=>{
-      state.RemeiesDetail=[]
+    clearRemeiesDetail1: (state, action) => {
+      state.RemeiesDetail = [];
     },
   },
   extraReducers: builder => {
@@ -974,11 +998,23 @@ const homeSlice = createSlice({
       .addCase(likedProductListApi.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(consultationDetail1.pending, state => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(consultationDetail1.fulfilled, (state, action) => {
+        state.loading = false;
+        state.ConsultationDetail = action.payload;
+      })
+      .addCase(consultationDetail1.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
 
-export const {clearError,clearRemedis,clearRemeiesDetail1} = homeSlice.actions;
+export const {clearError, clearRemedis, clearRemeiesDetail1} =
+  homeSlice.actions;
 
 export default homeSlice.reducer;
-

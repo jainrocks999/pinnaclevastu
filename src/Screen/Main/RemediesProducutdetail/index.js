@@ -58,13 +58,12 @@ const RemediesProductDetail = ({route}) => {
   const [currentItemInCart, setCurrentItemInCart] = useState();
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
 
-
   const animation = useRef(new Animated.Value(0)).current;
-  const [buttonText, setButtonText] = useState("ADD TO CART");
+  const [buttonText, setButtonText] = useState('ADD TO CART');
 
   const halfFlipInterpolate = animation.interpolate({
     inputRange: [0, 90],
-    outputRange: ["0deg", "90deg"], // Rotate only up to 90 degrees
+    outputRange: ['0deg', '90deg'], // Rotate only up to 90 degrees
   });
 
   useEffect(() => {
@@ -291,49 +290,44 @@ const RemediesProductDetail = ({route}) => {
   //     console.error('Error adding item to cart:', error);
   //   }
   // };
- 
+
   const handleGoToCartAnimation = () => {
     if (isInCart) {
-      navigation.navigate('Home', { screen: 'MyCart' });
+      navigation.navigate('Home', {screen: 'MyCart'});
     }
   };
 
-  const handleAddToCart = async (Detail) => {
+  const handleAddToCart = async Detail => {
     try {
-      // Extract `prod` from `Detail`
-      const prod = Detail || {}; // Use Detail as prod if exists, otherwise fallback to empty object
-  
+      const prod = Detail || {}; // Fallback to empty object if no product details
       if (!prod || Object.keys(prod).length === 0) {
-        console.error("Error: Product details are missing!");
+        console.error('Error: Product details are missing!');
         return;
       }
-  
-      // Start animation to flip halfway
+
+      // Change button text immediately to "GO TO CART"
+      setButtonText('GO TO CART');
+      setIsInCart(true); // Ensure we mark the item as added
+
+      // Start flip animation
       Animated.timing(animation, {
-        toValue: 90,
+        toValue: 90, // Rotate halfway
         duration: 300,
         useNativeDriver: true,
       }).start(() => {
-        // Change button text after halfway point
-        setButtonText((prevText) =>
-          prevText === "ADD TO CART" ? "GO TO CART" : "ADD TO CART"
-        );
-  
-        // Call Addtocart function here
-        Addtocart(prod, { qty: quantity });
-        console.log("Added to cart:", prod);
-  
-        // Complete animation back to 0 degrees
+        // Add product to the cart in the background
+        Addtocart(prod, {qty: quantity});
+        console.log('Added to cart:', prod);
+
+        // Complete the flip animation back to 0 degrees
         Animated.timing(animation, {
-          toValue: 0,
+          toValue: 0, // Rotate back to 0
           duration: 300,
           useNativeDriver: true,
-        }).start(() => {
-          setIsInCart(true); // Update state after animation completes
-        });
+        }).start();
       });
     } catch (error) {
-      console.error("Error adding to cart:", error);
+      console.error('Error adding to cart:', error);
     }
   };
 
@@ -358,7 +352,7 @@ const RemediesProductDetail = ({route}) => {
               qty: quantityToUpdate,
               token: userData.token,
               currentQty: qty,
-              fromCartScreen:false
+              fromCartScreen: false,
             }),
           );
         } else {
@@ -480,7 +474,7 @@ const RemediesProductDetail = ({route}) => {
                   qty: qty,
                   token: userData.token,
                   currentQty: 1,
-                  fromCartScreen:false
+                  fromCartScreen: false,
                 }),
               );
               // handleUpdateCartData(
@@ -652,34 +646,39 @@ const RemediesProductDetail = ({route}) => {
           }
           style={styles.image}
         />
-  
-      <View style={styles.textContainer}>
-        <Text style={[styles.thirdCard, styles.titleText]}> {item.name
+
+        <View style={styles.textContainer}>
+          <Text style={[styles.thirdCard, styles.titleText]}>
+            {' '}
+            {item.name
               ? item.name.length > 20
                 ? `${item.name.substring(0, 20)}...`
                 : item.name
-              : ' '}</Text>
-        <Text style={[styles.thirdCard, {marginTop: 10}]}>₹ {item.price}</Text>
+              : ' '}
+          </Text>
+          <Text style={[styles.thirdCard, {marginTop: 10}]}>
+            ₹ {item.price}
+          </Text>
 
-        <View style={styles.direction}>
-          {item.reviews != null ? (
-            <Rating
-              type="custom"
-              tintColor={colors.ordercolor}
-              ratingCount={5}
-              imageSize={16}
-              startingValue={item?.reviews}
-              ratingColor="#52B1E9"
-              ratingBackgroundColor={colors.lightGrey} // Unfilled star color
-            />
-          ) : null}
+          <View style={styles.direction}>
+            {item.reviews != null ? (
+              <Rating
+                type="custom"
+                tintColor={colors.ordercolor}
+                ratingCount={5}
+                imageSize={16}
+                startingValue={item?.reviews}
+                ratingColor="#52B1E9"
+                ratingBackgroundColor={colors.lightGrey} // Unfilled star color
+              />
+            ) : null}
+          </View>
+          <TouchableOpacity
+            style={styles.buttonstylefirst}
+            onPress={() => Addtocart(item, {qty: 1})}>
+            <Text style={styles.buttonstyle}>Add to Cart</Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          style={styles.buttonstylefirst}
-          onPress={() => Addtocart(item, {qty: 1})}>
-          <Text style={styles.buttonstyle}>Add to Cart</Text>
-        </TouchableOpacity>
-      </View>
       </TouchableOpacity>
     </View>
   );
@@ -974,32 +973,7 @@ const RemediesProductDetail = ({route}) => {
                 </TouchableOpacity>
               </View>
             </View>
-            {isInCart ? (
-              // <Animated.View
-              //   style={[
-              //     {
-              //       transform: [{scale: buttonAnimatedValue}],
-              //     },
-              //     styles.book,
-              //     {marginTop: 15},
-              //   ]}>
-              //   <TouchableOpacity
-              //     onPress={() => {
-              //       handleGoToCartAnimation();
-              //       // navigation.navigate('Home', {screen: 'MyCart'});
-              //     }}
-              //     style={{
-              //       position: 'absolute',
-              //       top: 0,
-              //       left: 0,
-              //       right: 0,
-              //       bottom: 0,
-              //       justifyContent: 'center',
-              //       alignItems: 'center',
-              //     }}>
-              //     <Text style={styles.btext1}>GO TO CART</Text>
-              //   </TouchableOpacity>
-              // </Animated.View>
+            {/* {isInCart ? (
               <Animated.View
               style={[
                
@@ -1011,7 +985,6 @@ const RemediesProductDetail = ({route}) => {
               <TouchableOpacity
                 onPress={() => {
                   handleGoToCartAnimation();
-                  // navigation.navigate('Home', {screen: 'MyCart'});
                 }}
                 style={{
                   position: 'absolute',
@@ -1033,7 +1006,7 @@ const RemediesProductDetail = ({route}) => {
 
               <Animated.View
               style={[
-                // styles.card,
+              
                 { transform: [{ rotateX: halfFlipInterpolate }] },
                 styles.book1,
                 { marginTop: 15 },
@@ -1050,48 +1023,48 @@ const RemediesProductDetail = ({route}) => {
                   alignItems: 'center',
                 }}
                 onPress={() => handleAddToCart(Detail)}>
-                {/* {/ <Text style={styles.btext1}>ADD TO CART</Text> /} */}
+              
                 <Animated.Text style={[styles.btext1,]}>
                   ADD TO CART
                 </Animated.Text>
               </TouchableOpacity>
             </Animated.View>
+            )} */}
 
-              // <TouchableOpacity
-              //   onPress={() => navigation.navigate('Home', {screen: 'MyCart'})}
-              //   style={[styles.book, {marginTop: 15}]}>
-              //   <Text style={styles.btext1}>GO TO CART</Text>
-              // </TouchableOpacity>
-              // <Animated.View
-              //   style={[
-              //     {
-              //       transform: [{scale: buttonAnimatedValue}],
-              //     },
-              //     styles.book,
-              //     {marginTop: 15},
-              //   ]}>
-              //   <TouchableOpacity
-              //     style={{
-              //       position: 'absolute',
-              //       top: 0,
-              //       left: 0,
-              //       right: 0,
-              //       bottom: 0,
-              //       justifyContent: 'center',
-              //       alignItems: 'center',
-              //     }}
-              //     onPress={() => handleAddToCart(Detail)}>
-              //     <Text style={styles.btext1}>ADD TO CART</Text>
-              //   </TouchableOpacity>
-              // </Animated.View>
-
-  
-              // <TouchableOpacity
-              //   onPress={() => handleAddToCart(Detail)}
-              //   style={[styles.book, {marginTop: 15}]}>
-              //   <Text style={styles.btext1}>ADD TO CART</Text>
-              // </TouchableOpacity>
-            )}
+            <Animated.View
+              style={[
+                {
+                  transform: [
+                    {
+                      rotateX: halfFlipInterpolate, // Smoothly flips the button
+                    },
+                  ],
+                },
+                styles.book1,
+                {marginTop: 15},
+              ]}>
+              <TouchableOpacity
+                onPress={() => {
+                  if (isInCart) {
+                    handleGoToCartAnimation(); // Navigate to the cart
+                  } else {
+                    handleAddToCart(Detail); // Add to cart and update state
+                  }
+                }}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Animated.Text style={[styles.btext1]}>
+                  {buttonText}
+                </Animated.Text>
+              </TouchableOpacity>
+            </Animated.View>
           </View>
 
           <View>

@@ -19,10 +19,11 @@ import {fontSize} from '../../../Component/fontsize';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import DatePicker from 'react-native-date-picker';
 import Toast from 'react-native-simple-toast';
+import { useSelector } from 'react-redux';
 
 const EditProfile = () => {
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
-
+  const userDetail = useSelector(state => state?.Auth?.userData);
   const [visible, setVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState({
     label: '',

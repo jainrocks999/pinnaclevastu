@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Animated
 } from 'react-native';
 import React, {useRef, useState} from 'react';
 import styles from './styles';
@@ -15,7 +16,11 @@ import Toast from 'react-native-simple-toast';
 import Loader from '../../../Component/Loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const {width} = Dimensions.get('window');
+
 const OTPPAGE = ({route}) => {
+
+   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
+
   console.log('fsdss', route?.params.data.OTP);
   // console.log(route?.params.from);
   const navigation = useNavigation();
@@ -171,15 +176,39 @@ const OTPPAGE = ({route}) => {
             />
           ))}
         </View>
-        <View>
+        <Animated.View
+          style={[
+            {
+              transform: [{ scale: buttonAnimatedValue }],
+            },
+
+          ]}
+        >
           <TouchableOpacity
-            onPress={() => handleVerify()}
+
+            onPress={() => {
+
+              Animated.sequence([
+                Animated.timing(buttonAnimatedValue, {
+                  toValue: 0.94,
+                  duration: 500,
+                  useNativeDriver: true,
+                }),
+                Animated.timing(buttonAnimatedValue, {
+                  toValue: 1,
+                  duration: 300,
+                  useNativeDriver: true,
+                }),
+              ]).start(() => {
+                handleVerify();
+              });
+            }}
             style={styles.buttoncontainer}>
             <View style={styles.touch}>
               <Text style={styles.btext}>{'VERIFY'}</Text>
             </View>
           </TouchableOpacity>
-        </View>
+        </Animated.View>
         <View style={styles.endview}>
           <Text style={styles.endtext}>
             {"Don't receive the OTP ? "}

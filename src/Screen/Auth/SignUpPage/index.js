@@ -69,11 +69,10 @@ const SignUpPage = () => {
     name: '',
     email: '',
     mobile: '',
-    cityPincode: '',
-    birthPlace: '',
     gender: '',
     cityPincode: '',
     date: '',
+    birthPlace: '',
   });
 
   const formatDate = date => {
@@ -135,17 +134,10 @@ const SignUpPage = () => {
       } else if (response.error) {
         console.log('Image picker error: ', response.error);
       } else if (response.assets && response.assets.length > 0) {
-        // const imageUri = response.assets[0].base64;
-        const base64Image = `data:${response.assets[0].type};base64,${response.assets[0].base64}`;
+      
 
-        setSelectedImage(base64Image);
-        setSelectedImagetype(response.assets[0]?.uri);
-        // setSelectedname(response.assets[0]?.fileName)
-        // if (imageSize > 2000000) {
-        //   compressImage(imageUri);
-        // } else {
-
-        // }
+        const pickedImage = response.assets[0];
+        setSelectedImage(pickedImage);
       }
     });
   };
@@ -164,43 +156,14 @@ const SignUpPage = () => {
         console.log('User cancelled camera');
       } else if (response.error) {
         console.log('Camera error: ', response.error);
-      } else if (response.assets) {
-        const base64Image = `data:${response.assets[0].type};base64,${response.assets[0].base64}`;
-        setSelectedImage(base64Image);
-        setSelectedImagetype(response.assets[0]?.uri);
+      }else if (response.assets && response.assets.length > 0) {
+        const pickedImage = response.assets[0];
+        setSelectedImage(pickedImage);
       }
     });
   };
 
-  // const openCamera = async () => {
-  //   await requestCameraPermission();
-  //   setModalVisible(false);
-  //   console.log('handleCamera');
-  //   const options = {
-  //     mediaType: 'photo',
-  //     maxHeight: 2000,
-  //     maxWidth: 2000,
-  //     includeBase64:true
-  //   };
 
-  //   launchCamera(options, response => {
-
-  //     if (response.didCancel) {
-  //       console.log('User cancelled camera');
-  //     } else if (response.error) {
-  //       console.log('Camera error: ', response.error);
-  //     } else if (response.assets) {
-  //       // const imageUri = response.assets[0].base64;
-  //       const base64Image = `data:${response.assets[0].type};base64,${response.assets[0].base64}`;
-
-  //       setSelectedImage(base64Image);
-  //       // setSelectedImagetype(response.assets[0].type);
-  //       // setSelectedname(response.assets[0]?.fileName)
-  //     }
-  //     console.log('sdklslgvgv;ls',isModalVisible);
-
-  //   });
-  // };
 
   const scrollViewRef = useRef(null);
 
@@ -318,22 +281,32 @@ const SignUpPage = () => {
       shake('cityPincode');
       scrollToField('cityPincode');
       return;
-      // } else if (formData.date === '') {
-      //   shake('date');
-      //   scrollToField('date');
-      //   return;
+      } else if (formData.date === '') {
+        shake('date');
+        scrollToField('date');
+        return;
     } else if (formData.cityPincode.length < 6) {
       shake('cityPincode');
       scrollToField('cityPincode');
       return;
     } else {
+      const formUserData = new FormData();
+      formUserData.append('name', formData.name);
+      formUserData.append('email', formData.email);
+      formUserData.append('phone', formData.mobile);
+      formUserData.append('gender', gender);
+      formUserData.append('dob', formatDate(date));
+      formUserData.append('time_of_birth', formatTime(time));
+      formUserData.append('place_of_birth', formData.birthPlace);
+      formUserData.append('avatar',{
+        uri: selectedImage.uri,
+        name: selectedImage.fileName,
+        type: selectedImage.type,
+      });
+
       await dispatch(
         signupUser({
-          formData,
-          gender,
-          date: formatDate(date),
-          time: formatTime(time),
-          selectedImage: selectedImage,
+          formUserData,
           url: 'sign-up',
           navigation,
         }),
@@ -622,7 +595,7 @@ const SignUpPage = () => {
                 style={styles.input1}
                 placeholder="Upload Photo"
                 placeholderTextColor={colors.placeholder}
-                value={selectedImagetype}
+                value={selectedImage?.uri}
                 editable={false}
               />
 

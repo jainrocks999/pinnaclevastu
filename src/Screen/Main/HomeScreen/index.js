@@ -31,7 +31,15 @@ import Imagepath from '../../../Component/Imagepath';
 import LinearGradient from 'react-native-linear-gradient';
 import AutoHeightImage from 'react-native-auto-height-image';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getAddress } from '../../../Redux/Slice/Addresslice';
+import {getAddress} from '../../../Redux/Slice/Addresslice';
+import {
+  addToCartApi,
+  clearLocalCartData,
+  getCartDataApi,
+} from '../../../Redux/Slice/CartSlice';
+import {getUserDetailApi} from '../../../Redux/Slice/Authslice';
+import { consultationDetail1 } from '../../../Redux/Slice/HomeSlice';
+
 let backPress = 0;
 const HomeScreen = () => {
   const flatListRef = useRef(null);
@@ -46,13 +54,21 @@ const HomeScreen = () => {
   const [displayedText, setDisplayedText] = useState('');
   const [displayedText1, setDisplayedText1] = useState('');
 
+  const userDetail = useSelector(state => state?.Auth?.userData);
+
   const Homebanner = useSelector(state => state.home?.HomeBanner?.data);
 
   const isLoading = useSelector(state => state.home?.loading);
 
+  const cartDataList = useSelector(state => state?.cart?.CartData);
+  const localCartDataList = useSelector(
+    state => state?.cart?.localStorageCartData,
+  );
   const cartTotalQuantity = useSelector(
     state => state?.cart?.cartTotalQuantity,
   );
+
+
 
   const newArray = [];
   (Homebanner?.home_slider?.[0]?.slider_items || []).forEach(item => {
@@ -119,19 +135,56 @@ const HomeScreen = () => {
   }, [placeholderText]);
 
   const getUserType = async () => {
-    const userStatus = await AsyncStorage.getItem('user_data');
-    const userData = userStatus ? JSON.parse(userStatus) : null;
-    const userType = userData?.user_type;
-    setUserType(userType);
-   if(userType) { await dispatch(
-                  getAddress({
-                    user_id: userData.user_id,
-                    token: userData.token,
-    
-                    url: 'fetch-customer-address',
-                    // navigation,
-                  }),
-                );}
+    try {
+      const userStatus = await AsyncStorage.getItem('user_data');
+      const userData = userStatus ? JSON.parse(userStatus) : null;
+      const userType = userData?.user_type;
+      setUserType(userType);
+      if (userType) {
+        await dispatch(
+          getAddress({
+            user_id: userData.user_id,
+            token: userData.token,
+
+            url: 'fetch-customer-address',
+            // navigation,
+          }),
+        );
+        // console.log(cartDataList.length)
+        // console.log(localCartDataList.length)
+        if (cartDataList.length === 0) {
+          await dispatch(
+            getCartDataApi({
+              token: userData.token,
+              url: `cart?user_id=${userData.user_id}`,
+            }),
+          );
+        }
+        if (localCartDataList.length > 0) {
+          for (const item of localCartDataList) {
+            await dispatch(
+              addToCartApi({
+                user_id: userData.user_id,
+                itemId: item.id,
+                qty: item.qty,
+                user_type: userData.user_type,
+                token: userData?.token,
+                url: 'add-to-cart',
+              }),
+            );
+          }
+          dispatch(clearLocalCartData());
+          await dispatch(
+            getCartDataApi({
+              token: userData.token,
+              url: `cart?user_id=${userData.user_id}`,
+            }),
+          );
+        }
+      }
+    } catch (error) {
+      console.error('Error syncing cart and address data:', error);
+    }
   };
 
   const handleImageChange = index => {
@@ -267,32 +320,39 @@ const HomeScreen = () => {
     );
   };
 
-  const handlePress = index => {
+  const handlePress = (item, index) => {
     const newScaleAnims = {...scaleAnims};
-
-    // Create the animated value for the clicked item if not already present
     if (!newScaleAnims[index]) {
       newScaleAnims[index] = new Animated.Value(1);
     }
 
     setScaleAnims(newScaleAnims);
 
-    // Trigger the animation sequence for the clicked item
+    
     Animated.sequence([
       Animated.timing(newScaleAnims[index], {
-        toValue: 0.97, // Shrink to 30% of the original size
+        toValue: 0.97, 
         duration: 500,
         useNativeDriver: true,
       }),
       Animated.timing(newScaleAnims[index], {
-        toValue: 1, // Return to original size
+        toValue: 1, 
         duration: 500,
         useNativeDriver: true,
       }),
-    ]).start(() => {
-      navigation.navigate('profile');
-    });
+    ]).start(async () => {
+      await dispatch(
+        
+          consultationDetail1({
+            url: 'fetch-franchise-details',
+            franchise_id: item.id,
+            navigation,
+          })
+        );
+   
+     });
   };
+
 
   const renderItem3 = ({item, index}) => {
     const itemScaleAnim = scaleAnims[index] || new Animated.Value(1);
@@ -306,7 +366,7 @@ const HomeScreen = () => {
         ]}>
         <TouchableOpacity
           style={[styles.cardContainer2]}
-          onPress={() => handlePress(index)}>
+          onPress={() => handlePress(item,index)}>
           <View style={{flexDirection: 'row', gap: 10, alignItems: 'center'}}>
             <Image
               source={
@@ -383,7 +443,9 @@ const HomeScreen = () => {
           style={styles.cardImg}
         />
         <View style={styles.cardInfo}>
-          {isLiveCourse?<Text style={styles.DateText}>{item?.start_date}</Text>:null}
+          {isLiveCourse ? (
+            <Text style={styles.DateText}>{item?.start_date}</Text>
+          ) : null}
           <Text style={styles.titleText}>{item?.title}</Text>
 
           <Text style={styles.regularText}>
@@ -396,8 +458,6 @@ const HomeScreen = () => {
           {/* <Text style={styles.price}>{`₹ ${item?.price}`}</Text> */}
 
           <View style={{flexDirection: 'row', gap: 10}}>
-       
-
             <Text style={[styles.price]}>
               {`₹ ${
                 userType === 'customers' && item?.sale_price
