@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, {useState, useRef} from 'react';
 import {
   View,
   Text,
@@ -10,21 +10,21 @@ import {
   Linking,
   Alert,
   Share,
-  Clipboard
+  Clipboard,
 } from 'react-native';
 import styles from './styles';
-import { colors } from '../../../Component/colors';
-import { Rating } from 'react-native-ratings';
-import { widthPrecent as wp } from '../../../Component/ResponsiveScreen/responsive';
-import { useNavigation } from '@react-navigation/native';
-import { consultationDetail1 } from '../../../Redux/Slice/HomeSlice';
-import { useSelector } from 'react-redux';
+import {colors} from '../../../Component/colors';
+import {Rating} from 'react-native-ratings';
+import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
+import {useNavigation} from '@react-navigation/native';
+import {consultationDetail1} from '../../../Redux/Slice/HomeSlice';
+import {useSelector} from 'react-redux';
+import Imagepath from '../../../Component/Imagepath';
 
-const ResidentalScreen = ({ navigation }) => {
+const ResidentalScreen = ({navigation}) => {
+  const data = useSelector(state => state?.home?.ConsultationDetail?.data);
 
-  const data = useSelector(state => state?.home?.ConsultationDetail?.data)
-
- const [scaleAnims, setScaleAnims] = useState({});
+  const [scaleAnims, setScaleAnims] = useState({});
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
 
   const data2 = [
@@ -100,69 +100,105 @@ const ResidentalScreen = ({ navigation }) => {
     });
   };
 
-   const handleItemClick = (index) => {
-      const newScaleAnims = { ...scaleAnims };
-      
-      // Create the animated value for the clicked item if not already present
-      if (!newScaleAnims[index]) {
-        newScaleAnims[index] = new Animated.Value(1);
-      }
-      
-      setScaleAnims(newScaleAnims);
-  
-      // Trigger the animation sequence for the clicked item
-      Animated.sequence([
-        Animated.timing(newScaleAnims[index], {
-          toValue: 0.96, // Shrink to 30% of the original size
-          duration: 400,
-          useNativeDriver: true,
-        }),
-        Animated.timing(newScaleAnims[index], {
-          toValue: 1, // Return to original size
-          duration: 400,
-          useNativeDriver: true,
-        }),
-      ]).start();
-    };
+  const handleItemClick = index => {
+    const newScaleAnims = {...scaleAnims};
 
+    // Create the animated value for the clicked item if not already present
+    if (!newScaleAnims[index]) {
+      newScaleAnims[index] = new Animated.Value(1);
+    }
 
-  const renderItem = ({ item, index }) => {
+    setScaleAnims(newScaleAnims);
+
+    // Trigger the animation sequence for the clicked item
+    Animated.sequence([
+      Animated.timing(newScaleAnims[index], {
+        toValue: 0.96, // Shrink to 30% of the original size
+        duration: 400,
+        useNativeDriver: true,
+      }),
+      Animated.timing(newScaleAnims[index], {
+        toValue: 1, // Return to original size
+        duration: 400,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  //   const renderItem = ({ item, index }) => {
+  //     let backgroundColor;
+
+  //     if (item.name === 'Residential Vastu') {
+  //       backgroundColor = colors.card4;
+  //     } else if (item.name === 'Industrial Vastu') {
+  //       backgroundColor = colors.card3;
+  //     } else if (item.name === 'Gemstone') {
+  //       backgroundColor = colors.card2;
+  //     } else {
+  //       backgroundColor = colors.card3;
+  //     }
+  //  const itemScaleAnim = scaleAnims[index] || new Animated.Value(1);
+  //     return (
+  //         <Animated.View
+  //             style={[
+  //               // styles.cardContainer,
+  //               {
+  //                 transform: [{ scale: itemScaleAnim }], // Apply scale animation to the view
+  //               },
+  //             ]}
+  //           >
+  //       <TouchableOpacity style={[styles.cardContainer, { backgroundColor }]} onPress={() => handleItemClick(index)}>
+  //         <Image source={item.image} style={styles.image} />
+  //         <Text style={styles.text}>{item.name}</Text>
+  //       </TouchableOpacity>
+  //       </Animated.View>
+  //     );
+  //   };
+  const renderItem = ({item, index}) => {
     let backgroundColor;
 
-
-    if (item.name === 'Residential Vastu') {
+    if (item.services_name === 'Residential Vastu') {
       backgroundColor = colors.card4;
-    } else if (item.name === 'Industrial Vastu') {
+    } else if (item.services_name === 'Industrial Vastu') {
       backgroundColor = colors.card3;
-    } else if (item.name === 'Gemstone') {
+    } else if (item.services_name === 'Gemstone') {
       backgroundColor = colors.card2;
     } else {
       backgroundColor = colors.card3;
     }
- const itemScaleAnim = scaleAnims[index] || new Animated.Value(1);
+    const itemScaleAnim = scaleAnims[index] || new Animated.Value(1);
     return (
-        <Animated.View
-            style={[
-              // styles.cardContainer,
-              {
-                transform: [{ scale: itemScaleAnim }], // Apply scale animation to the view
-              },
-            ]}
-          >
-      <TouchableOpacity style={[styles.cardContainer, { backgroundColor }]} onPress={() => handleItemClick(index)}>
-        <Image source={item.image} style={styles.image} />
-        <Text style={styles.text}>{item.name}</Text>
-      </TouchableOpacity>
+      <Animated.View
+        style={[
+          // styles.cardContainer,
+          {
+            transform: [{scale: itemScaleAnim}], // Apply scale animation to the view
+          },
+        ]}>
+        <TouchableOpacity
+          style={[styles.cardContainer, {backgroundColor}]}
+          onPress={() => handleItemClick(index)}>
+          <Image
+            source={
+              item.logo
+                ? {uri: `${Imagepath.Path}${item.logo}`}
+                : require('../../../assets/image/Remedies/Image-not.png')
+            }
+            style={styles.image}
+          />
+          <Text style={styles.text}>{item.services_name}</Text>
+        </TouchableOpacity>
       </Animated.View>
     );
   };
-  const renderItem3 = ({ item }) => {
+
+  const renderItem3 = ({item}) => {
     return (
       <TouchableOpacity
         onPress={() => navigation.navigate('profile')}
         style={[styles.cardContainer1]}>
         <View style={styles.reviewCard}>
-          <View style={{ paddingLeft: 5 }}>
+          <View style={{paddingLeft: 5}}>
             <Image style={styles.reviewImage} source={item.image} />
 
             <Rating
@@ -175,10 +211,10 @@ const ResidentalScreen = ({ navigation }) => {
               ratingBackgroundColor={colors.lightGrey} // Unfilled star color
             />
           </View>
-          <View style={[styles.card, { paddingLeft: 10 }]}>
+          <View style={[styles.card, {paddingLeft: 10}]}>
             <Text style={styles.third1}>{item.name}</Text>
 
-            <Text style={[styles.third2, { marginTop: -8 }]}>{item.msg}</Text>
+            <Text style={[styles.third2, {marginTop: -8}]}>{item.msg}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -186,9 +222,10 @@ const ResidentalScreen = ({ navigation }) => {
   };
   return (
     <View style={styles.container}>
-     
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
           <Image
             style={styles.backBtn}
             source={require('../../../assets/drawer/Back1.png')}
@@ -201,8 +238,7 @@ const ResidentalScreen = ({ navigation }) => {
       </View>
 
       <ScrollView contentContainerStyle={styles.servicesContainer}>
-
-      <View style={styles.cardContainer1}>
+        <View style={styles.cardContainer1}>
           <View
             style={{
               flexDirection: 'row',
@@ -216,7 +252,7 @@ const ResidentalScreen = ({ navigation }) => {
               <Image
                 source={
                   data?.logo
-                    ? { uri: `${Imagepath.Path}${data?.logo}` }
+                    ? {uri: `${Imagepath.Path}${data?.logo}`}
                     : require('../../../assets/image/Remedies/Image-not.png')
                 }
                 style={styles.cardImage}
@@ -236,24 +272,37 @@ const ResidentalScreen = ({ navigation }) => {
             <View style={styles.card}>
               <Text style={styles.third1}>{data?.franchise_name}</Text>
 
-              <Text style={[styles.third2, { marginBottom: 3 }]}>Services :
-                {data?.franchise_services?.services_name}
+            
+              <Text style={[styles.third2, {marginBottom: 3}]}>
+                Services:{' '}
+                {data?.franchise_services
+                  ?.map(service => service.services_name) // Extract all services_name
+                  .join(', ')}
               </Text>
+
               <Text style={styles.third2}>{data?.language}</Text>
               <Text style={styles.third2}>Exp: {data?.experience_of_year}</Text>
-              <Text style={styles.priceText}>
+              {/* <Text style={styles.priceText}>
                 Price: {data?.franchise_services?.services_price}
+              </Text> */}
+              <Text style={styles.priceText}>
+                Price: ₹ {" "}
+                {/* {data?.franchise_services?.reduce(
+                  (total, service) => total + service.services_price,
+                  0,
+                )} */}
+                {data?.charges}
               </Text>
             </View>
           </View>
         </View>
 
-
         <View style={styles.contain}>
           <Text style={styles.service}>Specialist</Text>
         </View>
         <FlatList
-          data={data2}
+          // data={data2}
+          data={data?.franchise_services || []}
           renderItem={renderItem}
           keyExtractor={item => item.id}
           numColumns={3}
@@ -264,57 +313,24 @@ const ResidentalScreen = ({ navigation }) => {
             paddingHorizontal: 0,
           }}
         />
-        <View style={{ paddingHorizontal: 10 }}>
-          <Text style={styles.cont}>
-            {
-              '“Many people say that an individual’s positive energy and young per numerology. Pinnacle Vastu is gratified to share light and knowledge with and through Shreni Rajbhandary.'
-            }
-          </Text>
+        <View style={{paddingHorizontal: 10}}>
+          <Text style={styles.cont}>{data?.short_description}</Text>
         </View>
 
-        <View style={{ paddingHorizontal: 10 }}>
-          <Text style={styles.cont}>
-            {
-              '“Many people say that an individual’s positive energy and young per numerology. and knowledge with and through Shreni Rajbhandary.'
-            }
-          </Text>
+        <View style={{paddingHorizontal: 10}}>
+          <Text style={styles.cont}>{data?.content}</Text>
         </View>
-
-        <View style={{ paddingHorizontal: 10 }}>
-          <Text style={styles.cont}>
-            {
-              '“Many people say that an individual’s positive energy lights up the room,  involved in the environment and urban planning sector since 2017. While doing so, she was curious about spaces and how traditionally, spaces were developed in this part of the world. With this curiosity, she started to uncover more about Vastu Shastra. She is not just developing Vastu-compliant properties but is also involved in Vastu-compliant urban spaces. Her clients are primarily from the government, development,'
-            }
-          </Text>
-        </View>
-        <View style={{ paddingHorizontal: 10 }}>
-          <Text style={styles.cont}>
-            {
-              '“Many people say that an individual’s positive energy and young per numerology. Pinnacle Vastu is gratified to share light and knowledge with and through Shreni Rajbhandary.'
-            }
-          </Text>
-        </View>
-        <View style={{ paddingHorizontal: 10 }}>
-          <Text style={styles.cont}>
-            {
-              '“Many people say that an individual’s positive energy is gratified to share light and knowledge.'
-            }
-          </Text>
-        </View>
-
 
         <View style={styles.shareview}>
           <View style={styles.rowSection}>
-          <TouchableOpacity
-              style={styles.shareIcon}
-              onPress={() => share()}>
+            <TouchableOpacity style={styles.shareIcon} onPress={() => share()}>
               <Image
                 style={styles.shareIcon}
                 source={require('../../../assets/otherApp/share.png')}
               />
             </TouchableOpacity>
 
-            <Text style={[styles.cont, { marginTop: 0 }]}>{'Share it :'}</Text>
+            <Text style={[styles.cont, {marginTop: 0}]}>{'Share it :'}</Text>
             {/* <Image
               style={styles.socialImg}
               source={require('../../..//assets/drawer/fb.png')}
@@ -323,11 +339,14 @@ const ResidentalScreen = ({ navigation }) => {
               onPress={() => openApp('fb://profile', 'https://facebook.com')}>
               <Image
                 style={styles.socialImg}
-                source={require('../../..//assets/drawer/fb.png')} />
+                source={require('../../..//assets/drawer/fb.png')}
+              />
             </TouchableOpacity>
-          
+
             <TouchableOpacity
-              onPress={() => openApp('instagram://app', 'https://instagram.com')}>
+              onPress={() =>
+                openApp('instagram://app', 'https://instagram.com')
+              }>
               <Image
                 style={styles.socialImg}
                 source={require('../../../assets/drawer/instagram.png')}
@@ -340,11 +359,10 @@ const ResidentalScreen = ({ navigation }) => {
               />
             </TouchableOpacity>
           </View>
-        
+
           <TouchableOpacity style={styles.button}>
             <Text style={styles.btext}>Write a Review</Text>
           </TouchableOpacity>
-         
         </View>
 
         <View style={styles.reviewSection}>
@@ -367,16 +385,14 @@ const ResidentalScreen = ({ navigation }) => {
             style={[
               styles.book,
               {
-                transform: [{ scale: buttonAnimatedValue }],
+                transform: [{scale: buttonAnimatedValue}],
                 backgroundColor: colors.orange,
               },
-            ]}
-          >
+            ]}>
             <Text style={styles.btext1}>BOOK NOW</Text>
           </Animated.View>
         </TouchableOpacity>
       </ScrollView>
-    
     </View>
   );
 };

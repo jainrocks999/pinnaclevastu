@@ -29,8 +29,8 @@ const EditProfile = () => {
     label: '',
     value: '',
   });
-  const navigation = useNavigation();
-
+  const navigation = useNavigation()
+  
   const [gender, setGender] = useState('');
 
   const [search, setSearch] = useState('');
@@ -42,6 +42,8 @@ const EditProfile = () => {
     setGender(item.label);
     setVisible(false);
   };
+
+  console.log(userDetail,"edit user data...")
 
   const [formData, setFormData] = useState({
     name: '',

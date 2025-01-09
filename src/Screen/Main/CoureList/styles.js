@@ -85,6 +85,8 @@ export default StyleSheet.create({
     height: wp(20),
     resizeMode: 'contain',
     borderRadius: 8,
+    borderColor:colors.placeholder,
+    borderWidth:1
   },
   dateText: {
     marginTop: -4,

@@ -240,6 +240,7 @@ import styles from './styles';
 import { colors } from '../../../Component/colors';
 import { Rating } from 'react-native-ratings';
 import { widthPrecent as wp } from '../../../Component/ResponsiveScreen/responsive';
+import { useSelector } from 'react-redux';
 
 const ResidentalScreen = ({ navigation }) => {
   const [textAnim] = useState(new Animated.Value(0));
@@ -248,6 +249,8 @@ const ResidentalScreen = ({ navigation }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const animatedValue = useRef(new Animated.Value(1)).current;
   const bgAnim = useRef(new Animated.Value(0)).current;
+
+  const Homebanner = useSelector(state => state.home?.HomeBanner?.data);
 
   const textItems = [
     { text: 'Which direction boosts success?', color: '#B1F0F7' },
@@ -378,59 +381,124 @@ const ResidentalScreen = ({ navigation }) => {
   
   
     };
-  const renderItem3 = ({ item, index }) => {
-    const itemScaleAnim = scaleAnims[index] || new Animated.Value(1);
+  // const renderItem3 = ({ item, index }) => {
+  //   const itemScaleAnim = scaleAnims[index] || new Animated.Value(1);
 
   
 
-    return (
-      <Animated.View
-          style={[
-            styles.cardContainer2,
-            {
-              transform: [{ scale: itemScaleAnim }], 
-            },
-          ]}
-        >
+  //   return (
+  //     <Animated.View
+  //         style={[
+  //           styles.cardContainer2,
+  //           {
+  //             transform: [{ scale: itemScaleAnim }], 
+  //           },
+  //         ]}
+  //       >
 
      
-      <TouchableOpacity onPress={() => handlePress(index)} >
-        <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
-          <View style={styles.imgContainer}>
-            <Image
+  //     <TouchableOpacity onPress={() => handlePress(index)} >
+  //       <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+  //         <View style={styles.imgContainer}>
+  //           <Image
+  //             style={[
+  //               styles.cardImage,
+                
+  //             ]}
+  //             source={item.image}
+  //           />
+  //           <View style={styles.direction}>
+  //             <Rating
+  //               type="custom"
+  //               tintColor={colors.white}
+  //               ratingCount={5}
+  //               imageSize={wp(3.8)}
+  //               startingValue={2}
+  //               ratingColor="#52B1E9"
+  //               ratingBackgroundColor={colors.lightGrey}
+  //             />
+  //           </View>
+  //         </View>
+  //         <View style={styles.card}>
+  //           <Text style={styles.third1}>{item.name}</Text>
+  //           <Text style={[styles.third2, { marginBottom: 2 }]}>
+  //             Services : {item.services}
+  //           </Text>
+  //           <Text style={styles.third2}>{item.languages}</Text>
+  //           <Text style={styles.third2}>Exp: {item.experience}</Text>
+  //           <Text style={styles.priceText}>Price: {item.price}</Text>
+  //         </View>
+  //         <Image
+  //           style={styles.nextBtn}
+  //           source={require('../../../assets/drawer/raero.png')}
+  //         />
+  //       </View>
+  //     </TouchableOpacity>
+  //     </Animated.View>
+  //   );
+  // };
+
+  const renderItem3 = ({ item, index }) => {
+    const itemScaleAnim = scaleAnims[index] || new Animated.Value(1);
+
+
+
+    return (
+      <Animated.View
+        style={[
+          styles.cardContainer2,
+          {
+            transform: [{ scale: itemScaleAnim }],
+          },
+        ]}
+      >
+
+
+        <TouchableOpacity onPress={() => handlePress(index)} >
+          <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+            <View style={styles.imgContainer}>
+              {/* <Image
               style={[
                 styles.cardImage,
                 
               ]}
               source={item.image}
-            />
-            <View style={styles.direction}>
-              <Rating
-                type="custom"
-                tintColor={colors.white}
-                ratingCount={5}
-                imageSize={wp(3.8)}
-                startingValue={2}
-                ratingColor="#52B1E9"
-                ratingBackgroundColor={colors.lightGrey}
+            /> */}
+              <Image
+                source={
+                  item.logo
+                    ? { uri: `${Imagepath.Path}${item?.logo}` }
+                    : require('../../../assets/image/Remedies/Image-not.png')
+                }
+                style={styles.cardImage}
               />
+              <View style={styles.direction}>
+                <Rating
+                  type="custom"
+                  tintColor={colors.white}
+                  ratingCount={5}
+                  imageSize={wp(3.8)}
+                  startingValue={2}
+                  ratingColor="#52B1E9"
+                  ratingBackgroundColor={colors.lightGrey}
+                />
+              </View>
             </View>
+            <View style={styles.card}>
+              <Text style={styles.third1}>{item.franchise_name}</Text>
+              <Text style={[styles.third2, { marginBottom: 2 }]}>
+                Services :  {item?.franchise_services?.services_name}
+              </Text>
+              <Text style={styles.third2}>{item?.language}</Text>
+              <Text style={styles.third2}>Exp: {item?.experience_of_year}</Text>
+              <Text style={styles.priceText}>Price: {item?.franchise_services?.services_price}</Text>
+            </View>
+            <Image
+              style={styles.nextBtn}
+              source={require('../../../assets/drawer/raero.png')}
+            />
           </View>
-          <View style={styles.card}>
-            <Text style={styles.third1}>{item.name}</Text>
-            <Text style={[styles.third2, { marginBottom: 2 }]}>
-              Services : {item.services}
-            </Text>
-            <Text style={styles.third2}>{item.languages}</Text>
-            <Text style={styles.third2}>Exp: {item.experience}</Text>
-            <Text style={styles.priceText}>Price: {item.price}</Text>
-          </View>
-          <Image
-            style={styles.nextBtn}
-            source={require('../../../assets/drawer/raero.png')}
-          />
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
       </Animated.View>
     );
   };
@@ -509,7 +577,8 @@ const ResidentalScreen = ({ navigation }) => {
         </Animated.View>
 
         <FlatList
-          data={DATA}
+          // data={DATA}
+          data={Homebanner?.franchises}
           renderItem={renderItem3}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}

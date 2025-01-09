@@ -21,7 +21,6 @@ import {useSelector} from 'react-redux';
 import Imagepath from '../../../Component/Imagepath';
 import {widthPrecent} from '../../../Component/ResponsiveScreen/responsive';
 import RenderHTML from 'react-native-render-html';
-import Video from 'react-native-video';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 import WebView from 'react-native-webview';

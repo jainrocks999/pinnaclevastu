@@ -380,7 +380,7 @@ const HomeScreen = () => {
               <Text style={styles.third}>{item.franchise_name}</Text>
               <Text style={styles.third1}>{item.specializations}</Text>
               <Text style={styles.third2}>
-                {item?.franchise_services?.services_name}
+                {item?.franchise_services}
               </Text>
               <View style={styles.starContainer}>
                 <Rating
