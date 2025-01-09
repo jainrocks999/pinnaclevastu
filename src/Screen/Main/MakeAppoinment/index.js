@@ -180,7 +180,7 @@ const ResidentalScreen = ({ navigation }) => {
         useNativeDriver: true,
       }),
     ]).start(() => {
-      navigation.navigate('Appoiment');
+      // navigation.navigate('Appoiment');
     });
 
    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
@@ -199,10 +199,10 @@ const ResidentalScreen = ({ navigation }) => {
       'mobile',
       'gender',
       'cityPincode',
-      'date',
-      'time',
-      'birthPlace',
-      'additionalInfo',
+      // 'date',
+      // 'time',
+      // 'birthPlace',
+      // 'additionalInfo',
     ];
 
     for (let field of fieldsToValidate) {
