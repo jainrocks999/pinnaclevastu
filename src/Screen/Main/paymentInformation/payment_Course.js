@@ -21,7 +21,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import constants from '../../../Redux/constant/constants';
 import axios from 'axios';
 import Loader from '../../../Component/Loader';
-
+import RazorpayCheckout from 'react-native-razorpay';
 import {useDispatch, useSelector} from 'react-redux';
 import { fontSize } from '../../../Component/fontsize';
 
@@ -180,10 +180,45 @@ const PaymentCourse = ({route}) => {
         useNativeDriver: true,
       }),
     ]).start(() => {
-     
-      createbyord();
+      Createorder1()
+  //  {
+  //    radioActive=='cod'?
+  //     createbyord():Createorder1()}
      
     });
+  };
+
+
+
+
+
+
+
+
+  const Createorder1 = async () => {
+    var options = {
+      description: 'Credits towards consultation',
+      // image: 'https://i.imgur.com/3g7nmJC.png',
+      currency: 'INR',
+      key: 'rzp_test_nS7mvhlfOHnGbx',
+      amount: '5000',
+      // name: 'OpenCart',
+      prefill: {
+        email: 'rohansahusahi@example.com',
+        contact: '9191919191',
+        name: 'Razorpay Software',
+      },
+      theme: {color: '#18314F'},
+    };
+    RazorpayCheckout.open(options)
+      .then(data => {
+        // setTrans(data.razorpay_payment_id);
+        createto(data);
+      })
+      .catch(error => {
+        // handle failure
+        console.log(`Error: ${error.code} | ${error.description}`);
+      });
   };
 
   return (
@@ -317,6 +352,21 @@ const PaymentCourse = ({route}) => {
             </View>
           </View>
 
+
+          <View style={[styles.appBottomSection, styles.borderBottom]}>
+          <Text style={styles.otherIconText}>Online Payment</Text>
+
+<View style={styles.radioBtnContainer}>
+  <RadioButton
+    value="Online"
+    status={radioActive === 'Online' ? 'checked' : 'unchecked'}
+    onPress={() => setRadioActive('Online')}
+    color="#009FDF"
+    uncheckedColor="#B7B7B7"
+    style={styles.radio}
+  />
+</View>
+</View>
           <View style={[styles.appBottomSection, styles.borderBottom]}>
             <Image
               style={styles.otherIcons}

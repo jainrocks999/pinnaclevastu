@@ -25,6 +25,7 @@ import Video from 'react-native-video';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 import WebView from 'react-native-webview';
+import constants from '../../../Redux/constant/constants';
 
 const {width} = Dimensions.get('window');
 
@@ -170,7 +171,7 @@ const CourseDetail = ({route}) => {
     }
     finalUrl1 = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=1&autohide=1&enablejsapi=1`;
   }
-console.log('gdfjgkgd',finalUrl1);
+
 
 
   const videoDat = CourceDetailA?.course_video
@@ -318,9 +319,11 @@ console.log('gdfjgkgd',finalUrl1);
 
   const handleShare = async () => {
     try {
+      const product= `${constants?.mainUrl}fetch-courses-details?course_id=${CourceDetailA?.id}`
       const result = await Share.share({
-        message: 'Check out this awesome app!', // Text to share
-        url: 'https://example.com', // Optional URL to share
+      
+        message: `Check out this awesome app! ${product}`, // Text to share
+        url: product,
         title: 'Share this App', // Title of the share dialog
       });
 
@@ -328,7 +331,7 @@ console.log('gdfjgkgd',finalUrl1);
         if (result.activityType) {
           console.log('Shared with activity type: ', result.activityType);
         } else {
-          console.log('Shared successfully!');
+          console.log('Shared successfully!',product);
         }
       } else if (result.action === Share.dismissedAction) {
         console.log('Share dismissed!');
@@ -683,36 +686,6 @@ console.log('gdfjgkgd',finalUrl1);
               html: CourceDetailA?.trainer?.description,
             }}
           />
-          {/* <Text style={styles.journeytext}>
-            His journey of occultism began in year 2012 which gradually acted as
-            a gamechanger when he realized the potential of occult field.
-            </Text>
-            <Text style={styles.journeytext}>
-            His journey of occultism began in year 2012 which gradually acted as
-            a gamechanger when he realized the potential of occult field began
-            in year 2012 which gradually acted as a gamechanger when he realized
-            the potential of occult field.
-            </Text>
-            <Text style={styles.journeytext}>
-            His journey of occultism began in year 2012 which gradually acted as
-            a gamechanger when he realized the potential of occult field.
-            </Text>
-            <Text style={styles.journeytext}>
-            His journey of occultism began in year 2012 which gradually acted as
-            a gamechanger when he realized began in year 2012 which gradually
-            acted as a gamechanger when he realized the potential of occult
-            field the potential of occult field.
-            </Text>
-            <Text style={styles.journeytext}>
-            His journey of occultism began in year 2012 which gradually acted as
-            a gamechanger when he realized the potential of occult field.
-            </Text>
-            <Text style={styles.journeytext}>
-            His journey of began in year 2012 which gradually acted as a
-            gamechanger when he realized the potential of occult field occultism
-            began in year 2012 which gradually acted as a gamechanger when he
-            realized the potential of occult field.
-            </Text> */}
         </View>
         <View style={styles.courseview}>
           <Text style={styles.demotext}>Course Review By Student</Text>
@@ -731,8 +704,8 @@ console.log('gdfjgkgd',finalUrl1);
               const contentOffsetX = e.nativeEvent.contentOffset.x;
               const currentIndex = Math.round(
                 contentOffsetX / widthPrecent(70),
-              ); // Calculate index based on item width
-              setCurrentIndex(currentIndex); // Update the current index state
+              ); 
+              setCurrentIndex(currentIndex); 
             }}
           />
 
@@ -750,43 +723,17 @@ console.log('gdfjgkgd',finalUrl1);
         <View style={{marginTop: 15}}>
           <FlatList
             data={data1}
-            numColumns={2} // Display items in 2 columns
+            numColumns={2} 
             keyExtractor={item => item.id}
             renderItem={renderItem}
             showsVerticalScrollIndicator={false}
           />
         </View>
-
-        {/* <TouchableOpacity
-          onPress={() => {
-            userType
-              ? navigation.navigate('PaymentCourse', {data1: CourceDetailA})
-              : navigation.navigate('Login', {from: 'CourseDetails'});
-          }}
-          style={styles.book}>
-          <Text style={styles.btext1}>Join Course</Text>
-        </TouchableOpacity> */}
       </ScrollView>
 
       <View style={styles.scrollview}>
         <View style={styles.listItem}>
           <Text style={styles.listItemText}>{CourceDetailA?.title}</Text>
-          {/* <Text style={styles.listitem1}>₹ {CourceDetailA.price}</Text> */}
-          {/* {userType &&
-          (CourceDetailA?.sale_price < CourceDetailA?.price ||
-          CourceDetailA?.student_price < CourceDetailA?.price ||
-            CourceDetailA?.franchise_price < CourceDetailA?.price) &&
-            (CourceDetailA?.sale_price ||
-            CourceDetailA?.student_price ||
-            CourceDetailA?.franchise_price) ? (
-              <Text
-              style={[
-                styles.listitem1,
-                {textDecorationLine: 'line-through', color: 'gray'},
-                ]}>
-                ₹ {CourceDetailA?.price}
-                </Text>
-                ) : null} */}{' '}
           <Text style={[styles.listitem1]}>
             {`₹ ${
               userType === 'customers' && CourceDetailA?.sale_price
@@ -802,10 +749,10 @@ console.log('gdfjgkgd',finalUrl1);
         <Animated.View
           style={[
             {
-              transform: [{scale: buttonAnimatedValue}], // स्केल एनिमेशन
+              transform: [{scale: buttonAnimatedValue}], 
             },
           ]}>
-          <TouchableOpacity onPress={handleJoinCourse} style={styles.book}>
+          <TouchableOpacity onPress={()=> handleJoinCourse()} style={styles.book}>
             <Text style={styles.btext1}>
               {coursetype ? 'Join Course' : 'Get An Instant Access Now'}
             </Text>

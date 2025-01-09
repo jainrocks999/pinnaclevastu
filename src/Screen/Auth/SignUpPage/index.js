@@ -281,7 +281,7 @@ const SignUpPage = () => {
       shake('cityPincode');
       scrollToField('cityPincode');
       return;
-      } else if (formData.date === '') {
+      } else if (date === '') {
         shake('date');
         scrollToField('date');
         return;
@@ -312,7 +312,6 @@ const SignUpPage = () => {
         }),
       );
     }
-    //  console.log(formData);
   };
 
   const data = [
