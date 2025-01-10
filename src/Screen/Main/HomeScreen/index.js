@@ -38,7 +38,7 @@ import {
   getCartDataApi,
 } from '../../../Redux/Slice/CartSlice';
 import {getUserDetailApi} from '../../../Redux/Slice/Authslice';
-import { consultationDetail1 } from '../../../Redux/Slice/HomeSlice';
+import {consultationDetail1} from '../../../Redux/Slice/HomeSlice';
 
 let backPress = 0;
 const HomeScreen = () => {
@@ -55,7 +55,7 @@ const HomeScreen = () => {
   const [displayedText1, setDisplayedText1] = useState('');
 
   const userDetail = useSelector(state => state?.Auth?.userData);
-
+  console.log(userDetail, 'sandepp...');
   const Homebanner = useSelector(state => state.home?.HomeBanner?.data);
 
   const isLoading = useSelector(state => state.home?.loading);
@@ -67,8 +67,6 @@ const HomeScreen = () => {
   const cartTotalQuantity = useSelector(
     state => state?.cart?.cartTotalQuantity,
   );
-
-
 
   const newArray = [];
   (Homebanner?.home_slider?.[0]?.slider_items || []).forEach(item => {
@@ -178,6 +176,14 @@ const HomeScreen = () => {
             getCartDataApi({
               token: userData.token,
               url: `cart?user_id=${userData.user_id}`,
+            }),
+          );
+        }
+        if (userDetail.length === 0) {
+          await dispatch(
+            getUserDetailApi({
+              token: userData.token,
+              url: `profile-list?user_id=${userData.user_id}`,
             }),
           );
         }
@@ -328,31 +334,27 @@ const HomeScreen = () => {
 
     setScaleAnims(newScaleAnims);
 
-    
     Animated.sequence([
       Animated.timing(newScaleAnims[index], {
-        toValue: 0.97, 
+        toValue: 0.97,
         duration: 500,
         useNativeDriver: true,
       }),
       Animated.timing(newScaleAnims[index], {
-        toValue: 1, 
+        toValue: 1,
         duration: 500,
         useNativeDriver: true,
       }),
     ]).start(async () => {
       await dispatch(
-        
-          consultationDetail1({
-            url: 'fetch-franchise-details',
-            franchise_id: item.id,
-            navigation,
-          })
-        );
-   
-     });
+        consultationDetail1({
+          url: 'fetch-franchise-details',
+          franchise_id: item.id,
+          navigation,
+        }),
+      );
+    });
   };
-
 
   const renderItem3 = ({item, index}) => {
     const itemScaleAnim = scaleAnims[index] || new Animated.Value(1);
@@ -366,7 +368,7 @@ const HomeScreen = () => {
         ]}>
         <TouchableOpacity
           style={[styles.cardContainer2]}
-          onPress={() => handlePress(item,index)}>
+          onPress={() => handlePress(item, index)}>
           <View style={{flexDirection: 'row', gap: 10, alignItems: 'center'}}>
             <Image
               source={
@@ -379,9 +381,7 @@ const HomeScreen = () => {
             <View style={styles.infoSection}>
               <Text style={styles.third}>{item.franchise_name}</Text>
               <Text style={styles.third1}>{item.specializations}</Text>
-              <Text style={styles.third2}>
-                {item?.franchise_services}
-              </Text>
+              <Text style={styles.third2}>{item?.franchise_services}</Text>
               <View style={styles.starContainer}>
                 <Rating
                   type="custom"
