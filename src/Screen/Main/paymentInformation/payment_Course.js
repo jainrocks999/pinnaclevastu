@@ -73,7 +73,7 @@ const PaymentCourse = ({route}) => {
       ? tax_amount // Fixed tax amount
       : 0;
     const totalProductAmount = itemPrice + taxAmount; 
-   console.log('klmlkdfgklgh',taxAmount,tax_type);
+  
    
     return {
       totalTaxAmount: taxAmount.toFixed(2), // Total tax amount.
@@ -180,7 +180,7 @@ const PaymentCourse = ({route}) => {
         useNativeDriver: true,
       }),
     ]).start(() => {
-      Createorder1()
+      createbyord();
   //  {
   //    radioActive=='cod'?
   //     createbyord():Createorder1()}
@@ -189,35 +189,42 @@ const PaymentCourse = ({route}) => {
   };
 
 
-
-
-
-
-
-
   const Createorder1 = async () => {
+    let total=100*totals?.totalAmount
+   setRadioActive('Online')
     var options = {
       description: 'Credits towards consultation',
-      // image: 'https://i.imgur.com/3g7nmJC.png',
+       image: require('../../../assets/image/header.png'),
       currency: 'INR',
       key: 'rzp_test_nS7mvhlfOHnGbx',
-      amount: '5000',
-      // name: 'OpenCart',
+      amount: total,
+       name: 'Pinnacle Vastu',
       prefill: {
         email: 'rohansahusahi@example.com',
         contact: '9191919191',
         name: 'Razorpay Software',
       },
-      theme: {color: '#18314F'},
+      theme: {color: colors.orange},
     };
     RazorpayCheckout.open(options)
       .then(data => {
-        // setTrans(data.razorpay_payment_id);
-        createto(data);
+        if (typeof data === "string") {
+          try {
+            // Parse the string into an object
+            const parsedData = JSON.parse(data);
+            console.log("Payment ID:", parsedData.razorpay_payment_id);
+          } catch (error) {
+            console.error("Error parsing JSON:", error);
+          }
+        } else {
+          // Directly access if `data` is already an object
+          console.log("Payment ID:", data.razorpay_payment_id);
+        }
+       
       })
       .catch(error => {
         // handle failure
-        console.log(`Error: ${error.code} | ${error.description}`);
+        console.log(`Errorouo: ${error.code} | ${error.description}`);
       });
   };
 
@@ -360,7 +367,7 @@ const PaymentCourse = ({route}) => {
   <RadioButton
     value="Online"
     status={radioActive === 'Online' ? 'checked' : 'unchecked'}
-    onPress={() => setRadioActive('Online')}
+    onPress={() =>Createorder1()}
     color="#009FDF"
     uncheckedColor="#B7B7B7"
     style={styles.radio}

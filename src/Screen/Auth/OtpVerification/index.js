@@ -6,27 +6,48 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  Animated
+  Animated,
 } from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import styles from './styles';
 import {colors} from '../../../Component/colors';
 import {useNavigation} from '@react-navigation/native';
 import Toast from 'react-native-simple-toast';
 import Loader from '../../../Component/Loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { loginUser } from '../../../Redux/Slice/Authslice';
+import { useDispatch } from 'react-redux';
 const {width} = Dimensions.get('window');
 
 const OTPPAGE = ({route}) => {
-
-   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
+  const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
 
   console.log('fsdss', route?.params.data.OTP);
+  const dispatch =useDispatch();
   // console.log(route?.params.from);
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
   const [code, setCode] = useState(['', '', '', '', '', '']);
   const inputs = useRef([]);
+
+  const [timer, setTimer] = useState(60);
+  const [isDisabled, setIsDisabled] = useState(true);
+  useEffect(() => {
+    if (timer > 0) {
+      const interval = setInterval(() => {
+        setTimer(prevTimer => prevTimer - 1);
+      }, 1000);
+
+      return () => clearInterval(interval);
+    } else {
+      setIsDisabled(false);
+    }
+  }, [timer]);
+
+  const handleResendOTP = () => {
+    setTimer(60);
+    setIsDisabled(true);
+  };
 
   const handleInputChange = (text, index) => {
     if (/^\d*$/.test(text)) {
@@ -46,69 +67,22 @@ const OTPPAGE = ({route}) => {
     }
   };
 
-  // const handleVerify = () => {
-  //   const enteredCode = code.join('');
-
-  //   console.log('dnkdsnfd', enteredCode, route?.params?.data?.OTP);
-
-  //   if (enteredCode.length < 6) {
-  //     Toast.show('Please enter a complete 6-digit code.');
-  //   } else if (enteredCode != route?.params?.data?.OTP) {
-  //     Toast.show('The entered OTP is incorrect.');
-  //   } else {
-  //     Toast.show('OTP verified successfully!');
-  //     console.log(route?.params?.from)
-  //     if (route?.params?.from == 'MyCart') {
-  //       // navigation.navigate('MyCart', {from: 'OTP'});
-  //       navigation.navigate('Home', {screen: 'MyCart' ,params: { from: 'OTP' },});
-  //     } else {
-  //       navigation.navigate('Home');
-  //     }
-  //   }
-  // };
   const handleVerify = async () => {
     const enteredCode = code.join('');
     setIsLoading(true);
     console.log('dnkdsnfd', enteredCode, route?.params?.data);
 
-    // if (enteredCode.length < 6) {
-    //   Toast.show('Please enter a complete 6-digit code.');
-    //   setIsLoading(false);
-    // } else if (enteredCode != route?.params?.data?.OTP) {
-    //   AsyncStorage.setItem('user_data', route?.params?.data);
-    //   AsyncStorage.setItem('user_type', route?.params?.data?.user_type);
-    //   AsyncStorage.setItem(
-    //     'user_id',
-    //     JSON.stringify(route?.params?.data?.user_id),
-    //   );
-    //   AsyncStorage.setItem('Token', route?.params?.data?.token);
-
-    //   Toast.show('The entered OTP is incorrect.');
-    //   setIsLoading(false);
-    // } else {
-    //   Toast.show('OTP verified successfully!');
-    //   setIsLoading(false);
-
-    //   console.log(route?.params?.from);
-
-    //   if (route?.params?.from == 'MyCart') {
-    //     // navigation.navigate('MyCart', {from: 'OTP'});
-    //     navigation.navigate('Home', {screen: 'MyCart', params: {from: 'OTP'}});
-    //   } else {
-    //     navigation.navigate('Home');
-    //   }
-    // }
     if (enteredCode.length < 6) {
       Toast.show('Please enter a complete 6-digit code.');
       setIsLoading(false);
-      return; // Early return to stop further execution
+      return;
     }
 
     if (enteredCode != route?.params?.data?.OTP) {
-      console.log(route?.params?.data?.OTP,"sdjfskflsdfmsdlkdm")
+      console.log(route?.params?.data?.OTP, 'sdjfskflsdfmsdlkdm');
       Toast.show('The entered OTP is incorrect.');
       setIsLoading(false);
-      return; // Early return if OTP is incorrect
+      return;
     }
     try {
       await AsyncStorage.setItem(
@@ -127,13 +101,11 @@ const OTPPAGE = ({route}) => {
       if (route?.params?.from === 'MyCart') {
         setIsLoading(false);
         navigation.replace('Home', {screen: 'MyCart', params: {from: 'OTP'}});
-      }else if  (route?.params?.from == 'CourseDetails') {
+      } else if (route?.params?.from == 'CourseDetails') {
         setIsLoading(false);
         navigation.replace('Home');
         // navigation.replace('CourseDetail');
-      }
-      
-      else {
+      } else {
         setIsLoading(false);
         navigation.replace('Home');
       }
@@ -141,9 +113,18 @@ const OTPPAGE = ({route}) => {
       console.error('Error storing user data:', error);
     }
   };
+
+  const resendOtp = async() => {
+   
+   
+     await dispatch(loginUser({mobile:route?.params.item, url: 'login',}));
+      // navigation.navigate('OTP');
+    
+  };
+
   return (
     <View style={styles.container}>
-    {isLoading ? <Loader /> : null}
+      {isLoading ? <Loader /> : null}
       <ScrollView style={styles.scroll}>
         <View style={styles.main}>
           <Text style={styles.title1}>
@@ -158,7 +139,13 @@ const OTPPAGE = ({route}) => {
               styles.title1
             }>{`verification code sent to your ${route?.params?.data?.OTP}`}</Text>
         </View>
-
+        {isDisabled && (
+          <Text style={{color: '#FC0600'}}>
+            {' '}
+            {timer}
+            <Text>seconds</Text>{' '}
+          </Text>
+        )}
         <View style={styles.codeInputContainer}>
           {code.map((digit, index) => (
             <TextInput
@@ -179,15 +166,11 @@ const OTPPAGE = ({route}) => {
         <Animated.View
           style={[
             {
-              transform: [{ scale: buttonAnimatedValue }],
+              transform: [{scale: buttonAnimatedValue}],
             },
-
-          ]}
-        >
+          ]}>
           <TouchableOpacity
-
             onPress={() => {
-
               Animated.sequence([
                 Animated.timing(buttonAnimatedValue, {
                   toValue: 0.94,
@@ -210,17 +193,24 @@ const OTPPAGE = ({route}) => {
           </TouchableOpacity>
         </Animated.View>
         <View style={styles.endview}>
-          <Text style={styles.endtext}>
-            {"Don't receive the OTP ? "}
+          {isLoading ? null : (
+            <Text style={styles.endtext}>Don't receive the OTP ?</Text>
+          )}
+
+          <TouchableOpacity
+            disabled={isDisabled ? true : false}
+            onPress={() => resendOtp()}
+            style={styles.resend}>
             <Text
               style={{
+                // color: isDisabled ? '#161616' : '#FC0600',
                 color: colors.heading,
                 fontFamily: 'Poppins-Medium',
                 textDecorationLine: 'underline',
               }}>
               Resend
             </Text>
-          </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </View>

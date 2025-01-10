@@ -80,11 +80,19 @@ export default StyleSheet.create({
   },
   endview:{
     marginTop:hp(3),
+    flexDirection:'row',
+    borderWidth:0.01,
+    justifyContent:'center'
   },
   endtext:{
     fontSize:fontSize.Sixteen,
    fontFamily:'Poppins-Regular',
    color:colors.light_gr,
    textAlign:'center'
+  },
+  resend:{  
+    marginTop: hp('2%'),
+    
+    // marginRight: wp('10%'),
   }
 });
