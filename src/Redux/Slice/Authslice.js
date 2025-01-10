@@ -110,26 +110,24 @@ export const signupUser = createAsyncThunk(
 
 export const getUserDetailApi = createAsyncThunk(
   'auth/getUserDetail',
-  async ({user_id, token, url}, {rejectWithValue}) => {
+  async ({token, url}, {rejectWithValue}) => {
     try {
-      let data = {
-        user_id: user_id,
-        token: token,
-      };
+   
       let config = {
         method: 'get',
         maxBodyLength: Infinity,
         url: `${constants.mainUrl}${url}`,
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
 
-        data: data,
+       
       };
       // console.log('shkshfskdfhsdf', config);
 
       const response = await axios.request(config);
-      // console.log('sfkjlsglksgsgs', response.data);
+       console.log('get profile update data ', response.data);
 
       if (response.data.status == 200) {
         // const responseDataString = JSON.stringify(response.data)
@@ -146,12 +144,65 @@ export const getUserDetailApi = createAsyncThunk(
   },
 );
 
+
+
+
+
+export const updateApi = createAsyncThunk(
+  'auth/updateApi',
+  async ({formUserData, url, navigation,token,userid}, {rejectWithValue,dispatch}) => {
+    console.log('auth/updateApi',formUserData,url,token);
+    
+    try {
+      let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+       url: `${constants.mainUrl}${url}`,
+        headers: {
+          
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+
+        data: formUserData,
+      };
+   
+
+      const response = await axios.request(config);
+    
+
+      if (response.data.status == 200) {
+      
+        
+  await dispatch(
+              getUserDetailApi({
+                token: token,
+                url: `profile-list?user_id=${userid}`,
+              }),
+            );
+            navigation.goBack();
+        return response.data;
+      } else {
+        Toast.show(response.data.msg);
+        console.log('errrorroro', response.data);
+        return rejectWithValue(error.response?.data || error.message);
+      }
+    } catch (error) {
+      console.log('errro',error);
+      
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  },
+);
+
+
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
     userData: [],
     signupUserData: [],
     loginUserData: [],
+    updatedata:{},
     loading: false,
     error: null,
   },
@@ -198,6 +249,20 @@ const authSlice = createSlice({
         state.userData = action.payload;
       })
       .addCase(getUserDetailApi.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+       .addCase(updateApi.pending, state => {
+       
+        state.loading = true
+         state.error = null;
+      })
+      .addCase(updateApi.fulfilled, (state, action) => {
+       
+        state.loading = false;
+        state.updatedata = action.payload;
+      })
+      .addCase(updateApi.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

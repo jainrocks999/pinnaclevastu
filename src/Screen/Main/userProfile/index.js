@@ -46,10 +46,9 @@ const MyProfile = () => {
         if (userStatus) {
           // await AsyncStorage.clear();
           setIsLoggedIn(true);
-          if (userDetail.length === 0) {
+          if (userDetail.length == 0) {
             await dispatch(
               getUserDetailApi({
-                user_id: userData.user_id,
                 token: userData.token,
                 url: `profile-list?user_id=${userData.user_id}`,
               }),
@@ -67,10 +66,6 @@ const MyProfile = () => {
 
     checkLoginStatus();
   }, [focus]);
-
-  // const confirmForLogout = () => {
-  //   setIsModalVisible(true);
-  // };
 
   const handleLogout = async () => {
     setIsLoading(true);

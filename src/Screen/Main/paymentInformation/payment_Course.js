@@ -196,11 +196,11 @@ const PaymentCourse = ({route}) => {
       description: 'Credits towards consultation',
        image: require('../../../assets/image/header.png'),
       currency: 'INR',
-      key: 'rzp_test_nS7mvhlfOHnGbx',
+      key: 'rzp_test_PhhCFgYuhlpWmQ',
       amount: total,
        name: 'Pinnacle Vastu',
       prefill: {
-        email: 'rohansahusahi@example.com',
+        email: '@example.com',
         contact: '9191919191',
         name: 'Razorpay Software',
       },
@@ -210,14 +210,14 @@ const PaymentCourse = ({route}) => {
       .then(data => {
         if (typeof data === "string") {
           try {
-            // Parse the string into an object
+            
             const parsedData = JSON.parse(data);
             console.log("Payment ID:", parsedData.razorpay_payment_id);
           } catch (error) {
             console.error("Error parsing JSON:", error);
           }
         } else {
-          // Directly access if `data` is already an object
+         
           console.log("Payment ID:", data.razorpay_payment_id);
         }
        

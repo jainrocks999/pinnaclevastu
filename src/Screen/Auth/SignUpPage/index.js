@@ -296,6 +296,7 @@ const SignUpPage = () => {
       formUserData.append('phone', formData.mobile);
       formUserData.append('gender', gender);
       formUserData.append('dob', formatDate(date));
+      formUserData.append('city_pincode',formData.cityPincode)
       formUserData.append('time_of_birth', formatTime(time));
       formUserData.append('place_of_birth', formData.birthPlace);
       formUserData.append('avatar',{
@@ -315,9 +316,9 @@ const SignUpPage = () => {
   };
 
   const data = [
-    {label: 'Male', value: 'Male'},
-    {label: 'Female', value: 'Female'},
-    {label: 'Transgender', value: 'Transgender'},
+    {label: 'Male', value: 'male'},
+    {label: 'Female', value: 'female'},
+    {label: 'Transgender', value: 'transgender'},
   ];
 
   return (

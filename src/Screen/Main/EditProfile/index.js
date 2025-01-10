@@ -10,49 +10,48 @@ import {
   Animated,
   Vibration,
 } from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import styles from './styles';
 import {colors} from '../../../Component/colors';
-import SelectModal from '../../../Component/dropdown';
+
 import {useNavigation} from '@react-navigation/native';
 import {fontSize} from '../../../Component/fontsize';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import DatePicker from 'react-native-date-picker';
 import Toast from 'react-native-simple-toast';
-import { useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import {Dropdown} from 'react-native-element-dropdown';
+import {updateApi} from '../../../Redux/Slice/Authslice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const EditProfile = () => {
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
   const userDetail = useSelector(state => state?.Auth?.userData);
   const [visible, setVisible] = useState(false);
+  const [isuserselectimage,setIsuserselectimage] =useState(false)
   const [selectedItem, setSelectedItem] = useState({
     label: '',
     value: '',
   });
-  const navigation = useNavigation()
-  
-  const [gender, setGender] = useState('');
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const [gender, setGender] = useState(userDetail?.gender ?? '');
 
   const [search, setSearch] = useState('');
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImage, setSelectedImage] = useState({
+    uri: userDetail?.avatar ?? '', 
+    name: '',
+    type: '', 
+  });
+
   const [isModalVisible, setModalVisible] = useState(false);
 
-  const onSelect = item => {
-    setSelectedItem(item);
-    setGender(item.label);
-    setVisible(false);
-  };
-
-  console.log(userDetail,"edit user data...")
-
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    mobile: '',
-    cityPincode: '',
-    birthPlace: '',
-    gender: '',
-    cityPincode: '',
+    name: userDetail.name,
+    email: userDetail.email,
+    mobile: userDetail.phone,
+    cityPincode: JSON.stringify(userDetail?.city_pincode) ?? '',
+    birthPlace: userDetail?.place_of_birth ?? '',
   });
 
   const [shakeAnimation, setShakeAnimation] = useState({
@@ -62,25 +61,56 @@ const EditProfile = () => {
     cityPincode: new Animated.Value(0),
     gender: new Animated.Value(0),
     // date: new Animated.Value(0),
-    birthPlace: new Animated.Value(0), // New animated value for Place of Birth
+    birthPlace: new Animated.Value(0),
     // additionalInfo: new Animated.Value(0),
     // time: new Animated.Value(0),
     // services: new Animated.Value(0),
   });
   const scrollViewRef = useRef(null);
+  console.log('gfaadssa', userDetail);
 
-  const [date, setDate] = useState('');
+  const [date, setDate] = useState(
+    userDetail?.dob ? new Date(userDetail.dob) : null,
+  );
   const [open, setOpen] = useState(false);
 
   const formatDate = date => {
+    console.log('fjffkjgdfk', date);
+
     if (!date) return 'Date of Birth';
-    const day = date.getDate().toString().padStart(2, '0');
+    const day = date?.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const year = date.getFullYear().toString();
     return `${day}-${month}-${year}`;
   };
 
-  const [time, setTime] = useState('');
+  const parseTimeString = timeString => {
+    const [time, modifier] = timeString.split(' '); // Split time and AM/PM
+    const [hours, minutes] = time.split(':'); // Split hours and minutes
+
+    let hour = parseInt(hours, 10);
+    if (modifier === 'PM' && hour !== 12) {
+      hour += 12; // Convert PM hours to 24-hour format
+    }
+    if (modifier === 'AM' && hour === 12) {
+      hour = 0; // Convert 12 AM to 0 hours (midnight)
+    }
+
+    const date = new Date();
+    date.setHours(hour);
+    date.setMinutes(parseInt(minutes, 10));
+    date.setSeconds(0); // Set seconds to 0 for consistency
+
+    return date;
+  };
+
+  const [time, setTime] = useState(() => {
+    if (userDetail?.time_of_birth) {
+      return parseTimeString(userDetail.time_of_birth); // Parse the time string to Date
+    }
+    return null; // If no time, set to null
+  });
+
   const [open1, setOpen1] = useState(false);
 
   const formatTime = time => {
@@ -135,8 +165,13 @@ const EditProfile = () => {
       } else if (response.error) {
         console.log('Camera error: ', response.error);
       } else if (response.assets) {
-        const imageUri = response.assets[0].uri;
-        setSelectedImage(imageUri);
+        const pickedImage = response.assets[0];
+        setIsuserselectimage(true);
+        setSelectedImage({
+          uri: pickedImage.uri, // Initial URI is the avatar URL from userDetail
+          name: pickedImage.fileName, // Default name is empty
+          type: pickedImage.type, // Default type is empty
+        });
       }
       toggleModal();
     });
@@ -156,17 +191,22 @@ const EditProfile = () => {
       } else if (response.error) {
         console.log('Image picker error: ', response.error);
       } else if (response.assets && response.assets.length > 0) {
-        const imageUri = response.assets[0].uri;
-        setSelectedImage(imageUri);
+        const pickedImage = response.assets[0];
+        setIsuserselectimage(true);
+        setSelectedImage({
+          uri: pickedImage.uri, // Initial URI is the avatar URL from userDetail
+          name: pickedImage.fileName, // Default name is empty
+          type: pickedImage.type, // Default type is empty
+        });
       }
       toggleModal();
     });
   };
 
   const data = [
-    {label: 'Male', value: 'Male'},
-    {label: 'Female', value: 'Female'},
-    {label: 'Transgender', value: 'Transgender'},
+    {label: 'Male', value: 'male'},
+    {label: 'Female', value: 'female'},
+    {label: 'Transgender', value: 'transgender'},
   ];
 
   const handleInputChange = (name, value) => {
@@ -239,7 +279,7 @@ const EditProfile = () => {
     });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     Animated.sequence([
       Animated.timing(buttonAnimatedValue, {
         toValue: 0.94,
@@ -288,7 +328,51 @@ const EditProfile = () => {
       scrollToField('cityPincode');
       return;
     } else {
-      navigation.navigate('OTP');
+      const userid = await AsyncStorage.getItem('user_id');
+      const token = await AsyncStorage.getItem('Token');
+      // const formUserData = new FormData();
+
+      // formUserData.append('user_id',userid);
+      // formUserData.append('name', formData.name);
+      // formUserData.append('email', formData.email);
+      // formUserData.append('phone', formData.mobile);
+      // formUserData.append('gender', gender);
+      // formUserData.append('dob', formatDate(date));
+      // formUserData.append('city_pincode', formData.cityPincode);
+      // formUserData.append('time_of_birth', formatTime(time));
+      // formUserData.append('place_of_birth', formData.birthPlace);
+      // formUserData.append('avatar', {
+      //   uri: selectedImage.uri,
+      //   name: selectedImage.name,
+      //   type: selectedImage.type,
+      // });
+      let data = new FormData();
+      data.append('name',  formData.name);
+      data.append('email',  formData.email);
+      data.append('phone',  formData.mobile);
+      data.append('dob', formatDate(date));
+      data.append('time_of_birth',formatTime(time));
+      data.append('place_of_birth', formData.birthPlace);
+      data.append('gender', gender);
+      data.append('city_pincode', formData.cityPincode);
+      data.append('user_id', userid);
+      {isuserselectimage?
+        data.append('avatar', {
+          uri: selectedImage.uri,
+          name: selectedImage.name,
+          type: selectedImage.type,
+        }):null
+      }
+     
+      await dispatch(
+        updateApi({
+          formUserData:data,
+          url: 'profile-update',
+          token,
+          userid,
+          navigation,
+        }),
+      );
     }
   };
 
@@ -306,14 +390,7 @@ const EditProfile = () => {
 
         <Text style={styles.logoText}>Edit My Profile</Text>
       </View>
-      <SelectModal
-        search={search}
-        data={data}
-        setSearch={setSearch}
-        visible={visible}
-        onSelect={onSelect}
-        onClose={value => setVisible(value)}
-      />
+
       <ScrollView
         ref={scrollViewRef}
         contentContainerStyle={styles.main1} // Added to fix scrolling
@@ -361,44 +438,54 @@ const EditProfile = () => {
             />
           </Animated.View>
         </View>
+
         <View style={styles.inputmain}>
           <Text style={styles.title2}>Gender*</Text>
           <Animated.View
             style={[{transform: [{translateX: shakeAnimation.gender}]}]}>
-            <TouchableOpacity
-              onPress={() => setVisible(true)}
+            <Dropdown
               style={[
                 styles.input,
+                styles.inputShadow,
                 {
                   flexDirection: 'row',
                   justifyContent: 'space-between',
-
                   alignItems: 'center',
                 },
-              ]}>
-              <Text
-                style={{
-                  color: gender ? colors.heading : colors.placeholder,
-                  fontSize: fontSize.Sixteen,
-                  // marginTop: 2,
-                  fontFamily: 'Poppins-Regular',
-                }}>
-                {gender ? gender : 'Gender'}
-              </Text>
-              <Image
-                style={{
-                  height: 8,
-                  width: 15,
-                }}
-                source={require('../../../assets/image/arrow_icon.png')}
-              />
-            </TouchableOpacity>
+              ]}
+              data={data}
+              labelField="label"
+              valueField="value"
+              placeholder={'Gender'}
+              placeholderStyle={{
+                color: gender ? colors.heading : colors.placeholder,
+                fontSize: fontSize.Sixteen,
+                // marginTop: 2,
+                fontFamily: 'Poppins-Regular',
+              }}
+              selectedTextStyle={styles.selectedText}
+              itemTextStyle={styles.itemText}
+              value={gender}
+              onChange={text => setGender(text.value)}
+              renderRightIcon={() => (
+                <Image
+                  style={{
+                    height: 8,
+                    width: 15,
+                  }}
+                  source={require('../../../assets/image/arrow_icon.png')}
+                />
+              )}
+            />
           </Animated.View>
         </View>
+
         <View style={styles.inputmain}>
           <Text style={styles.title2}>Current City Pincode*</Text>
           <Animated.View
             style={[{transform: [{translateX: shakeAnimation.cityPincode}]}]}>
+            {console.log('formData.cityPincode', formData.cityPincode)}
+
             <TextInput
               style={styles.input}
               placeholder="Current City Pincode"
@@ -518,7 +605,7 @@ const EditProfile = () => {
               style={styles.input1}
               placeholder="Upload Photo"
               placeholderTextColor={colors.placeholder}
-              value={selectedImage}
+              value={selectedImage.uri}
               editable={false}
             />
             <TouchableOpacity
@@ -531,7 +618,9 @@ const EditProfile = () => {
           </View>
           <Text style={styles.uppload}>Maximum upload file size 2mb.</Text>
         </View>
-        <TouchableOpacity onPress={handleSubmit} style={styles.buttoncontainer}>
+        <TouchableOpacity
+          onPress={() => handleSubmit()}
+          style={styles.buttoncontainer}>
           <Text style={styles.btext}>{'UPDATE PROFILE'}</Text>
         </TouchableOpacity>
       </ScrollView>

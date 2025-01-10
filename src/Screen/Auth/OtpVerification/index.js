@@ -115,10 +115,7 @@ const OTPPAGE = ({route}) => {
   };
 
   const resendOtp = async() => {
-   
-   
      await dispatch(loginUser({mobile:route?.params.item, url: 'login',}));
-      // navigation.navigate('OTP');
     
   };
 
