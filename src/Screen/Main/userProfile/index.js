@@ -41,19 +41,20 @@ const MyProfile = () => {
         const userStatus = await AsyncStorage.getItem('user_data');
         const userData = JSON.parse(userStatus);
 
-        console.log('virendra', userData);
+        console.log('virendra', userData); 
 
         if (userStatus) {
           // await AsyncStorage.clear();
           setIsLoggedIn(true);
-          if (userDetail.length == 0) {
-            await dispatch(
-              getUserDetailApi({
-                token: userData.token,
-                url: `profile-list?user_id=${userData.user_id}`,
-              }),
-            );
-          }
+          // if (userDetail.length === 0) {
+          //   await dispatch(
+          //     getUserDetailApi({
+          //       user_id: userData.user_id,
+          //       token: userData.token,
+          //       url: `profile-list?user_id=${userData.user_id}`,
+          //     }),
+          //   );
+          // }
         } else {
           navigation.navigate('Login');
           setIsLoggedIn(false);

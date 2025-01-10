@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
   Animated,
+  Keyboard,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import styles from './styles';
@@ -15,15 +16,18 @@ import {useNavigation} from '@react-navigation/native';
 import Toast from 'react-native-simple-toast';
 import Loader from '../../../Component/Loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { loginUser } from '../../../Redux/Slice/Authslice';
-import { useDispatch } from 'react-redux';
+import {clearloginUserData, loginUser} from '../../../Redux/Slice/Authslice';
+import {useDispatch, useSelector} from 'react-redux';
 const {width} = Dimensions.get('window');
 
 const OTPPAGE = ({route}) => {
-  const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
+  const loginUserData = useSelector(state => state?.Auth?.loginUserData);
 
-  console.log('fsdss', route?.params.data.OTP);
-  const dispatch =useDispatch();
+  const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
+  // console.log(loginUserData, 'smfldflsdf');
+
+  // console.log('fsdss', route?.params.data.OTP);
+  const dispatch = useDispatch();
   // console.log(route?.params.from);
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
@@ -32,6 +36,8 @@ const OTPPAGE = ({route}) => {
 
   const [timer, setTimer] = useState(60);
   const [isDisabled, setIsDisabled] = useState(true);
+  // const [OTP, setOTP] = useState('');
+
   useEffect(() => {
     if (timer > 0) {
       const interval = setInterval(() => {
@@ -43,11 +49,6 @@ const OTPPAGE = ({route}) => {
       setIsDisabled(false);
     }
   }, [timer]);
-
-  const handleResendOTP = () => {
-    setTimer(60);
-    setIsDisabled(true);
-  };
 
   const handleInputChange = (text, index) => {
     if (/^\d*$/.test(text)) {
@@ -78,23 +79,20 @@ const OTPPAGE = ({route}) => {
       return;
     }
 
-    if (enteredCode != route?.params?.data?.OTP) {
-      console.log(route?.params?.data?.OTP, 'sdjfskflsdfmsdlkdm');
+    if (enteredCode != loginUserData.OTP) {
+      console.log(loginUserData.OTP, 'sdjfskflsdfmsdlkdm');
       Toast.show('The entered OTP is incorrect.');
       setIsLoading(false);
       return;
     }
     try {
-      await AsyncStorage.setItem(
-        'user_data',
-        JSON.stringify(route?.params?.data),
-      );
-      await AsyncStorage.setItem('user_type', route?.params?.data?.user_type);
+      await AsyncStorage.setItem('user_data', JSON.stringify(loginUserData));
+      await AsyncStorage.setItem('user_type', loginUserData?.user_type);
       await AsyncStorage.setItem(
         'user_id',
-        JSON.stringify(route?.params?.data?.user_id),
+        JSON.stringify(loginUserData?.user_id),
       );
-      await AsyncStorage.setItem('Token', route?.params?.data?.token);
+      await AsyncStorage.setItem('Token', loginUserData?.token);
 
       Toast.show('OTP verified successfully!');
 
@@ -113,10 +111,13 @@ const OTPPAGE = ({route}) => {
       console.error('Error storing user data:', error);
     }
   };
+  // console.log('this is user data', loginUserData);
 
-  const resendOtp = async() => {
-     await dispatch(loginUser({mobile:route?.params.item, url: 'login',}));
-    
+  const resendOtp = async () => {
+    Keyboard.dismiss();
+    setIsDisabled(true);
+    setTimer(60);
+    await dispatch(loginUser({mobile: route?.params.item, url: 'login'}));
   };
 
   return (
@@ -134,13 +135,14 @@ const OTPPAGE = ({route}) => {
           <Text
             style={
               styles.title1
-            }>{`verification code sent to your ${route?.params?.data?.OTP}`}</Text>
+              // }>{`verification code sent to your ${route?.params?.data?.OTP}`}</Text>
+            }>{`verification code sent to your ${loginUserData.OTP}`}</Text>
         </View>
         {isDisabled && (
-          <Text style={{color: '#FC0600'}}>
+          <Text style={{color: '#FC0600', textAlign: 'center'}}>
             {' '}
             {timer}
-            <Text>seconds</Text>{' '}
+            <Text>{" "}seconds</Text>{' '}
           </Text>
         )}
         <View style={styles.codeInputContainer}>
@@ -200,8 +202,8 @@ const OTPPAGE = ({route}) => {
             style={styles.resend}>
             <Text
               style={{
-                // color: isDisabled ? '#161616' : '#FC0600',
-                color: colors.heading,
+                color: isDisabled ? colors.placeholder : colors.heading,
+                // color: colors.heading,
                 fontFamily: 'Poppins-Medium',
                 textDecorationLine: 'underline',
               }}>

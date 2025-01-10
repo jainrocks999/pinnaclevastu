@@ -34,25 +34,30 @@ export const loginUser = createAsyncThunk(
         // AsyncStorage.setItem('user_type', response.data.user_type);
         // AsyncStorage.setItem('user_id', JSON.stringify(response.data.user_id));
         // AsyncStorage.setItem('Token', response.data.token);
+
         Toast.show(response.data.msg);
-        if (route?.params?.from && route?.params.from == 'MyCart') {
-          navigation.replace('OTP', {
-            data: response.data,
-            item: mobile,
-            from: 'MyCart',
-          });
-        } else if (
-          route?.params?.from &&
-          route?.params.from == 'CourseDetails'
-        ) {
-          navigation.replace('OTP', {
-            data: response.data,
-            item: mobile,
-            from: 'CourseDetails',
-          });
-        } else {
-          navigation.replace('OTP', {data: response.data, item: mobile});
+
+        if (navigation) {
+          if (route?.params?.from && route?.params.from == 'MyCart') {
+            navigation.replace('OTP', {
+              data: response.data,
+              item: mobile,
+              from: 'MyCart',
+            });
+          } else if (
+            route?.params?.from &&
+            route?.params.from == 'CourseDetails'
+          ) {
+            navigation.replace('OTP', {
+              data: response.data,
+              item: mobile,
+              from: 'CourseDetails',
+            });
+          } else {
+            navigation.replace('OTP', {data: response.data, item: mobile});
+          }
         }
+        console.log(response.data, 'asdkoasjkdsadjo');
         return response.data;
       } else {
         Toast.show(response.data.msg);
@@ -120,9 +125,7 @@ export const getUserDetailApi = createAsyncThunk(
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
-        },
-
-       
+        }   
       };
       // console.log('shkshfskdfhsdf', config);
 
@@ -213,6 +216,9 @@ const authSlice = createSlice({
     clearUserData: state => {
       state.userData = [];
     },
+    clearloginUserData: state => {
+      state.loginUserData = [];
+    },
   },
   extraReducers: builder => {
     builder
@@ -222,6 +228,8 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
+        // console.log('thissisisisi', action.payload);
+
         state.loginUserData = action.payload;
       })
       .addCase(loginUser.rejected, (state, action) => {
@@ -269,6 +277,7 @@ const authSlice = createSlice({
   },
 });
 
-export const {clearError,clearUserData} = authSlice.actions;
+export const {clearError, clearUserData, clearloginUserData} =
+  authSlice.actions;
 
 export default authSlice.reducer;
