@@ -357,6 +357,7 @@ const HomeScreen = () => {
   };
 
   const renderItem3 = ({item, index}) => {
+    // console.log(item,"sandeep......");
     const itemScaleAnim = scaleAnims[index] || new Animated.Value(1);
     return (
       <Animated.View

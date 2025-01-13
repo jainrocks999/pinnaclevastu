@@ -9,6 +9,7 @@ import {
   FlatList,
   Dimensions,
   ScrollView,
+  BackHandler,
 } from 'react-native';
 import {colors} from '../../../Component/colors';
 import {fontSize} from '../../../Component/fontsize';
@@ -64,9 +65,35 @@ useEffect(() => {
   useEffect(() => {
    
     if (focus) {
-      apicall();
+      apicall()
+      const backAction = () => {
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'UserProfile'}],
+        })
+        return true; 
+      };
+      
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+  
+      return () => backHandler.remove(); 
     }
-  }, [focus]);
+  }, [focus,navigation]);
+
+
+  // useEffect(() => {
+  //   const backAction = () => {
+  //     navigation.reset({
+  //       index: 0,
+  //       routes: [{name: 'UserProfile'}],
+  //     })
+  //     return true; 
+  //   };
+
+  //   const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+  //   return () => backHandler.remove(); 
+  // }, [navigation]);
 
   const apicall = async () => {
   
@@ -89,6 +116,7 @@ useEffect(() => {
       console.error('Error in API call:', error);
     }
   };
+
 
   const OrderDetails = async item => {
     const token = await AsyncStorage.getItem('Token');

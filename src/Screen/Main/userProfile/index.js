@@ -41,7 +41,7 @@ const MyProfile = () => {
         const userStatus = await AsyncStorage.getItem('user_data');
         const userData = JSON.parse(userStatus);
 
-        console.log('virendra', userData); 
+        // console.log('virendra', userData); 
 
         if (userStatus) {
           // await AsyncStorage.clear();
