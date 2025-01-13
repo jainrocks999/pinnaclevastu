@@ -55,7 +55,7 @@ const HomeScreen = () => {
   const [displayedText1, setDisplayedText1] = useState('');
 
   const userDetail = useSelector(state => state?.Auth?.userData);
-  console.log(userDetail, 'sandepp...');
+
   const Homebanner = useSelector(state => state.home?.HomeBanner?.data);
 
   const isLoading = useSelector(state => state.home?.loading);
@@ -357,6 +357,7 @@ const HomeScreen = () => {
   };
 
   const renderItem3 = ({item, index}) => {
+    // console.log(item,"sandeep......");
     const itemScaleAnim = scaleAnims[index] || new Animated.Value(1);
     return (
       <Animated.View

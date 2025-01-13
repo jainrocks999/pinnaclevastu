@@ -109,27 +109,27 @@ const CourceListDownload = ({navigation}) => {
   const placeholderText = 'Search';
   const [displayedText, setDisplayedText] = useState('');
 
-  // useEffect(() => {
-  //   let currentIndex = 0;
+  useEffect(() => {
+    let currentIndex = 0;
 
-  //   const startAnimation = () => {
-  //     const intervalId = setInterval(() => {
-  //       if (currentIndex < placeholderText.length) {
-  //         setDisplayedText(placeholderText.slice(0, currentIndex + 1));
-  //         currentIndex++;
-  //       } else {
-  //         currentIndex = 0;
-  //         setDisplayedText('');
-  //       }
-  //     }, 450);
+    const startAnimation = () => {
+      const intervalId = setInterval(() => {
+        if (currentIndex < placeholderText.length) {
+          setDisplayedText(placeholderText.slice(0, currentIndex + 1));
+          currentIndex++;
+        } else {
+          currentIndex = 0;
+          setDisplayedText('');
+        }
+      }, 450);
 
-  //     return intervalId;
-  //   };
-  //   // apicall();
-  //   const intervalId = startAnimation();
+      return intervalId;
+    };
 
-  //   return () => clearInterval(intervalId);
-  // }, [placeholderText]);
+    const intervalId = startAnimation();
+
+    return () => clearInterval(intervalId);
+  }, [placeholderText]);
 
   useEffect(() => {
     apicall();
@@ -160,7 +160,7 @@ const CourceListDownload = ({navigation}) => {
       console.error('Error in API call:', error);
     }
   };
-  console.log(tutorialData, 'asdmlkasdmlasd');
+  // console.log(tutorialData, 'asdmlkasdmlasd');
 
   const openVideoModel = item => {
     if (item.video && item.video !== '') {
@@ -170,8 +170,9 @@ const CourceListDownload = ({navigation}) => {
     console.log(videoUri, 'sdjsdkdkal');
   };
 
-  const renderSubItems = ({item}) => (
+  const renderSubItems = ({item,index}) => (
     <View style={styles.singleSubItem}>
+      {/* {console.log(item,"sandeep,.....")} */}
       <View style={[styles.direction]}>
         <TouchableOpacity onPress={() => openVideoModel(item)}>
           <Image
@@ -209,7 +210,7 @@ const CourceListDownload = ({navigation}) => {
 
   const renderItems = ({item, index}) => (
     <View>
-      {console.log(item, 'assasdkmlsa')}
+      {/* {console.log(item, 'assasdkmlsa')} */}
       <TouchableOpacity
         onPress={() => toggleSection(index)}
         style={[
@@ -251,7 +252,7 @@ const CourceListDownload = ({navigation}) => {
           <View style={{backgroundColor: '#EAEAEA', height: 1}} />
           <FlatList
             data={item.resources}
-            keyExtractor={index => index.toString()}
+            keyExtractor={(item, index) => item.material_id?.toString() || index.toString()} 
             renderItem={renderSubItems}
           />
         </View>
@@ -325,7 +326,8 @@ const CourceListDownload = ({navigation}) => {
 
         <FlatList
           data={tutorialData?.resources}
-          keyExtractor={index => index.toString()}
+          // keyExtractor={index => index.toString()}
+          keyExtractor={(item, index) => item.section_id?.toString() || index.toString()} 
           renderItem={renderItems}
           contentContainerStyle={{gap: 10}}
         />

@@ -24,6 +24,8 @@ import Imagepath from '../../../Component/Imagepath';
 const ResidentalScreen = ({navigation}) => {
   const data = useSelector(state => state?.home?.ConsultationDetail?.data);
 
+  console.log(data,"scmlsmkcl")  
+
   const [scaleAnims, setScaleAnims] = useState({});
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
 
@@ -109,7 +111,6 @@ const ResidentalScreen = ({navigation}) => {
     }
 
     setScaleAnims(newScaleAnims);
-
     // Trigger the animation sequence for the clicked item
     Animated.sequence([
       Animated.timing(newScaleAnims[index], {
@@ -155,6 +156,7 @@ const ResidentalScreen = ({navigation}) => {
   //     );
   //   };
   const renderItem = ({item, index}) => {
+    console.log(item,"asmlaskdlasdmas")
     let backgroundColor;
 
     if (item.services_name === 'Residential Vastu') {
@@ -176,7 +178,7 @@ const ResidentalScreen = ({navigation}) => {
           },
         ]}>
         <TouchableOpacity
-          style={[styles.cardContainer, {backgroundColor}]}
+          style={[styles.cardContainer,{backgroundColor: item?.color_code}]}
           onPress={() => handleItemClick(index)}>
           <Image
             source={

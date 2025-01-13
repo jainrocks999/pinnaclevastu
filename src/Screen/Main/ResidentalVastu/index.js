@@ -79,7 +79,7 @@
 //           />
 //         </View>
 //       </TouchableOpacity>
-  
+
 //     );
 //   };
 
@@ -159,7 +159,7 @@
 //           contentContainerStyle={styles.listContainer}
 //         />
 //       </ScrollView>
-     
+
 //     </View>
 //   );
 // };
@@ -223,9 +223,7 @@
 //   },
 // ];
 
-
-
-import React, { useState, useEffect, useRef } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   Text,
@@ -237,12 +235,13 @@ import {
   TextInput,
 } from 'react-native';
 import styles from './styles';
-import { colors } from '../../../Component/colors';
-import { Rating } from 'react-native-ratings';
-import { widthPrecent as wp } from '../../../Component/ResponsiveScreen/responsive';
-import { useSelector } from 'react-redux';
+import {colors} from '../../../Component/colors';
+import {Rating} from 'react-native-ratings';
+import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
+import {useDispatch, useSelector} from 'react-redux';
+import {consultationDetail1} from '../../../Redux/Slice/HomeSlice';
 
-const ResidentalScreen = ({ navigation }) => {
+const ResidentalScreen = ({navigation}) => {
   const [textAnim] = useState(new Animated.Value(0));
   const [scaleAnim] = useState(new Animated.Value(1));
   const [scaleAnims, setScaleAnims] = useState({});
@@ -251,16 +250,16 @@ const ResidentalScreen = ({ navigation }) => {
   const bgAnim = useRef(new Animated.Value(0)).current;
 
   const Homebanner = useSelector(state => state.home?.HomeBanner?.data);
+  const dispatch = useDispatch();
 
   const textItems = [
-    { text: 'Which direction boosts success?', color: '#B1F0F7' },
-    { text: 'Unlock Prosperity with Vastu!', color: '#E195AB' },
-    { text: 'Transform Space, Elevate Success', color: '#FFE7A7' },
+    {text: 'Which direction boosts success?', color: '#B1F0F7'},
+    {text: 'Unlock Prosperity with Vastu!', color: '#E195AB'},
+    {text: 'Transform Space, Elevate Success', color: '#FFE7A7'},
   ];
 
-
-  const placeholderText = "Search"; 
-  const [displayedText, setDisplayedText] = useState(''); 
+  const placeholderText = 'Search';
+  const [displayedText, setDisplayedText] = useState('');
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -282,35 +281,33 @@ const ResidentalScreen = ({ navigation }) => {
           duration: 1500,
           useNativeDriver: true,
         }),
-      ])
+      ]),
     ).start();
   }, [animatedValue]);
 
   useEffect(() => {
     let currentIndex = 0;
-  
+
     const startAnimation = () => {
       const intervalId = setInterval(() => {
         if (currentIndex < placeholderText.length) {
-          
-          setDisplayedText(placeholderText.slice(0, currentIndex + 1)); 
+          setDisplayedText(placeholderText.slice(0, currentIndex + 1));
           currentIndex++;
         } else {
-          
-          currentIndex = 0; 
-          setDisplayedText(''); 
+          currentIndex = 0;
+          setDisplayedText('');
         }
-      }, 450); 
-  
+      }, 450);
+
       return intervalId;
     };
-  
+
     const intervalId = startAnimation();
-  
-    return () => clearInterval(intervalId); 
+
+    return () => clearInterval(intervalId);
   }, [placeholderText]);
 
-  const slideText = (direction) => {
+  const slideText = direction => {
     const newIndex =
       direction === 'left'
         ? currentIndex === textItems.length - 1
@@ -347,63 +344,60 @@ const ResidentalScreen = ({ navigation }) => {
 
   const backgroundColor = bgAnim.interpolate({
     inputRange: textItems.map((_, index) => index),
-    outputRange: textItems.map((item) => item.color),
+    outputRange: textItems.map(item => item.color),
   });
 
- 
+  const handlePress = (index, itemId) => {
+    const newScaleAnims = {...scaleAnims};
 
-  const handlePress = (index) => {
-  
-      const newScaleAnims = { ...scaleAnims };
-  
-    
-      if (!newScaleAnims[index]) {
-        newScaleAnims[index] = new Animated.Value(1);
-      }
-      
-      setScaleAnims(newScaleAnims);
-  
-     
-      Animated.sequence([
-        Animated.timing(newScaleAnims[index], {
-          toValue: 0.97,
-          duration: 500,
-          useNativeDriver: true,
+    if (!newScaleAnims[index]) {
+      newScaleAnims[index] = new Animated.Value(1);
+    }
+
+    setScaleAnims(newScaleAnims);
+
+    Animated.sequence([
+      Animated.timing(newScaleAnims[index], {
+        toValue: 0.97,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(newScaleAnims[index], {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+    ]).start(async () => {
+      await dispatch(
+        consultationDetail1({
+          url: 'fetch-franchise-details',
+          franchise_id: itemId,
+          navigation,
         }),
-        Animated.timing(newScaleAnims[index], {
-          toValue: 1, 
-          duration: 500,
-          useNativeDriver: true,
-        }),
-      ]).start(() => {
-        navigation.navigate('profile');
-      });
-  
-  
-    };
+      );
+      // navigation.navigate('profile');
+    });
+  };
   // const renderItem3 = ({ item, index }) => {
   //   const itemScaleAnim = scaleAnims[index] || new Animated.Value(1);
-
-  
 
   //   return (
   //     <Animated.View
   //         style={[
   //           styles.cardContainer2,
   //           {
-  //             transform: [{ scale: itemScaleAnim }], 
+  //             transform: [{ scale: itemScaleAnim }],
   //           },
   //         ]}
   //       >
 
-     
   //     <TouchableOpacity onPress={() => handlePress(index)} >
   //       <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
   //         <View style={styles.imgContainer}>
   //           <Image
   //             style={[
   //               styles.cardImage,
-                
+
   //             ]}
   //             source={item.image}
   //           />
@@ -438,24 +432,19 @@ const ResidentalScreen = ({ navigation }) => {
   //   );
   // };
 
-  const renderItem3 = ({ item, index }) => {
+  const renderItem3 = ({item, index}) => {
     const itemScaleAnim = scaleAnims[index] || new Animated.Value(1);
-
-
 
     return (
       <Animated.View
         style={[
           styles.cardContainer2,
           {
-            transform: [{ scale: itemScaleAnim }],
+            transform: [{scale: itemScaleAnim}],
           },
-        ]}
-      >
-
-
-        <TouchableOpacity onPress={() => handlePress(index)} >
-          <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+        ]}>
+        <TouchableOpacity onPress={() => handlePress(index, item.id)}>
+          <View style={{flexDirection: 'row', alignItems: 'flex-start'}}>
             <View style={styles.imgContainer}>
               {/* <Image
               style={[
@@ -467,7 +456,7 @@ const ResidentalScreen = ({ navigation }) => {
               <Image
                 source={
                   item.logo
-                    ? { uri: `${Imagepath.Path}${item?.logo}` }
+                    ? {uri: `${Imagepath.Path}${item?.logo}`}
                     : require('../../../assets/image/Remedies/Image-not.png')
                 }
                 style={styles.cardImage}
@@ -486,12 +475,12 @@ const ResidentalScreen = ({ navigation }) => {
             </View>
             <View style={styles.card}>
               <Text style={styles.third1}>{item.franchise_name}</Text>
-              <Text style={[styles.third2, { marginBottom: 2 }]}>
-                Services :  {item?.franchise_services?.services_name}
+              <Text style={[styles.third2, {marginBottom: 2}]}>
+                Services : {item?.franchise_services?.services_name}
               </Text>
               <Text style={styles.third2}>{item?.language}</Text>
               <Text style={styles.third2}>Exp: {item?.experience_of_year}</Text>
-              <Text style={styles.priceText}>Price: {item?.franchise_services?.services_price}</Text>
+              <Text style={styles.priceText}>Price:₹ {item?.charges}</Text>
             </View>
             <Image
               style={styles.nextBtn}
@@ -506,7 +495,9 @@ const ResidentalScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{top:10,bottom:10,left:10,right:10}}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
           <Image
             style={styles.backBtn}
             source={require('../../../assets/drawer/Back1.png')}
@@ -520,30 +511,31 @@ const ResidentalScreen = ({ navigation }) => {
 
       <ScrollView contentContainerStyle={styles.servicesContainer}>
         <View style={styles.searchContainer}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <TouchableOpacity hitSlop={{top:10,bottom:10,left:10,right:10}}>
-         
-            <Image source={require('../../../assets/image/SearchIcon.png')} />
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <TouchableOpacity
+              hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+              <Image source={require('../../../assets/image/SearchIcon.png')} />
             </TouchableOpacity>
-           
+
             <TextInput
-        style={styles.searchInput}
-        placeholder={displayedText} 
-        placeholderTextColor={colors.searchBarTextColor}
-      />
+              style={styles.searchInput}
+              placeholder={displayedText}
+              placeholderTextColor={colors.searchBarTextColor}
+            />
           </View>
-          <TouchableOpacity style={styles.filterBtn}  hitSlop={{top:10,bottom:10,left:10,right:10}}>
+          <TouchableOpacity
+            style={styles.filterBtn}
+            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
             <Image source={require('../../../assets/image/Vector.png')} />
           </TouchableOpacity>
         </View>
 
-        <Animated.View style={[styles.main, { backgroundColor }]}>
+        <Animated.View style={[styles.main, {backgroundColor}]}>
           <TouchableOpacity
             onPress={() => slideText('right')}
             activeOpacity={0.6}
             style={styles.arrowButton}
-            hitSlop={{top:10,bottom:10,left:10,right:10}}
-          >
+            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
             <Image
               style={styles.arrowIcon}
               source={require('../../../assets/drawer/aero.png')}
@@ -553,12 +545,10 @@ const ResidentalScreen = ({ navigation }) => {
           <Animated.View
             style={[
               styles.titleContainer,
-              { transform: [{ translateX: textAnim }] },
-            ]}
-          >
+              {transform: [{translateX: textAnim}]},
+            ]}>
             <Animated.Text
-              style={[styles.title, { transform: [{ scale: animatedValue }] }]}
-            >
+              style={[styles.title, {transform: [{scale: animatedValue}]}]}>
               {textItems[currentIndex].text}
             </Animated.Text>
           </Animated.View>
@@ -567,8 +557,7 @@ const ResidentalScreen = ({ navigation }) => {
             onPress={() => slideText('left')}
             activeOpacity={0.6}
             style={styles.arrowButton}
-            hitSlop={{top:10,bottom:10,left:10,right:10}}
-          >
+            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
             <Image
               style={styles.arrowIcon}
               source={require('../../../assets/drawer/raero.png')}
@@ -580,7 +569,7 @@ const ResidentalScreen = ({ navigation }) => {
           // data={DATA}
           data={Homebanner?.franchises}
           renderItem={renderItem3}
-          keyExtractor={(item) => item.id}
+          keyExtractor={item => item.id}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContainer}
         />
@@ -620,26 +609,3 @@ const DATA = [
     image: require('../../../assets/image/Imag.png'),
   },
 ];
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
