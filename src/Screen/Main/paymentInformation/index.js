@@ -25,14 +25,16 @@ import Loader from '../../../Component/Loader';
 import {shipmethod} from '../../../Redux/Slice/orderSclice';
 import {useDispatch, useSelector} from 'react-redux';
 import {clearcartdata} from '../../../Redux/Slice/CartSlice';
-
+import RazorpayCheckout from 'react-native-razorpay';
 const ResidentalScreen = ({route}) => {
   const nav = route.params;
   const navigation = useNavigation();
+    const userDetail = useSelector(state => state?.Auth?.userData);
+     const cartDataList = useSelector(state => state?.cart?.CartData);
   const isLoading = useSelector(state => state?.order?.loading);
   const ship = useSelector(state => state?.order?.shipm?.shipping_method);
-  console.log('fkjfgjkfgkf ,fifgigi', ship);
   const dispatch = useDispatch();
+  const[trakIdSectionIS,setTranjuctionId]=useState('');
   const [radioActive, setRadioActive] = useState('');
   const [loading1, setLoading] = useState(false);
   const [userType, setUserType] = useState('');
@@ -126,6 +128,47 @@ const ResidentalScreen = ({route}) => {
     }
   }, [nav?.data?.item, userType]);
 
+
+
+  const Createorder1 = async () => {
+    let total = 100 * parseInt(totals?.totalAmount); // Ensure `totals?.totalAmount` is a valid number
+    console.log('sdflks',total,radioActive);
+    
+
+    var options = {
+      description: 'Credits towards consultation',
+      image: require('../../../assets/image/header.png'),
+      currency: 'INR',
+      key: 'rzp_test_PhhCFgYuhlpWmQ',
+      amount: total, // Amount in smallest currency unit (e.g., paise for INR)
+      name: 'Pinnacle Vastu',
+      prefill: {
+        email: userDetail?.email || '', // Ensure fallback values
+        contact: userDetail?.phone || '',
+        name: userDetail?.name || '',
+      },
+      theme: { color: colors.orange },
+    };
+  
+    try {
+      const data = await RazorpayCheckout.open(options);
+      console.log('Razorpay Response:', data);
+  
+      // Validate and handle response
+      if (data && data.razorpay_payment_id) {
+        console.log('Payment ID:', data.razorpay_payment_id);
+        setTranjuctionId(data.razorpay_payment_id);
+        createbyord(); // Call your method with payment ID
+      } else {
+        console.error('Payment ID missing in response:', data);
+      }
+    } catch (error) {
+      // Log full error for debugging
+      console.error('Razorpay Error:', error);
+      console.log(`Error Code: ${error.code} | Description: ${error.description}`);
+    }
+  };
+
   const data = {
     shipping_option: ship?.shipping_method_id ?? '1',
     shipping_method: 'default',
@@ -133,7 +176,7 @@ const ResidentalScreen = ({route}) => {
     shipping_amount: ship?.price ?? '',
     shipping_type: '',
     is_available_shipping: '1',
-    transaction_id: '79896585966',
+    transaction_id: trakIdSectionIS??'',
     coupon_code: '',
     tax_amount: totals?.totalTaxAmount,
     sub_amount: totals?.totalPriceOnly,
@@ -155,7 +198,7 @@ const ResidentalScreen = ({route}) => {
     currency: 'IND',
     customer_id: nav?.adress?.customer_id,
     customer_type: 'Botble\\Ecommerce\\Models\\Customer',
-    payment_method: radioActive ? 'cod' : '',
+    payment_method: radioActive ?? '',
     payment_status: 'pending',
     description: 'testing perpose',
     tax_information: {
@@ -178,6 +221,7 @@ const ResidentalScreen = ({route}) => {
       address: nav?.adress?.billing_address?.address ?? '',
     },
   };
+
 
   const createbyord = async () => {
     try {
@@ -228,17 +272,17 @@ const ResidentalScreen = ({route}) => {
   };
 
   const renderItem = ({item, index}) => {
-    const isLastItem = index === nav?.data?.item.length - 1; // Dynamically check if it's the last item
-    const isGSTRow = item.id === '2'; // Example: Use dynamic checks for specific rows
+    const isLastItem = index === nav?.data?.item.length - 1;
+    const isGSTRow = item.id === '2'; 
 
     return (
       <View
         style={[
           styles.card45,
-          styles.borderBottom, // Apply border unless it's the last item
+          styles.borderBottom, 
           {
             paddingTop: 0,
-            paddingBottom: isGSTRow ? 5 : 0, // Apply padding dynamically based on item condition
+            paddingBottom: isGSTRow ? 5 : 0, 
           },
         ]}>
         <Text style={[item.isBold ? styles.third3 : styles.third1]}>
@@ -422,6 +466,23 @@ const ResidentalScreen = ({route}) => {
             </View>
           </View>
 
+
+  <View style={[styles.appBottomSection, styles.borderBottom]}>
+            <Text style={styles.otherIconText}>Razorpay Payment</Text>
+
+            <View style={styles.radioBtnContainer}>
+              <RadioButton
+                value="Razorpay"
+                status={radioActive === 'Razorpay' ? 'checked' : 'unchecked'}
+                onPress={() => {
+                  setRadioActive('Razorpay');
+                }}
+                color="#009FDF"
+                uncheckedColor="#B7B7B7"
+                style={styles.radio}
+              />
+            </View>
+          </View>
           <View style={[styles.appBottomSection, styles.borderBottom]}>
             <Image
               style={styles.otherIcons}
@@ -508,11 +569,19 @@ const ResidentalScreen = ({route}) => {
                     useNativeDriver: true,
                   }),
                 ]).start(() => {
-                  createbyord(); // Call createbyord after animation is complete
+
+
+                  if (radioActive === 'Razorpay') {
+                    Createorder1();    
+                  }
+                  else{
+                    createbyord();
+                  }
+                 
                 });
               }
             }}
-            disabled={!radioActive} // Disable the button if COD is not active
+            disabled={!radioActive &&cartDataList?.length!=0} // Disable the button if COD is not active
             style={[
               styles.book,
               {

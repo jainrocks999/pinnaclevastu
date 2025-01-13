@@ -39,7 +39,6 @@ import AnimatedLine from '../../../Component/progressbar';
 
 const RemediesProductDetail = ({route}) => {
   const item = route?.params?.data;
-  console.log('fdmglkfgmdfg', item);
 
   const navigation = useNavigation();
   const {width} = Dimensions.get('window');
@@ -558,7 +557,7 @@ const RemediesProductDetail = ({route}) => {
   const renderItem3 = ({item}) => {
     return (
       <TouchableOpacity
-        onPress={() => navigation.navigate('profile')}
+        // onPress={() => navigation.navigate('profile')}
         style={[styles.cardContainer1]}>
         <View style={styles.reviewCard}>
           <View style={{paddingLeft: 5}}>

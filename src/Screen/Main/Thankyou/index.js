@@ -1,10 +1,22 @@
-import { StyleSheet, Text, TouchableOpacity, View,Image } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, TouchableOpacity, View,Image, BackHandler } from 'react-native'
+import React, { useEffect } from 'react'
 import styles from './styles'
 import { useNavigation } from '@react-navigation/native';
 const ThankyouPage = ({route}) => {
   console.log('route,,,,',route?.params?.order);
   const navigation =useNavigation();
+  useEffect(() => {
+    // Handle hardware back button press
+    const backAction = () => {
+      navigation.replace('Home');
+      return true; // Prevent default back action
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove(); 
+  }, [navigation, route?.params?.data]);
+
   return (
     <View style={styles.container}>
         <View style={styles.main}>

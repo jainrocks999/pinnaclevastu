@@ -20,7 +20,7 @@ const UserAddress = ({data}) => {
           style={[styles.checkboxWrapper, checked && styles.checkedBackground]}>
           <Checkbox
             status={checked ? 'checked' : 'unchecked'}
-            onPress={() => setChecked(!checked)}
+            onPress={() => setChecked(checked)}
             color="#FFF"
             uncheckedColor="#DFE7EF"
           />

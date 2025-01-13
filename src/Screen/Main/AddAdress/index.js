@@ -234,7 +234,7 @@ const Address = ({route}) => {
       navigation
     };
   
-    console.log('Payload:', apiPayload);
+ 
   
        await dispatch(createAddress(apiPayload));
   };

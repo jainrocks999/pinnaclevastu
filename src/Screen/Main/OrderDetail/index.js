@@ -161,7 +161,6 @@ const OrderDetail = () => {
 
   const renderItem = ({item}) => (
     <View style={styles.card}>
-      {console.log(item)}
       <Image
         style={styles.cardImg}
         source={
@@ -271,7 +270,6 @@ const OrderDetail = () => {
           data2?.status?.value == 'completed' ||
           data2?.shipment?.shipment_status == 'not_delivered' ? (
             <View style={styles.OrderstatusMsgContainer}>
-              {console.log(data2?.status?.value)}
               <Image
                 style={styles.cancleOrderImg}
                 source={require('../../../assets/otherApp/orderCencelled.png')}

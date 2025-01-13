@@ -24,21 +24,19 @@ const DeliveryAddress = ({route}) => {
   const  navigation =useNavigation();
   const isLoading=useSelector(state=>state.address.loading);
   const addresstoget=useSelector(state=>state.address?.getaData);
-// console.log('fgfgjfg',addresstoget)
 const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
-  const [selectedId, setSelectedId] = useState(null);
+  const [selectedId, setSelectedId] = useState('');
   const [addresstoget1, setAddresstoget] = useState(addresstoget); // Address list
   const [defaultAddress, setDefaultAddress] = useState(''); 
   const [sortedAddresses, setSortedAddresses] = useState([]);
    const dispatch = useDispatch()
    const focus=useIsFocused();
  useEffect(()=>{
-  // setSelectedId(null);
- if(focus){
+
    AddressList();
- }
+ 
   
- },[focus])
+ },[])
  const AddressList = async()=>{
  
  const token = await AsyncStorage.getItem('Token');

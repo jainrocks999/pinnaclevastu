@@ -23,10 +23,12 @@ import {useDispatch, useSelector} from 'react-redux';
 import {Dropdown} from 'react-native-element-dropdown';
 import {updateApi} from '../../../Redux/Slice/Authslice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Loader from '../../../Component/Loader';
 
 const EditProfile = () => {
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
   const userDetail = useSelector(state => state?.Auth?.userData);
+  const isLoading =useSelector(state=>state?.Auth?.loading);
   const [visible, setVisible] = useState(false);
   const [isuserselectimage,setIsuserselectimage] =useState(false)
   const [selectedItem, setSelectedItem] = useState({
@@ -390,7 +392,7 @@ const EditProfile = () => {
 
         <Text style={styles.logoText}>Edit My Profile</Text>
       </View>
-
+       {isLoading?<Loader/>:null}
       <ScrollView
         ref={scrollViewRef}
         contentContainerStyle={styles.main1} // Added to fix scrolling
@@ -492,6 +494,7 @@ const EditProfile = () => {
               placeholderTextColor={colors.placeholder}
               keyboardType="numeric"
               value={formData.cityPincode}
+              maxLength={6}
               onChangeText={text => handleInputChange('cityPincode', text)}
             />
           </Animated.View>

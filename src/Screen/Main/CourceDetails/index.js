@@ -751,6 +751,8 @@ const CourseDetail = ({route}) => {
               transform: [{scale: buttonAnimatedValue}], 
             },
           ]}>
+            {console.log('coursetype?????',coursetype)}
+            
           <TouchableOpacity onPress={()=> handleJoinCourse()} style={styles.book}>
             <Text style={styles.btext1}>
               {coursetype ? 'Join Course' : 'Get An Instant Access Now'}

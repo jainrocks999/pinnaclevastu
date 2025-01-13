@@ -55,7 +55,7 @@ const HomeScreen = () => {
   const [displayedText1, setDisplayedText1] = useState('');
 
   const userDetail = useSelector(state => state?.Auth?.userData);
-  console.log(userDetail, 'sandepp...');
+
   const Homebanner = useSelector(state => state.home?.HomeBanner?.data);
 
   const isLoading = useSelector(state => state.home?.loading);

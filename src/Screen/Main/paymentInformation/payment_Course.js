@@ -23,13 +23,13 @@ import axios from 'axios';
 import Loader from '../../../Component/Loader';
 import RazorpayCheckout from 'react-native-razorpay';
 import {useDispatch, useSelector} from 'react-redux';
-import { fontSize } from '../../../Component/fontsize';
+import {fontSize} from '../../../Component/fontsize';
 
 const PaymentCourse = ({route}) => {
   const nav = route.params?.data1;
   const navigation = useNavigation();
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
- 
+  const userDetail = useSelector(state => state?.Auth?.userData);
   const dispatch = useDispatch();
   const [radioActive, setRadioActive] = useState('');
   const [loading1, setLoading] = useState(false);
@@ -39,49 +39,47 @@ const PaymentCourse = ({route}) => {
     totalAmount: '',
     totalPriceOnly: '',
   });
-  
+
   const calculateTotals = (product, userType) => {
     const {
       sale_price,
       student_price,
       franchise_price,
       price,
-      tax_amount = 0, 
-      tax_type = "percentage",
-     
+      tax_amount = 0,
+      tax_type = 'percentage',
     } = product;
-  
+
     // Determine the selected price based on user type.
     const selectedPrice =
-      userType === "customers" && sale_price
+      userType === 'customers' && sale_price
         ? parseFloat(sale_price)
-        : userType === "student" && student_price
+        : userType === 'student' && student_price
         ? parseFloat(student_price)
-        : userType === "franchise" && franchise_price
+        : userType === 'franchise' && franchise_price
         ? parseFloat(franchise_price)
         : parseFloat(price);
-  
-    const itemPrice = selectedPrice; 
+
+    const itemPrice = selectedPrice;
     // const taxAmount =
     // tax_type === "percentage"
-    //   ? (itemPrice * parseFloat(tax_amount)) / 100 
+    //   ? (itemPrice * parseFloat(tax_amount)) / 100
     //   : parseFloat(tax_amount);
     const taxAmount =
-    tax_type === "percentage"
-      ? (selectedPrice * tax_amount) / 100 // Calculate percentage-based tax
-      : tax_type === "amount"
-      ? tax_amount // Fixed tax amount
-      : 0;
-    const totalProductAmount = itemPrice + taxAmount; 
-  
-   
+      tax_type === 'percentage'
+        ? (selectedPrice * tax_amount) / 100 // Calculate percentage-based tax
+        : tax_type === 'amount'
+        ? tax_amount // Fixed tax amount
+        : 0;
+    const totalProductAmount = itemPrice + taxAmount;
+
     return {
       totalTaxAmount: taxAmount.toFixed(2), // Total tax amount.
       totalAmount: totalProductAmount.toFixed(2), // Grand total amount.
       totalPriceOnly: itemPrice.toFixed(2), // Total price before tax.
     };
   };
- 
+
   useEffect(() => {
     setTotals('');
 
@@ -95,8 +93,6 @@ const PaymentCourse = ({route}) => {
   }, []);
 
   useEffect(() => {
-  
-   
     if (userType && Object.values(nav)?.filter(Boolean)?.length > 0) {
       const calculatedTotals = calculateTotals(nav, userType);
 
@@ -104,9 +100,7 @@ const PaymentCourse = ({route}) => {
     }
   }, [nav, userType]);
 
- 
-
-  const createbyord = async () => {
+  const createbyord = async item => {
     const userid = await AsyncStorage.getItem('user_id');
     const data = {
       user_id: userid,
@@ -119,11 +113,11 @@ const PaymentCourse = ({route}) => {
       discount_amt: '',
       payment_method: radioActive,
       payment_status: 'pending',
-      payment_transaction_id: '123456',
+      payment_transaction_id: item ?? '',
     };
     try {
       setLoading(true);
-      
+
       const jsonData = JSON.stringify(data);
       const token = await AsyncStorage.getItem('Token');
       console.log('create order request ', jsonData);
@@ -145,7 +139,10 @@ const PaymentCourse = ({route}) => {
       if (response?.data?.status == 200) {
         setLoading(false);
         Toast.show(response?.data?.msg);
-       navigation.navigate('Thankyou', {order: response?.data,data:'Courses'});
+        navigation.navigate('Thankyou', {
+          order: response?.data,
+          data: 'Courses',
+        });
       } else {
         setLoading(false);
         Toast.show(response?.data?.msg);
@@ -165,12 +162,11 @@ const PaymentCourse = ({route}) => {
   };
 
   const handleProceedToPay = () => {
-    if (!radioActive) return; 
+    if (!radioActive) return;
 
-   
     Animated.sequence([
       Animated.timing(buttonAnimatedValue, {
-        toValue: 0.94, 
+        toValue: 0.94,
         duration: 500,
         useNativeDriver: true,
       }),
@@ -180,52 +176,51 @@ const PaymentCourse = ({route}) => {
         useNativeDriver: true,
       }),
     ]).start(() => {
-      createbyord();
-  //  {
-  //    radioActive=='cod'?
-  //     createbyord():Createorder1()}
-     
+      if (radioActive === 'Razorpay') {
+        Createorder1();
+      } else {
+        createbyord('');
+      }
     });
   };
 
-
   const Createorder1 = async () => {
-    let total=100*totals?.totalAmount
-   setRadioActive('Online')
+    let total = 100 * parseInt(totals?.totalAmount); // Ensure `totals?.totalAmount` is a valid number
+    console.log('sdflks', total, radioActive);
+
     var options = {
       description: 'Credits towards consultation',
-       image: require('../../../assets/image/header.png'),
+      image: require('../../../assets/image/header.png'),
       currency: 'INR',
       key: 'rzp_test_PhhCFgYuhlpWmQ',
-      amount: total,
-       name: 'Pinnacle Vastu',
+      amount: total, // Amount in smallest currency unit (e.g., paise for INR)
+      name: 'Pinnacle Vastu',
       prefill: {
-        email: '@example.com',
-        contact: '9191919191',
-        name: 'Razorpay Software',
+        email: userDetail?.email || '', // Ensure fallback values
+        contact: userDetail?.phone || '',
+        name: userDetail?.name || '',
       },
       theme: {color: colors.orange},
     };
-    RazorpayCheckout.open(options)
-      .then(data => {
-        if (typeof data === "string") {
-          try {
-            
-            const parsedData = JSON.parse(data);
-            console.log("Payment ID:", parsedData.razorpay_payment_id);
-          } catch (error) {
-            console.error("Error parsing JSON:", error);
-          }
-        } else {
-         
-          console.log("Payment ID:", data.razorpay_payment_id);
-        }
-       
-      })
-      .catch(error => {
-        // handle failure
-        console.log(`Errorouo: ${error.code} | ${error.description}`);
-      });
+
+    try {
+      const data = await RazorpayCheckout.open(options);
+      console.log('Razorpay Response:', data);
+
+      // Validate and handle response
+      if (data && data.razorpay_payment_id) {
+        console.log('Payment ID:', data.razorpay_payment_id);
+        createbyord(data.razorpay_payment_id); // Call your method with payment ID
+      } else {
+        console.error('Payment ID missing in response:', data);
+      }
+    } catch (error) {
+      // Log full error for debugging
+      console.error('Razorpay Error:', error);
+      console.log(
+        `Error Code: ${error.code} | Description: ${error.description}`,
+      );
+    }
   };
 
   return (
@@ -245,14 +240,13 @@ const PaymentCourse = ({route}) => {
           <Text style={styles.logoText}>Payment Information</Text>
         </View>
       </View>
-      {/* {loading1 ? <Loader /> : null} */}
+      {loading1 ? <Loader /> : null}
       <ScrollView contentContainerStyle={styles.servicesContainer}>
         <View>
-          <CourseInfoCard  data={nav} />
+          <CourseInfoCard data={nav} />
         </View>
 
         <View style={styles.cardContainer2}>
-          
           <View
             style={[
               styles.card45,
@@ -277,8 +271,6 @@ const PaymentCourse = ({route}) => {
             <Text style={[styles.third2]}>₹ {totals?.totalAmount}</Text>
           </View>
         </View>
-
-        
 
         <View style={styles.inputmain}>
           <View style={[styles.input]}>
@@ -359,21 +351,22 @@ const PaymentCourse = ({route}) => {
             </View>
           </View>
 
-
           <View style={[styles.appBottomSection, styles.borderBottom]}>
-          <Text style={styles.otherIconText}>Online Payment</Text>
+            <Text style={styles.otherIconText}>Razorpay Payment</Text>
 
-<View style={styles.radioBtnContainer}>
-  <RadioButton
-    value="Online"
-    status={radioActive === 'Online' ? 'checked' : 'unchecked'}
-    onPress={() =>Createorder1()}
-    color="#009FDF"
-    uncheckedColor="#B7B7B7"
-    style={styles.radio}
-  />
-</View>
-</View>
+            <View style={styles.radioBtnContainer}>
+              <RadioButton
+                value="Razorpay"
+                status={radioActive === 'Razorpay' ? 'checked' : 'unchecked'}
+                onPress={() => {
+                  setRadioActive('Razorpay');
+                }}
+                color="#009FDF"
+                uncheckedColor="#B7B7B7"
+                style={styles.radio}
+              />
+            </View>
+          </View>
           <View style={[styles.appBottomSection, styles.borderBottom]}>
             <Image
               style={styles.otherIcons}
@@ -433,11 +426,17 @@ const PaymentCourse = ({route}) => {
         </View>
 
         <Text style={[styles.payment1]}>
-         {nav?.title}
-          <Text style={{ fontSize: fontSize.Sixteen,
+          {nav?.title}
+          <Text
+            style={{
+              fontSize: fontSize.Sixteen,
               color: colors.paymenttext,
               fontFamily: 'Poppins-SemiBold',
-              marginLeft: 15}} > {`₹ ${totals?.totalAmount}`}</Text>
+              marginLeft: 15,
+            }}>
+            {' '}
+            {`₹ ${totals?.totalAmount}`}
+          </Text>
         </Text>
 
         {/* <TouchableOpacity
@@ -469,21 +468,18 @@ const PaymentCourse = ({route}) => {
           </Text>
         </TouchableOpacity> */}
 
-       
-<Animated.View
+        <Animated.View
           style={[
             styles.book,
             {
-              transform: [{ scale: buttonAnimatedValue }], 
-              backgroundColor: !radioActive ? colors.lightGrey : colors.orange, 
-              shadowColor: !radioActive ? 'black' : '#ad3803', 
+              transform: [{scale: buttonAnimatedValue}],
+              backgroundColor: !radioActive ? colors.lightGrey : colors.orange,
+              shadowColor: !radioActive ? 'black' : '#ad3803',
             },
-          ]}
-        >
+          ]}>
           <TouchableOpacity
-            onPress={handleProceedToPay} 
-            disabled={!radioActive} 
-          >
+            onPress={handleProceedToPay}
+            disabled={!radioActive}>
             <Text style={[styles.btext1]}>PROCEED TO PAY</Text>
           </TouchableOpacity>
         </Animated.View>
