@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "969714967849",
+    "project_id": "pinnaclevastu-app",
+    "storage_bucket": "pinnaclevastu-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:969714967849:android:2e69487a00bd226a0d0338",
+        "android_client_info": {
+          "package_name": "com.pinnaclevastu"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVC2R4GZDW7BI62RNnVcOCalYt8onc8C4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

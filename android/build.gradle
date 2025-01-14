@@ -1,5 +1,9 @@
 buildscript {
     ext {
+
+        googlePlayServicesVersion = "+" // default: "+"
+        firebaseMessagingVersion = "21.1.0" // default: "21.1.0"
+
         buildToolsVersion = "35.0.0"
         minSdkVersion = 24
         compileSdkVersion = 35
@@ -7,15 +11,26 @@ buildscript {
         ndkVersion = "26.1.10909125"
         kotlinVersion = "1.9.24"
     }
+   
     repositories {
         google()
         mavenCentral()
     }
-    dependencies {
+      dependencies {
+        dependencies {
         classpath("com.android.tools.build:gradle")
         classpath("com.facebook.react:react-native-gradle-plugin")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
+        classpath('com.google.gms:google-services:4.4.0')
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.9'
+    }
     }
 }
 
 apply plugin: "com.facebook.react.rootproject"
+
+// Add the configurations.all block here
+configurations.all {
+    resolutionStrategy {
+        force 'com.facebook.react:react-native:0.76.2' // Ensure this matches your React Native version
+    }
+}
