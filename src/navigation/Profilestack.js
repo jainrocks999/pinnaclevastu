@@ -1,9 +1,5 @@
 import React from "react";
-
-
-
 import MyOrder from "../Screen/Main/MyOrder";
-
 import CourceListDownload from "../Screen/Main/CourceListDownload";
 import CoureList from "../Screen/Main/CoureList";
 import Appointment from "../Screen/Main/Appoinment";

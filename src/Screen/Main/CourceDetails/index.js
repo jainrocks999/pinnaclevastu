@@ -402,7 +402,7 @@ const CourseDetail = ({route}) => {
           <Text style={styles.learntext}>
             {CourceDetailA?.short_description != null
               ? CourceDetailA?.short_description
-              : 'Learn The Most Effective Numero Vastu Techniques'}
+              : ''}
           </Text>
           <View style={styles.direction}>
             {/* <Text style={styles.ruppestext}>{`₹ ${CourceDetailA?.price}`}</Text> */}
@@ -751,7 +751,7 @@ const CourseDetail = ({route}) => {
               transform: [{scale: buttonAnimatedValue}], 
             },
           ]}>
-            {console.log('coursetype?????',coursetype)}
+           
             
           <TouchableOpacity onPress={()=> handleJoinCourse()} style={styles.book}>
             <Text style={styles.btext1}>

@@ -1,6 +1,7 @@
 import React, { Fragment, useEffect } from 'react';
 import {
   LogBox,
+  PermissionsAndroid,
   Platform,
   SafeAreaView,
   ScrollView,
@@ -16,9 +17,7 @@ import { Provider } from 'react-redux';
 import store from './src/Redux/store/store';
 import PushNotificationIOS from "@react-native-community/push-notification-ios";
 import PushNotification from "react-native-push-notification";
-import { useNetInfo } from "@react-native-community/netinfo";
-
-import analytics from '@react-native-firebase/analytics';
+import crashlytics from '@react-native-firebase/crashlytics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
@@ -34,20 +33,47 @@ PushNotification.createChannel(
   (created) => console.log(`createChannel returned '${created}'`)
 );
 const App = () => {
-
-  const { type, isConnected } = useNetInfo();
-
+ 
+    const requestNotificationPermission = async () => {
+      if (Platform.OS === 'android' && Platform.Version >= 33) {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+          {
+            title: 'Notification Permission',
+            message: 'This app needs access to notifications to alert you.',
+            buttonPositive: 'OK',
+          },
+        );
+        if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+          console.log('Notification permission denied');
+        }
+      }
+    };
+  
+   
+ 
   useEffect(() => {
-    // Firebase से इवेंट लॉग करें
-    analytics()
-      .logEvent('test_event', { test_param: 'test_value' })
-      .then(() => {
-        console.log('Firebase connected and event logged!');
-      })
-      .catch(error => {
-        console.error('Firebase connection failed: ', error);
-      });
+    requestNotificationPermission();
+    crashlytics().log('Analytics page just mounted');
+    getCrashlyticsDetail();
+    return () => {
+      crashlytics().log('Analytics page just unmounted');
+    };
   }, []);
+
+  const getCrashlyticsDetail = async () => {
+    const userStatus = await AsyncStorage.getItem('user_data');
+    const userData = userStatus ? JSON.parse(userStatus) : null;
+   
+
+    try {
+      crashlytics().setUserId(userData?.user_id);
+      crashlytics().setAttribute('username', userData?.user_id);
+    } catch (err) {
+      crashlytics().recordError(err);
+    }
+  };
+
 
   PushNotification.configure({
     onRegister: function (token) {
@@ -60,15 +86,6 @@ const App = () => {
         message: notification.title,
       });
       console.log('this is notifi',notification);
-      if(notification.userInteraction===true && notification.foreground==false && notification.title=='New Message on ZBWA Group') {
-        // RootNavigation.push('Splash')
-        manageLogin()
-      }
-      else{
-        if (notification.userInteraction==true && notification.foreground==true && notification.title=='New Message on ZBWA Group') {
-          manageLogin()
-        }
-      }
       notification.finish(PushNotificationIOS.FetchResult.NoData);
     },
     onAction: function (notification) {

@@ -291,7 +291,7 @@ const OtherCourses = ({navigation}) => {
                 ? item?.short_description.length > 45
                   ? `${item?.short_description.substring(0, 45)}...`
                   : item?.short_description
-                : 'While Vastu Shastra gives us data about our...'}
+                : ''}
             </Text>
             {/* <Text style={styles.price}>{`₹ ${item?.price}`}</Text> */}
             <View style={{flexDirection:"row",gap:10}}>
