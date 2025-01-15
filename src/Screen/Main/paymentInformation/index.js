@@ -335,6 +335,7 @@ const ResidentalScreen = ({route}) => {
             data={nav?.data?.item}
             keyExtractor={item => item.id?.toString()} // Ensure id is a string
             renderItem={renderItem}
+            scrollEnabled={false}
           />
           <View
             style={[

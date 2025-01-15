@@ -221,7 +221,11 @@ const HomeScreen = () => {
         duration: 400,
         useNativeDriver: true,
       }),
-    ]).start();
+    ]).start(()=>{
+      navigation.navigate('Home1', {
+        screen: 'Consultancy',
+      })
+    });
   };
 
   const renderItem = ({item, index}) => {
@@ -583,6 +587,7 @@ const HomeScreen = () => {
         <FlatList
           data={Homebanner?.services ? Homebanner?.services : []}
           renderItem={renderItem}
+          scrollEnabled={false}
           keyExtractor={item => item.id}
           numColumns={3}
           showsVerticalScrollIndicator={false}
@@ -611,6 +616,7 @@ const HomeScreen = () => {
           renderItem={renderItem1}
           keyExtractor={item => item.id}
           numColumns={3}
+          scrollEnabled={false}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContainer}
         />
@@ -758,6 +764,7 @@ const HomeScreen = () => {
             renderItem={renderItem4}
             keyExtractor={item => item.id}
             // numColumns={3}
+            scrollEnabled={false}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.bottomCard}
           />

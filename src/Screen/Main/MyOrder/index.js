@@ -353,6 +353,7 @@ useEffect(() => {
        ( <FlatList
           data={product}
           keyExtractor={item => item.id}
+          scrollEnabled={false}
           renderItem={renderOrderItem}
           contentContainerStyle={styles.ordersList}
         />):
@@ -364,6 +365,7 @@ useEffect(() => {
           <FlatList
           data={cource}
           keyExtractor={item => item.id}
+          scrollEnabled={false}
           renderItem={renderOrderItem1}
           contentContainerStyle={styles.ordersList}
         />

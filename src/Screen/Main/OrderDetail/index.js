@@ -301,6 +301,7 @@ const OrderDetail = () => {
             data={data2?.products}
             keyExtractor={item => item.id.toString()}
             renderItem={renderItem}
+            scrollEnabled={false}
             contentContainerStyle={styles.listContainer}
           />
 

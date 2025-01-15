@@ -201,6 +201,7 @@ const handleConformPayment = () => {
        (<FlatList
           data={sortedAddresses? sortedAddresses:[]}
           renderItem={renderItem}
+          scrollEnabled={false}
           keyExtractor={item => item.id}
         />):
         (<View style={{}}>

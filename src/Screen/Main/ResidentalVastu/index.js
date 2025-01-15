@@ -571,6 +571,7 @@ const ResidentalScreen = ({navigation}) => {
           renderItem={renderItem3}
           keyExtractor={item => item.id}
           showsVerticalScrollIndicator={false}
+          scrollEnabled={false}
           contentContainerStyle={styles.listContainer}
         />
       </ScrollView>
