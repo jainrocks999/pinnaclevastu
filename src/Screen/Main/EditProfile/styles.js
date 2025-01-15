@@ -197,4 +197,14 @@ export default StyleSheet.create({
     width: '100%',
     resizeMode: 'contain',
   },
+  selectedText: {
+    fontSize: fontSize.Sixteen,
+    fontFamily: 'Poppins-Regular',
+    color: colors.heading,
+  },
+  itemText: {
+    fontSize: fontSize.Sixteen,
+    fontFamily: 'Poppins-Regular',
+    color: colors.heading,
+  },
 });

@@ -84,6 +84,8 @@ const App = () => {
       PushNotification.localNotification({
         title: notification.message,
         message: notification.title,
+        smallIcon: "android/app/src/main/res/drawable/ic_launcher.png", // The name of the small icon (for Android)
+        largeIcon: "android/app/src/main/res/drawable/ic_launcher_foreground.png", 
       });
       console.log('this is notifi',notification);
       notification.finish(PushNotificationIOS.FetchResult.NoData);

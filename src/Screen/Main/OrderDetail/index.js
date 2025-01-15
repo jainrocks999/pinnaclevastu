@@ -201,7 +201,6 @@ const OrderDetail = () => {
         data2?.shipment?.shipment_status !== 'not_delivered' &&
         visibleItemId !== item.id ? (
           <TouchableOpacity onPress={() => setVisibleItemId(item.id)}>
-            {console.log(visibleItemId, item.id, 'sandeep sdjkosdkmfomkdofs')}
             <Text style={styles.cancleBtn}>Cancel</Text>
           </TouchableOpacity>
         ) : null}

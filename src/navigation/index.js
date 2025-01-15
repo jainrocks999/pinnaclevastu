@@ -164,6 +164,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {getCartDataApi} from '../Redux/Slice/CartSlice';
 import {loadCartData} from '../Redux/Slice/CartSlice';
 import PaymentCourse from '../Screen/Main/paymentInformation/payment_Course';
+import PaymentAppointment from '../Screen/Main/paymentInformation/payment_Appointment';
 const Stack = createNativeStackNavigator();
 
 function Navigate() {
@@ -246,6 +247,7 @@ function Navigate() {
         <Stack.Screen name="Appoiment" component={Appoinment} />
         <Stack.Screen name="Payment" component={Payment} />
         <Stack.Screen name="PaymentCourse" component={PaymentCourse} />
+        <Stack.Screen name="PaymentAppointment" component={PaymentAppointment} />
         <Stack.Screen name="Thankyou" component={ThankyouPage} />
         <Stack.Screen name="Succes" component={PaymentApp} />
 

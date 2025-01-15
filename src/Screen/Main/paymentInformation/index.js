@@ -131,19 +131,16 @@ const ResidentalScreen = ({route}) => {
 
 
   const Createorder1 = async () => {
-    let total = 100 * parseInt(totals?.totalAmount); // Ensure `totals?.totalAmount` is a valid number
-    console.log('sdflks',total,radioActive);
-    
-
+    let total = 100 * parseInt(totals?.totalAmount); // Total in paise
     var options = {
       description: 'Credits towards consultation',
       image: require('../../../assets/image/header.png'),
       currency: 'INR',
       key: 'rzp_test_PhhCFgYuhlpWmQ',
-      amount: total, // Amount in smallest currency unit (e.g., paise for INR)
+      amount: total,
       name: 'Pinnacle Vastu',
       prefill: {
-        email: userDetail?.email || '', // Ensure fallback values
+        email: userDetail?.email || '',
         contact: userDetail?.phone || '',
         name: userDetail?.name || '',
       },
@@ -152,78 +149,97 @@ const ResidentalScreen = ({route}) => {
   
     try {
       const data = await RazorpayCheckout.open(options);
-      console.log('Razorpay Response:', data);
   
-      // Validate and handle response
-      if (data && data.razorpay_payment_id) {
-        console.log('Payment ID:', data.razorpay_payment_id);
-        setTranjuctionId(data.razorpay_payment_id);
-        createbyord(); // Call your method with payment ID
-      } else {
-        console.error('Payment ID missing in response:', data);
-      }
+     
+      const transactionDetails = {
+        radioActive,
+        paymentId: data.razorpay_payment_id ||'',
+        status: data.razorpay_payment_id ? 'completed' : 'failed',
+        amount: totals?.totalAmount,
+        reason: data.razorpay_payment_id ? null : 'Payment ID missing',
+        code: null, 
+      };
+  
+      
+      createbyord(transactionDetails);
     } catch (error) {
-      // Log full error for debugging
-      console.error('Razorpay Error:', error);
-      console.log(`Error Code: ${error.code} | Description: ${error.description}`);
+     console.log('shgkjshgkg',error);
+     
+      const transactionDetails = {
+        radioActive,
+        paymentId: '',
+        status: 'failed',
+        amount: totals?.totalAmount,
+        reason:error?.error?.reason|| 'Transaction failed',
+        code: error.code, 
+      };
+  
+   
+      createbyord(transactionDetails);
     }
   };
-
-  const data = {
-    shipping_option: ship?.shipping_method_id ?? '1',
-    shipping_method: 'default',
-    // shipping_method: ship?.name  ?? 'defalut',
-    shipping_amount: ship?.price ?? '',
-    shipping_type: '',
-    is_available_shipping: '1',
-    transaction_id: trakIdSectionIS??'',
-    coupon_code: '',
-    tax_amount: totals?.totalTaxAmount,
-    sub_amount: totals?.totalPriceOnly,
-    discount_amount: '0',
-    discount_description: 'order create',
-    note: 'order note testing',
-    customer_address_id: nav?.adress?.id ?? '',
-    address: {
-      address_id: nav?.adress?.id ?? '',
-      name: nav?.adress?.name ?? '',
-      email: nav?.adress?.email ?? '',
-      phone: nav?.adress?.phone ?? '',
-      country: nav?.adress?.country ?? '',
-      state: nav?.adress?.state ?? '',
-      city: nav?.adress?.city ?? '',
-      address: nav?.adress?.address ?? '',
-    },
-    amount: amount,
-    currency: 'IND',
-    customer_id: nav?.adress?.customer_id,
-    customer_type: 'Botble\\Ecommerce\\Models\\Customer',
-    payment_method: radioActive ?? '',
-    payment_status: 'pending',
-    description: 'testing perpose',
-    tax_information: {
-      company_name: '',
-      company_address: '',
-      company_tax_code: '',
-      company_email: '',
-    },
-    user_id: nav?.adress?.customer_id,
-    rowid: nav?.data?.item?.[0]?.rowid,
-    billing_status: nav?.adress?.billing_status ?? '',
-    billingAddress: {
-      // address_id:  nav?.adress?.id ?? '',
-      name: nav?.adress?.billing_address?.name ?? '',
-      email: nav?.adress?.billing_address?.email ?? '',
-      phone: nav?.adress?.billing_address?.phone ?? '',
-      country: nav?.adress?.billing_address?.country ?? '',
-      state: nav?.adress?.billing_address?.state ?? '',
-      city: nav?.adress?.billing_address?.city ?? '',
-      address: nav?.adress?.billing_address?.address ?? '',
-    },
-  };
+  
 
 
-  const createbyord = async () => {
+
+  const createbyord = async (item12) => {
+console.log('dhsbgjsbsfg',item12);
+
+    const data = {
+      shipping_option: ship?.shipping_method_id ?? '1',
+      shipping_method: 'default',
+      // shipping_method: ship?.name  ?? 'defalut',
+      shipping_amount: ship?.price ?? '',
+      shipping_type: '',
+      is_available_shipping: '1',
+      payment_status:item12?.status??'pending',
+      payment_method: item12?.radioActive ?? '',
+      transaction_id: item12?.paymentId??'',
+      coupon_code: '',
+      tax_amount: totals?.totalTaxAmount,
+      sub_amount: totals?.totalPriceOnly,
+      discount_amount: '0',
+      discount_description: 'order create',
+      note: 'order note testing',
+      customer_address_id: nav?.adress?.id ?? '',
+      address: {
+        address_id: nav?.adress?.id ?? '',
+        name: nav?.adress?.name ?? '',
+        email: nav?.adress?.email ?? '',
+        phone: nav?.adress?.phone ?? '',
+        country: nav?.adress?.country ?? '',
+        state: nav?.adress?.state ?? '',
+        city: nav?.adress?.city ?? '',
+        address: nav?.adress?.address ?? '',
+      },
+      amount: amount,
+      currency: 'IND',
+      customer_id: nav?.adress?.customer_id,
+      customer_type: 'Botble\\Ecommerce\\Models\\Customer',
+      description: 'testing perpose',
+      tax_information: {
+        company_name: '',
+        company_address: '',
+        company_tax_code: '',
+        company_email: '',
+      },
+      user_id: nav?.adress?.customer_id,
+      rowid: nav?.data?.item?.[0]?.rowid,
+      billing_status: nav?.adress?.billing_status ?? '',
+      billingAddress: {
+        // address_id:  nav?.adress?.id ?? '',
+        name: nav?.adress?.billing_address?.name ?? '',
+        email: nav?.adress?.billing_address?.email ?? '',
+        phone: nav?.adress?.billing_address?.phone ?? '',
+        country: nav?.adress?.billing_address?.country ?? '',
+        state: nav?.adress?.billing_address?.state ?? '',
+        city: nav?.adress?.billing_address?.city ?? '',
+        address: nav?.adress?.billing_address?.address ?? '',
+      },
+    };
+
+    console.log('create order request ', data);
+
     try {
       setLoading(true);
       // Convert the dynamic object to a JSO stringN
@@ -472,10 +488,10 @@ const ResidentalScreen = ({route}) => {
 
             <View style={styles.radioBtnContainer}>
               <RadioButton
-                value="Razorpay"
-                status={radioActive === 'Razorpay' ? 'checked' : 'unchecked'}
+                value="razorpay"
+                status={radioActive === 'razorpay' ? 'checked' : 'unchecked'}
                 onPress={() => {
-                  setRadioActive('Razorpay');
+                  setRadioActive('razorpay');
                 }}
                 color="#009FDF"
                 uncheckedColor="#B7B7B7"
@@ -571,11 +587,20 @@ const ResidentalScreen = ({route}) => {
                 ]).start(() => {
 
 
-                  if (radioActive === 'Razorpay') {
+                  if (radioActive === 'razorpay') {
                     Createorder1();    
                   }
                   else{
-                    createbyord();
+
+                    const transactionDetails = {
+                      radioActive,
+                      paymentId: '',
+                      status: 'pending',
+                      amount: totals?.totalAmount,
+                      reason:'',
+                      code: '', 
+                    };
+                    createbyord(transactionDetails);
                   }
                  
                 });

@@ -220,7 +220,7 @@ const ResidentalScreen = ({ navigation }) => {
     }
 
     // All fields validated
-    navigation.navigate('Payment', { data1: 'Residental' });
+    navigation.navigate('PaymentAppointment', { data1: 'Residental' });
   };
 
 

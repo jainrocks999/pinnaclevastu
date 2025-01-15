@@ -102,30 +102,35 @@ const PaymentCourse = ({route}) => {
 
   const createbyord = async (item) => {
     const userid = await AsyncStorage.getItem('user_id');
-    const data = {
-      user_id: userid,
-      course_id: nav?.id,
-      total: totals?.totalAmount,
-      sub_amount: totals?.totalPriceOnly,
-      tax_amount: totals?.totalTaxAmount,
-      coupon_code: '',
-      coupon_desc: '',
-      discount_amt: '',
+
+
+    let data = {
+      booking_name: "testing",
+      booking_email: "testing@gmail.com",
+      booking_mobile_no: "7049419271",
+      selected_franchise_id: 11,
+      selected_franchise_services: [17, 18, 22],
+      booking_date: "15-01-2025",
+      booking_text: "testing",
+      booking_time: "12:57:01",
+      status: "pending",
+      transaction_id: item?.paymentId ?? '',
       payment_method: item?.radioActive,
       payment_status: item?.status,
-      payment_transaction_id: item?.paymentId ?? '',
+      payment_date: "15-01-2025",
+      user_id: userid,
     };
     try {
       setLoading(true);
 
       const jsonData = JSON.stringify(data);
       const token = await AsyncStorage.getItem('Token');
-      console.log('create order request ', jsonData);
+      console.log('create order request appoinment  ', jsonData);
 
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: `${constants.mainUrl}create-courses-order`,
+        url: `${constants.mainUrl}franchise-appointment`,
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -134,15 +139,15 @@ const PaymentCourse = ({route}) => {
       };
 
       const response = await axios.request(config);
-      console.log('create order to response ', response.data);
+      console.log('create order to appoinment  response ', response.data);
 
       if (response?.data?.status == 200) {
         setLoading(false);
         Toast.show(response?.data?.msg);
-        navigation.navigate('Thankyou', {
-          order: response?.data,
-          data: 'Courses',
-        });
+        // navigation.navigate('Thankyou', {
+        //   order: response?.data,
+        //   data: 'Courses',
+        // });
       } else {
         setLoading(false);
         Toast.show(response?.data?.msg);
@@ -183,7 +188,7 @@ const PaymentCourse = ({route}) => {
 
         const transactionDetails = {
           radioActive,
-          paymentId: '',
+          paymentId: '112313544',
           status: 'pending',
           amount: totals?.totalAmount,
           reason:'',
@@ -198,7 +203,7 @@ const PaymentCourse = ({route}) => {
 
 
  const Createorder1 = async () => {
-    let total = 100 * parseInt(totals?.totalAmount); // Total in paise
+    let total = 100 * parseInt(totals?.totalAmount); 
     var options = {
       description: 'Credits towards consultation',
       image: require('../../../assets/image/header.png'),
@@ -245,7 +250,6 @@ const PaymentCourse = ({route}) => {
       createbyord(transactionDetails);
     }
   };
-
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -265,10 +269,6 @@ const PaymentCourse = ({route}) => {
       </View>
       {loading1 ? <Loader /> : null}
       <ScrollView contentContainerStyle={styles.servicesContainer}>
-        <View>
-          <CourseInfoCard data={nav} />
-        </View>
-
         <View style={styles.cardContainer2}>
           <View
             style={[
@@ -461,35 +461,6 @@ const PaymentCourse = ({route}) => {
             {`₹ ${totals?.totalAmount}`}
           </Text>
         </Text>
-
-        {/* <TouchableOpacity
-          onPress={() => {
-            if (radioActive) {
-              createbyord();
-              // navigation.navigate('Succes');
-            }
-          }}
-          disabled={!radioActive} 
-          style={[
-            styles.book,
-            {
-              backgroundColor: !radioActive
-               
-                ? colors.lightGrey
-                : colors.orange, 
-              shadowColor: !radioActive
-                ? 'black'
-                : '#ad3803', 
-            },
-          ]}>
-          <Text
-            style={[
-              styles.btext1,
-              
-            ]}>
-            PROCEED TO PAY
-          </Text>
-        </TouchableOpacity> */}
 
         <Animated.View
           style={[
