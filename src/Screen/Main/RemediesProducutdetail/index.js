@@ -1072,6 +1072,7 @@ const RemediesProductDetail = ({route}) => {
               renderItem={renderItem4}
               keyExtractor={item => item.id}
               numColumns={3}
+              scrollEnabled={false}
               showsVerticalScrollIndicator={false}
               contentContainerStyle={styles.listContainer}
             />
@@ -1083,6 +1084,7 @@ const RemediesProductDetail = ({route}) => {
                 item => item.description !== null && item.label !== null,
               )}
               keyExtractor={item => item.desc_data_id.toString()}
+              scrollEnabled={false}
               renderItem={renderItems}
             />
           </View>
@@ -1091,7 +1093,6 @@ const RemediesProductDetail = ({route}) => {
               <Text style={[styles.header1, {marginLeft: 20}]}>
                 Frequently Bought Together
               </Text>
-
               <FlatList
                 data={Detail?.cross_sales}
                 renderItem={renderItem}
@@ -1136,13 +1137,13 @@ const RemediesProductDetail = ({route}) => {
               null}
             </View>
           ) : null}
+
           {Detail?.top_best_seller?.length != 0 ? (
             <View style={styles.suggestItemContainer}>
               <Text style={styles.header1}>Top Best Sellers</Text>
-
               <FlatList
                 data={Detail?.top_best_seller}
-                keyExtractor={(item, index) => index.toString()}
+                keyExtractor={item => item.id.toString()}
                 renderItem={renderItem2}
                 horizontal
                 showsHorizontalScrollIndicator={false}
@@ -1153,7 +1154,7 @@ const RemediesProductDetail = ({route}) => {
                   setCurrentIndex(currentIndex); // Update state with the calculated index
                 }}
               />
-
+              {/* {console.log(Detail?.top_best_seller,"sandeepfdmkdfkgdf")} */}
               <View style={styles.dotContainer}>
                 {Detail?.top_best_seller.map((_, index) => (
                   <TouchableOpacity
@@ -1162,7 +1163,7 @@ const RemediesProductDetail = ({route}) => {
                       styles.dot,
                       currentIndex === index && styles.activeDot,
                     ]}
-                    onPress={() => handleImageChange(index)}
+                    // onPress={() => handleImageChange(index)}
                   />
                 ))}
               </View>
@@ -1188,7 +1189,8 @@ const RemediesProductDetail = ({route}) => {
                 <FlatList
                   data={reviewsToShow}
                   renderItem={renderItem3}
-                  keyExtractor={item => item.id?.toString()}
+                  scrollEnabled={false}
+                  keyExtractor={index => index.toString()}
                   showsVerticalScrollIndicator={false}
                 />
                 {!showAllReviews && (

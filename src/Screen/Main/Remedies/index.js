@@ -147,6 +147,7 @@ const Remedies = ({navigation}) => {
             numColumns={2}
             keyExtractor={item => item.id}
             showsVerticalScrollIndicator={false}
+            scrollEnabled={false}
             contentContainerStyle={{
               paddingHorizontal: 0,
               alignSelf: 'center',

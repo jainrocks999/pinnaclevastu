@@ -306,6 +306,7 @@ const ResidentalScreen = ({navigation}) => {
           // data={data2}
           data={data?.franchise_services || []}
           renderItem={renderItem}
+          scrollEnabled={false}
           keyExtractor={item => item.id}
           numColumns={3}
           showsVerticalScrollIndicator={false}
@@ -373,6 +374,7 @@ const ResidentalScreen = ({navigation}) => {
           </View>
           <FlatList
             data={data1}
+            scrollEnabled={false}
             renderItem={renderItem3}
             keyExtractor={item => item.id}
             //   numColumns={3}

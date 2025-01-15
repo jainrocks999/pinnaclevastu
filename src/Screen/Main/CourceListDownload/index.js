@@ -252,6 +252,7 @@ const CourceListDownload = ({navigation}) => {
           <View style={{backgroundColor: '#EAEAEA', height: 1}} />
           <FlatList
             data={item.resources}
+            scrollEnabled={false}
             keyExtractor={(item, index) => item.material_id?.toString() || index.toString()} 
             renderItem={renderSubItems}
           />
@@ -329,6 +330,7 @@ const CourceListDownload = ({navigation}) => {
           // keyExtractor={index => index.toString()}
           keyExtractor={(item, index) => item.section_id?.toString() || index.toString()} 
           renderItem={renderItems}
+          scrollEnabled={false}
           contentContainerStyle={{gap: 10}}
         />
       </ScrollView>

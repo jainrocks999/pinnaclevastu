@@ -248,6 +248,7 @@ const MyProfile = () => {
         <FlatList
           data={actionItems}
           keyExtractor={item => item.id}
+          scrollEnabled={false}
           renderItem={renderItem}
           contentContainerStyle={styles.actionList}
           ItemSeparatorComponent={({leadingItem}) =>

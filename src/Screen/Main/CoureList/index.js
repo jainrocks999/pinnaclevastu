@@ -154,6 +154,7 @@ const CoureList = ({navigation}) => {
         </Text>
 
         <FlatList
+         scrollEnabled={false}
           contentContainerStyle={{
             gap: 10,
           }}

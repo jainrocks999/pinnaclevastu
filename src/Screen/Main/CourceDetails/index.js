@@ -490,6 +490,7 @@ const CourseDetail = ({route}) => {
         </View>
 
         <FlatList
+         scrollEnabled={false}
           data={CourceDetailA?.desc_data?.filter(
             item => item.description !== null && item.label !== null,
           )}
@@ -603,6 +604,7 @@ const CourseDetail = ({route}) => {
           
         </View>
         <FlatList
+         scrollEnabled={false}
           data={CourceDetailA?.desc_demo_data?.filter(
             item => item.description !== null && item.label !== null,
           )}
@@ -725,6 +727,7 @@ const CourseDetail = ({route}) => {
             numColumns={2} 
             keyExtractor={item => item.id}
             renderItem={renderItem}
+            scrollEnabled={false}
             showsVerticalScrollIndicator={false}
           />
         </View>

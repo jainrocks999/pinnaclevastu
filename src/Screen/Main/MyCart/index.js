@@ -646,6 +646,7 @@ const Remedies12SecondComponent = () => {
             {/* <Text style={[styles.viewinner1,styles.third,{textAlign:"center"}]}>Cart is Empty !</Text> */}
             <FlatList
               data={isLoggedIn ? cartDataList : localCartDataList}
+              scrollEnabled={false}
               keyExtractor={item => item.id}
               renderItem={renderItem}
               contentContainerStyle={styles.viewinner1}

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {
   View,
   Text,
@@ -11,47 +11,59 @@ import {
   Easing,
   FlatList,
   ImageBackground,
-  Vibration
+  Vibration,
 } from 'react-native';
 import styles from './styles';
-import { colors } from '../../../Component/colors';
-import { fontSize } from '../../../Component/fontsize';
+import {colors} from '../../../Component/colors';
+import {fontSize} from '../../../Component/fontsize';
 import SelectModal from '../../../Component/dropdown';
-import { Checkbox } from 'react-native-paper';
+import {Checkbox} from 'react-native-paper';
 import DatePicker from 'react-native-date-picker';
 import Toast from 'react-native-simple-toast';
-import { Dropdown } from 'react-native-element-dropdown';
+import {Dropdown} from 'react-native-element-dropdown';
+import {useSelector} from 'react-redux';
 
+const ResidentalScreen = ({navigation}) => {
+  const userDetail = useSelector(state => state?.Auth?.userData);
+  const data = useSelector(state => state?.home?.ConsultationDetail?.data);
+  // console.log('data',data)
+  const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
+  const [services, setServices] = useState([]);
 
-const ResidentalScreen = ({ navigation }) => {
-   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
-  const [isResident, setIsresident] = useState(true);
-  const [isIndustrial, setIsindustrial] = useState(false);
-  const [isGemstone, setIsGemstone] = useState(false);
+  console.log(services,'sdmfkdsmf')
+  // const [visible, setVisible] = useState(false);
+  // const [selectedItem, setSelectedItem] = useState({
+  //   label: '',
+  //   value: '',
+  // });
 
-  const [visible, setVisible] = useState(false);
-  const [selectedItem, setSelectedItem] = useState({
-    label: '',
-    value: '',
-  });
-
-  const [gender, setGender] = useState('');
-  const [search, setSearch] = useState('');
-  const onSelect = item => {
-    setSelectedItem(item);
-    setGender(item.label);
-    setVisible(false);
-  };
-
-
+  // const [gender, setGender] = useState('');
+  // const [search, setSearch] = useState('');
+  // const onSelect = item => {
+  //   setSelectedItem(item);
+  //   setGender(item.label);
+  //   setVisible(false);
+  // };
 
   const genderOptions = [
-    { label: 'Male', value: 'Male' },
-    { label: 'Female', value: 'Female' },
-    { label: 'Transgender', value: 'Transgender' },
+    {label: 'Male', value: 'Male'},
+    {label: 'Female', value: 'Female'},
+    {label: 'Transgender', value: 'Transgender'},
   ];
 
-  const [date, setDate] = useState('');
+  useEffect(() => {
+    if (data?.franchise_services?.length > 0) {
+      const defaultService = {
+        id: data.franchise_services[0]?.id,
+        name: data.franchise_services[0]?.services_name,
+      };
+      setServices([defaultService]);
+    }
+  }, [data?.franchise_services]);
+
+  const [date, setDate] = useState(
+    userDetail?.dob ? new Date(userDetail.dob) : null,
+  );
   const [open, setOpen] = useState(false);
 
   const formatDate = date => {
@@ -62,7 +74,32 @@ const ResidentalScreen = ({ navigation }) => {
     return `${day}-${month}-${year}`;
   };
 
-  const [time, setTime] = useState('');
+  const parseTimeString = timeString => {
+      const [time, modifier] = timeString.split(' ');
+      const [hours, minutes] = time.split(':'); 
+  
+      let hour = parseInt(hours, 10);
+      if (modifier === 'PM' && hour !== 12) {
+        hour += 12;
+      }
+      if (modifier === 'AM' && hour === 12) {
+        hour = 0; 
+      }
+  
+      const date = new Date();
+      date.setHours(hour);
+      date.setMinutes(parseInt(minutes, 10));
+      date.setSeconds(0); 
+  
+      return date;
+    };
+  
+    const [time, setTime] = useState(() => {
+      if (userDetail?.time_of_birth) {
+        return parseTimeString(userDetail.time_of_birth); 
+      }
+      return null;
+    });
   const [open1, setOpen1] = useState(false);
 
   const formatTime = time => {
@@ -77,14 +114,15 @@ const ResidentalScreen = ({ navigation }) => {
   };
 
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    mobile: '',
-    cityPincode: '',
-    gender: '',
-    birthPlace: '',
-    additionalInfo: ''
+    name: userDetail.name || '',
+    email: userDetail.email || '',
+    mobile: userDetail.phone || '',
+    cityPincode: userDetail?.city_pincode || '',
+    gender: userDetail?.gender || '',
+    birthPlace: userDetail?.place_of_birth || '',
+    additionalInfo: '',
   });
+
   const [shakeAnimation, setShakeAnimation] = useState({
     name: new Animated.Value(0),
     email: new Animated.Value(0),
@@ -92,35 +130,35 @@ const ResidentalScreen = ({ navigation }) => {
     cityPincode: new Animated.Value(0),
     gender: new Animated.Value(0),
     date: new Animated.Value(0),
-    birthPlace: new Animated.Value(0),      // New animated value for Place of Birth
+    birthPlace: new Animated.Value(0), // New animated value for Place of Birth
     additionalInfo: new Animated.Value(0),
     time: new Animated.Value(0),
     services: new Animated.Value(0),
   });
   const scrollViewRef = useRef(null);
+
   const handleInputChange = (name, value) => {
-    setFormData({ ...formData, [name]: value });
+    setFormData({...formData, [name]: value});
 
     if (name === 'mobile') {
       const numericValue = value.replace(/[^0-9]/g, '');
       const mobileRegex = /^[0-9]{0,10}$/;
 
       mobileRegex.test(numericValue)
-        ? setFormData({ ...formData, mobile: numericValue })
+        ? setFormData({...formData, mobile: numericValue})
         : Toast.show('Invalid mobile number.');
-
     } else if (name === 'cityPincode') {
       const numericValue = value.replace(/[^0-9]/g, '');
       const pinCodeRegex = /^[0-9]{0,6}$/;
 
       pinCodeRegex.test(numericValue)
-        ? setFormData({ ...formData, cityPincode: numericValue })
+        ? setFormData({...formData, cityPincode: numericValue})
         : Toast.show('Invalid city pincode.');
     }
   };
 
   // Shake animation function
-  const shake = (field) => {
+  const shake = field => {
     Vibration.vibrate(100); // Vibration for 100 milliseconds
     Animated.sequence([
       Animated.timing(shakeAnimation[field], {
@@ -163,11 +201,13 @@ const ResidentalScreen = ({ navigation }) => {
       birthPlace: 700,
       additionalInfo: 800,
     };
-    scrollViewRef.current.scrollTo({ y: fieldOffsets[fieldName], animated: true });
+    scrollViewRef.current.scrollTo({
+      y: fieldOffsets[fieldName],
+      animated: true,
+    });
   };
 
   const handleSubmit = () => {
-
     Animated.sequence([
       Animated.timing(buttonAnimatedValue, {
         toValue: 0.94,
@@ -180,12 +220,16 @@ const ResidentalScreen = ({ navigation }) => {
         useNativeDriver: true,
       }),
     ]).start(() => {
-      // navigation.navigate('Appoiment');
+      if(userDetail.length!==0){
+        navigation.navigate('Payment');
+      }else{
+        navigation.navigate('Login');
+      }
     });
 
-   const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     // Check if at least one service is selected
-    if (!isResident && !isIndustrial && !isGemstone) {
+    if (services.length === 0) {
       shake('services');
       scrollToField('services'); // Scroll to services section
       // Toast.show('Please select at least one service.');
@@ -193,7 +237,6 @@ const ResidentalScreen = ({ navigation }) => {
     }
     // Sequential Validation
     const fieldsToValidate = [
-
       'name',
       'email',
       'mobile',
@@ -212,7 +255,10 @@ const ResidentalScreen = ({ navigation }) => {
         return;
       }
 
-      if (!formData[field] || (field === 'mobile' && formData[field].length < 10)) {
+      if (
+        !formData[field] ||
+        (field === 'mobile' && formData[field].length < 10)
+      ) {
         shake(field);
         scrollToField(field);
         return;
@@ -223,14 +269,22 @@ const ResidentalScreen = ({ navigation }) => {
     navigation.navigate('PaymentAppointment', { data1: 'Residental' });
   };
 
+  const handleCheckboxPress = service => {
+    const isSelected = services.some(item => item.id === service.id);
+
+    if (isSelected) {
+      setServices(services.filter(item => item.id !== service.id));
+    } else {
+      setServices([...services, service]);
+    }
+  };
 
   return (
     <View style={styles.container}>
-
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}
-           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          >
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
           <Image
             style={styles.backBtn}
             source={require('../../../assets/drawer/Back1.png')}
@@ -242,24 +296,64 @@ const ResidentalScreen = ({ navigation }) => {
         </View>
       </View>
 
-
-      <ScrollView ref={scrollViewRef} contentContainerStyle={styles.servicesContainer}>
-
+      <ScrollView
+        ref={scrollViewRef}
+        contentContainerStyle={styles.servicesContainer}>
         <Animated.View
-          style={{ transform: [{ translateX: shakeAnimation.services }] }}
-        >
+          style={{transform: [{translateX: shakeAnimation.services}]}}>
           <View style={[styles.cardContainer2]}>
             <Text
               style={[
                 styles.service,
                 styles.widthOfSevices1,
-                { fontSize: fontSize.Fifteen },
+                {fontSize: fontSize.Fifteen},
               ]}>
               Services
             </Text>
 
             <View>
-              <View style={styles.serviceSection}>
+              <FlatList
+                data={data?.franchise_services || []}
+                scrollEnabled={false}
+                keyExtractor={item => item?.item?.id}
+                renderItem={item => (
+                  <View style={styles.serviceSection}>
+                    {/* {console.log(item.item,"adjfjsdfkm")} */}
+                    <View
+                      style={[
+                        styles.checkboxWrapper,
+                        services.some(
+                          service => service.id === item?.item?.id,
+                        ) && styles.checkedBackground,
+                      ]}>
+                      <Checkbox
+                        status={
+                          services.some(
+                            service => service.id === item?.item?.id,
+                          )
+                            ? 'checked'
+                            : 'unchecked'
+                        }
+                        onPress={() =>
+                          handleCheckboxPress({
+                            id: item?.item?.id,
+                            name: item?.item?.services_name,
+                          })
+                        }
+                        color="#FFF"
+                        uncheckedColor="#DFE7EF"
+                      />
+                    </View>
+                    <Text style={styles.labelText}>
+                      {item?.item?.services_name}
+                    </Text>
+                    <Text style={styles.priceText}>
+                      ₹ {item?.item?.services_price}
+                    </Text>
+                  </View>
+                )}
+              />
+              {/* <View style={styles.serviceSection}>
                 <View
                   style={[
                     styles.checkboxWrapper,
@@ -318,35 +412,38 @@ const ResidentalScreen = ({ navigation }) => {
                 </View>
                 <Text style={styles.labelText}>Gemstone</Text>
                 <Text style={styles.priceText}>₹ 500</Text>
-              </View>
+              </View> */}
             </View>
-
           </View>
-
         </Animated.View>
         <View style={styles.cardContainer2}>
-          <Text style={[styles.service, styles.widthOfSevices2, { fontSize: fontSize.Fifteen }]}>
+          <Text
+            style={[
+              styles.service,
+              styles.widthOfSevices2,
+              {fontSize: fontSize.Fifteen},
+            ]}>
             Personal Detail
           </Text>
 
-
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Full Name*</Text>
-            <Animated.View style={[{ transform: [{ translateX: shakeAnimation.name }] }]}>
+            <Animated.View
+              style={[{transform: [{translateX: shakeAnimation.name}]}]}>
               <TextInput
-                style={[styles.input, { elevation: 5 }]}
+                style={[styles.input, {elevation: 5}]}
                 placeholder="Name"
                 placeholderTextColor={colors.placeholder}
                 value={formData.name}
-                onChangeText={(text) => handleInputChange('name', text)}
+                onChangeText={text => handleInputChange('name', text)}
               />
             </Animated.View>
           </View>
 
-
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Email*</Text>
-            <Animated.View style={[{ transform: [{ translateX: shakeAnimation.email }] }]}>
+            <Animated.View
+              style={[{transform: [{translateX: shakeAnimation.email}]}]}>
               <TextInput
                 style={styles.input}
                 placeholder="Email"
@@ -359,7 +456,8 @@ const ResidentalScreen = ({ navigation }) => {
           </View>
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Mobile Number*</Text>
-            <Animated.View style={[{ transform: [{ translateX: shakeAnimation.mobile }] }]}>
+            <Animated.View
+              style={[{transform: [{translateX: shakeAnimation.mobile}]}]}>
               <TextInput
                 style={styles.input}
                 placeholder="Mobile Number"
@@ -372,10 +470,10 @@ const ResidentalScreen = ({ navigation }) => {
             </Animated.View>
           </View>
 
-
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Gender*</Text>
-            <Animated.View style={[{ transform: [{ translateX: shakeAnimation.gender }] }]}>
+            <Animated.View
+              style={[{transform: [{translateX: shakeAnimation.gender}]}]}>
               <Dropdown
                 style={styles.input}
                 data={genderOptions}
@@ -409,26 +507,24 @@ const ResidentalScreen = ({ navigation }) => {
                       fontSize: fontSize.Fifteen,
                       fontFamily: 'Poppins-Regular',
                       padding: 10, // आइटम के लिए padding
-                    }}
-                  >
+                    }}>
                     {item.label}
                   </Text>
                 )}
               />
             </Animated.View>
-
-
           </View>
 
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Current City Pincode*</Text>
-            <Animated.View style={[{ transform: [{ translateX: shakeAnimation.cityPincode }] }]}>
-
+            <Animated.View
+              style={[{transform: [{translateX: shakeAnimation.cityPincode}]}]}>
               <TextInput
                 style={styles.input}
                 placeholder="Pincode"
                 placeholderTextColor={colors.placeholder}
                 keyboardType="numeric"
+                maxLength={6}
                 value={formData.cityPincode}
                 onChangeText={text => handleInputChange('cityPincode', text)}
               />
@@ -452,7 +548,7 @@ const ResidentalScreen = ({ navigation }) => {
               <Text
                 style={[
                   styles.input1,
-                  { color: date === '' ? colors.placeholder : colors.heading },
+                  {color: date === '' ? colors.placeholder : colors.heading},
                 ]}>
                 {formatDate(date)}
               </Text>
@@ -478,10 +574,7 @@ const ResidentalScreen = ({ navigation }) => {
               }}
               onCancel={() => setOpen(false)}
             />
-
           </View>
-
-
 
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Time of Birth</Text>
@@ -501,7 +594,7 @@ const ResidentalScreen = ({ navigation }) => {
               <Text
                 style={[
                   styles.input1,
-                  { color: time === '' ? colors.placeholder : colors.heading },
+                  {color: time === '' ? colors.placeholder : colors.heading},
                 ]}>
                 {formatTime(time)}
               </Text>
@@ -530,7 +623,8 @@ const ResidentalScreen = ({ navigation }) => {
 
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Place of Birth</Text>
-            <Animated.View style={[{ transform: [{ translateX: shakeAnimation.birthPlace }] }]}>
+            <Animated.View
+              style={[{transform: [{translateX: shakeAnimation.birthPlace}]}]}>
               <TextInput
                 style={styles.input}
                 placeholder="Place of Birth"
@@ -565,16 +659,14 @@ const ResidentalScreen = ({ navigation }) => {
             style={[
               styles.book,
               {
-                transform: [{ scale: buttonAnimatedValue }],
+                transform: [{scale: buttonAnimatedValue}],
                 backgroundColor: colors.orange,
               },
-            ]}
-          >
+            ]}>
             <Text style={styles.btext1}>SUBMIT</Text>
           </Animated.View>
         </TouchableOpacity>
       </ScrollView>
-
     </View>
   );
 };

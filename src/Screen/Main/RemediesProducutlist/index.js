@@ -343,6 +343,7 @@ useEffect(()=>{
           renderItem={renderItem}
           numColumns={2}
           keyExtractor={item => item.id}
+          scrollEnabled={false}
           // nestedScrollEnabled={true}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{}}

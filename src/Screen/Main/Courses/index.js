@@ -412,6 +412,7 @@ const OtherCourses = ({navigation}) => {
           contentContainerStyle={styles.cardContainer}
           data={Live_cource ? Live_cource : []}
           renderItem={renderCard}
+          scrollEnabled={false}
           // numColumns={2}
         />
       </ScrollView>
