@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {
   View,
   Text,
@@ -18,14 +18,21 @@ import {Rating} from 'react-native-ratings';
 import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
 import {useNavigation} from '@react-navigation/native';
 import {consultationDetail1} from '../../../Redux/Slice/HomeSlice';
-import {useSelector} from 'react-redux';
+import { useSelector} from 'react-redux';
 import Imagepath from '../../../Component/Imagepath';
 
+
 const ResidentalScreen = ({navigation}) => {
-  const data = useSelector(state => state?.home?.ConsultationDetail?.data);
 
-  console.log(data,"scmlsmkcl")  
+  const userDetail = useSelector(state => state?.Auth?.userData);
+  // const data = useSelector(state => state?.home?.ConsultationDetail?.data);
+  const data = useSelector(state => state.consultation.ConsultationDetail);
 
+
+  // console.log(fromScreen," se aaya hai....")
+  // console.log(data,"scmlsmkcl")
+
+ 
   const [scaleAnims, setScaleAnims] = useState({});
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
 
@@ -98,7 +105,11 @@ const ResidentalScreen = ({navigation}) => {
         useNativeDriver: true,
       }),
     ]).start(() => {
-      navigation.navigate('Appoiment');
+      if (userDetail.length === 0) {
+        navigation.navigate('Login', {from: 'profile'});
+      } else {
+        navigation.navigate('Appoiment');
+      }
     });
   };
 
@@ -156,7 +167,7 @@ const ResidentalScreen = ({navigation}) => {
   //     );
   //   };
   const renderItem = ({item, index}) => {
-    console.log(item,"asmlaskdlasdmas")
+    // console.log(item,"asmlaskdlasdmas")
     let backgroundColor;
 
     if (item.services_name === 'Residential Vastu') {
@@ -178,7 +189,7 @@ const ResidentalScreen = ({navigation}) => {
           },
         ]}>
         <TouchableOpacity
-          style={[styles.cardContainer,{backgroundColor: item?.color_code}]}
+          style={[styles.cardContainer, {backgroundColor: item?.color_code}]}
           onPress={() => handleItemClick(index)}>
           <Image
             source={
@@ -274,7 +285,6 @@ const ResidentalScreen = ({navigation}) => {
             <View style={styles.card}>
               <Text style={styles.third1}>{data?.franchise_name}</Text>
 
-            
               <Text style={[styles.third2, {marginBottom: 3}]}>
                 Services:{' '}
                 {data?.franchise_services
@@ -288,7 +298,7 @@ const ResidentalScreen = ({navigation}) => {
                 Price: {data?.franchise_services?.services_price}
               </Text> */}
               <Text style={styles.priceText}>
-                Price: ₹ {" "}
+                Price: ₹{' '}
                 {/* {data?.franchise_services?.reduce(
                   (total, service) => total + service.services_price,
                   0,
@@ -383,20 +393,19 @@ const ResidentalScreen = ({navigation}) => {
 
           <Text style={styles.seeall}>See all Reviews</Text>
         </View>
-
-        <TouchableOpacity onPress={handlePress} activeOpacity={1}>
-          <Animated.View
-            style={[
-              styles.book,
-              {
-                transform: [{scale: buttonAnimatedValue}],
-                backgroundColor: colors.orange,
-              },
-            ]}>
-            <Text style={styles.btext1}>BOOK NOW</Text>
-          </Animated.View>
-        </TouchableOpacity>
       </ScrollView>
+      <TouchableOpacity onPress={handlePress} activeOpacity={1}>
+        <Animated.View
+          style={[
+            styles.book,
+            {
+              transform: [{scale: buttonAnimatedValue}],
+              backgroundColor: colors.orange,
+            },
+          ]}>
+          <Text style={styles.btext1}>BOOK NOW</Text>
+        </Animated.View>
+      </TouchableOpacity>
     </View>
   );
 };

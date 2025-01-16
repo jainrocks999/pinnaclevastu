@@ -239,7 +239,10 @@ import {colors} from '../../../Component/colors';
 import {Rating} from 'react-native-ratings';
 import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
 import {useDispatch, useSelector} from 'react-redux';
-import {consultationDetail1} from '../../../Redux/Slice/HomeSlice';
+// import {clearConsultationDetail, consultationDetail1} from '../../../Redux/Slice/HomeSlice';
+import {consultationDetail1} from '../../../Redux/Slice/ConsultancySlice';
+import { getCosultationListApi } from '../../../Redux/Slice/ConsultancySlice';
+import Imagepath from '../../../Component/Imagepath';
 
 const ResidentalScreen = ({navigation}) => {
   const [textAnim] = useState(new Animated.Value(0));
@@ -248,8 +251,10 @@ const ResidentalScreen = ({navigation}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const animatedValue = useRef(new Animated.Value(1)).current;
   const bgAnim = useRef(new Animated.Value(0)).current;
+  const CosultationListData = useSelector(state => state.consultation.ConsultationList
+  );
+  // console.log(CosultationListData,"sdkosdkmsddof")
 
-  const Homebanner = useSelector(state => state.home?.HomeBanner?.data);
   const dispatch = useDispatch();
 
   const textItems = [
@@ -261,6 +266,14 @@ const ResidentalScreen = ({navigation}) => {
   const placeholderText = 'Search';
   const [displayedText, setDisplayedText] = useState('');
 
+  useEffect(()=>{
+    apicall()
+  },[])
+
+  const apicall = async () => {
+     await dispatch(getCosultationListApi({url: 'fetch-franchise-list'}));
+   };
+  
   useEffect(() => {
     const interval = setInterval(() => {
       slideText('left');
@@ -368,6 +381,7 @@ const ResidentalScreen = ({navigation}) => {
         useNativeDriver: true,
       }),
     ]).start(async () => {
+      // dispatch(clearConsultationDetail())
       await dispatch(
         consultationDetail1({
           url: 'fetch-franchise-details',
@@ -476,7 +490,10 @@ const ResidentalScreen = ({navigation}) => {
             <View style={styles.card}>
               <Text style={styles.third1}>{item.franchise_name}</Text>
               <Text style={[styles.third2, {marginBottom: 2}]}>
-                Services : {item?.franchise_services?.services_name}
+                Services : {" "}
+                {item?.franchise_services
+                  ?.map(service => service.services_name) // Extract all services_name
+                  .join(', ')}
               </Text>
               <Text style={styles.third2}>{item?.language}</Text>
               <Text style={styles.third2}>Exp: {item?.experience_of_year}</Text>
@@ -567,7 +584,7 @@ const ResidentalScreen = ({navigation}) => {
 
         <FlatList
           // data={DATA}
-          data={Homebanner?.franchises}
+          data={CosultationListData}
           renderItem={renderItem3}
           keyExtractor={item => item.id}
           showsVerticalScrollIndicator={false}

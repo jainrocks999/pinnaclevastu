@@ -144,6 +144,7 @@ const LoginScreen = ({route, navigation}) => {
           >
             <TouchableOpacity
               onPress={() => {
+                // console.log("hyy")
                 Animated.sequence([
                   Animated.timing(buttonAnimatedValue, {
                     toValue: 0.94,
@@ -156,6 +157,7 @@ const LoginScreen = ({route, navigation}) => {
                     useNativeDriver: true,
                   }),
                 ]).start(() => {
+                 
                   LoginAPi();
                 });
               }}
@@ -176,7 +178,7 @@ const LoginScreen = ({route, navigation}) => {
             <Text style={styles.endtext}>
               {"Don't have an account ? "}
               <Text
-                onPress={() => navigation.navigate('Signup')}
+                onPress={() => navigation.navigate('Signup',route.params)}
                 style={{color: colors.orange}}>
                 Sign up
               </Text>

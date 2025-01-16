@@ -16,7 +16,11 @@ import {useNavigation} from '@react-navigation/native';
 import Toast from 'react-native-simple-toast';
 import Loader from '../../../Component/Loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {clearloginUserData, loginUser} from '../../../Redux/Slice/Authslice';
+import {
+  clearloginUserData,
+  getUserDetailApi,
+  loginUser,
+} from '../../../Redux/Slice/Authslice';
 import {useDispatch, useSelector} from 'react-redux';
 const {width} = Dimensions.get('window');
 
@@ -101,8 +105,26 @@ const OTPPAGE = ({route}) => {
         navigation.replace('Home', {screen: 'MyCart', params: {from: 'OTP'}});
       } else if (route?.params?.from == 'CourseDetails') {
         setIsLoading(false);
-        navigation.replace('Home');
-        // navigation.replace('CourseDetail');
+        // navigation.replace('Home');
+        await dispatch(
+          getUserDetailApi({
+            token: loginUserData?.token,
+            url: `profile-list?user_id=${loginUserData?.user_id}`,
+          }),
+        );
+        navigation.pop();
+        navigation.replace('CourseDetail');
+      } else if (route?.params?.from === 'profile') {
+        setIsLoading(false);
+        await dispatch(
+          getUserDetailApi({
+            token: loginUserData?.token,
+            url: `profile-list?user_id=${loginUserData?.user_id}`,
+          }),
+        );
+        // navigation.replace('Appoiment');
+        navigation.pop();
+        navigation.replace('profile');
       } else {
         setIsLoading(false);
         navigation.replace('Home');
@@ -142,7 +164,7 @@ const OTPPAGE = ({route}) => {
           <Text style={{color: '#FC0600', textAlign: 'center'}}>
             {' '}
             {timer}
-            <Text>{" "}seconds</Text>{' '}
+            <Text> seconds</Text>{' '}
           </Text>
         )}
         <View style={styles.codeInputContainer}>

@@ -279,33 +279,6 @@ export const likedProductListApi = createAsyncThunk(
     }
   },
 );
-export const consultationDetail1 = createAsyncThunk(
-  'home/consultationDetail1',
-  async ({url, franchise_id, navigation}, {rejectWithValue}) => {
-    console.log('consultation detail00', url, franchise_id);
-    try {
-      const config = {
-        method: 'get',
-        maxBodyLength: Infinity,
-        url: `${constant.mainUrl}${url}?franchise_id=${franchise_id}`,
-        headers: {},
-      };
-      const response = await axios.request(config);
-      if (response?.data?.status == 200) {
-        console.log('response data consultation detail ', response.data);
-        navigation.navigate('profile');
-        return response?.data;
-      } else {
-        Toast.show(response?.data?.msg);
-      }
-    } catch (error) {
-      console.log('banner error ', error);
-      return rejectWithValue(
-        error.response ? error.response.data : error.message,
-      );
-    }
-  },
-);
 
 
 

@@ -53,6 +53,12 @@ export const loginUser = createAsyncThunk(
               item: mobile,
               from: 'CourseDetails',
             });
+          } else if (route?.params?.from && route?.params.from == 'profile') {
+            navigation.replace('OTP', {
+              data: response.data,
+              item: mobile,
+              from: 'profile',
+            });
           } else {
             navigation.replace('OTP', {data: response.data, item: mobile});
           }
@@ -74,7 +80,10 @@ export const loginUser = createAsyncThunk(
 
 export const signupUser = createAsyncThunk(
   'auth/signupUser',
-  async ({formUserData, url, navigation}, {rejectWithValue}) => {
+  async (
+    {formUserData, url, navigation, route},
+    {dispatch, rejectWithValue},
+  ) => {
     try {
       let config = {
         method: 'post',
@@ -99,7 +108,34 @@ export const signupUser = createAsyncThunk(
         AsyncStorage.setItem('user_type', response.data.user_type);
         AsyncStorage.setItem('user_id', JSON.stringify(response.data.user_id));
         AsyncStorage.setItem('Token', response.data.token);
-        navigation.navigate('Home');
+        console.log(route?.params?.from,"**************")
+        if (route?.params?.from == 'profile') {
+          await dispatch(
+            getUserDetailApi({
+              token: response.data.token,
+              url: `profile-list?user_id=${response.data.user_id}`,
+            }),
+          );
+          // navigation.replace('Appoiment',);
+          navigation.pop();
+          navigation.pop();
+          navigation.replace('profile');
+
+        } else if (route?.params?.from == 'CourseDetails') {
+          await dispatch(
+            getUserDetailApi({
+              token: response.data.token,
+              url: `profile-list?user_id=${response.data.user_id}`,
+            }),
+          );
+          // navigation.replace('Appoiment',);
+          navigation.pop();
+          navigation.pop();
+          navigation.replace('CourseDetail');
+        } else {
+          navigation.navigate('Home');
+        }
+        // console.log(route,"$$$$$$$")
 
         return response.data;
       } else {
@@ -117,7 +153,6 @@ export const getUserDetailApi = createAsyncThunk(
   'auth/getUserDetail',
   async ({token, url}, {rejectWithValue}) => {
     try {
-   
       let config = {
         method: 'get',
         maxBodyLength: Infinity,
@@ -125,12 +160,12 @@ export const getUserDetailApi = createAsyncThunk(
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
-        }   
+        },
       };
-      // console.log('shkshfskdfhsdf', config);
+      console.log('shkshfskdfhsdf', config);
 
       const response = await axios.request(config);
-       console.log('get profile update data ', response.data);
+      console.log('get profile update data ', response.data);
 
       if (response.data.status == 200) {
         // const responseDataString = JSON.stringify(response.data)
@@ -147,43 +182,37 @@ export const getUserDetailApi = createAsyncThunk(
   },
 );
 
-
-
-
-
 export const updateApi = createAsyncThunk(
   'auth/updateApi',
-  async ({formUserData, url, navigation,token,userid}, {rejectWithValue,dispatch}) => {
-    console.log('auth/updateApi',formUserData,url,token);
-    
+  async (
+    {formUserData, url, navigation, token, userid},
+    {rejectWithValue, dispatch},
+  ) => {
+    console.log('auth/updateApi', formUserData, url, token);
+
     try {
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
-       url: `${constants.mainUrl}${url}`,
+        url: `${constants.mainUrl}${url}`,
         headers: {
-          
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
         },
 
         data: formUserData,
       };
-   
 
       const response = await axios.request(config);
-    
 
       if (response.data.status == 200) {
-      
-        
-  await dispatch(
-              getUserDetailApi({
-                token: token,
-                url: `profile-list?user_id=${userid}`,
-              }),
-            );
-            navigation.goBack();
+        await dispatch(
+          getUserDetailApi({
+            token: token,
+            url: `profile-list?user_id=${userid}`,
+          }),
+        );
+        navigation.goBack();
         return response.data;
       } else {
         Toast.show(response.data.msg);
@@ -191,13 +220,12 @@ export const updateApi = createAsyncThunk(
         return rejectWithValue(error.response?.data || error.message);
       }
     } catch (error) {
-      console.log('errro',error);
-      
+      console.log('errro', error);
+
       return rejectWithValue(error.response?.data || error.message);
     }
   },
 );
-
 
 const authSlice = createSlice({
   name: 'auth',
@@ -205,7 +233,7 @@ const authSlice = createSlice({
     userData: [],
     signupUserData: [],
     loginUserData: [],
-    updatedata:{},
+    updatedata: {},
     loading: false,
     error: null,
   },
@@ -260,13 +288,11 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-       .addCase(updateApi.pending, state => {
-       
-        state.loading = true
-         state.error = null;
+      .addCase(updateApi.pending, state => {
+        state.loading = true;
+        state.error = null;
       })
       .addCase(updateApi.fulfilled, (state, action) => {
-       
         state.loading = false;
         state.updatedata = action.payload;
       })

@@ -169,7 +169,8 @@ export default StyleSheet.create({
     fontFamily: 'Poppins-Regular',
     color: colors.heading,
     textAlign: 'center',
-    paddingHorizontal:10,
+    // paddingHorizontal:10,
+    // borderWidth:1
   },
   contain: {
     marginTop: hp(2),
@@ -241,6 +242,7 @@ export default StyleSheet.create({
     borderRadius: 10,
     justifyContent: "center",
     marginTop: hp(1.3),
+    marginBottom:hp(1.3)
     // shadowColor: "#ad3803",
     // shadowOffset: { width: 0, height: 6 },
     // shadowOpacity: 0.5, 
