@@ -558,7 +558,10 @@ console.log('dhsbgjsbsfg',item12);
           </View>
         </View>
 
-        <Text style={[styles.payment1]}>
+      
+      </ScrollView>
+      <View style={styles.servicesContainer}>
+      <Text style={[styles.payment1]}>
           Secured by Trusted Indian Banks{' '}
           <Image
             style={{height: 12, width: 12}}
@@ -630,22 +633,7 @@ console.log('dhsbgjsbsfg',item12);
             <Text style={[styles.btext1]}>PROCEED TO PAY</Text>
           </TouchableOpacity>
         </Animated.View>
-        {/* <TouchableOpacity
-          onPress={() =>createbyord()
-            //  navigation.navigate('Succes')
-            }
-          style={[
-            styles.book,
-            {
-              backgroundColor:
-                nav?.data1 === 'Remedies' ? colors.lightGrey : colors.orange,
-                shadowColor:
-                nav?.data1 === 'Remedies' ? "black" : "#ad3803",
-            },
-          ]}>
-          <Text style={styles.btext1}>PROCEED TO PAY</Text>
-        </TouchableOpacity> */}
-      </ScrollView>
+        </View>
     </View>
   );
 };

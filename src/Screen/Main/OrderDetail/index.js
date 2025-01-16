@@ -56,7 +56,6 @@ const OrderDetail = () => {
   const navigation = useNavigation();
   const data2 = useSelector(state => state?.order?.orderD);
   const loading1 = useSelector(state => state?.order?.loading);
-  // const [visible, setVisible] = useState(false);
   const [visibleItemId, setVisibleItemId] = useState(null);
   const [reason, setReason] = useState('');
   const dispatch = useDispatch();
@@ -71,8 +70,6 @@ const OrderDetail = () => {
   const toggleCollapse1 = () => {
     setIsCollapsed1(!isCollapsed1);
   };
-
-  // console.log(data2, 'sandeep...');
   const cancelorder = async () => {
     if (!reason.trim()) {
       Toast.show('Reason for cancellation is required');
@@ -197,7 +194,7 @@ const OrderDetail = () => {
         </View>
         <Text style={styles.productName}>Total: ₹ {item?.price}</Text>
         {data2?.status?.value !== 'canceled' &&
-        data2?.status?.value !== 'completed' &&
+        data2?.status?.value !== 'completed' &&data2?.payment?.status?.value!=='failed'&&
         data2?.shipment?.shipment_status !== 'not_delivered' &&
         visibleItemId !== item.id ? (
           <TouchableOpacity onPress={() => setVisibleItemId(item.id)}>
@@ -216,7 +213,7 @@ const OrderDetail = () => {
               value={reason}
               onChangeText={text => setReason(text)}
               multiline={true}
-              textAlignVertical="top" // Ensures text starts from the top of the input
+              textAlignVertical="top"
               numberOfLines={4}
             />
             <TouchableOpacity onPress={() => cancelorder()}>
@@ -228,14 +225,17 @@ const OrderDetail = () => {
       </View>
     </View>
   );
+
+
+
   const getCurrentPosition = () => {
     const position = data2?.shipment?.shipment_status;
     if (position == 'pending' || position == 'canceled') return null;
-    if (position == 'approved') return 0;
-    if (position == 'arrange_shipment') return 1;
-    if (position == 'ready_to_be_shipped_out') return 2;
-    if (position == 'delivering') return 3;
-    if (position == 'delivered') return 4;
+    if (position == 'Order Placed') return 0;
+    if (position == 'Ready For Shipment') return 1;
+    if (position == 'Dispatched') return 2;
+    if (position == 'Out For Delivery') return 3;
+    if (position == 'Delivered') return 4;
   };
 
   return (
@@ -266,7 +266,7 @@ const OrderDetail = () => {
         <View style={styles.section}>
           {/* {getCurrentPosition() >= 7 ? ( */}
           {data2?.status?.value == 'canceled' ||
-          data2?.status?.value == 'completed' ||
+          data2?.status?.value == 'completed' ||data2?.payment?.status?.value=='failed'||
           data2?.shipment?.shipment_status == 'not_delivered' ? (
             <View style={styles.OrderstatusMsgContainer}>
               <Image
@@ -277,7 +277,7 @@ const OrderDetail = () => {
                 <Text
                   style={{
                     color:
-                      data2?.status?.value === 'canceled'
+                      data2?.status?.value === 'canceled'||data2?.payment?.status?.value=='failed'
                         ? '#FF0000'
                         : data2?.status?.value === 'completed'
                         ? '#02A883'
@@ -288,7 +288,7 @@ const OrderDetail = () => {
                     : data2?.status?.value === 'completed'
                     ? 'DELIVERED '
                     : data2?.shipment?.shipment_status === 'not_delivered'
-                    ? 'NOT DELIVERED '
+                    ? 'NOT DELIVERED ' :data2?.payment?.status?.value=='failed'?'PAYMENT FAILED '
                     : ''}
                 </Text>
                 on {formatDate()}
@@ -375,7 +375,6 @@ const OrderDetail = () => {
                   styles.lebleText,
                   {
                     fontSize: customStyles.labelSize,
-                    // fontFamily: 'YourCustomFontFamily',
                     color:
                       position < getCurrentPosition()
                         ? customStyles.finishedStepLabelColor
@@ -423,11 +422,9 @@ const OrderDetail = () => {
             <Text style={styles.rowLabel}>Shipping charges</Text>
             <Text style={styles.rowLabel}>{`₹ ${data2?.shipping_amount}`}</Text>
           </View>
-
           <View style={[styles.listRow]}>
             <Text style={styles.TaxText}>
-              Tax
-              {/* <Text style={{fontSize: fontSize.Thirteen}}>(3.0%)</Text> */}
+              Tax 
             </Text>
             <Text style={styles.rowLabel}>{`₹ ${data2?.tax_amount}`}</Text>
           </View>

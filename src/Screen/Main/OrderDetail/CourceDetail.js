@@ -4,15 +4,12 @@ import {
   TouchableOpacity,
   ScrollView,
   Image,
-  FlatList,
   TextInput,
 } from 'react-native';
 import React, {useState} from 'react';
 import styles from './styles';
-import {Dropdown} from 'react-native-element-dropdown';
 import StepIndicator from 'react-native-step-indicator';
 import Toast from 'react-native-simple-toast';
-
 import {
   heightPercent,
   widthPrecent as wp,
@@ -21,7 +18,6 @@ import {fontSize} from '../../../Component/fontsize';
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import Imagepath from '../../../Component/Imagepath';
-
 import {cancelorders, orderDetail} from '../../../Redux/Slice/orderSclice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {colors} from '../../../Component/colors';
@@ -234,9 +230,7 @@ const CourceDetail = () => {
                   styles.productName
                 }>{`Total: ₹ ${data2?.sub_total}`}</Text>
               <TouchableOpacity
-                onPress={
-                  () => navigation.navigate('CourceListDownload')
-                }>
+                onPress={() => navigation.navigate('CourceListDownload')}>
                 <Text
                   style={{
                     marginTop: 8,

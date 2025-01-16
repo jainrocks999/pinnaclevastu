@@ -25,7 +25,7 @@ import RazorpayCheckout from 'react-native-razorpay';
 import {useDispatch, useSelector} from 'react-redux';
 import {fontSize} from '../../../Component/fontsize';
 
-const PaymentCourse = ({route}) => {
+const PaymentAppointment = ({route}) => {
   const nav = route.params?.data1;
   const navigation = useNavigation();
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
@@ -482,4 +482,4 @@ const PaymentCourse = ({route}) => {
   );
 };
 
-export default PaymentCourse;
+export default PaymentAppointment;

@@ -55,6 +55,7 @@ const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
  useEffect(() => {
   // Check for the default item in the address list
   const defaultItem = addresstoget?.find((item) => item?.is_default == 1);
+console.log('dkdjdsa',defaultItem?.id,addresstoget);
 
   if (defaultItem) {
     setDefaultAddress(defaultItem); 

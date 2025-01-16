@@ -6,7 +6,7 @@ import constants from '../constant/constants';
 
 export const createAddress = createAsyncThunk(
   'address/createAddress',
-  async ({url, token, data, navigation}, {rejectWithValue}) => {
+  async ({url, token, data, navigation}, {dispatch,rejectWithValue}) => {
     console.log('create address  resse  ', url, JSON.stringify(data));
 
     let config = {
@@ -25,7 +25,15 @@ export const createAddress = createAsyncThunk(
      
       if (response.data.status == 200) {
         Toast.show(response.data.msg);
-         navigation.goBack();
+
+        await  dispatch(getAddress({  
+          user_id:data?.user_id,
+          
+          token: token,
+         
+          url:'fetch-customer-address',
+        }));
+          navigation.goBack();
         return response.data;
       } else {
         Toast.show(response.data.msg);
@@ -44,6 +52,7 @@ export const getAddress = createAsyncThunk(
   'address/getAddress',
   async ({user_id, token, url}, {rejectWithValue}) => {
    
+console.log(user_id, token,'user_id, token');
 
     try {
       const config = {
@@ -59,6 +68,7 @@ export const getAddress = createAsyncThunk(
 
       if (response.data.status == 200) {
        
+        console.log('get adresss ',response.data.data);
         
         // Toast.show(response.data.msg);
         return response?.data?.data;

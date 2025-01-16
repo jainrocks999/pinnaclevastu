@@ -58,7 +58,7 @@ const Address = ({route}) => {
   useEffect(() => {
     if (item.data == false && item.item) {
 
-      console.log('flkdfmkldsfmlkdf',item?.item);
+      // console.log('flkdfmkldsfmlkdf',item?.item);
       
       setFormData((prevData) => ({
         ...prevData,
@@ -200,7 +200,7 @@ const Address = ({route}) => {
       apartment: formData.apartment,
       user_id: userid,
       is_default: '1',
-      billing_status:saveInfo?'1':'0',
+      billing_status:saveInfo?1:0,
       billing: {
         name: finalBillingAddressData?.name,
         phone: finalBillingAddressData?.phone,
@@ -212,31 +212,22 @@ const Address = ({route}) => {
         zip_code: finalBillingAddressData?.pincode,
         apartment:finalBillingAddressData?.apartment,
       },
-      // billing_name:finalBillingAddressData?.name,
-      // billing_phone:finalBillingAddressData?.phone,
-      // billing_email:finalBillingAddressData.email,
-      // billing_is_default:saveInfo?'0':'1',
-      // billing_address:finalBillingAddressData?.address,
-      // billing_country:finalBillingAddressData?.country,
-      // billing_state:finalBillingAddressData?.state,
-      // billing_city:finalBillingAddressData?.city,
-      // billing_zip_code:finalBillingAddressData?.zip_code,
-      // billing_apartment:finalBillingAddressData?.apartment,
+      
       ...(item?.data === false && { customer_address_id: item?.item?.id }),
+      ...(item?.data === false && { billing_address_id: item?.item?.billing_address?.biling_address_id}), // Fixed typo
     };
   
     // Final payload
     const apiPayload = {
       url: item?.data === false ? 'update-customer-address' : 'create-customer-address',
-      token,
+       token,
       data:addressData,
       // Data1: finalBillingAddressData,
-      navigation
+       navigation
     };
   
- 
   
-       await dispatch(createAddress(apiPayload));
+      await dispatch(createAddress(apiPayload));
   };
   
 

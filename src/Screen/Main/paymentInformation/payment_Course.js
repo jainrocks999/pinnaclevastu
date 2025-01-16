@@ -448,7 +448,10 @@ const PaymentCourse = ({route}) => {
           </View>
         </View>
 
-        <Text style={[styles.payment1]}>
+        
+      </ScrollView>
+      <View style={styles.servicesContainer}>
+      <Text style={[styles.payment1]}>
           {nav?.title}
           <Text
             style={{
@@ -461,35 +464,6 @@ const PaymentCourse = ({route}) => {
             {`₹ ${totals?.totalAmount}`}
           </Text>
         </Text>
-
-        {/* <TouchableOpacity
-          onPress={() => {
-            if (radioActive) {
-              createbyord();
-              // navigation.navigate('Succes');
-            }
-          }}
-          disabled={!radioActive} 
-          style={[
-            styles.book,
-            {
-              backgroundColor: !radioActive
-               
-                ? colors.lightGrey
-                : colors.orange, 
-              shadowColor: !radioActive
-                ? 'black'
-                : '#ad3803', 
-            },
-          ]}>
-          <Text
-            style={[
-              styles.btext1,
-              
-            ]}>
-            PROCEED TO PAY
-          </Text>
-        </TouchableOpacity> */}
 
         <Animated.View
           style={[
@@ -506,7 +480,7 @@ const PaymentCourse = ({route}) => {
             <Text style={[styles.btext1]}>PROCEED TO PAY</Text>
           </TouchableOpacity>
         </Animated.View>
-      </ScrollView>
+      </View>
     </View>
   );
 };

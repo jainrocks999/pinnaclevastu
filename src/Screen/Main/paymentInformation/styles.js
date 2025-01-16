@@ -42,7 +42,7 @@ export default StyleSheet.create({
     color: colors.cardcolor,
   },
   servicesContainer: {
-    paddingBottom: 30,
+    paddingBottom: 15,
     paddingHorizontal: 15,
   },
 
