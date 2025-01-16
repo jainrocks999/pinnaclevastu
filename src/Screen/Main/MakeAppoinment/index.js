@@ -12,6 +12,7 @@ import {
   FlatList,
   ImageBackground,
   Vibration,
+  BackHandler,
 } from 'react-native';
 import styles from './styles';
 import {colors} from '../../../Component/colors';
@@ -21,16 +22,19 @@ import {Checkbox} from 'react-native-paper';
 import DatePicker from 'react-native-date-picker';
 import Toast from 'react-native-simple-toast';
 import {Dropdown} from 'react-native-element-dropdown';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {getUserDetailApi} from '../../../Redux/Slice/Authslice';
 
-const ResidentalScreen = ({navigation}) => {
+const ResidentalScreen = ({navigation }) => {
+  const dispatch = useDispatch();
   const userDetail = useSelector(state => state?.Auth?.userData);
-  const data = useSelector(state => state?.home?.ConsultationDetail?.data);
+  const data = useSelector(state => state?.consultation?.ConsultationDetail);
   // console.log('data',data)
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
   const [services, setServices] = useState([]);
+  const [isEdit, setIsEdit] = useState(false);
 
-  console.log(services,'sdmfkdsmf')
   // const [visible, setVisible] = useState(false);
   // const [selectedItem, setSelectedItem] = useState({
   //   label: '',
@@ -56,11 +60,12 @@ const ResidentalScreen = ({navigation}) => {
       const defaultService = {
         id: data.franchise_services[0]?.id,
         name: data.franchise_services[0]?.services_name,
+        price: data.franchise_services[0]?.services_price,
       };
       setServices([defaultService]);
     }
-  }, [data?.franchise_services]);
-
+  }, [data?.franchise_services, userDetail]);
+  console.log(isEdit);
   const [date, setDate] = useState(
     userDetail?.dob ? new Date(userDetail.dob) : null,
   );
@@ -75,31 +80,31 @@ const ResidentalScreen = ({navigation}) => {
   };
 
   const parseTimeString = timeString => {
-      const [time, modifier] = timeString.split(' ');
-      const [hours, minutes] = time.split(':'); 
-  
-      let hour = parseInt(hours, 10);
-      if (modifier === 'PM' && hour !== 12) {
-        hour += 12;
-      }
-      if (modifier === 'AM' && hour === 12) {
-        hour = 0; 
-      }
-  
-      const date = new Date();
-      date.setHours(hour);
-      date.setMinutes(parseInt(minutes, 10));
-      date.setSeconds(0); 
-  
-      return date;
-    };
-  
-    const [time, setTime] = useState(() => {
-      if (userDetail?.time_of_birth) {
-        return parseTimeString(userDetail.time_of_birth); 
-      }
-      return null;
-    });
+    const [time, modifier] = timeString.split(' ');
+    const [hours, minutes] = time.split(':');
+
+    let hour = parseInt(hours, 10);
+    if (modifier === 'PM' && hour !== 12) {
+      hour += 12;
+    }
+    if (modifier === 'AM' && hour === 12) {
+      hour = 0;
+    }
+
+    const date = new Date();
+    date.setHours(hour);
+    date.setMinutes(parseInt(minutes, 10));
+    date.setSeconds(0);
+
+    return date;
+  };
+
+  const [time, setTime] = useState(() => {
+    if (userDetail?.time_of_birth) {
+      return parseTimeString(userDetail.time_of_birth);
+    }
+    return null;
+  });
   const [open1, setOpen1] = useState(false);
 
   const formatTime = time => {
@@ -112,12 +117,12 @@ const ResidentalScreen = ({navigation}) => {
     const strTime = `${hours}:${minutes} ${ampm}`;
     return strTime;
   };
-
+  console.log(userDetail.city_pincode, '****************');
   const [formData, setFormData] = useState({
-    name: userDetail.name || '',
-    email: userDetail.email || '',
-    mobile: userDetail.phone || '',
-    cityPincode: userDetail?.city_pincode || '',
+    name: userDetail?.name || '',
+    email: userDetail?.email || '',
+    mobile: userDetail?.phone || '',
+    cityPincode: userDetail?.city_pincode?.toString() || '',
     gender: userDetail?.gender || '',
     birthPlace: userDetail?.place_of_birth || '',
     additionalInfo: '',
@@ -219,13 +224,7 @@ const ResidentalScreen = ({navigation}) => {
         duration: 300,
         useNativeDriver: true,
       }),
-    ]).start(() => {
-      if(userDetail.length!==0){
-        navigation.navigate('Payment');
-      }else{
-        navigation.navigate('Login');
-      }
-    });
+    ]).start();
 
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     // Check if at least one service is selected
@@ -266,7 +265,15 @@ const ResidentalScreen = ({navigation}) => {
     }
 
     // All fields validated
-    navigation.navigate('PaymentAppointment', { data1: 'Residental' });
+    // if (userDetail.length !== 0) {
+    navigation.navigate('PaymentAppointment', {
+      data1: 'Residental',
+      services: services,
+      formData: {...formData, bod: formatDate(date), bot: formatTime(time)},
+    });
+    // } else {
+    // navigation.navigate('Login');
+    // }
   };
 
   const handleCheckboxPress = service => {
@@ -315,9 +322,10 @@ const ResidentalScreen = ({navigation}) => {
               <FlatList
                 data={data?.franchise_services || []}
                 scrollEnabled={false}
-                keyExtractor={item => item?.item?.id}
+                keyExtractor={item => item?.item?.id.toString()}
                 renderItem={item => (
                   <View style={styles.serviceSection}>
+                    {console.log(item)}
                     {/* {console.log(item.item,"adjfjsdfkm")} */}
                     <View
                       style={[
@@ -338,6 +346,7 @@ const ResidentalScreen = ({navigation}) => {
                           handleCheckboxPress({
                             id: item?.item?.id,
                             name: item?.item?.services_name,
+                            price: item?.item?.services_price,
                           })
                         }
                         color="#FFF"
@@ -416,257 +425,357 @@ const ResidentalScreen = ({navigation}) => {
             </View>
           </View>
         </Animated.View>
-        <View style={styles.cardContainer2}>
-          <Text
-            style={[
-              styles.service,
-              styles.widthOfSevices2,
-              {fontSize: fontSize.Fifteen},
-            ]}>
-            Personal Detail
-          </Text>
-
-          <View style={styles.inputmain}>
-            <Text style={styles.title2}>Full Name*</Text>
-            <Animated.View
-              style={[{transform: [{translateX: shakeAnimation.name}]}]}>
-              <TextInput
-                style={[styles.input, {elevation: 5}]}
-                placeholder="Name"
-                placeholderTextColor={colors.placeholder}
-                value={formData.name}
-                onChangeText={text => handleInputChange('name', text)}
-              />
-            </Animated.View>
-          </View>
-
-          <View style={styles.inputmain}>
-            <Text style={styles.title2}>Email*</Text>
-            <Animated.View
-              style={[{transform: [{translateX: shakeAnimation.email}]}]}>
-              <TextInput
-                style={styles.input}
-                placeholder="Email"
-                placeholderTextColor={colors.placeholder}
-                keyboardType="email-address"
-                value={formData.email}
-                onChangeText={text => handleInputChange('email', text)}
-              />
-            </Animated.View>
-          </View>
-          <View style={styles.inputmain}>
-            <Text style={styles.title2}>Mobile Number*</Text>
-            <Animated.View
-              style={[{transform: [{translateX: shakeAnimation.mobile}]}]}>
-              <TextInput
-                style={styles.input}
-                placeholder="Mobile Number"
-                placeholderTextColor={colors.placeholder}
-                maxLength={10}
-                keyboardType="numeric"
-                value={formData.mobile}
-                onChangeText={text => handleInputChange('mobile', text)}
-              />
-            </Animated.View>
-          </View>
-
-          <View style={styles.inputmain}>
-            <Text style={styles.title2}>Gender*</Text>
-            <Animated.View
-              style={[{transform: [{translateX: shakeAnimation.gender}]}]}>
-              <Dropdown
-                style={styles.input}
-                data={genderOptions}
-                labelField="label"
-                valueField="value"
-                placeholder={'Select Gender'}
-                placeholderStyle={{
-                  color: formData.gender ? colors.heading : colors.placeholder,
-                  fontSize: fontSize.Fifteen,
-                }}
-                selectedTextStyle={{
-                  color: colors.heading,
-                  fontSize: fontSize.Fifteen,
-                  fontFamily: 'Poppins-Regular',
-                }}
-                value={formData.gender}
-                onChange={text => handleInputChange('gender', text.value)}
-                renderRightIcon={() => (
-                  <Image
-                    style={{
-                      height: 8,
-                      width: 15,
-                    }}
-                    source={require('../../../assets/image/arrow_icon.png')}
-                  />
-                )}
-                renderItem={item => (
-                  <Text
-                    style={{
-                      color: colors.heading, // इनपुट का टेक्स्ट कलर
-                      fontSize: fontSize.Fifteen,
-                      fontFamily: 'Poppins-Regular',
-                      padding: 10, // आइटम के लिए padding
-                    }}>
-                    {item.label}
-                  </Text>
-                )}
-              />
-            </Animated.View>
-          </View>
-
-          <View style={styles.inputmain}>
-            <Text style={styles.title2}>Current City Pincode*</Text>
-            <Animated.View
-              style={[{transform: [{translateX: shakeAnimation.cityPincode}]}]}>
-              <TextInput
-                style={styles.input}
-                placeholder="Pincode"
-                placeholderTextColor={colors.placeholder}
-                keyboardType="numeric"
-                maxLength={6}
-                value={formData.cityPincode}
-                onChangeText={text => handleInputChange('cityPincode', text)}
-              />
-            </Animated.View>
-          </View>
-
-          <View style={styles.inputmain}>
-            <Text style={styles.title2}>Date of Birth*</Text>
-            {/* <Animated.View style={{ transform: [{ translateX: shakeAnimation.date }] }}> */}
-            <TouchableOpacity
-              onPress={() => setOpen(true)}
+        {isEdit ? (
+          <View style={styles.cardContainer2}>
+            <Text
               style={[
-                styles.input,
-                styles.inputShadow,
-                {
+                styles.service,
+                styles.widthOfSevices2,
+                {fontSize: fontSize.Fifteen},
+              ]}>
+              Personal Detail
+            </Text>
+
+            <View style={styles.inputmain}>
+              <Text style={styles.title2}>Full Name*</Text>
+              <Animated.View
+                style={[{transform: [{translateX: shakeAnimation.name}]}]}>
+                <TextInput
+                  style={[styles.input, {elevation: 5}]}
+                  placeholder="Name"
+                  placeholderTextColor={colors.placeholder}
+                  value={formData.name}
+                  onChangeText={text => handleInputChange('name', text)}
+                />
+              </Animated.View>
+            </View>
+
+            <View style={styles.inputmain}>
+              <Text style={styles.title2}>Email*</Text>
+              <Animated.View
+                style={[{transform: [{translateX: shakeAnimation.email}]}]}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Email"
+                  placeholderTextColor={colors.placeholder}
+                  keyboardType="email-address"
+                  value={formData.email}
+                  onChangeText={text => handleInputChange('email', text)}
+                />
+              </Animated.View>
+            </View>
+            <View style={styles.inputmain}>
+              <Text style={styles.title2}>Mobile Number*</Text>
+              <Animated.View
+                style={[{transform: [{translateX: shakeAnimation.mobile}]}]}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Mobile Number"
+                  placeholderTextColor={colors.placeholder}
+                  maxLength={10}
+                  keyboardType="numeric"
+                  value={formData.mobile}
+                  onChangeText={text => handleInputChange('mobile', text)}
+                />
+              </Animated.View>
+            </View>
+
+            <View style={styles.inputmain}>
+              <Text style={styles.title2}>Gender*</Text>
+              <Animated.View
+                style={[{transform: [{translateX: shakeAnimation.gender}]}]}>
+                <Dropdown
+                  style={styles.input}
+                  data={genderOptions}
+                  labelField="label"
+                  valueField="value"
+                  placeholder={'Select Gender'}
+                  placeholderStyle={{
+                    color: formData.gender
+                      ? colors.heading
+                      : colors.placeholder,
+                    fontSize: fontSize.Fifteen,
+                  }}
+                  selectedTextStyle={{
+                    color: colors.heading,
+                    fontSize: fontSize.Fifteen,
+                    fontFamily: 'Poppins-Regular',
+                  }}
+                  value={formData.gender}
+                  onChange={text => handleInputChange('gender', text.value)}
+                  renderRightIcon={() => (
+                    <Image
+                      style={{
+                        height: 8,
+                        width: 15,
+                      }}
+                      source={require('../../../assets/image/arrow_icon.png')}
+                    />
+                  )}
+                  renderItem={item => (
+                    <Text
+                      style={{
+                        color: colors.heading, // इनपुट का टेक्स्ट कलर
+                        fontSize: fontSize.Fifteen,
+                        fontFamily: 'Poppins-Regular',
+                        padding: 10, // आइटम के लिए padding
+                      }}>
+                      {item.label}
+                    </Text>
+                  )}
+                />
+              </Animated.View>
+            </View>
+
+            <View style={styles.inputmain}>
+              <Text style={styles.title2}>Current City Pincode*</Text>
+              <Animated.View
+                style={[
+                  {transform: [{translateX: shakeAnimation.cityPincode}]},
+                ]}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Pincode"
+                  placeholderTextColor={colors.placeholder}
+                  keyboardType="numeric"
+                  maxLength={6}
+                  value={formData.cityPincode}
+                  onChangeText={text => handleInputChange('cityPincode', text)}
+                />
+              </Animated.View>
+            </View>
+
+            <View style={styles.inputmain}>
+              <Text style={styles.title2}>Date of Birth*</Text>
+              {/* <Animated.View style={{ transform: [{ translateX: shakeAnimation.date }] }}> */}
+              <TouchableOpacity
+                onPress={() => setOpen(true)}
+                style={[
+                  styles.input,
+                  styles.inputShadow,
+                  {
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  },
+                ]}>
+                <Text
+                  style={[
+                    styles.input1,
+                    {color: date === '' ? colors.placeholder : colors.heading},
+                  ]}>
+                  {formatDate(date)}
+                </Text>
+
+                <Image
+                  style={{
+                    height: 20,
+                    width: 20,
+                  }}
+                  source={require('../../../assets/image/cale.png')}
+                />
+              </TouchableOpacity>
+              {/* </Animated.View> */}
+              <DatePicker
+                modal
+                open={open}
+                date={date || new Date()}
+                mode="date"
+                maximumDate={new Date()}
+                onConfirm={selectedDate => {
+                  setOpen(false);
+                  setDate(selectedDate);
+                }}
+                onCancel={() => setOpen(false)}
+              />
+            </View>
+
+            <View style={styles.inputmain}>
+              <Text style={styles.title2}>Time of Birth</Text>
+
+              {/* <Animated.View style={[{ transform: [{ translateX: shakeAnimation.time }] }]}> */}
+              <TouchableOpacity
+                onPress={() => setOpen1(true)}
+                style={[
+                  styles.input,
+                  styles.inputShadow,
+                  {
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  },
+                ]}>
+                <Text
+                  style={[
+                    styles.input1,
+                    {color: time === '' ? colors.placeholder : colors.heading},
+                  ]}>
+                  {formatTime(time)}
+                </Text>
+
+                <Image
+                  style={{
+                    height: 20,
+                    width: 20,
+                  }}
+                  source={require('../../../assets/image/Layer.png')}
+                />
+              </TouchableOpacity>
+              {/* </Animated.View> */}
+              <DatePicker
+                modal
+                open={open1}
+                date={time || new Date()}
+                mode="time"
+                onConfirm={selectedTime => {
+                  setOpen1(false);
+                  setTime(selectedTime);
+                }}
+                onCancel={() => setOpen1(false)}
+              />
+            </View>
+
+            <View style={styles.inputmain}>
+              <Text style={styles.title2}>Place of Birth</Text>
+              <Animated.View
+                style={[
+                  {transform: [{translateX: shakeAnimation.birthPlace}]},
+                ]}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Place of Birth"
+                  placeholderTextColor={colors.placeholder}
+                  value={formData.birthPlace}
+                  onChangeText={text => handleInputChange('birthPlace', text)}
+                />
+              </Animated.View>
+            </View>
+            <View style={styles.inputmain}>
+              <Text style={styles.title2}>Additional Information Message</Text>
+              {/* <Animated.View style={[{ transform: [{ translateX: shakeAnimation.additionalInfo }] }]}> */}
+              <TextInput
+                style={styles.messageInput}
+                placeholder="Type here..."
+                placeholderTextColor={colors.placeholder}
+                value={formData.additionalInfo}
+                onChangeText={text => handleInputChange('additionalInfo', text)}
+              />
+              {/* </Animated.View> */}
+            </View>
+          </View>
+        ) : (
+          <View style={styles.cardContainer2}>
+            <Text
+              style={[
+                styles.service,
+                styles.widthOfSevices2,
+                {fontSize: fontSize.Fifteen},
+              ]}>
+              Personal Detail
+            </Text>
+            <TouchableOpacity
+              style={styles.editBtn}
+              onPress={() => setIsEdit(true)}>
+              <Text style={styles.editText}>Edit</Text>
+            </TouchableOpacity>
+            <View style={{marginHorizontal: 5}}>
+              <Text style={styles.profileText}>{formData.name}</Text>
+              <View
+                style={{
                   flexDirection: 'row',
                   justifyContent: 'space-between',
-                  alignItems: 'center',
-                },
-              ]}>
-              <Text
-                style={[
-                  styles.input1,
-                  {color: date === '' ? colors.placeholder : colors.heading},
-                ]}>
-                {formatDate(date)}
-              </Text>
-
-              <Image
+                  paddingVertical: 5,
+                }}>
+                {formData.email && (
+                  <View>
+                    <Text style={styles.smallText}>
+                      email : {formData.email}
+                    </Text>
+                  </View>
+                )}
+                {formData.mobile && (
+                  <View>
+                    <Text style={styles.smallText}>
+                      mob no : {formData.mobile}
+                    </Text>
+                  </View>
+                )}
+              </View>
+              {formData.cityPincode && (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-end',
+                    paddingVertical: 3,
+                  }}>
+                  <Text style={styles.smallText}>currentcity Pincode : </Text>
+                  <Text style={styles.smallText}> {formData.cityPincode}</Text>
+                </View>
+              )}
+              <View
                 style={{
-                  height: 20,
-                  width: 20,
-                }}
-                source={require('../../../assets/image/cale.png')}
-              />
-            </TouchableOpacity>
-            {/* </Animated.View> */}
-            <DatePicker
-              modal
-              open={open}
-              date={date || new Date()}
-              mode="date"
-              maximumDate={new Date()}
-              onConfirm={selectedDate => {
-                setOpen(false);
-                setDate(selectedDate);
-              }}
-              onCancel={() => setOpen(false)}
-            />
-          </View>
-
-          <View style={styles.inputmain}>
-            <Text style={styles.title2}>Time of Birth</Text>
-
-            {/* <Animated.View style={[{ transform: [{ translateX: shakeAnimation.time }] }]}> */}
-            <TouchableOpacity
-              onPress={() => setOpen1(true)}
-              style={[
-                styles.input,
-                styles.inputShadow,
-                {
                   flexDirection: 'row',
                   justifyContent: 'space-between',
-                  alignItems: 'center',
-                },
-              ]}>
-              <Text
-                style={[
-                  styles.input1,
-                  {color: time === '' ? colors.placeholder : colors.heading},
-                ]}>
-                {formatTime(time)}
-              </Text>
-
-              <Image
+                  paddingVertical: 3,
+                }}>
+                <View>
+                  <Text style={styles.smallText}>{formData.gender}</Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    paddingVertical: 3,
+                  }}>
+                  <Text style={styles.smallText}>Birthplace :</Text>
+                  <Text style={styles.smallText}> {formData.birthPlace}</Text>
+                </View>
+              </View>
+              <View
                 style={{
-                  height: 20,
-                  width: 20,
-                }}
-                source={require('../../../assets/image/Layer.png')}
-              />
-            </TouchableOpacity>
-            {/* </Animated.View> */}
-            <DatePicker
-              modal
-              open={open1}
-              date={time || new Date()}
-              mode="time"
-              onConfirm={selectedTime => {
-                setOpen1(false);
-                setTime(selectedTime);
-              }}
-              onCancel={() => setOpen1(false)}
-            />
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  gap: 10,
+                }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                  }}>
+                  <Text style={styles.smallText}>Birthdate :</Text>
+                  <Text style={styles.smallText}> {formatDate(date)}</Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                  }}>
+                  <Text style={styles.smallText}>Birthtime : </Text>
+                  <Text style={styles.smallText}>{formatTime(time)}</Text>
+                </View>
+              </View>
+            </View>
           </View>
-
-          <View style={styles.inputmain}>
-            <Text style={styles.title2}>Place of Birth</Text>
-            <Animated.View
-              style={[{transform: [{translateX: shakeAnimation.birthPlace}]}]}>
-              <TextInput
-                style={styles.input}
-                placeholder="Place of Birth"
-                placeholderTextColor={colors.placeholder}
-                value={formData.birthPlace}
-                onChangeText={text => handleInputChange('birthPlace', text)}
-              />
-            </Animated.View>
-          </View>
-          <View style={styles.inputmain}>
-            <Text style={styles.title2}>Additional Information Message</Text>
-            {/* <Animated.View style={[{ transform: [{ translateX: shakeAnimation.additionalInfo }] }]}> */}
-            <TextInput
-              style={styles.messageInput}
-              placeholder="Type here..."
-              placeholderTextColor={colors.placeholder}
-              value={formData.additionalInfo}
-              onChangeText={text => handleInputChange('additionalInfo', text)}
-            />
-            {/* </Animated.View> */}
-          </View>
-        </View>
-
+        )}
         {/* <TouchableOpacity
           onPress={handleSubmit}
           style={styles.book}>
           <Text style={styles.btext1}>SUBMIT</Text>
         </TouchableOpacity> */}
-
-        <TouchableOpacity onPress={handleSubmit} activeOpacity={1}>
-          <Animated.View
-            style={[
-              styles.book,
-              {
-                transform: [{scale: buttonAnimatedValue}],
-                backgroundColor: colors.orange,
-              },
-            ]}>
-            <Text style={styles.btext1}>SUBMIT</Text>
-          </Animated.View>
-        </TouchableOpacity>
       </ScrollView>
+
+      <TouchableOpacity onPress={handleSubmit} activeOpacity={1}>
+        <Animated.View
+          style={[
+            styles.book,
+            {
+              transform: [{scale: buttonAnimatedValue}],
+              backgroundColor: colors.orange,
+            },
+          ]}>
+          <Text style={styles.btext1}>SUBMIT</Text>
+        </Animated.View>
+      </TouchableOpacity>
     </View>
   );
 };

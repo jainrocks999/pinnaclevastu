@@ -24,7 +24,8 @@ import {signupUser} from '../../../Redux/Slice/Authslice';
 import {Dropdown} from 'react-native-element-dropdown';
 import Loader from '../../../Component/Loader';
 
-const SignUpPage = () => {
+const SignUpPage = ({route}) => {
+  console.log(route,"######")
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
 
   const dispatch = useDispatch();
@@ -304,12 +305,12 @@ const SignUpPage = () => {
         name: selectedImage.fileName,
         type: selectedImage.type,
       });
-
       await dispatch(
         signupUser({
           formUserData,
           url: 'sign-up',
           navigation,
+          route
         }),
       );
     }

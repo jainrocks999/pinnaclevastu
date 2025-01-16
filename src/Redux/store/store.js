@@ -21,6 +21,8 @@ import homeSlice from '../Slice/HomeSlice';
 import Addresslice from '../Slice/Addresslice';
 import Orderslice from '../Slice/orderSclice';
 import cartSlice from '../Slice/CartSlice';
+import consultationSlice from "../Slice/ConsultancySlice"
+
 const store = configureStore({
   reducer: {
     Auth: authSlice,
@@ -28,6 +30,7 @@ const store = configureStore({
     address: Addresslice,
     order: Orderslice,
     cart: cartSlice,
+    consultation: consultationSlice,
   },
 });
 

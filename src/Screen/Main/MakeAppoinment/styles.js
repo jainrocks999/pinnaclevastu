@@ -29,7 +29,7 @@ export default StyleSheet.create({
   },
 
   backBtn: {
-    marginTop:-5,
+    marginTop: -5,
     height: wp(4),
     width: wp(2.3),
     resizeMode: 'stretch',
@@ -82,11 +82,11 @@ export default StyleSheet.create({
   },
   widthOfSevices1: {
     width: wp(22),
-    textAlign:"center",
+    textAlign: 'center',
   },
   widthOfSevices2: {
     width: wp(35),
-    textAlign:"center",
+    textAlign: 'center',
   },
   cont: {
     fontSize: fontSize.Fourteen,
@@ -146,12 +146,14 @@ export default StyleSheet.create({
   },
 
   book: {
+    marginHorizontal: 15,
     backgroundColor: colors.orange,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
     height: wp(13),
-    shadowColor: "#ad3803", // Shadow color
+    marginVertical: hp(1.3),
+    shadowColor: '#ad3803', // Shadow color
     shadowOffset: {width: 0, height: 6}, // Shadow direction
     shadowOpacity: 0.8, // Shadow intensity
     shadowRadius: 10, // Shadow blur radius
@@ -176,9 +178,9 @@ export default StyleSheet.create({
     // marginTop: 2,
     fontFamily: 'Poppins-Regular',
     backgroundColor: colors.white,
-    color:colors.heading
+    color: colors.heading,
   },
- 
+
   serviceSection: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
@@ -197,5 +199,31 @@ export default StyleSheet.create({
     fontSize: fontSize.Thirteen,
     color: colors.cardcolor,
     fontFamily: 'Poppins-Regular',
+  },
+  profileText: {
+    fontFamily: 'Poppins-Bold',
+    fontSize: fontSize.Eighteen,
+    color: colors.orange,
+    textAlign: 'center',
+    marginTop:5
+  },
+  smallText: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: fontSize.Twelve,
+    color: colors.cardcolor,
+  },
+  editBtn:{
+    position: 'absolute',
+    top: 0,
+    right: 10,
+    padding: 5,
+
+  },
+  editText: {
+    // borderWidth:1,
+    fontFamily: 'Poppins-Regular',
+    fontSize: fontSize.Eleven,
+    color: 'red',
+    textDecorationLine: 'underline',
   },
 });

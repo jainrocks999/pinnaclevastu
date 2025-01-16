@@ -26,10 +26,15 @@ import {useDispatch, useSelector} from 'react-redux';
 import {fontSize} from '../../../Component/fontsize';
 
 const PaymentCourse = ({route}) => {
-  const nav = route.params?.data1;
+  const nav = route.params?.data1;      
+  const services = route.params?.services;
+  const formData = route.params?.formData;
   const navigation = useNavigation();
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
   const userDetail = useSelector(state => state?.Auth?.userData);
+  const vastuExpertData = useSelector(
+    state => state?.consultation?.ConsultationDetail
+  );
   const dispatch = useDispatch();
   const [radioActive, setRadioActive] = useState('');
   const [loading1, setLoading] = useState(false);
@@ -74,13 +79,15 @@ const PaymentCourse = ({route}) => {
     const totalProductAmount = itemPrice + taxAmount;
 
     return {
-      totalTaxAmount: taxAmount.toFixed(2), // Total tax amount.
+      totalTaxAmount: totlaServicesPrice.toFixed(2), // Total tax amount.
       totalAmount: totalProductAmount.toFixed(2), // Grand total amount.
       totalPriceOnly: itemPrice.toFixed(2), // Total price before tax.
     };
   };
 
-  useEffect(() => {
+  const totlaServicesPrice=services.reduce((total, item) => total + item.price, 0);
+
+  useEffect(() => { 
     setTotals('');
 
     const usercheck = async () => {
@@ -100,24 +107,24 @@ const PaymentCourse = ({route}) => {
     }
   }, [nav, userType]);
 
-  const createbyord = async (item) => {
+  const createbyord = async item => {
     const userid = await AsyncStorage.getItem('user_id');
-
-
+    console.log(userid,'sjdfksdfmdl',);
+    const selected_franchise_services = services.map(service => service.id);
     let data = {
-      booking_name: "testing",
-      booking_email: "testing@gmail.com",
-      booking_mobile_no: "7049419271",
-      selected_franchise_id: 11,
-      selected_franchise_services: [17, 18, 22],
-      booking_date: "15-01-2025",
-      booking_text: "testing",
-      booking_time: "12:57:01",
-      status: "pending",
+      booking_name: formData.name,
+      booking_email: formData.email,
+      booking_mobile_no: formData.mobile,
+      selected_franchise_id: vastuExpertData?.id,
+      selected_franchise_services: selected_franchise_services,
+      booking_date: formData.bod,
+      booking_text: formData.additionalInfo,
+      booking_time:formData.bot,
+      status: 'pending',
       transaction_id: item?.paymentId ?? '',
       payment_method: item?.radioActive,
       payment_status: item?.status,
-      payment_date: "15-01-2025",
+      payment_date: new Date(),
       user_id: userid,
     };
     try {
@@ -184,26 +191,21 @@ const PaymentCourse = ({route}) => {
       if (radioActive === 'razorpay') {
         Createorder1();
       } else {
-
-
         const transactionDetails = {
           radioActive,
-          paymentId: '112313544',
+          paymentId: '',
           status: 'pending',
           amount: totals?.totalAmount,
-          reason:'',
-          code: '', 
+          reason: '',
+          code: '',
         };
         createbyord(transactionDetails);
       }
     });
   };
 
-
-
-
- const Createorder1 = async () => {
-    let total = 100 * parseInt(totals?.totalAmount); 
+  const Createorder1 = async () => {
+    let total = 100 * parseInt(totals?.totalAmount);
     var options = {
       description: 'Credits towards consultation',
       image: require('../../../assets/image/header.png'),
@@ -216,37 +218,34 @@ const PaymentCourse = ({route}) => {
         contact: userDetail?.phone || '',
         name: userDetail?.name || '',
       },
-      theme: { color: colors.orange },
+      theme: {color: colors.orange},
     };
-  
+
     try {
       const data = await RazorpayCheckout.open(options);
-  
-     
+
       const transactionDetails = {
         radioActive,
-        paymentId: data.razorpay_payment_id ||'',
+        paymentId: data.razorpay_payment_id || '',
         status: data.razorpay_payment_id ? 'completed' : 'failed',
         amount: totals?.totalAmount,
         reason: data.razorpay_payment_id ? null : 'Payment ID missing',
-        code: null, 
+        code: null,
       };
-  
-      
+
       createbyord(transactionDetails);
     } catch (error) {
-     console.log('shgkjshgkg',error);
-     
+      console.log('shgkjshgkg', error);
+
       const transactionDetails = {
         radioActive,
         paymentId: '',
         status: 'failed',
         amount: totals?.totalAmount,
-        reason:error?.error?.reason|| 'Transaction failed',
-        code: error.code, 
+        reason: error?.error?.reason || 'Transaction failed',
+        code: error.code,
       };
-  
-   
+
       createbyord(transactionDetails);
     }
   };
@@ -276,8 +275,8 @@ const PaymentCourse = ({route}) => {
               styles.borderBottom,
               {paddingTop: 0, paddingBottom: 5},
             ]}>
-            <Text style={styles.third2}>{nav?.title}</Text>
-            <Text style={[styles.third2]}>{`₹ ${totals?.totalPriceOnly}`}</Text>
+            <Text style={styles.third2}>{vastuExpertData?.franchise_name}</Text>
+            <Text style={[styles.third2]}>{`₹ ${totlaServicesPrice}`}</Text>
           </View>
           <View
             style={[

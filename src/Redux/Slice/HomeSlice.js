@@ -842,33 +842,6 @@ export const likedProductListApi = createAsyncThunk(
     }
   },
 );
-export const consultationDetail1 = createAsyncThunk(
-  'home/consultationDetail1',
-  async ({url, franchise_id, navigation}, {rejectWithValue}) => {
-    console.log('consultation detail00', url, franchise_id);
-    try {
-      const config = {
-        method: 'get',
-        maxBodyLength: Infinity,
-        url: `${constant.mainUrl}${url}?franchise_id=${franchise_id}`,
-        headers: {},
-      };
-      const response = await axios.request(config);
-      if (response?.data?.status == 200) {
-        console.log('response data consultation detail ', response.data);
-        navigation.navigate('profile');
-        return response?.data;
-      } else {
-        Toast.show(response?.data?.msg);
-      }
-    } catch (error) {
-      console.log('banner error ', error);
-      return rejectWithValue(
-        error.response ? error.response.data : error.message,
-      );
-    }
-  },
-);
 
 const homeSlice = createSlice({
   name: 'home',
@@ -881,7 +854,6 @@ const homeSlice = createSlice({
     Cource: [],
     CourceDetailA: [],
     likeProductList: [],
-    ConsultationDetail: [],
     loading: false,
     error: null,
   },
@@ -996,18 +968,6 @@ const homeSlice = createSlice({
         state.likeProductList = action.payload;
       })
       .addCase(likedProductListApi.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      .addCase(consultationDetail1.pending, state => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(consultationDetail1.fulfilled, (state, action) => {
-        state.loading = false;
-        state.ConsultationDetail = action.payload;
-      })
-      .addCase(consultationDetail1.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
