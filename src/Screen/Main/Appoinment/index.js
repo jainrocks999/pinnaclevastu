@@ -16,7 +16,7 @@ import {Rating} from 'react-native-ratings';
 import {heightPercent} from '../../../Component/ResponsiveScreen/responsive';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {getAppoinment} from '../../../Redux/Slice/HomeSlice';
+import {getAppoinment} from '../../../Redux/Slice/ConsultancySlice';
 import {useDispatch, useSelector} from 'react-redux';
 import Imagepath from '../../../Component/Imagepath';
 
@@ -80,13 +80,13 @@ const completedAppointments = [
 const Appointment = ({}) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const appoinment1 = useSelector(state => state?.home?.Appoinment1);
-
+  const appoinment1 = useSelector(state => state?.consultation?.Appoinment1);
+  console.log(appoinment1, 'sdfdfsddfsd');
   const [selectedTab, setSelectedTab] = useState('Upcoming');
   const [appointmentsData, setAppointmentsData] = useState(appoinment1);
   const [sessionOver, setSessionOver] = useState(true);
   const [scaleAnims, setScaleAnims] = useState({});
-  console.log('data      get', appointmentsData);
+  console.log('data  get', appointmentsData);
   useEffect(() => {
     APPoinemet();
   }, []);

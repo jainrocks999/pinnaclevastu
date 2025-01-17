@@ -26,7 +26,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getUserDetailApi} from '../../../Redux/Slice/Authslice';
 
-const ResidentalScreen = ({navigation }) => {
+const ResidentalScreen = ({navigation}) => {
   const dispatch = useDispatch();
   const userDetail = useSelector(state => state?.Auth?.userData);
   const data = useSelector(state => state?.consultation?.ConsultationDetail);
@@ -164,6 +164,7 @@ const ResidentalScreen = ({navigation }) => {
 
   // Shake animation function
   const shake = field => {
+    setIsEdit(true);
     Vibration.vibrate(100); // Vibration for 100 milliseconds
     Animated.sequence([
       Animated.timing(shakeAnimation[field], {
@@ -678,90 +679,64 @@ const ResidentalScreen = ({navigation }) => {
               onPress={() => setIsEdit(true)}>
               <Text style={styles.editText}>Edit</Text>
             </TouchableOpacity>
-            <View style={{marginHorizontal: 5}}>
+
+            <View
+              style={{
+                marginTop:8,
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+                paddingVertical: 5,
+              }}>
+          
               <Text style={styles.profileText}>{formData.name}</Text>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  paddingVertical: 5,
-                }}>
-                {formData.email && (
-                  <View>
-                    <Text style={styles.smallText}>
-                      email : {formData.email}
-                    </Text>
-                  </View>
-                )}
-                {formData.mobile && (
-                  <View>
-                    <Text style={styles.smallText}>
-                      mob no : {formData.mobile}
-                    </Text>
-                  </View>
-                )}
-              </View>
-              {formData.cityPincode && (
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'flex-end',
-                    paddingVertical: 3,
-                  }}>
-                  <Text style={styles.smallText}>currentcity Pincode : </Text>
-                  <Text style={styles.smallText}> {formData.cityPincode}</Text>
-                </View>
-              )}
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  paddingVertical: 3,
-                }}>
-                <View>
-                  <Text style={styles.smallText}>{formData.gender}</Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    paddingVertical: 3,
-                  }}>
-                  <Text style={styles.smallText}>Birthplace :</Text>
-                  <Text style={styles.smallText}> {formData.birthPlace}</Text>
-                </View>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  gap: 10,
-                }}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}>
-                  <Text style={styles.smallText}>Birthdate :</Text>
-                  <Text style={styles.smallText}> {formatDate(date)}</Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}>
-                  <Text style={styles.smallText}>Birthtime : </Text>
-                  <Text style={styles.smallText}>{formatTime(time)}</Text>
-                </View>
-              </View>
             </View>
+            {formData.email && (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start',
+                  paddingVertical: 5,
+                  gap:10
+                }}>
+                <Text style={styles.boldText}> Email  :</Text>
+                <Text style={styles.smallText}>{formData.email}</Text>
+              </View>
+            )}
+
+            {formData.mobile && (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start',
+                  paddingVertical: 5,
+                  gap:10
+                }}>
+                <Text style={styles.boldText}>  Phone no  :</Text>
+                <Text style={styles.smallText}>{formData.mobile}</Text>
+              </View>
+            )}
+         
+            {formatDate(date) && (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start',
+                  paddingVertical: 5,
+                  gap:10
+                }}>
+                <Text style={styles.boldText}>  Birthdate  :</Text>
+                <Text style={styles.smallText}>{formatDate(date)}</Text>
+              </View>
+            )}
+          
+        
           </View>
         )}
         {/* <TouchableOpacity
           onPress={handleSubmit}
           style={styles.book}>
           <Text style={styles.btext1}>SUBMIT</Text>
-        </TouchableOpacity> */}
+        </TouchableOpacity> */}     
       </ScrollView>
 
       <TouchableOpacity onPress={handleSubmit} activeOpacity={1}>

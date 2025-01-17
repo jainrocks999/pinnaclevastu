@@ -18,21 +18,17 @@ import {Rating} from 'react-native-ratings';
 import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
 import {useNavigation} from '@react-navigation/native';
 import {consultationDetail1} from '../../../Redux/Slice/HomeSlice';
-import { useSelector} from 'react-redux';
+import {useSelector} from 'react-redux';
 import Imagepath from '../../../Component/Imagepath';
 
-
 const ResidentalScreen = ({navigation}) => {
-
   const userDetail = useSelector(state => state?.Auth?.userData);
   // const data = useSelector(state => state?.home?.ConsultationDetail?.data);
   const data = useSelector(state => state.consultation.ConsultationDetail);
 
-
   // console.log(fromScreen," se aaya hai....")
   // console.log(data,"scmlsmkcl")
 
- 
   const [scaleAnims, setScaleAnims] = useState({});
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
 
@@ -189,7 +185,18 @@ const ResidentalScreen = ({navigation}) => {
           },
         ]}>
         <TouchableOpacity
-          style={[styles.cardContainer, {backgroundColor: item?.color_code}]}
+          style={[
+            styles.cardContainer,
+            {
+              backgroundColor: item?.color_code,
+              width:
+                data?.franchise_services.length == 1
+                  ? wp(90)
+                  : data?.franchise_services.length == 2
+                  ? wp(45)
+                  : wp(30),
+            },
+          ]}
           onPress={() => handleItemClick(index)}>
           <Image
             source={
@@ -314,16 +321,26 @@ const ResidentalScreen = ({navigation}) => {
         </View>
         <FlatList
           // data={data2}
-          data={data?.franchise_services || []}
+          data={data?.franchise_services || [].slice(0, 3)}
           renderItem={renderItem}
           scrollEnabled={false}
           keyExtractor={item => item.id}
           numColumns={3}
           showsVerticalScrollIndicator={false}
+          // contentContainerStyle={{
+          //   alignSelf: 'center',
+          //   justifyContent:"center",
+          //   gap: 15,
+          //   paddingHorizontal: 0,
+          //   width:"100%",
+          //   borderWidth:1
+          // }}
           contentContainerStyle={{
-            alignSelf: 'center',
-            gap: 15,
-            paddingHorizontal: 0,
+            flexDirection: 'row',
+            justifyContent: 'center',
+            // justifyContent: data?.franchise_services.length == 1 ? "center" : "space-between", // Adjust based on item count
+            // paddingHorizontal:  data?.franchise_services?.length == 1 ? 0 : 10, // Adjust padding
+            width: '100%',
           }}
         />
         <View style={{paddingHorizontal: 10}}>

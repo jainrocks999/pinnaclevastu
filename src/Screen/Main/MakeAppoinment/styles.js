@@ -202,10 +202,16 @@ export default StyleSheet.create({
   },
   profileText: {
     fontFamily: 'Poppins-Bold',
-    fontSize: fontSize.Eighteen,
-    color: colors.orange,
+    fontSize: fontSize.Fifteen,
+    color: colors.cardcolor,
     textAlign: 'center',
-    marginTop:5
+    // marginLeft:20
+    // marginTop:5
+  },
+  boldText:{
+    fontFamily: 'Poppins-Bold',
+    fontSize: fontSize.Twelve,
+    color: colors.cardcolor,
   },
   smallText: {
     fontFamily: 'Poppins-Regular',
@@ -214,8 +220,8 @@ export default StyleSheet.create({
   },
   editBtn:{
     position: 'absolute',
-    top: 0,
-    right: 10,
+    top: 10,
+    right: 20,
     padding: 5,
 
   },

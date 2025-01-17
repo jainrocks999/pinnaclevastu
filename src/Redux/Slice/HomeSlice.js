@@ -280,42 +280,6 @@ export const likedProductListApi = createAsyncThunk(
   },
 );
 
-
-
-
-
-export const getAppoinment = createAsyncThunk(
-  'home/getAppoinment',
-    async ({url,token,user_id}, {rejectWithValue}) => {
-      console.log(url,token,user_id, 'Appoinment1 ,,,response ');
-    try {
-      const config = {
-        method: 'get',
-        maxBodyLength: Infinity,
-        url: `${constant.mainUrl}${url}?user_id=${user_id}`,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
-      console.log('Appoinment1 ,,,response ',config);
-
-      const response = await axios.request(config);
-     console.log(response.data, 'Appoinment1 ,,,response ');
-
-      if (response?.data?.status == 200) {
-        // console.log(response.data, 'response.data Sandeep dfgmkdflgkdflg');
-        return response?.data?.data;
-      }
-    } catch (error) {
-      console.log('Liked Product List error ', error);
-
-      return rejectWithValue(
-        error.response ? error.response.data : error.message,
-      );
-    }
-  },
-);
-
 const homeSlice = createSlice({
   name: 'home',
   initialState: {
@@ -327,8 +291,6 @@ const homeSlice = createSlice({
     Cource: [],
     CourceDetailA: [],
     likeProductList: [],
-    ConsultationDetail: [],
-    Appoinment1:[],
     loading: false,
     error: null,
   },
@@ -446,30 +408,6 @@ const homeSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(consultationDetail1.pending, state => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(consultationDetail1.fulfilled, (state, action) => {
-        state.loading = false;
-        state.ConsultationDetail = action.payload;
-      })
-      .addCase(consultationDetail1.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      .addCase(getAppoinment.pending, state => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(getAppoinment.fulfilled, (state, action) => {
-        state.loading = false;
-        state.Appoinment1 = action.payload;
-      })
-      .addCase(getAppoinment.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      });
   },
 });
 

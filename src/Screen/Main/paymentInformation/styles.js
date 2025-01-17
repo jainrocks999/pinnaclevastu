@@ -126,9 +126,10 @@ export default StyleSheet.create({
   otherIcons: {
     // height: 40,
     // width: 63,
-    height: wp(9),
-    width: wp(12),
-    resizeMode: 'contain',
+    // padding:10,
+    height: wp(10),
+    width: wp(15),
+    resizeMode: 'center',
     borderWidth: 1,
     borderColor: '#DFE7EF',
     borderRadius: 10,
@@ -271,7 +272,7 @@ export default StyleSheet.create({
     fontFamily: 'Poppins-Regular',
     color: colors.paymenttext,
     textAlign: 'center',
-    marginTop: 20,
+    marginTop: 10,
     marginBottom: 8,
   },
 });
