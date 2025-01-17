@@ -172,7 +172,16 @@ const CoureList = ({navigation}) => {
                   onPress={() => handlePress(item)} // Pass item id to trigger animation
                   style={styles.card}>
                   <View style={styles.cardInfo}>
-                    <Text style={styles.headingText}>{item.course.title}</Text>
+                    <Text style={styles.headingText}>
+                      
+                    {item.course.title
+                ? item.course.title.length > 20
+                  ? `${item.course.title.substring(0, 20)}...`
+                  : item.course.title
+                : ''}
+                      
+                      
+                    </Text>
                     <Text style={styles.dateText}>
                       Date:{' '}
                       <Text style={styles.smallText}>

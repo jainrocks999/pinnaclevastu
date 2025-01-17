@@ -28,6 +28,7 @@ const {width} = Dimensions.get('window');
 const MyOrder = ({route}) => {
   const navigation = useNavigation();
 
+
   const product = useSelector(state => state?.order?.orderList1?.data);
   
   const cource =useSelector(state => state?.order?.orderCource?.data);
@@ -63,7 +64,7 @@ useEffect(() => {
     return () => clearInterval(intervalId); 
   }, [placeholderText]);
   useEffect(() => {
-   
+    setSelectedTab(route?.params?.data);
     if (focus) {
       apicall()
       const backAction = () => {
@@ -78,27 +79,12 @@ useEffect(() => {
   
       return () => backHandler.remove(); 
     }
-  }, [focus,navigation]);
-
-
-  // useEffect(() => {
-  //   const backAction = () => {
-  //     navigation.reset({
-  //       index: 0,
-  //       routes: [{name: 'UserProfile'}],
-  //     })
-  //     return true; 
-  //   };
-
-  //   const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-
-  //   return () => backHandler.remove(); 
-  // }, [navigation]);
+  }, [navigation]);
 
   const apicall = async () => {
   
     try {
-      // Retrieve token and user_id from AsyncStorage
+
       const token = await AsyncStorage.getItem('Token');
       const userid = await AsyncStorage.getItem('user_id');
 
@@ -370,7 +356,7 @@ useEffect(() => {
           contentContainerStyle={styles.ordersList}
         />
       
-      ):(<Text>Deepu</Text>)
+      ):(<Text>Consultation</Text>)
         
         }
       </ScrollView>

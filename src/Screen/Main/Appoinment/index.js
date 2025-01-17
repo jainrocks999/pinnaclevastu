@@ -89,6 +89,7 @@ const Appointment = ({}) => {
   console.log('data      get', appointmentsData);
   useEffect(() => {
     APPoinemet();
+    
   }, []);
   const APPoinemet = async () => {
     const token = await AsyncStorage.getItem('Token');
@@ -126,12 +127,15 @@ const Appointment = ({}) => {
     });
   };
 
+  useEffect(()=>{
+    handleTabClick('Upcoming');
+  },[appoinment1])
   const handleTabClick = tab => {
     setSelectedTab(tab);
-    if (tab === 'Upcoming') {
+    if (tab == 'Upcoming') {
       setAppointmentsData(appoinment1);
     } else {
-      setAppointmentsData(completedAppointments);
+      setAppointmentsData(appoinment1);
     }
   };
   function formatDateDirectly(dateString) {

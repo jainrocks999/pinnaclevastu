@@ -674,6 +674,7 @@ const ResidentalScreen = ({navigation }) => {
               Personal Detail
             </Text>
             <TouchableOpacity
+             hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
               style={styles.editBtn}
               onPress={() => setIsEdit(true)}>
               <Text style={styles.editText}>Edit</Text>

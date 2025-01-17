@@ -242,7 +242,7 @@ const PaymentCourse = ({route}) => {
       };
   
    
-      createbyord(transactionDetails);
+      // createbyord(transactionDetails);
     }
   };
 

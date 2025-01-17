@@ -197,7 +197,7 @@ const MyProfile = () => {
             onPress={() =>
               navigation.navigate('Home1', {
                 screen: 'MyProfile',
-                params: {screen: 'MyOrder'},
+                params: {screen: 'MyOrder',params:{data:'Remedies'}},
               })
             }
             hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}

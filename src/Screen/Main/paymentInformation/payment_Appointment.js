@@ -25,7 +25,7 @@ import RazorpayCheckout from 'react-native-razorpay';
 import {useDispatch, useSelector} from 'react-redux';
 import {fontSize} from '../../../Component/fontsize';
 
-const PaymentCourse = ({route}) => {
+const PaymentAppointment = ({route}) => {
   const nav = route.params?.data1;      
   const services = route.params?.services;
   const formData = route.params?.formData;
@@ -246,7 +246,7 @@ const PaymentCourse = ({route}) => {
         code: error.code,
       };
 
-      createbyord(transactionDetails);
+      // createbyord(transactionDetails);
     }
   };
   return (
@@ -447,19 +447,16 @@ const PaymentCourse = ({route}) => {
           </View>
         </View>
 
-        <Text style={[styles.payment1]}>
-          {nav?.title}
-          <Text
-            style={{
-              fontSize: fontSize.Sixteen,
-              color: colors.paymenttext,
-              fontFamily: 'Poppins-SemiBold',
-              marginLeft: 15,
-            }}>
-            {' '}
-            {`₹ ${totals?.totalAmount}`}
-          </Text>
-        </Text>
+      </ScrollView>
+      <View style={styles.servicesContainer}>
+        
+     <Text style={[styles.payment1]}>
+               Secured by Trusted Indian Banks{' '}
+               <Image
+                 style={{height: 12, width: 12}}
+                 source={require('../../../assets/otherApp/verify.png')}
+               />
+             </Text>
 
         <Animated.View
           style={[
@@ -476,7 +473,7 @@ const PaymentCourse = ({route}) => {
             <Text style={[styles.btext1]}>PROCEED TO PAY</Text>
           </TouchableOpacity>
         </Animated.View>
-      </ScrollView>
+      </View>
     </View>
   );
 };

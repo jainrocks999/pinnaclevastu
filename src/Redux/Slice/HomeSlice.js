@@ -327,7 +327,6 @@ const homeSlice = createSlice({
     Cource: [],
     CourceDetailA: [],
     likeProductList: [],
-    ConsultationDetail: [],
     Appoinment1:[],
     loading: false,
     error: null,
@@ -446,18 +445,7 @@ const homeSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(consultationDetail1.pending, state => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(consultationDetail1.fulfilled, (state, action) => {
-        state.loading = false;
-        state.ConsultationDetail = action.payload;
-      })
-      .addCase(consultationDetail1.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
+     
       .addCase(getAppoinment.pending, state => {
         state.loading = true;
         state.error = null;

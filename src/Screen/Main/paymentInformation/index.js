@@ -163,6 +163,7 @@ const ResidentalScreen = ({route}) => {
       
       createbyord(transactionDetails);
     } catch (error) {
+      
      console.log('shgkjshgkg',error);
      
       const transactionDetails = {
@@ -175,7 +176,7 @@ const ResidentalScreen = ({route}) => {
       };
   
    
-      createbyord(transactionDetails);
+      // createbyord(transactionDetails);
     }
   };
   
