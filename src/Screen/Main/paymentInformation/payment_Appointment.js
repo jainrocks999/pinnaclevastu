@@ -33,7 +33,7 @@ const PaymentAppointment = ({route}) => {
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
   const userDetail = useSelector(state => state?.Auth?.userData);
   const vastuExpertData = useSelector(
-    state => state?.consultation?.ConsultationDetail
+    state => state?.consultation?.ConsultationDetail,
   );
   const dispatch = useDispatch();
   const [radioActive, setRadioActive] = useState('');
@@ -85,9 +85,12 @@ const PaymentAppointment = ({route}) => {
     };
   };
 
-  const totlaServicesPrice=services.reduce((total, item) => total + item.price, 0);
+  const totlaServicesPrice = services.reduce(
+    (total, item) => total + item.price,
+    0,
+  );
 
-  useEffect(() => { 
+  useEffect(() => {
     setTotals('');
 
     const usercheck = async () => {
@@ -109,7 +112,7 @@ const PaymentAppointment = ({route}) => {
 
   const createbyord = async item => {
     const userid = await AsyncStorage.getItem('user_id');
-    console.log(userid,'sjdfksdfmdl',);
+    console.log(userid, 'sjdfksdfmdl');
     const selected_franchise_services = services.map(service => service.id);
     let data = {
       booking_name: formData.name,
@@ -119,7 +122,7 @@ const PaymentAppointment = ({route}) => {
       selected_franchise_services: selected_franchise_services,
       booking_date: formData.bod,
       booking_text: formData.additionalInfo,
-      booking_time:formData.bot,
+      booking_time: formData.bot,
       status: 'pending',
       transaction_id: item?.paymentId ?? '',
       payment_method: item?.radioActive,
@@ -307,7 +310,7 @@ const PaymentAppointment = ({route}) => {
           </View>
         </View>
 
-        <View style={[styles.cardContainer2]}>
+        {/* <View style={[styles.cardContainer2]}>
           <Text style={styles.payment}>
             Pay Directly with your favourite UPI apps
           </Text>
@@ -349,16 +352,16 @@ const PaymentAppointment = ({route}) => {
             />
             <Text style={[styles.service]}>Pay with other UPI apps</Text>
           </View>
-        </View>
+        </View> */}
 
         <View style={styles.cardContainer2}>
           <Text style={[styles.payment, {}]}>Other payment Methods</Text>
 
           <View style={[styles.appBottomSection, styles.borderBottom]}>
-            {/* <Image
+            <Image
               style={styles.otherIcons}
-              source={require('../../../assets/otherApp/paytm2.png')}
-            /> */}
+              source={require('../../../assets/image/cash-on-delivery.png')}
+            />
             <Text style={styles.otherIconText}>Cash on Delivery</Text>
 
             <View style={styles.radioBtnContainer}>
@@ -373,7 +376,11 @@ const PaymentAppointment = ({route}) => {
             </View>
           </View>
 
-          <View style={[styles.appBottomSection, styles.borderBottom]}>
+          <View style={[styles.appBottomSection, {paddingBottom: 15}]}>
+            <Image
+              style={styles.otherIcons}
+              source={require('../../../assets/image/razorpay-icon.png')}
+            />
             <Text style={styles.otherIconText}>Razorpay Payment</Text>
 
             <View style={styles.radioBtnContainer}>
@@ -389,7 +396,7 @@ const PaymentAppointment = ({route}) => {
               />
             </View>
           </View>
-          <View style={[styles.appBottomSection, styles.borderBottom]}>
+          {/* <View style={[styles.appBottomSection, styles.borderBottom]}>
             <Image
               style={styles.otherIcons}
               source={require('../../../assets/otherApp/paytm2.png')}
@@ -406,9 +413,9 @@ const PaymentAppointment = ({route}) => {
                 style={styles.radio}
               />
             </View>
-          </View>
+          </View> */}
 
-          <View style={[styles.appBottomSection, styles.borderBottom]}>
+          {/* <View style={[styles.appBottomSection, styles.borderBottom]}>
             <Image
               style={styles.otherIcons}
               source={require('../../../assets/otherApp/card.png')}
@@ -425,9 +432,9 @@ const PaymentAppointment = ({route}) => {
                 style={styles.radio}
               />
             </View>
-          </View>
+          </View> */}
 
-          <View style={[styles.appBottomSection]}>
+          {/* <View style={[styles.appBottomSection]}>
             <Image
               style={styles.otherIcons}
               source={require('../../../assets/otherApp/netbanking.png')}
@@ -444,7 +451,7 @@ const PaymentAppointment = ({route}) => {
                 style={styles.radio}
               />
             </View>
-          </View>
+          </View> */}
         </View>
 
       </ScrollView>

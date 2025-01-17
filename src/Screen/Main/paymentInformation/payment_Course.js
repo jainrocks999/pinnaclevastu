@@ -100,7 +100,7 @@ const PaymentCourse = ({route}) => {
     }
   }, [nav, userType]);
 
-  const createbyord = async (item) => {
+  const createbyord = async item => {
     const userid = await AsyncStorage.getItem('user_id');
     const data = {
       user_id: userid,
@@ -179,25 +179,20 @@ const PaymentCourse = ({route}) => {
       if (radioActive === 'razorpay') {
         Createorder1();
       } else {
-
-
         const transactionDetails = {
           radioActive,
           paymentId: '',
           status: 'pending',
           amount: totals?.totalAmount,
-          reason:'',
-          code: '', 
+          reason: '',
+          code: '',
         };
         createbyord(transactionDetails);
       }
     });
   };
 
-
-
-
- const Createorder1 = async () => {
+  const Createorder1 = async () => {
     let total = 100 * parseInt(totals?.totalAmount); // Total in paise
     var options = {
       description: 'Credits towards consultation',
@@ -211,34 +206,32 @@ const PaymentCourse = ({route}) => {
         contact: userDetail?.phone || '',
         name: userDetail?.name || '',
       },
-      theme: { color: colors.orange },
+      theme: {color: colors.orange},
     };
-  
+
     try {
       const data = await RazorpayCheckout.open(options);
-  
-     
+
       const transactionDetails = {
         radioActive,
-        paymentId: data.razorpay_payment_id ||'',
+        paymentId: data.razorpay_payment_id || '',
         status: data.razorpay_payment_id ? 'completed' : 'failed',
         amount: totals?.totalAmount,
         reason: data.razorpay_payment_id ? null : 'Payment ID missing',
-        code: null, 
+        code: null,
       };
-  
-      
+
       createbyord(transactionDetails);
     } catch (error) {
-     console.log('shgkjshgkg',error);
-     
+      console.log('shgkjshgkg', error);
+
       const transactionDetails = {
         radioActive,
         paymentId: '',
         status: 'failed',
         amount: totals?.totalAmount,
-        reason:error?.error?.reason|| 'Transaction failed',
-        code: error.code, 
+        reason: error?.error?.reason || 'Transaction failed',
+        code: error.code,
       };
   
    
@@ -308,7 +301,7 @@ const PaymentCourse = ({route}) => {
           </View>
         </View>
 
-        <View style={[styles.cardContainer2]}>
+        {/* <View style={[styles.cardContainer2]}>
           <Text style={styles.payment}>
             Pay Directly with your favourite UPI apps
           </Text>
@@ -350,16 +343,16 @@ const PaymentCourse = ({route}) => {
             />
             <Text style={[styles.service]}>Pay with other UPI apps</Text>
           </View>
-        </View>
+        </View> */}
 
         <View style={styles.cardContainer2}>
           <Text style={[styles.payment, {}]}>Other payment Methods</Text>
 
           <View style={[styles.appBottomSection, styles.borderBottom]}>
-            {/* <Image
+            <Image
               style={styles.otherIcons}
-              source={require('../../../assets/otherApp/paytm2.png')}
-            /> */}
+              source={require('../../../assets/image/cash-on-delivery.png')}
+            />
             <Text style={styles.otherIconText}>Cash on Delivery</Text>
 
             <View style={styles.radioBtnContainer}>
@@ -374,7 +367,11 @@ const PaymentCourse = ({route}) => {
             </View>
           </View>
 
-          <View style={[styles.appBottomSection, styles.borderBottom]}>
+          <View style={[styles.appBottomSection, {paddingBottom: 15}]}>
+            <Image
+              style={styles.otherIcons}
+              source={require('../../../assets/image/razorpay-icon.png')}
+            />
             <Text style={styles.otherIconText}>Razorpay Payment</Text>
 
             <View style={styles.radioBtnContainer}>
@@ -390,7 +387,7 @@ const PaymentCourse = ({route}) => {
               />
             </View>
           </View>
-          <View style={[styles.appBottomSection, styles.borderBottom]}>
+          {/* <View style={[styles.appBottomSection, styles.borderBottom]}>
             <Image
               style={styles.otherIcons}
               source={require('../../../assets/otherApp/paytm2.png')}
@@ -407,9 +404,9 @@ const PaymentCourse = ({route}) => {
                 style={styles.radio}
               />
             </View>
-          </View>
+          </View> */}
 
-          <View style={[styles.appBottomSection, styles.borderBottom]}>
+          {/* <View style={[styles.appBottomSection, styles.borderBottom]}>
             <Image
               style={styles.otherIcons}
               source={require('../../../assets/otherApp/card.png')}
@@ -426,9 +423,9 @@ const PaymentCourse = ({route}) => {
                 style={styles.radio}
               />
             </View>
-          </View>
+          </View> */}
 
-          <View style={[styles.appBottomSection]}>
+          {/* <View style={[styles.appBottomSection]}>
             <Image
               style={styles.otherIcons}
               source={require('../../../assets/otherApp/netbanking.png')}
@@ -445,13 +442,11 @@ const PaymentCourse = ({route}) => {
                 style={styles.radio}
               />
             </View>
-          </View>
+          </View> */}
         </View>
-
-        
       </ScrollView>
       <View style={styles.servicesContainer}>
-      <Text style={[styles.payment1]}>
+        <Text style={[styles.payment1]}>
           {nav?.title}
           <Text
             style={{

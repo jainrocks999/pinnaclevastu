@@ -29,12 +29,12 @@ import RazorpayCheckout from 'react-native-razorpay';
 const ResidentalScreen = ({route}) => {
   const nav = route.params;
   const navigation = useNavigation();
-    const userDetail = useSelector(state => state?.Auth?.userData);
-     const cartDataList = useSelector(state => state?.cart?.CartData);
+  const userDetail = useSelector(state => state?.Auth?.userData);
+  const cartDataList = useSelector(state => state?.cart?.CartData);
   const isLoading = useSelector(state => state?.order?.loading);
   const ship = useSelector(state => state?.order?.shipm?.shipping_method);
   const dispatch = useDispatch();
-  const[trakIdSectionIS,setTranjuctionId]=useState('');
+  const [trakIdSectionIS, setTranjuctionId] = useState('');
   const [radioActive, setRadioActive] = useState('');
   const [loading1, setLoading] = useState(false);
   const [userType, setUserType] = useState('');
@@ -128,8 +128,6 @@ const ResidentalScreen = ({route}) => {
     }
   }, [nav?.data?.item, userType]);
 
-
-
   const Createorder1 = async () => {
     let total = 100 * parseInt(totals?.totalAmount); // Total in paise
     var options = {
@@ -144,23 +142,21 @@ const ResidentalScreen = ({route}) => {
         contact: userDetail?.phone || '',
         name: userDetail?.name || '',
       },
-      theme: { color: colors.orange },
+      theme: {color: colors.orange},
     };
-  
+
     try {
       const data = await RazorpayCheckout.open(options);
-  
-     
+
       const transactionDetails = {
         radioActive,
-        paymentId: data.razorpay_payment_id ||'',
+        paymentId: data.razorpay_payment_id || '',
         status: data.razorpay_payment_id ? 'completed' : 'failed',
         amount: totals?.totalAmount,
         reason: data.razorpay_payment_id ? null : 'Payment ID missing',
-        code: null, 
+        code: null,
       };
-  
-      
+
       createbyord(transactionDetails);
     } catch (error) {
       
@@ -171,20 +167,17 @@ const ResidentalScreen = ({route}) => {
         paymentId: '',
         status: 'failed',
         amount: totals?.totalAmount,
-        reason:error?.error?.reason|| 'Transaction failed',
-        code: error.code, 
+        reason: error?.error?.reason || 'Transaction failed',
+        code: error.code,
       };
   
    
       // createbyord(transactionDetails);
     }
   };
-  
 
-
-
-  const createbyord = async (item12) => {
-console.log('dhsbgjsbsfg',item12);
+  const createbyord = async item12 => {
+    console.log('dhsbgjsbsfg', item12);
 
     const data = {
       shipping_option: ship?.shipping_method_id ?? '1',
@@ -193,9 +186,9 @@ console.log('dhsbgjsbsfg',item12);
       shipping_amount: ship?.price ?? '',
       shipping_type: '',
       is_available_shipping: '1',
-      payment_status:item12?.status??'pending',
+      payment_status: item12?.status ?? 'pending',
       payment_method: item12?.radioActive ?? '',
-      transaction_id: item12?.paymentId??'',
+      transaction_id: item12?.paymentId ?? '',
       coupon_code: '',
       tax_amount: totals?.totalTaxAmount,
       sub_amount: totals?.totalPriceOnly,
@@ -290,16 +283,16 @@ console.log('dhsbgjsbsfg',item12);
 
   const renderItem = ({item, index}) => {
     const isLastItem = index === nav?.data?.item.length - 1;
-    const isGSTRow = item.id === '2'; 
+    const isGSTRow = item.id === '2';
 
     return (
       <View
         style={[
           styles.card45,
-          styles.borderBottom, 
+          styles.borderBottom,
           {
             paddingTop: 0,
-            paddingBottom: isGSTRow ? 5 : 0, 
+            paddingBottom: isGSTRow ? 5 : 0,
           },
         ]}>
         <Text style={[item.isBold ? styles.third3 : styles.third1]}>
@@ -418,7 +411,7 @@ console.log('dhsbgjsbsfg',item12);
           </View>
         </View>
 
-        <View style={[styles.cardContainer2]}>
+        {/* <View style={[styles.cardContainer2]}>
           <Text style={styles.payment}>
             Pay Directly with your favourite UPI apps
           </Text>
@@ -460,16 +453,17 @@ console.log('dhsbgjsbsfg',item12);
             />
             <Text style={[styles.service]}>Pay with other UPI apps</Text>
           </View>
-        </View>
+        </View> */}
 
         <View style={styles.cardContainer2}>
           <Text style={[styles.payment, {}]}>Other payment Methods</Text>
 
           <View style={[styles.appBottomSection, styles.borderBottom]}>
-            {/* <Image
-              style={styles.otherIcons}
-              source={require('../../../assets/otherApp/paytm2.png')}
-            /> */}
+       
+              <Image
+                style={styles.otherIcons}
+                source={require('../../../assets/image/cash-on-delivery.png')}
+              />
             <Text style={styles.otherIconText}>Cash on Delivery</Text>
 
             <View style={styles.radioBtnContainer}>
@@ -484,8 +478,11 @@ console.log('dhsbgjsbsfg',item12);
             </View>
           </View>
 
-
-  <View style={[styles.appBottomSection, styles.borderBottom]}>
+          <View style={[styles.appBottomSection,{paddingBottom:15}]}>
+          <Image
+                style={styles.otherIcons}
+                source={require('../../../assets/image/razorpay-icon.png')}
+              />
             <Text style={styles.otherIconText}>Razorpay Payment</Text>
 
             <View style={styles.radioBtnContainer}>
@@ -501,7 +498,7 @@ console.log('dhsbgjsbsfg',item12);
               />
             </View>
           </View>
-          <View style={[styles.appBottomSection, styles.borderBottom]}>
+          {/* <View style={[styles.appBottomSection, styles.borderBottom]}>
             <Image
               style={styles.otherIcons}
               source={require('../../../assets/otherApp/paytm2.png')}
@@ -518,9 +515,9 @@ console.log('dhsbgjsbsfg',item12);
                 style={styles.radio}
               />
             </View>
-          </View>
+          </View> */}
 
-          <View style={[styles.appBottomSection, styles.borderBottom]}>
+          {/* <View style={[styles.appBottomSection, styles.borderBottom]}>
             <Image
               style={styles.otherIcons}
               source={require('../../../assets/otherApp/card.png')}
@@ -537,9 +534,9 @@ console.log('dhsbgjsbsfg',item12);
                 style={styles.radio}
               />
             </View>
-          </View>
+          </View> */}
 
-          <View style={[styles.appBottomSection]}>
+          {/* <View style={[styles.appBottomSection]}>
             <Image
               style={styles.otherIcons}
               source={require('../../../assets/otherApp/netbanking.png')}
@@ -556,13 +553,11 @@ console.log('dhsbgjsbsfg',item12);
                 style={styles.radio}
               />
             </View>
-          </View>
+          </View> */}
         </View>
-
-      
       </ScrollView>
       <View style={styles.servicesContainer}>
-      <Text style={[styles.payment1]}>
+        <Text style={[styles.payment1]}>
           Secured by Trusted Indian Banks{' '}
           <Image
             style={{height: 12, width: 12}}
@@ -590,28 +585,23 @@ console.log('dhsbgjsbsfg',item12);
                     useNativeDriver: true,
                   }),
                 ]).start(() => {
-
-
                   if (radioActive === 'razorpay') {
-                    Createorder1();    
-                  }
-                  else{
-
+                    Createorder1();
+                  } else {
                     const transactionDetails = {
                       radioActive,
                       paymentId: '',
                       status: 'pending',
                       amount: totals?.totalAmount,
-                      reason:'',
-                      code: '', 
+                      reason: '',
+                      code: '',
                     };
                     createbyord(transactionDetails);
                   }
-                 
                 });
               }
             }}
-            disabled={!radioActive &&cartDataList?.length!=0} // Disable the button if COD is not active
+            disabled={!radioActive && cartDataList?.length != 0} // Disable the button if COD is not active
             style={[
               styles.book,
               {
@@ -634,7 +624,7 @@ console.log('dhsbgjsbsfg',item12);
             <Text style={[styles.btext1]}>PROCEED TO PAY</Text>
           </TouchableOpacity>
         </Animated.View>
-        </View>
+      </View>
     </View>
   );
 };
