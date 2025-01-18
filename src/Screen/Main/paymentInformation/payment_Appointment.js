@@ -115,20 +115,23 @@ const PaymentAppointment = ({route}) => {
     console.log(userid, 'sjdfksdfmdl');
     const selected_franchise_services = services.map(service => service.id);
     let data = {
-      booking_name: formData.name,
-      booking_email: formData.email,
-      booking_mobile_no: formData.mobile,
+      name: formData.name,
+      email: formData.email,
+      mobile_no: formData.mobile,
+      gender:formData.gender,
+      citypincode:formData.cityPincode,
+      // birth_date: formData.bod,
+      birth_time: formData.bot,
+      text_here: formData.additionalInfo,
+      birth_place:formData.birthPlace,
       selected_franchise_id: vastuExpertData?.id,
       selected_franchise_services: selected_franchise_services,
-      booking_date: formData.bod,
-      booking_text: formData.additionalInfo,
-      booking_time: formData.bot,
-      status: 'pending',
-      transaction_id: item?.paymentId ?? '',
-      payment_method: item?.radioActive,
-      payment_status: item?.status,
-      payment_date: new Date(),
       user_id: userid,
+      // status: 'pending',
+      // transaction_id: item?.paymentId ?? '',
+      // payment_method: item?.radioActive,
+      // payment_status: item?.status,
+      // payment_date: new Date(),
     };
     try {
       setLoading(true);
@@ -156,7 +159,7 @@ const PaymentAppointment = ({route}) => {
         Toast.show(response?.data?.msg);
         navigation.navigate('Thankyou', {
           order: response?.data,
-          data: 'Consultation',
+          data: 'Courses',
         });
       } else {
         setLoading(false);
@@ -355,9 +358,9 @@ const PaymentAppointment = ({route}) => {
         </View> */}
 
         <View style={styles.cardContainer2}>
-          <Text style={[styles.payment, {}]}>Payment Method</Text>
+          <Text style={[styles.payment, {}]}>Other payment Methods</Text>
 
-          {/* <View style={[styles.appBottomSection, styles.borderBottom]}>
+          <View style={[styles.appBottomSection, styles.borderBottom]}>
             <Image
               style={styles.otherIcons}
               source={require('../../../assets/image/cash-on-delivery.png')}
@@ -374,7 +377,7 @@ const PaymentAppointment = ({route}) => {
                 style={styles.radio}
               />
             </View>
-          </View> */}
+          </View>
 
           <View style={[styles.appBottomSection, {paddingBottom: 15}]}>
             <Image
