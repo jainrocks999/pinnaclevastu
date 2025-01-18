@@ -241,7 +241,7 @@ import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive
 import {useDispatch, useSelector} from 'react-redux';
 // import {clearConsultationDetail, consultationDetail1} from '../../../Redux/Slice/HomeSlice';
 import {consultationDetail1} from '../../../Redux/Slice/ConsultancySlice';
-import { getCosultationListApi } from '../../../Redux/Slice/ConsultancySlice';
+import {getCosultationListApi} from '../../../Redux/Slice/ConsultancySlice';
 import Imagepath from '../../../Component/Imagepath';
 
 const ResidentalScreen = ({navigation}) => {
@@ -251,7 +251,8 @@ const ResidentalScreen = ({navigation}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const animatedValue = useRef(new Animated.Value(1)).current;
   const bgAnim = useRef(new Animated.Value(0)).current;
-  const CosultationListData = useSelector(state => state.consultation.ConsultationList
+  const CosultationListData = useSelector(
+    state => state.consultation.ConsultationList,
   );
   // console.log(CosultationListData,"sdkosdkmsddof")
 
@@ -266,14 +267,14 @@ const ResidentalScreen = ({navigation}) => {
   const placeholderText = 'Search';
   const [displayedText, setDisplayedText] = useState('');
 
-  useEffect(()=>{
-    apicall()
-  },[])
+  useEffect(() => {
+    apicall();
+  }, []);
 
   const apicall = async () => {
-     await dispatch(getCosultationListApi({url: 'fetch-franchise-list'}));
-   };
-  
+    await dispatch(getCosultationListApi({url: `fetch-franchise-list?franchise_services_id=0`}));
+  };
+
   useEffect(() => {
     const interval = setInterval(() => {
       slideText('left');
@@ -392,60 +393,16 @@ const ResidentalScreen = ({navigation}) => {
       // navigation.navigate('profile');
     });
   };
-  // const renderItem3 = ({ item, index }) => {
-  //   const itemScaleAnim = scaleAnims[index] || new Animated.Value(1);
 
-  //   return (
-  //     <Animated.View
-  //         style={[
-  //           styles.cardContainer2,
-  //           {
-  //             transform: [{ scale: itemScaleAnim }],
-  //           },
-  //         ]}
-  //       >
-
-  //     <TouchableOpacity onPress={() => handlePress(index)} >
-  //       <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
-  //         <View style={styles.imgContainer}>
-  //           <Image
-  //             style={[
-  //               styles.cardImage,
-
-  //             ]}
-  //             source={item.image}
-  //           />
-  //           <View style={styles.direction}>
-  //             <Rating
-  //               type="custom"
-  //               tintColor={colors.white}
-  //               ratingCount={5}
-  //               imageSize={wp(3.8)}
-  //               startingValue={2}
-  //               ratingColor="#52B1E9"
-  //               ratingBackgroundColor={colors.lightGrey}
-  //             />
-  //           </View>
-  //         </View>
-  //         <View style={styles.card}>
-  //           <Text style={styles.third1}>{item.name}</Text>
-  //           <Text style={[styles.third2, { marginBottom: 2 }]}>
-  //             Services : {item.services}
-  //           </Text>
-  //           <Text style={styles.third2}>{item.languages}</Text>
-  //           <Text style={styles.third2}>Exp: {item.experience}</Text>
-  //           <Text style={styles.priceText}>Price: {item.price}</Text>
-  //         </View>
-  //         <Image
-  //           style={styles.nextBtn}
-  //           source={require('../../../assets/drawer/raero.png')}
-  //         />
-  //       </View>
-  //     </TouchableOpacity>
-  //     </Animated.View>
-  //   );
-  // };
-
+  const calculateAverageRating = reviews => {
+    const totalRatings = reviews?.reduce(
+      (sum, review) => sum +JSON.parse( review?.star),
+      0,
+    );
+    const averageRating =
+      reviews?.length > 0 ? totalRatings / reviews?.length : 0;
+    return averageRating?.toFixed(1);
+  };
   const renderItem3 = ({item, index}) => {
     const itemScaleAnim = scaleAnims[index] || new Animated.Value(1);
 
@@ -474,15 +431,16 @@ const ResidentalScreen = ({navigation}) => {
                     : require('../../../assets/image/Remedies/Image-not.png')
                 }
                 style={styles.cardImage}
-              />
+              />       
               <View style={styles.direction}>
                 <Rating
                   type="custom"
                   tintColor={colors.white}
                   ratingCount={5}
                   imageSize={wp(3.8)}
-                  startingValue={2}
+                   startingValue={calculateAverageRating(item?.reviews)}
                   ratingColor="#52B1E9"
+                  readonly
                   ratingBackgroundColor={colors.lightGrey}
                 />
               </View>
@@ -490,7 +448,7 @@ const ResidentalScreen = ({navigation}) => {
             <View style={styles.card}>
               <Text style={styles.third1}>{item.franchise_name}</Text>
               <Text style={[styles.third2, {marginBottom: 2}]}>
-                Services : {" "}
+                Services :{' '}
                 {item?.franchise_services
                   ?.map(service => service.services_name) // Extract all services_name
                   .join(', ')}

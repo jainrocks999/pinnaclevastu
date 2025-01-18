@@ -395,6 +395,7 @@ const HomeScreen = () => {
                   imageSize={16}
                   startingValue={item.rating}
                   ratingColor="#52B1E9"
+                  readonly
                   ratingBackgroundColor={colors.lightGrey} // Unfilled star color
                 />
                 <Text style={[styles.third2]}>{item.rating}</Text>
@@ -731,7 +732,7 @@ const HomeScreen = () => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{paddingHorizontal: 10, marginBottom: wp(8)}}
         />
-        <View style={styles.consultationSection}>
+        {/* <View style={styles.consultationSection}>
           <View style={[styles.contain1, {}]}>
             <Text style={styles.service}>Consultation</Text>
 
@@ -739,15 +740,13 @@ const HomeScreen = () => {
               onPress={() =>
                 navigation.navigate('Home1', {
                   screen: 'Consultancy',
-                  // params: { screen: 'Consultancy' },
+                 
                 })
               }
               hitSlop={{top: 10, bottom: 10, left: 10, right: 10}} // Touch area increase
             >
               <Text style={styles.service1}>VIEW ALL</Text>
             </TouchableOpacity>
-
-            {/* <Text style={styles.service1}>VIEW ALL</Text> */}
           </View>
           <FlatList
             data={Homebanner?.franchises}
@@ -768,7 +767,7 @@ const HomeScreen = () => {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.bottomCard}
           />
-        </View>
+        </View> */}
       </ScrollView>
     </View>
   );

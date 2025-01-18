@@ -242,6 +242,7 @@ const Appointment = ({}) => {
                       startingValue={5}
                       tintColor="#fff"
                       imageSize={12}
+                      readonly
                       style={styles.starContainer}
                     />
                     <Text style={styles.ratingText}> 5 reviews</Text>

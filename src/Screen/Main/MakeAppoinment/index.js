@@ -30,7 +30,6 @@ const ResidentalScreen = ({navigation}) => {
   const dispatch = useDispatch();
   const userDetail = useSelector(state => state?.Auth?.userData);
   const data = useSelector(state => state?.consultation?.ConsultationDetail);
-  // console.log('data',data)
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
   const [services, setServices] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
@@ -65,7 +64,7 @@ const ResidentalScreen = ({navigation}) => {
       setServices([defaultService]);
     }
   }, [data?.franchise_services, userDetail]);
-  console.log(isEdit);
+
   const [date, setDate] = useState(
     userDetail?.dob ? new Date(userDetail.dob) : null,
   );
@@ -117,7 +116,7 @@ const ResidentalScreen = ({navigation}) => {
     const strTime = `${hours}:${minutes} ${ampm}`;
     return strTime;
   };
-  console.log(userDetail.city_pincode, '****************');
+  console.log(userDetail, '****************');
   const [formData, setFormData] = useState({
     name: userDetail?.name || '',
     email: userDetail?.email || '',
@@ -326,8 +325,6 @@ const ResidentalScreen = ({navigation}) => {
                 keyExtractor={item => item?.item?.id.toString()}
                 renderItem={item => (
                   <View style={styles.serviceSection}>
-                    {console.log(item)}
-                    {/* {console.log(item.item,"adjfjsdfkm")} */}
                     <View
                       style={[
                         styles.checkboxWrapper,

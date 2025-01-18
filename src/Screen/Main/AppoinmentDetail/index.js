@@ -102,6 +102,7 @@ const AppointmentDetails = ({navigation}) => {
                   // readonly={true}
                   startingValue={5}
                   tintColor="#F5FAFF"
+                  readonly
                   imageSize={widthPrecent(3.5)}
                   style={styles.starContainer}
                 />
@@ -154,6 +155,7 @@ const AppointmentDetails = ({navigation}) => {
                   tintColor="#FFFFFF"
                   ratingCount={5}
                   imageSize={20}
+                  readonly
                   style={styles.starContainer}
                 />
               </View>

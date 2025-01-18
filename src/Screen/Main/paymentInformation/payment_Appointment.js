@@ -26,7 +26,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {fontSize} from '../../../Component/fontsize';
 
 const PaymentAppointment = ({route}) => {
-  const nav = route.params?.data1;      
+  const nav = route.params?.data1;
   const services = route.params?.services;
   const formData = route.params?.formData;
   const navigation = useNavigation();
@@ -118,20 +118,20 @@ const PaymentAppointment = ({route}) => {
       name: formData.name,
       email: formData.email,
       mobile_no: formData.mobile,
-      gender:formData.gender,
-      citypincode:formData.cityPincode,
-      // birth_date: formData.bod,
+      gender: formData.gender,
+      citypincode: formData.cityPincode,
+      dob: formData.bod,
       birth_time: formData.bot,
       text_here: formData.additionalInfo,
-      birth_place:formData.birthPlace,
+      birth_place: formData.birthPlace,
       selected_franchise_id: vastuExpertData?.id,
       selected_franchise_services: selected_franchise_services,
       user_id: userid,
-      // status: 'pending',
-      // transaction_id: item?.paymentId ?? '',
-      // payment_method: item?.radioActive,
-      // payment_status: item?.status,
-      // payment_date: new Date(),
+      status: 'pending',
+      transaction_id: item?.paymentId ?? '',
+      payment_method: item?.radioActive,
+      payment_status: item?.status,
+      payment_date: new Date(),
     };
     try {
       setLoading(true);
@@ -156,10 +156,9 @@ const PaymentAppointment = ({route}) => {
 
       if (response?.data?.status == 200) {
         setLoading(false);
-        Toast.show(response?.data?.msg);
         navigation.navigate('Thankyou', {
           order: response?.data,
-          data: 'Courses',
+          data: 'Consultation',
         });
       } else {
         setLoading(false);
@@ -241,8 +240,6 @@ const PaymentAppointment = ({route}) => {
 
       createbyord(transactionDetails);
     } catch (error) {
-      console.log('shgkjshgkg', error);
-
       const transactionDetails = {
         radioActive,
         paymentId: '',
@@ -358,9 +355,9 @@ const PaymentAppointment = ({route}) => {
         </View> */}
 
         <View style={styles.cardContainer2}>
-          <Text style={[styles.payment, {}]}>Other payment Methods</Text>
+          <Text style={[styles.payment, {}]}>Payment Method</Text>
 
-          <View style={[styles.appBottomSection, styles.borderBottom]}>
+          {/* <View style={[styles.appBottomSection, styles.borderBottom]}>
             <Image
               style={styles.otherIcons}
               source={require('../../../assets/image/cash-on-delivery.png')}
@@ -377,7 +374,7 @@ const PaymentAppointment = ({route}) => {
                 style={styles.radio}
               />
             </View>
-          </View>
+          </View> */}
 
           <View style={[styles.appBottomSection, {paddingBottom: 15}]}>
             <Image
@@ -456,17 +453,15 @@ const PaymentAppointment = ({route}) => {
             </View>
           </View> */}
         </View>
-
       </ScrollView>
       <View style={styles.servicesContainer}>
-        
-     <Text style={[styles.payment1]}>
-               Secured by Trusted Indian Banks{' '}
-               <Image
-                 style={{height: 12, width: 12}}
-                 source={require('../../../assets/otherApp/verify.png')}
-               />
-             </Text>
+        <Text style={[styles.payment1]}>
+          Secured by Trusted Indian Banks{' '}
+          <Image
+            style={{height: 12, width: 12}}
+            source={require('../../../assets/otherApp/verify.png')}
+          />
+        </Text>
 
         <Animated.View
           style={[

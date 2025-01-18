@@ -164,7 +164,7 @@ const ResidentalScreen = ({navigation}) => {
           style={[
             styles.cardContainer,
             {
-              backgroundColor: item?.color_code,
+              backgroundColor: item?.color_code!=null?item?.color_code:colors.card3,
               width:
                 data?.franchise_services.length == 1
                   ? wp(90)
@@ -191,31 +191,52 @@ const ResidentalScreen = ({navigation}) => {
   const renderItem3 = ({item}) => {
     return (
       <TouchableOpacity
-        onPress={() => navigation.navigate('profile')}
+        // onPress={() => navigation.navigate('profile')}
         style={[styles.cardContainer1]}>
         <View style={styles.reviewCard}>
           <View style={{paddingLeft: 5}}>
-            <Image style={styles.reviewImage} source={item.image} />
-
+            <Image style={styles.reviewImage} source={
+              item?.images?
+              {uri:`${Imagepath?.Path}${item.images}`}:
+              require('../../../assets/image/Remedies/Image-not.png')
+              } />
             <Rating
               type="custom"
               tintColor={colors.white}
               ratingCount={5}
               imageSize={wp(3.5)}
-              startingValue={item.rating}
+              startingValue={item.star}
               ratingColor="#52B1E9"
+              readonly
               ratingBackgroundColor={colors.lightGrey} // Unfilled star color
             />
           </View>
           <View style={[styles.card, {paddingLeft: 10}]}>
-            <Text style={styles.third1}>{item.name}</Text>
+            <Text style={styles.third1}>{item.customer_name}</Text>
 
-            <Text style={[styles.third2, {marginTop: -8}]}>{item.msg}</Text>
+            <Text style={[styles.third2, {marginTop: -8}]}>{item?.comment}</Text>
           </View>
         </View>
       </TouchableOpacity>
     );
   };
+
+
+
+  const calculateAverageRating = reviews => {
+    const totalRatings = reviews?.reduce(
+      (sum, review) => sum + JSON.parse(review.star),
+      0,
+    );
+    
+    const averageRating =
+      reviews?.length > 0 ? totalRatings / reviews.length : 0;
+    return averageRating.toFixed(1);
+  };
+
+
+  const averageRating = calculateAverageRating(data?.reviews);
+  console.log(averageRating,'averageRating');
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -259,8 +280,9 @@ const ResidentalScreen = ({navigation}) => {
                   tintColor={colors.white}
                   ratingCount={5}
                   imageSize={wp(3.8)}
-                  startingValue={2}
+                  startingValue={averageRating}
                   ratingColor="#52B1E9"
+                  readonly
                   ratingBackgroundColor={colors.lightGrey} // Unfilled star color
                 />
               </View>
@@ -373,10 +395,10 @@ const ResidentalScreen = ({navigation}) => {
 
         <View style={styles.reviewSection}>
           <View style={styles.contain}>
-            <Text style={styles.service}>User Reviews (22)</Text>
+            <Text style={styles.service}>User Reviews ({data?.reviews?.length})</Text>
           </View>
           <FlatList
-            data={data1}
+            data={data?.reviews}
             scrollEnabled={false}
             renderItem={renderItem3}
             keyExtractor={item => item.id}

@@ -262,6 +262,7 @@ useEffect(()=>{
                 imageSize={item?.rating ? 16 : 20}
                 startingValue={item?.rating}
                 ratingColor="#52B1E9"
+                readonly
                 ratingBackgroundColor={colors.lightGrey} // Unfilled star color
               />
             ) : null}

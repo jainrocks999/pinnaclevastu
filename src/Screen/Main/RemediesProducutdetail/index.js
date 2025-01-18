@@ -191,18 +191,11 @@ const RemediesProductDetail = ({route}) => {
       //   }
       // }
       setIsInCart(false);
+      setButtonText('ADD TO CART');
       setQuantity(quantity + 1);
     }
   };
-  // const getCartStatus = () => {
-  //   if (quantity > currentItemInCart?.qty) {
-  //     return true;
-  //   }
-  //   if (quantity < currentItemInCart?.qty) {
-  //     return true;
-  //   }
-  //   return false;
-  // };
+  
 
   const decrement = () => {
     if (quantity > 1) {
@@ -213,82 +206,12 @@ const RemediesProductDetail = ({route}) => {
       //     setIsInCart(true);
       //   }
       // }
+      setButtonText('ADD TO CART');
       setIsInCart(false);
       setQuantity(quantity - 1);
     }
   };
 
-  // const handleGoToCartAnimation = () => {
-  //   Animated.sequence([
-  //     Animated.timing(buttonAnimatedValue, {
-  //       toValue: 0.94,
-  //       duration: 500,
-  //       useNativeDriver: true,
-  //     }),
-  //     Animated.timing(buttonAnimatedValue, {
-  //       toValue: 1,
-  //       duration: 300,
-  //       useNativeDriver: true,
-  //     }),
-  //   ]).start(() => {
-  //     navigation.navigate('Home', {screen: 'MyCart'});
-  //   });
-  // };
-
-  // const handleAddToCart = async prod => {
-  //   Animated.sequence([
-  //     Animated.timing(buttonAnimatedValue, {
-  //       toValue: 0.94,
-  //       duration: 500,
-  //       useNativeDriver: true,
-  //     }),
-  //     Animated.timing(buttonAnimatedValue, {
-  //       toValue: 1, // वापस बड़ा करें
-  //       duration: 300,
-  //       useNativeDriver: true,
-  //     }),
-  //   ]).start(async () => {
-  //     // Addtocart(prod);
-  //     Addtocart(prod, {qty: quantity});
-  //   });
-  // };
-
-  // const Addtocart = async item => {
-  //   try {
-  //     const userStatus = await AsyncStorage.getItem('user_data');
-  //     const userData = JSON.parse(userStatus);
-
-  //     // console.log(item);
-  //     if (userStatus) {
-  //       await dispatch(
-  //         addToCartApi({
-  //           user_id: userData.user_id,
-  //           itemId: item.id,
-  //           qty: quantity,
-  //           user_type: userData.user_type,
-  //           token: userData?.token,
-  //           url: 'add-to-cart',
-  //         }),
-  //       );
-  //       await dispatch(
-  //         getCartDataApi({
-  //           token: userData?.token,
-  //           url: `cart?user_id=${userData?.user_id}`,
-  //         }),
-  //       );
-  //       setIsInCart(true);
-  //     } else {
-  //       const itemWithQty = {
-  //         ...item,
-  //         qty: quantity,
-  //       };
-  //       dispatch(addToCart(itemWithQty));
-  //       setIsInCart(true);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error adding item to cart:', error);
-  //   }
-  // };
 
   const handleGoToCartAnimation = () => {
     if (isInCart) {
@@ -306,7 +229,7 @@ const RemediesProductDetail = ({route}) => {
 
       // Change button text immediately to "GO TO CART"
       setButtonText('GO TO CART');
-      setIsInCart(true); // Ensure we mark the item as added
+      setIsInCart(true);
 
       // Start flip animation
       Animated.timing(animation, {
@@ -577,6 +500,7 @@ const RemediesProductDetail = ({route}) => {
               imageSize={wp(3.5)}
               startingValue={item.rating}
               ratingColor="#52B1E9"
+              readonly
               ratingBackgroundColor={colors.lightGrey} // Unfilled star color
             />
           </View>
@@ -668,6 +592,7 @@ const RemediesProductDetail = ({route}) => {
                 imageSize={16}
                 startingValue={item?.reviews}
                 ratingColor="#52B1E9"
+                readonly
                 ratingBackgroundColor={colors.lightGrey} // Unfilled star color
               />
             ) : null}
@@ -842,6 +767,7 @@ const RemediesProductDetail = ({route}) => {
                       imageSize={16}
                       startingValue={averageRating}
                       ratingColor="#52B1E9"
+                      readonly
                       ratingBackgroundColor={colors.lightGrey} // Unfilled star color
                     />
                   </View>
@@ -972,64 +898,6 @@ const RemediesProductDetail = ({route}) => {
                 </TouchableOpacity>
               </View>
             </View>
-            {/* {isInCart ? (
-              <Animated.View
-              style={[
-               
-                { transform: [{ rotateX: halfFlipInterpolate }] },
-                styles.book1,
-                { marginTop: 15 },
-              ]}
-            >
-              <TouchableOpacity
-                onPress={() => {
-                  handleGoToCartAnimation();
-                }}
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-               
-                <Animated.Text style={[styles.btext1]}>
-                  GO TO CART
-                </Animated.Text>
-              </TouchableOpacity>
-            </Animated.View>
-            ) : (
-
-
-              <Animated.View
-              style={[
-              
-                { transform: [{ rotateX: halfFlipInterpolate }] },
-                styles.book1,
-                { marginTop: 15 },
-              ]}
-            >
-              <TouchableOpacity
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-                onPress={() => handleAddToCart(Detail)}>
-              
-                <Animated.Text style={[styles.btext1,]}>
-                  ADD TO CART
-                </Animated.Text>
-              </TouchableOpacity>
-            </Animated.View>
-            )} */}
-
             <Animated.View
               style={[
                 {
@@ -1044,7 +912,7 @@ const RemediesProductDetail = ({route}) => {
               ]}>
               <TouchableOpacity
                 onPress={() => {
-                  if (isInCart) {
+                  if (isInCart) {                   
                     handleGoToCartAnimation(); // Navigate to the cart
                   } else {
                     handleAddToCart(Detail); // Add to cart and update state
