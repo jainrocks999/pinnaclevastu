@@ -6,7 +6,7 @@ import Toast from 'react-native-simple-toast';
 export const getCosultationListApi = createAsyncThunk(
   'consultation/getCosultationList',
   async ({url}, {rejectWithValue}) => {
-    console.log('getCosultationList..', url);
+    // console.log('getCosultationList..', url);
 
     try {
       const config = {
@@ -18,7 +18,7 @@ export const getCosultationListApi = createAsyncThunk(
 
       const response = await axios.request(config);
 
-      console.log(response.data.data, 'sdmfsdkjfsldf');
+      // console.log(response.data.data, 'sdmfsdkjfsldf');
 
       if (response?.data?.status == 200) {
         return response?.data?.data;
@@ -39,7 +39,7 @@ export const getCosultationListApi = createAsyncThunk(
 export const consultationDetail1 = createAsyncThunk(
   'consultation/consultationDetail1',
   async ({url, franchise_id, navigation}, {rejectWithValue}) => {
-    console.log('consultation detail00', url, franchise_id);
+    // console.log('consultation detail00', url, franchise_id);
     try {
       const config = {
         method: 'get',
@@ -49,7 +49,7 @@ export const consultationDetail1 = createAsyncThunk(
       };
       const response = await axios.request(config);
       if (response?.data?.status == 200) {
-        console.log('response data consultation detail ', response.data.data);
+        // console.log('response data consultation detail ', response.data.data);
         navigation.navigate('profile');
         return response?.data.data;
       } else {
@@ -67,7 +67,7 @@ export const consultationDetail1 = createAsyncThunk(
 export const getAppoinment = createAsyncThunk(
   'consultation/getAppoinment',
     async ({url,token,user_id}, {rejectWithValue}) => {
-      console.log(url,token,user_id, 'Appoinment1 ,,,response ');
+      // console.log(url,token,user_id, 'Appoinment1 ,,,response ');
     try {
       const config = {
         method: 'get',

@@ -40,6 +40,7 @@ import AnimatedLine from '../../../Component/progressbar';
 const RemediesProductDetail = ({route}) => {
   const item = route?.params?.data;
 
+
   const navigation = useNavigation();
   const {width} = Dimensions.get('window');
   const Detail = useSelector(state => state.home?.RemeiesDetail?.data);
@@ -68,8 +69,9 @@ const RemediesProductDetail = ({route}) => {
   useEffect(() => {
     PRoductDeta();
   }, []);
-
+  console.log('jkfdgdgdkj',item);
   const PRoductDeta = async () => {
+   
     await dispatch(
       productDetail1({
         url: 'fetch-single-product',

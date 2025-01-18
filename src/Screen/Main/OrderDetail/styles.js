@@ -59,10 +59,9 @@ export default StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     gap: 13,
-    //  borderWidth:1,
     marginTop: 6,
-    // borderWidth: 1,
     borderRadius: 10,
+    // borderWidth:1,
     // borderColor: '#D8E3E980',
     // shadowColor: '#bdc3c7',
     // shadowOffset: {width: 0, height: 1},
@@ -70,19 +69,30 @@ export default StyleSheet.create({
     // shadowRadius: 12,
     //  elevation: 0.3,
     // paddingHorizontal: 15,
-    // paddingVertical:20
+    paddingVertical:5
+  },
+  ImageBtn:{
+    width: wp(34),
+    height:wp(20),
+    borderWidth:1,
+    borderColor: '#D8E3E980',
+    borderRadius: 5,
   },
   cardImg: {
-    borderRadius: 5,
-    width: wp(34),
+    // width: wp(34),
     resizeMode: 'contain',
-    height: '85%',
+    height: '100%',
   },
   cardInfo: {
     width: '55%',
   },
   productName: {
     fontSize: fontSize.Twelve,
+    color: colors.heading,
+    fontFamily: 'Poppins-Medium',
+  },
+  itemNameText:{
+    fontSize: fontSize.Fifteen,
     color: colors.heading,
     fontFamily: 'Poppins-Medium',
   },
@@ -97,17 +107,18 @@ export default StyleSheet.create({
     fontFamily: 'Poppins-Medium',
   },
   cancleBtn: {
-    marginTop: 8,
-    color: colors.white,
-    fontSize: fontSize.Twelve,
-    backgroundColor: colors.orange,
-    fontFamily: 'Poppins-Regular',
-    padding: wp(1.5),
-    width: wp(20),
-    textAlign: 'center',
+    backgroundColor: colors.white,
+    padding: wp(3),
     borderRadius: 6,
+    borderWidth:1,
+    borderColor:colors.placeholder,
   },
-
+  cancleBtnText:{
+    textAlign: 'center',
+    color: colors.grey,
+    fontSize: fontSize.Twelve,
+    fontFamily: 'Poppins-SemiBold',
+  },
   OrderTrackcontainer: {
     height: wp(60),
     justifyContent: 'center',
@@ -269,13 +280,14 @@ export default StyleSheet.create({
   input: {
     borderWidth: 1,
     height: 'auto',
-    width:'95%',
+    // width:'95%',
     // minHeight: 50,
     borderRadius:5,
     borderColor: colors.placeholder,
-    paddingHorizontal:10,
+    padding:15,
     fontSize: fontSize.Twelve,
     color: colors.heading,
     fontFamily: 'Poppins-Medium',
+    marginBottom:20
   },
 });
