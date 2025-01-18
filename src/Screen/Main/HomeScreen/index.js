@@ -132,6 +132,18 @@ const HomeScreen = () => {
     return () => clearInterval(intervalId);
   }, [placeholderText]);
 
+  const calculateAverageRating = data => {
+    if (!data.length) return 0;
+
+    const totalStars = data.reduce((sum, item) => {
+      return sum + Number(item.star);
+    }, 0);
+
+    const averageStars = totalStars / data.length;
+
+    return averageStars;
+  };
+
   const getUserType = async () => {
     try {
       const userStatus = await AsyncStorage.getItem('user_data');
@@ -221,10 +233,10 @@ const HomeScreen = () => {
         duration: 400,
         useNativeDriver: true,
       }),
-    ]).start(()=>{
+    ]).start(() => {
       navigation.navigate('Home1', {
         screen: 'Consultancy',
-      })
+      });
     });
   };
 
@@ -362,6 +374,7 @@ const HomeScreen = () => {
 
   const renderItem3 = ({item, index}) => {
     // console.log(item,"sandeep......");
+    console.log(Homebanner?.franchises, 'sandeep......');
     const itemScaleAnim = scaleAnims[index] || new Animated.Value(1);
     return (
       <Animated.View
@@ -384,20 +397,28 @@ const HomeScreen = () => {
               style={styles.cardImage}
             />
             <View style={styles.infoSection}>
-              <Text style={styles.third}>{item.franchise_name}</Text>
-              <Text style={styles.third1}>{item.specializations}</Text>
-              <Text style={styles.third2}>{item?.franchise_services}</Text>
+              <Text style={styles.third}>{item?.franchise_name}</Text>
+              <Text style={styles.third1}>{item?.specializations}</Text>
+              <Text style={[styles.third2]}>
+                Services :{' '}
+                {item?.franchise_services
+                  ?.map(service => service.services_name) // Extract all services_name
+                  .join(', ')}
+              </Text>
+              {/* <Text style={styles.third2}>{"item?.franchise_services"}</Text> */}
               <View style={styles.starContainer}>
                 <Rating
                   type="custom"
                   tintColor={colors.white}
                   ratingCount={5}
                   imageSize={16}
-                  startingValue={item.rating}
+                  startingValue={calculateAverageRating(item?.reviews)}
                   ratingColor="#52B1E9"
                   ratingBackgroundColor={colors.lightGrey} // Unfilled star color
                 />
-                <Text style={[styles.third2]}>{item.rating}</Text>
+                <Text style={[styles.third2]}>
+                  {item?.reviews.length} reviews
+                </Text>
               </View>
             </View>
 
@@ -751,8 +772,9 @@ const HomeScreen = () => {
           </View>
           <FlatList
             data={Homebanner?.franchises}
+            // data={data4}
             renderItem={renderItem3}
-            keyExtractor={item => item.id}
+            keyExtractor={index => index.toString()}
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{padding: 10}}

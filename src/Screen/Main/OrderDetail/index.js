@@ -6,6 +6,7 @@ import {
   Image,
   FlatList,
   TextInput,
+  Alert,
 } from 'react-native';
 import React, {useState} from 'react';
 import styles from './styles';
@@ -24,7 +25,7 @@ import Imagepath from '../../../Component/Imagepath';
 import Collapsible from 'react-native-collapsible';
 import {cancelorders, orderDetail} from '../../../Redux/Slice/orderSclice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { colors } from '../../../Component/colors';
+import {colors} from '../../../Component/colors';
 
 const labels = [
   'Order Received',
@@ -33,7 +34,7 @@ const labels = [
   'Out For Delivery',
   'Delivered',
 ];
- 
+
 const customStyles = {
   stepIndicatorSize: wp(5),
   stepStrokeWidth: 0,
@@ -56,7 +57,8 @@ const OrderDetail = () => {
   const navigation = useNavigation();
   const data2 = useSelector(state => state?.order?.orderD);
   const loading1 = useSelector(state => state?.order?.loading);
-  const [visibleItemId, setVisibleItemId] = useState(null);
+  // const [visibleItemId, setVisibleItemId] = useState(null);
+  const [isCancle, setIsCancle] = useState(false);
   const [reason, setReason] = useState('');
   const dispatch = useDispatch();
   const [currentPosition, setCurrentPosition] = useState(1);
@@ -96,7 +98,8 @@ const OrderDetail = () => {
           }),
         );
         OrderDetails();
-        setVisibleItemId(null);
+        // setVisibleItemId(null);
+        setIsCancle(false);
       } catch (error) {
         console.error('Error in cancelorder function:', error);
       }
@@ -158,16 +161,22 @@ const OrderDetail = () => {
 
   const renderItem = ({item}) => (
     <View style={styles.card}>
-      <Image
-        style={styles.cardImg}
-        source={
-          item?.product_image
-            ? {uri: `${Imagepath.Path}${item?.product_image}`}
-            : require('../../../assets/otherApp/itemImg.png')
-        }
-      />
+      <TouchableOpacity style={styles.ImageBtn}
+      onPress={()=>
+         navigation.navigate('ProductDetail', {data:{id:item?.product_id}}) 
+      }
+      >
+        <Image
+          style={styles.cardImg}
+          source={
+            item?.product_image
+              ? {uri: `${Imagepath.Path}${item?.product_image}`}
+              : require('../../../assets/otherApp/itemImg.png')
+          }
+        />
+      </TouchableOpacity>
       <View style={styles.cardInfo}>
-        <Text style={[styles.productName, {marginBottom: 10}]}>
+        <Text style={[styles.itemNameText, {marginBottom: 10}]}>
           {item.product_name}
         </Text>
         <View style={styles.quantitySection}>
@@ -193,15 +202,15 @@ const OrderDetail = () => {
           /> */}
         </View>
         <Text style={styles.productName}>Total: ₹ {item?.price}</Text>
-        {data2?.status?.value !== 'canceled' &&
+        {/* {data2?.status?.value !== 'canceled' &&
         data2?.status?.value !== 'completed' &&data2?.payment?.status?.value!=='failed'&&
         data2?.shipment?.shipment_status !== 'not_delivered' &&
         visibleItemId !== item.id ? (
           <TouchableOpacity onPress={() => setVisibleItemId(item.id)}>
             <Text style={styles.cancleBtn}>Cancel</Text>
           </TouchableOpacity>
-        ) : null}
-        {visibleItemId === item.id && (
+        ) : null} */}
+        {/* {visibleItemId === item.id && (
           <View style={styles.reasonContainer}>
             <Text style={[styles.productName, {marginBottom: 10}]}>
               Reason for Cancellation:
@@ -220,13 +229,10 @@ const OrderDetail = () => {
               <Text style={styles.cancleBtn}>submit</Text>
             </TouchableOpacity>
           </View>
-        )}
-        =
+        )} */}
       </View>
     </View>
   );
-
-
 
   const getCurrentPosition = () => {
     const position = data2?.shipment?.shipment_status;
@@ -242,10 +248,9 @@ const OrderDetail = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerRow}>
-          <TouchableOpacity onPress={() => navigation.goBack()}
-            
-            hitSlop={{bottom:10,top:10,left:10,right:10}}
-            >
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            hitSlop={{bottom: 10, top: 10, left: 10, right: 10}}>
             <Image
               style={styles.backBtn}
               source={require('../../../assets/drawer/Back1.png')}
@@ -266,7 +271,8 @@ const OrderDetail = () => {
         <View style={styles.section}>
           {/* {getCurrentPosition() >= 7 ? ( */}
           {data2?.status?.value == 'canceled' ||
-          data2?.status?.value == 'completed' ||data2?.payment?.status?.value=='failed'||
+          data2?.status?.value == 'completed' ||
+          data2?.payment?.status?.value == 'failed' ||
           data2?.shipment?.shipment_status == 'not_delivered' ? (
             <View style={styles.OrderstatusMsgContainer}>
               <Image
@@ -277,7 +283,8 @@ const OrderDetail = () => {
                 <Text
                   style={{
                     color:
-                      data2?.status?.value === 'canceled'||data2?.payment?.status?.value=='failed'
+                      data2?.status?.value === 'canceled' ||
+                      data2?.payment?.status?.value == 'failed'
                         ? '#FF0000'
                         : data2?.status?.value === 'completed'
                         ? '#02A883'
@@ -288,7 +295,9 @@ const OrderDetail = () => {
                     : data2?.status?.value === 'completed'
                     ? 'DELIVERED '
                     : data2?.shipment?.shipment_status === 'not_delivered'
-                    ? 'NOT DELIVERED ' :data2?.payment?.status?.value=='failed'?'PAYMENT FAILED '
+                    ? 'NOT DELIVERED '
+                    : data2?.payment?.status?.value == 'failed'
+                    ? 'PAYMENT FAILED '
                     : ''}
                 </Text>
                 on {formatDate()}
@@ -344,7 +353,43 @@ const OrderDetail = () => {
             </View>
           </View> */}
         </View>
-
+        {data2?.status?.value !== 'canceled' &&
+        data2?.status?.value !== 'completed' &&
+        data2?.payment?.status?.value !== 'failed' &&
+        data2?.shipment?.shipment_status !== 'not_delivered' ? (
+          <View style={styles.section}>
+            {isCancle && (
+              <View style={styles.reasonContainer}>
+                <Text style={[styles.productName, {marginBottom: 10}]}>
+                  Reason for Cancellation:
+                </Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter your reason here"
+                  placeholderTextColor={colors.placeholder}
+                  value={reason}
+                  onChangeText={text => setReason(text)}
+                  multiline={true}
+                  textAlignVertical="top"
+                  numberOfLines={4}
+                />
+              </View>
+            )}
+            {isCancle ? (
+              <TouchableOpacity
+                style={styles.cancleBtn}
+                onPress={() => cancelorder()}>
+                <Text style={styles.cancleBtnText}>submit</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={styles.cancleBtn}
+                onPress={() => setIsCancle(true)}>
+                <Text style={styles.cancleBtnText}>Cancel</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        ) : null}
         <View style={styles.OrderTrackcontainer}>
           <Text style={styles.titleText}>Track your order</Text>
 
@@ -423,9 +468,7 @@ const OrderDetail = () => {
             <Text style={styles.rowLabel}>{`₹ ${data2?.shipping_amount}`}</Text>
           </View>
           <View style={[styles.listRow]}>
-            <Text style={styles.TaxText}>
-              Tax 
-            </Text>
+            <Text style={styles.TaxText}>Tax</Text>
             <Text style={styles.rowLabel}>{`₹ ${data2?.tax_amount}`}</Text>
           </View>
           <View
