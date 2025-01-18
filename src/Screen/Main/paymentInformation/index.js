@@ -456,7 +456,7 @@ const ResidentalScreen = ({route}) => {
         </View> */}
 
         <View style={styles.cardContainer2}>
-          <Text style={[styles.payment, {}]}>Other payment Methods</Text>
+          <Text style={[styles.payment, {}]}>Payment Methods</Text>
 
           <View style={[styles.appBottomSection, styles.borderBottom]}>
        

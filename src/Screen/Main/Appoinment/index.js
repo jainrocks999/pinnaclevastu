@@ -138,6 +138,24 @@ const Appointment = ({}) => {
       setAppointmentsData(appoinment1);
     }
   };
+
+ useEffect(() => {
+ 
+      const backAction = () => {
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'UserProfile'}],
+        })
+        return true; 
+      };
+      
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+  
+      return () => backHandler.remove(); 
+  
+  }, [navigation]);
+
+
   function formatDateDirectly(dateString) {
     // Convert "16-01-2025" into a valid Date object
     const [day, month, year] = dateString.split('-');
@@ -253,12 +271,14 @@ const Appointment = ({}) => {
           <TouchableOpacity
             style={{height: 20, width: 30}}
             hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
-            // onPress={() =>
-            //   navigation.reset({
-            //     index: 0,
-            //     routes: [{name: 'UserProfile'}],
-            //   })}
-            onPress={() => navigation.goBack()}>
+            onPress={() =>
+              navigation.reset({
+                index: 0,
+                routes: [{name: 'UserProfile'}],
+              })
+            }
+            // onPress={() => navigation.goBack()}
+             >
             <Image
               style={{height: 15, width: 10}}
               source={require('../../../assets/drawer/Back.png')}

@@ -182,7 +182,7 @@ export const shipmethod = createAsyncThunk(
 
 export const cancelorders = createAsyncThunk(
   'address/cancelorders',
-  async ({url, token, data1, navigation}, {rejectWithValue}) => {
+  async ({url, token, data1, navigation}, {dispatch,rejectWithValue}) => {
     console.log('cancel ord  hgfghhg ', url, JSON.stringify(data1));
     let data2 = {
       user_id: data1.user_id,
@@ -207,6 +207,10 @@ export const cancelorders = createAsyncThunk(
       console.log(response?.data,"order cancle......")
       
       if (response.data.status == 200) {
+
+         await dispatch(
+                orderlistapi({id: data1.user_id, token: token, url: 'fetch-order'}),
+              );
         // Toast.show(response.data.msg);
         return response.data;
       } else {

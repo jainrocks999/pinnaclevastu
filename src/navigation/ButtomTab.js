@@ -29,6 +29,7 @@ export default function BottomTab() {
   const cartisLoading = useSelector(state => state.cart?.loading);
   const addressisLoading = useSelector(state => state.address?.loading);
   const orderisLoading = useSelector(state => state.order?.loading);
+  const ConsultancyLoading =useSelector(state=>state?.consultation?.loading)
   const handleTabPress = tab => {
     setCircleVisible(tab);
     setActiveTab(tab);
@@ -36,7 +37,7 @@ export default function BottomTab() {
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      {isLoading || cartisLoading || addressisLoading || orderisLoading ? (
+      {isLoading || cartisLoading || addressisLoading || orderisLoading || ConsultancyLoading? (
         <Loader />
       ) : null}
       <Tab.Navigator

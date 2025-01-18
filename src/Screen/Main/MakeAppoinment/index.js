@@ -50,9 +50,9 @@ const ResidentalScreen = ({navigation}) => {
   // };
 
   const genderOptions = [
-    {label: 'Male', value: 'Male'},
-    {label: 'Female', value: 'Female'},
-    {label: 'Transgender', value: 'Transgender'},
+    {label: 'Male', value: 'male'},
+    {label: 'Female', value: 'female'},
+    {label: 'Transgender', value: 'transgender'},
   ];
 
   useEffect(() => {
@@ -516,10 +516,10 @@ const ResidentalScreen = ({navigation}) => {
                   renderItem={item => (
                     <Text
                       style={{
-                        color: colors.heading, // इनपुट का टेक्स्ट कलर
+                        color: colors.heading, 
                         fontSize: fontSize.Fifteen,
                         fontFamily: 'Poppins-Regular',
-                        padding: 10, // आइटम के लिए padding
+                        padding: 10,
                       }}>
                       {item.label}
                     </Text>

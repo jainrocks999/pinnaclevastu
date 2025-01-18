@@ -323,13 +323,13 @@ export default StyleSheet.create({
 
   imageContainer: {
     margin: 5,
-    width: wp(70), // Set the width of the images
+     // Set the width of the images
     height: wp(42),
   },
   reviewImage: {
     width: '100%', // Set the width of the images
     height: '100%', // Set the height of the images
-   
+   resizeMode:'contain'
   },
   dotContainer: {
     flexDirection: 'row',

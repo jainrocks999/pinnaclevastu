@@ -346,9 +346,9 @@ const PaymentCourse = ({route}) => {
         </View> */}
 
         <View style={styles.cardContainer2}>
-          <Text style={[styles.payment, {}]}>Other payment Methods</Text>
+          <Text style={[styles.payment, {}]}>Payment Method</Text>
 
-          <View style={[styles.appBottomSection, styles.borderBottom]}>
+          {/* <View style={[styles.appBottomSection, styles.borderBottom]}>
             <Image
               style={styles.otherIcons}
               source={require('../../../assets/image/cash-on-delivery.png')}
@@ -365,7 +365,7 @@ const PaymentCourse = ({route}) => {
                 style={styles.radio}
               />
             </View>
-          </View>
+          </View> */}
 
           <View style={[styles.appBottomSection, {paddingBottom: 15}]}>
             <Image

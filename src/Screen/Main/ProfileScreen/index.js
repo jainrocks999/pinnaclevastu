@@ -10,7 +10,6 @@ import {
   Linking,
   Alert,
   Share,
-  Clipboard,
 } from 'react-native';
 import styles from './styles';
 import {colors} from '../../../Component/colors';
@@ -20,7 +19,8 @@ import {useNavigation} from '@react-navigation/native';
 import {consultationDetail1} from '../../../Redux/Slice/HomeSlice';
 import {useSelector} from 'react-redux';
 import Imagepath from '../../../Component/Imagepath';
-
+import Clipboard from '@react-native-clipboard/clipboard';
+import Toast from 'react-native-simple-toast';
 const ResidentalScreen = ({navigation}) => {
   const userDetail = useSelector(state => state?.Auth?.userData);
   // const data = useSelector(state => state?.home?.ConsultationDetail?.data);
@@ -79,13 +79,19 @@ const ResidentalScreen = ({navigation}) => {
     }
   };
   const copyToClipboard = async () => {
-    // const textToCopy = "This is the text you want to copy"; // Replace with your desired text or URL
-    // try {
-    //   await Clipboard.setString(textToCopy);
-    //   Alert.alert("Copied to Clipboard", "Text has been copied successfully!");
-    // } catch (error) {
-    //   Alert.alert("Error", "Failed to copy text.");
-    // }
+    const textToCopy = "This is the text you want to copy"; // Replace with your desired text or URL
+    try {
+       await Clipboard.setString(textToCopy);
+       Toast.show({
+        type: 'success', 
+        text1: 'Copied!', 
+        text2: 'Text copied to clipboard successfully!', 
+      });
+    } catch (error) {
+      console.log('error',error);
+      
+      Alert.alert("Error", "Failed to copy text.");
+    }
   };
 
   const handlePress = () => {
@@ -132,38 +138,8 @@ const ResidentalScreen = ({navigation}) => {
       }),
     ]).start();
   };
-
-  //   const renderItem = ({ item, index }) => {
-  //     let backgroundColor;
-
-  //     if (item.name === 'Residential Vastu') {
-  //       backgroundColor = colors.card4;
-  //     } else if (item.name === 'Industrial Vastu') {
-  //       backgroundColor = colors.card3;
-  //     } else if (item.name === 'Gemstone') {
-  //       backgroundColor = colors.card2;
-  //     } else {
-  //       backgroundColor = colors.card3;
-  //     }
-  //  const itemScaleAnim = scaleAnims[index] || new Animated.Value(1);
-  //     return (
-  //         <Animated.View
-  //             style={[
-  //               // styles.cardContainer,
-  //               {
-  //                 transform: [{ scale: itemScaleAnim }], // Apply scale animation to the view
-  //               },
-  //             ]}
-  //           >
-  //       <TouchableOpacity style={[styles.cardContainer, { backgroundColor }]} onPress={() => handleItemClick(index)}>
-  //         <Image source={item.image} style={styles.image} />
-  //         <Text style={styles.text}>{item.name}</Text>
-  //       </TouchableOpacity>
-  //       </Animated.View>
-  //     );
-  //   };
   const renderItem = ({item, index}) => {
-    // console.log(item,"asmlaskdlasdmas")
+    
     let backgroundColor;
 
     if (item.services_name === 'Residential Vastu') {
@@ -382,7 +358,7 @@ const ResidentalScreen = ({navigation}) => {
                 source={require('../../../assets/drawer/instagram.png')}
               />
             </TouchableOpacity>
-            <TouchableOpacity onPress={copyToClipboard}>
+            <TouchableOpacity onPress={()=>copyToClipboard()}>
               <Image
                 style={styles.socialImg}
                 source={require('../../../assets/drawer/copy.png')}

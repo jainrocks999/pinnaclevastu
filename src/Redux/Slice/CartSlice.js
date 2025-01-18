@@ -66,17 +66,32 @@ export const addToCartApi = createAsyncThunk(
       };
 
       const response = await axios.request(config);
-      console.log(response.data, 'response.data Virendra dfgmkdflgkdflg');
-      if (response?.data?.data?.status == 200) {
-        Toast.show(response?.data?.data.msg);
-      } else {
-        Toast.show(response?.data?.msg);
+      console.log(response.data?.error, 'response.data Virendra dfgmkdflgkdflg');
+      if(response.data?.data){
+        Toast.show(response?.data?.data?.msg);
+        return;
+      }else if(response.data?.error){
+        Toast.show(response?.data?.message);
+
       }
+      else{
+        Toast.show('something went wrong');
+      }
+    //   if(response.data?.error){
+    //     
+    //   }else{
+    //   if (response?.data?.data?.status == 200) {
+    //     Toast.show(response?.data?.data?.msg);
+    //   } else {
+    //     Toast.show(response?.data?.msg);
+    //   }
+    // }
     } catch (error) {
       console.log('cart error ', error);
-      return rejectWithValue(
-        error.response ? error.response.data : error.message,
-      );
+      Toast.show('something went wrong');
+      // return rejectWithValue(
+      //   error.response ? error.response.data : error.message,
+      // );
     }
   },
 );

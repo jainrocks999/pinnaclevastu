@@ -29,28 +29,28 @@ const ThankyouPage = ({route}) => {
       </View>
       <View style={{position:'absolute',bottom:20,width:'100%',paddingHorizontal:10}}>
       <TouchableOpacity  onPress={()=>
-        // navigation.navigate('Home',{screen:'Home1'})
-       
-       
-        // navigation.push('Home', {
-        //   screen: 'Home1',
-        //   params: {
-        //     screen: 'MyProfile',
-        //     params: {
-        //       screen: 'MyOrder',
-        //     },
-        //   },
-        // })
-        navigation.navigate('Home', {
-          screen: 'Home1',
-          params: {
-            screen: 'MyProfile',
-            params: {
-              screen: 'MyOrder',params:{data:route?.params?.data}
-            },
-          },
-        })
         
+      //  { route?.params?.order?.data?.length==0?
+      //   navigation.navigate('Home', {
+      //     screen: 'Home1',
+      //     params: {
+      //       screen: 'MyProfile',
+      //       params: {
+      //         screen: 'Appointment',params:{data:route?.params?.data}
+      //       },
+      //     },
+      //   })
+      // :
+      navigation.navigate('Home', {
+        screen: 'Home1',
+        params: {
+          screen: 'MyProfile',
+          params: {
+            screen: 'MyOrder',params:{data:route?.params?.data}
+          },
+        },
+      })
+    // }
       
         } style={styles.book}>
        <Text style={styles.btext1}>DONE</Text>

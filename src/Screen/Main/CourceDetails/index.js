@@ -153,16 +153,17 @@ const CourseDetail = ({route}) => {
       );
 
       if (fileItem) {
-        videoFileName = `${Imagepath.Path}${fileItem.value}`; 
+        videoFileName = `${Imagepath.Path}${fileItem.value}`;
       } else if (urlItem) {
-        videoFileName = urlItem.value; 
-        
+        videoFileName = urlItem.value;
       }
     }
   });
-  const isYouTubeUrl1 = videoFileName?.includes('youtube.com') || videoFileName?.includes('youtu.be');
+  const isYouTubeUrl1 =
+    videoFileName?.includes('youtube.com') ||
+    videoFileName?.includes('youtu.be');
   let finalUrl1 = videoFileName;
-  
+
   if (isYouTubeUrl1) {
     let videoId = videoFileName?.split('youtu.be/')[1]?.split('?')[0];
     if (!videoId) {
@@ -171,50 +172,46 @@ const CourseDetail = ({route}) => {
     finalUrl1 = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=1&autohide=1&enablejsapi=1`;
   }
 
-
-
   const videoDat = CourceDetailA?.course_video
     ? JSON.parse(CourceDetailA.course_video)
     : [];
 
-    let videoFileName1 = null;
+  let videoFileName1 = null;
 
- 
-    videoDat.forEach(videoItem => {
-      if (!videoFileName1) {
-        const fileItem = videoItem.find(
-          item => item.key === 'file' && item.value !== null,
-        );
-        const urlItem = videoItem.find(
-          item => item.key === 'url' && item.value !== null,
-        );
-        if (fileItem) {
-          videoFileName1 = `${Imagepath.Path}${fileItem.value}`; 
-        }
-     
-        else if (urlItem) {
-          videoFileName1 = urlItem.value;
-        }
+  videoDat.forEach(videoItem => {
+    if (!videoFileName1) {
+      const fileItem = videoItem.find(
+        item => item.key === 'file' && item.value !== null,
+      );
+      const urlItem = videoItem.find(
+        item => item.key === 'url' && item.value !== null,
+      );
+      if (fileItem) {
+        videoFileName1 = `${Imagepath.Path}${fileItem.value}`;
+      } else if (urlItem) {
+        videoFileName1 = urlItem.value;
       }
-    });
-    
-    const isYouTubeUrl = videoFileName1?.includes('youtube.com') || videoFileName1?.includes('youtu.be');
-    let finalUrl = videoFileName1;
-    
-    if (isYouTubeUrl) {
-      let videoId = videoFileName1?.split('youtu.be/')[1]?.split('?')[0];
-      if (!videoId) {
-        videoId = videoFileName1.split('v=')[1]?.split('&')[0];
-      }
-      finalUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=1&autohide=1&enablejsapi=1`;
     }
-    
-   
-    const [loading, setLoading] = useState(true);  
+  });
 
-    const handleLoadEnd = () => {
-      setLoading(false); 
-    };
+  const isYouTubeUrl =
+    videoFileName1?.includes('youtube.com') ||
+    videoFileName1?.includes('youtu.be');
+  let finalUrl = videoFileName1;
+
+  if (isYouTubeUrl) {
+    let videoId = videoFileName1?.split('youtu.be/')[1]?.split('?')[0];
+    if (!videoId) {
+      videoId = videoFileName1.split('v=')[1]?.split('&')[0];
+    }
+    finalUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=1&autohide=1&enablejsapi=1`;
+  }
+
+  const [loading, setLoading] = useState(true);
+
+  const handleLoadEnd = () => {
+    setLoading(false);
+  };
   const toggleSection = sectionId => {
     setExpandedSection(prevSection =>
       prevSection === sectionId ? null : sectionId,
@@ -301,11 +298,9 @@ const CourseDetail = ({route}) => {
       // Check if WhatsApp is installed
       const supported = await Linking.canOpenURL(appUrl);
       if (supported) {
-    
         await Linking.openURL(appUrl);
       } else {
         // Fallback to WhatsApp Web
-     
 
         await Linking.openURL(webUrl);
       }
@@ -318,9 +313,8 @@ const CourseDetail = ({route}) => {
 
   const handleShare = async () => {
     try {
-      const product= `${constants?.mainUrl}fetch-courses-details?course_id=${CourceDetailA?.id}`
+      const product = `${constants?.mainUrl}fetch-courses-details?course_id=${CourceDetailA?.id}`;
       const result = await Share.share({
-      
         message: `Check out this awesome app! ${product}`, // Text to share
         url: product,
         title: 'Share this App', // Title of the share dialog
@@ -330,7 +324,7 @@ const CourseDetail = ({route}) => {
         if (result.activityType) {
           console.log('Shared with activity type: ', result.activityType);
         } else {
-          console.log('Shared successfully!',product);
+          console.log('Shared successfully!', product);
         }
       } else if (result.action === Share.dismissedAction) {
         console.log('Share dismissed!');
@@ -338,7 +332,6 @@ const CourseDetail = ({route}) => {
     } catch (error) {
       console.error('Error sharing content: ', error.message);
     }
-   
   };
   const handleVideoPress = () => {
     setVideoState(prevState => ({
@@ -366,34 +359,34 @@ const CourseDetail = ({route}) => {
         <TouchableOpacity
           // onPress={()=>handleVideoPress()}
           style={styles.firstimgview}>
-{finalUrl?
-         
-<WebView
-        source={{ uri: finalUrl?finalUrl:'' }}
-        style={styles.img1}
-        // resizeMode='contain'
-        javaScriptEnabled={true}
-        domStorageEnabled={true}
-        allowsFullscreenVideo={true}
-        // startInLoadingState={true} 
-        // onLoadEnd={handleLoadEnd} 
-        // renderLoading={() => (
-        //   loading && (
-        //     <View style={styles.loader}>
-        //       <ActivityIndicator size="large" color={colors.orange} />
-        //     </View>
-        //   )
-        // )}
-      />
-: <Image
-            source={
-              CourceDetailA?.image
-                ? {uri: `${Imagepath.Path}${CourceDetailA?.image}`}
-                : require('../../../assets/image/Remedies/Image-not.png')
-            }
-            style={styles.img1}
-            /> 
-          }
+          {finalUrl ? (
+            <WebView
+              source={{uri: finalUrl ? finalUrl : ''}}
+              style={styles.img1}
+              // resizeMode='contain'
+              javaScriptEnabled={true}
+              domStorageEnabled={true}
+              allowsFullscreenVideo={true}
+              // startInLoadingState={true}
+              // onLoadEnd={handleLoadEnd}
+              // renderLoading={() => (
+              //   loading && (
+              //     <View style={styles.loader}>
+              //       <ActivityIndicator size="large" color={colors.orange} />
+              //     </View>
+              //   )
+              // )}
+            />
+          ) : (
+            <Image
+              source={
+                CourceDetailA?.image
+                  ? {uri: `${Imagepath.Path}${CourceDetailA?.image}`}
+                  : require('../../../assets/image/Remedies/Image-not.png')
+              }
+              style={styles.img1}
+            />
+          )}
         </TouchableOpacity>
         <View style={styles.advanceview}>
           <Text style={styles.advancetext}>{CourceDetailA?.title} </Text>
@@ -490,7 +483,7 @@ const CourseDetail = ({route}) => {
         </View>
 
         <FlatList
-         scrollEnabled={false}
+          scrollEnabled={false}
           data={CourceDetailA?.desc_data?.filter(
             item => item.description !== null && item.label !== null,
           )}
@@ -571,25 +564,25 @@ const CourseDetail = ({route}) => {
 
         <View style={styles.firstimgview}>
           <Text style={styles.demotext}>Demo Lecture</Text>
-        { finalUrl1?
-          <WebView
-        source={{ uri: finalUrl1?finalUrl1:'' }}
-        style={styles.img1}
-        // resizeMode='contain'
-        javaScriptEnabled={true}
-        domStorageEnabled={true}
-        allowsFullscreenVideo={true}
-       
-      />
-: <Image
-            source={
-              CourceDetailA?.image
-                ? {uri: `${Imagepath.Path}${CourceDetailA?.image}`}
-                : require('../../../assets/image/Remedies/Image-not.png')
-            }
-            style={styles.img1}
-            /> 
-          }
+          {finalUrl1 ? (
+            <WebView
+              source={{uri: finalUrl1 ? finalUrl1 : ''}}
+              style={styles.img1}
+              // resizeMode='contain'
+              javaScriptEnabled={true}
+              domStorageEnabled={true}
+              allowsFullscreenVideo={true}
+            />
+          ) : (
+            <Image
+              source={
+                CourceDetailA?.image
+                  ? {uri: `${Imagepath.Path}${CourceDetailA?.image}`}
+                  : require('../../../assets/image/Remedies/Image-not.png')
+              }
+              style={styles.img1}
+            />
+          )}
 
           {/* <Video
             source={{
@@ -600,11 +593,9 @@ const CourseDetail = ({route}) => {
             controls={true}
             onError={error => console.error('Video Error:', error)} // Debug video errors
           /> */}
-
-          
         </View>
         <FlatList
-         scrollEnabled={false}
+          scrollEnabled={false}
           data={CourceDetailA?.desc_demo_data?.filter(
             item => item.description !== null && item.label !== null,
           )}
@@ -688,43 +679,64 @@ const CourseDetail = ({route}) => {
             }}
           />
         </View>
-        <View style={styles.courseview}>
-          <Text style={styles.demotext}>Course Review By Student</Text>
+        {CourceDetailA?.reviews ? (
+          <View style={styles.courseview}>
+            <Text style={styles.demotext}>Course Review By Student</Text>
 
-          <FlatList
-            data={images}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({item, index}) => (
-              <View style={styles.imageContainer}>
-                <Image source={item} style={styles.reviewImage} />
-              </View>
-            )}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            onMomentumScrollEnd={e => {
-              const contentOffsetX = e.nativeEvent.contentOffset.x;
-              const currentIndex = Math.round(
-                contentOffsetX / widthPrecent(70),
-              ); 
-              setCurrentIndex(currentIndex); 
-            }}
-          />
+            <FlatList
+              data={CourceDetailA?.reviews}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({item, index}) => (
+                <View
+                  style={[
+                    styles.imageContainer,
+                    {
+                      width:
+                        CourceDetailA?.reviews?.length == 1
+                          ? widthPrecent(90)
+                          : widthPrecent(70),
+                    },
+                  ]}>
+                  <WebView
+                    source={{uri: item?.videos}}
+                    style={styles.reviewImage}
+                    // resizeMode='contain'
+                    javaScriptEnabled={true}
+                    domStorageEnabled={true}
+                    allowsFullscreenVideo={true}
+                  />
+                  {/* <Image source={item} style={styles.reviewImage} /> */}
+                </View>
+              )}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              onMomentumScrollEnd={e => {
+                const contentOffsetX = e.nativeEvent.contentOffset.x;
+                const currentIndex = Math.round(
+                  contentOffsetX / widthPrecent(70),
+                );
+                setCurrentIndex(currentIndex);
+              }}
+            />
 
-          <View style={styles.dotContainer}>
-            {images.map((_, index) => (
-              <TouchableOpacity
-                key={index}
-                style={[styles.dot, currentIndex === index && styles.activeDot]}
-                onPress={() => handleImageChange(index)}
-              />
-            ))}
+            <View style={styles.dotContainer}>
+              {CourceDetailA?.reviews?.map((_, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    styles.dot,
+                    currentIndex === index && styles.activeDot,
+                  ]}
+                  onPress={() => handleImageChange(index)}
+                />
+              ))}
+            </View>
           </View>
-        </View>
-
+        ) : null}
         <View style={{marginTop: 15}}>
           <FlatList
             data={data1}
-            numColumns={2} 
+            numColumns={2}
             keyExtractor={item => item.id}
             renderItem={renderItem}
             scrollEnabled={false}
@@ -751,12 +763,12 @@ const CourseDetail = ({route}) => {
         <Animated.View
           style={[
             {
-              transform: [{scale: buttonAnimatedValue}], 
+              transform: [{scale: buttonAnimatedValue}],
             },
           ]}>
-           
-            
-          <TouchableOpacity onPress={()=> handleJoinCourse()} style={styles.book}>
+          <TouchableOpacity
+            onPress={() => handleJoinCourse()}
+            style={styles.book}>
             <Text style={styles.btext1}>
               {coursetype ? 'Join Course' : 'Get An Instant Access Now'}
             </Text>

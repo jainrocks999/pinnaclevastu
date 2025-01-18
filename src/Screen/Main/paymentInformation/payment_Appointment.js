@@ -154,10 +154,10 @@ const PaymentAppointment = ({route}) => {
       if (response?.data?.status == 200) {
         setLoading(false);
         Toast.show(response?.data?.msg);
-        // navigation.navigate('Thankyou', {
-        //   order: response?.data,
-        //   data: 'Courses',
-        // });
+        navigation.navigate('Thankyou', {
+          order: response?.data,
+          data: 'Consultation',
+        });
       } else {
         setLoading(false);
         Toast.show(response?.data?.msg);
@@ -355,9 +355,9 @@ const PaymentAppointment = ({route}) => {
         </View> */}
 
         <View style={styles.cardContainer2}>
-          <Text style={[styles.payment, {}]}>Other payment Methods</Text>
+          <Text style={[styles.payment, {}]}>Payment Method</Text>
 
-          <View style={[styles.appBottomSection, styles.borderBottom]}>
+          {/* <View style={[styles.appBottomSection, styles.borderBottom]}>
             <Image
               style={styles.otherIcons}
               source={require('../../../assets/image/cash-on-delivery.png')}
@@ -374,7 +374,7 @@ const PaymentAppointment = ({route}) => {
                 style={styles.radio}
               />
             </View>
-          </View>
+          </View> */}
 
           <View style={[styles.appBottomSection, {paddingBottom: 15}]}>
             <Image
