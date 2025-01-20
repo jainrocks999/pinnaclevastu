@@ -136,10 +136,10 @@ const HomeScreen = () => {
     if (!data.length) return 0;
 
     const totalStars = data.reduce((sum, item) => {
-      return sum + Number(item.star);
+      return sum + Number(item?.star);
     }, 0);
 
-    const averageStars = totalStars / data.length;
+    const averageStars = totalStars / data?.length;
 
     return averageStars;
   };
@@ -174,7 +174,7 @@ const HomeScreen = () => {
           for (const item of localCartDataList) {
             await dispatch(
               addToCartApi({
-                user_id: userData.user_id,
+                 user_id: userData.user_id,
                 itemId: item.id,
                 qty: item.qty,
                 user_type: userData.user_type,
@@ -373,8 +373,7 @@ const HomeScreen = () => {
   };
 
   const renderItem3 = ({item, index}) => {
-    // console.log(item,"sandeep......");
-    console.log(Homebanner?.franchises, 'sandeep......');
+   
     const itemScaleAnim = scaleAnims[index] || new Animated.Value(1);
     return (
       <Animated.View
@@ -753,7 +752,7 @@ const HomeScreen = () => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{paddingHorizontal: 10, marginBottom: wp(8)}}
         />
-        {/* <View style={styles.consultationSection}>
+        <View style={styles.consultationSection}>
           <View style={[styles.contain1, {}]}>
             <Text style={styles.service}>Consultation</Text>
 
@@ -789,7 +788,7 @@ const HomeScreen = () => {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.bottomCard}
           />
-        </View> */}
+        </View>
       </ScrollView>
     </View>
   );

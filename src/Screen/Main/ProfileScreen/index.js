@@ -187,11 +187,12 @@ const ResidentalScreen = ({navigation}) => {
       </Animated.View>
     );
   };
-
+  const [showAll, setShowAll] = useState(false);
+  const filteredReviews = showAll ? data?.reviews : data?.reviews?.slice(0, 3);
   const renderItem3 = ({item}) => {
     return (
       <TouchableOpacity
-        // onPress={() => navigation.navigate('profile')}
+       
         style={[styles.cardContainer1]}>
         <View style={styles.reviewCard}>
           <View style={{paddingLeft: 5}}>
@@ -394,11 +395,13 @@ const ResidentalScreen = ({navigation}) => {
         </View>
 
         <View style={styles.reviewSection}>
+          {data?.reviews?.length!=0? 
+          <>
           <View style={styles.contain}>
             <Text style={styles.service}>User Reviews ({data?.reviews?.length})</Text>
           </View>
           <FlatList
-            data={data?.reviews}
+            data={filteredReviews}
             scrollEnabled={false}
             renderItem={renderItem3}
             keyExtractor={item => item.id}
@@ -406,7 +409,10 @@ const ResidentalScreen = ({navigation}) => {
             showsVerticalScrollIndicator={false}
           />
 
-          <Text style={styles.seeall}>See all Reviews</Text>
+        <TouchableOpacity onPress={() => setShowAll(!showAll)}>
+          <Text style={styles.seeall}>{filteredReviews?.reviews?.length > 3 &&  'See all Reviews'}</Text>
+        </TouchableOpacity>
+     </>:null}
         </View>
       </ScrollView>
       <TouchableOpacity onPress={handlePress} activeOpacity={1}>

@@ -7,8 +7,9 @@ import {
   FlatList,
   TextInput,
   Alert,
+  BackHandler,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import styles from './styles';
 import {Dropdown} from 'react-native-element-dropdown';
 import StepIndicator from 'react-native-step-indicator';
@@ -72,6 +73,21 @@ const OrderDetail = () => {
   const toggleCollapse1 = () => {
     setIsCollapsed1(!isCollapsed1);
   };
+
+  useEffect(() => {
+    const backAction = () => {
+      navigation.goBack();
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, [navigation]);
+
   const cancelorder = async () => {
     if (!reason.trim()) {
       Toast.show('Reason for cancellation is required');
@@ -161,17 +177,17 @@ const OrderDetail = () => {
 
   const renderItem = ({item}) => (
     <View style={styles.card}>
-      <TouchableOpacity style={styles.ImageBtn}
-      onPress={()=>
-         navigation.navigate('ProductDetail', {data:{id:item?.product_id}}) 
-      }
-      >
+      <TouchableOpacity
+        style={styles.ImageBtn}
+        onPress={() =>
+          navigation.navigate('ProductDetail', {data: {id: item?.product_id}})
+        }>
         <Image
           style={styles.cardImg}
           source={
             item?.product_image
               ? {uri: `${Imagepath.Path}${item?.product_image}`}
-              : require('../../../assets/otherApp/itemImg.png')
+              : require('../../../assets/image/Remedies/Image-not.png')
           }
         />
       </TouchableOpacity>

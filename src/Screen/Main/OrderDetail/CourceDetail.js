@@ -5,13 +5,15 @@ import {
   ScrollView,
   Image,
   TextInput,
+  BackHandler,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import styles from './styles';
 import StepIndicator from 'react-native-step-indicator';
 import Toast from 'react-native-simple-toast';
 import {
   heightPercent,
+  widthPrecent,
   widthPrecent as wp,
 } from '../../../Component/ResponsiveScreen/responsive';
 import {fontSize} from '../../../Component/fontsize';
@@ -21,6 +23,7 @@ import Imagepath from '../../../Component/Imagepath';
 import {cancelorders, orderDetail} from '../../../Redux/Slice/orderSclice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {colors} from '../../../Component/colors';
+import AutoHeightImage from 'react-native-auto-height-image';
 
 const labels = [
   'Order Received',
@@ -57,7 +60,18 @@ const CourceDetail = () => {
   const dispatch = useDispatch();
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
-  console.log('cource detail ', data2);
+ 
+   useEffect(() => {
+       const backAction = () => {
+         navigation.goBack()
+         return true; 
+       };
+       
+       const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+   
+       return () => backHandler.remove(); 
+     
+   }, [navigation]);
 
   const cancelorder = async () => {
     if (!reason.trim()) {
@@ -207,12 +221,15 @@ const CourceDetail = () => {
         }}>
         <View style={styles.section}>
           <View style={styles.card}>
-            <Image
-              style={styles.cardImg}
+            {console.log(' data2?.course?.image', `${Imagepath.Path}${data2?.course?.image}`)
+            }
+            <AutoHeightImage
+            style={{width:widthPrecent(34)}}
+              // style={[styles.cardImg,{width:widthPrecent(34)}]}
               source={
                 data2?.course?.image
                   ? {uri: `${Imagepath.Path}${data2?.course?.image}`}
-                  : require('../../../assets/otherApp/itemImg.png')
+                  : require('../../../assets/image/Remedies/Image-not.png')
               }
             />
             <View style={styles.cardInfo}>

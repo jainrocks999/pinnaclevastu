@@ -26,8 +26,9 @@ import {useDispatch, useSelector} from 'react-redux';
 import {fontSize} from '../../../Component/fontsize';
 
 const PaymentAppointment = ({route}) => {
-  const nav = route.params?.data1;
+  const nav = route.params?.services;
   const services = route.params?.services;
+  
   const formData = route.params?.formData;
   const navigation = useNavigation();
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
@@ -46,6 +47,8 @@ const PaymentAppointment = ({route}) => {
   });
 
   const calculateTotals = (product, userType) => {
+    console.log('nfgkjfdgfd',product);
+    
     const {
       sale_price,
       student_price,
@@ -72,16 +75,16 @@ const PaymentAppointment = ({route}) => {
     //   : parseFloat(tax_amount);
     const taxAmount =
       tax_type === 'percentage'
-        ? (selectedPrice * tax_amount) / 100 // Calculate percentage-based tax
+        ? (selectedPrice * tax_amount) / 100 
         : tax_type === 'amount'
-        ? tax_amount // Fixed tax amount
+        ? tax_amount 
         : 0;
     const totalProductAmount = itemPrice + taxAmount;
 
     return {
-      totalTaxAmount: totlaServicesPrice.toFixed(2), // Total tax amount.
-      totalAmount: totalProductAmount.toFixed(2), // Grand total amount.
-      totalPriceOnly: itemPrice.toFixed(2), // Total price before tax.
+      totalTaxAmount: totlaServicesPrice.toFixed(2), 
+      totalAmount: totalProductAmount.toFixed(2), 
+      totalPriceOnly: itemPrice.toFixed(2),
     };
   };
 

@@ -95,7 +95,6 @@ const PaymentCourse = ({route}) => {
   useEffect(() => {
     if (userType && Object.values(nav)?.filter(Boolean)?.length > 0) {
       const calculatedTotals = calculateTotals(nav, userType);
-
       setTotals(calculatedTotals);
     }
   }, [nav, userType]);

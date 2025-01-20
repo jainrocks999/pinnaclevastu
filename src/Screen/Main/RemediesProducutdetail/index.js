@@ -1065,7 +1065,8 @@ const RemediesProductDetail = ({route}) => {
                 />
                
                   <TouchableOpacity onPress={() => setShowAllReviews(true)}>
-                    <Text style={styles.seeall}>{!showAllReviews &&'See all Reviews'}</Text>
+      
+                    <Text style={styles.seeall}>{reviewsToShow?.reviews?.length > 3 &&'See all Reviews'}</Text>
                   </TouchableOpacity>
                
               </>
