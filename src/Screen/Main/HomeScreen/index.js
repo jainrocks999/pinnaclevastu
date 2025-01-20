@@ -38,7 +38,7 @@ import {
   getCartDataApi,
 } from '../../../Redux/Slice/CartSlice';
 import {getUserDetailApi} from '../../../Redux/Slice/Authslice';
-import {consultationDetail1} from '../../../Redux/Slice/HomeSlice';
+import {consultationDetail1} from '../../../Redux/Slice/ConsultancySlice';
 
 let backPress = 0;
 const HomeScreen = () => {
@@ -212,7 +212,7 @@ const HomeScreen = () => {
     setCurrentIndex(index);
   };
 
-  const handleItemClick = index => {
+  const handleItemClick = (index,itemId) => {
     const newScaleAnims = {...scaleAnims};
 
     if (!newScaleAnims[index]) {
@@ -236,6 +236,9 @@ const HomeScreen = () => {
     ]).start(() => {
       navigation.navigate('Home1', {
         screen: 'Consultancy',
+        params: {
+          itemId: itemId,
+        },
       });
     });
   };
@@ -267,7 +270,8 @@ const HomeScreen = () => {
         ]}>
         <TouchableOpacity
           style={[styles.cardContainer, {backgroundColor: item?.color_code}]}
-          onPress={() => handleItemClick(index)}>
+          onPress={() => handleItemClick(index, item.id)}>
+          {/* {console.log(item,"sadmlkasdlas")} */}
           <Image
             source={{uri: `${Imagepath.Path}${item?.logo}`}}
             style={styles.itemImg}
@@ -373,8 +377,7 @@ const HomeScreen = () => {
   };
 
   const renderItem3 = ({item, index}) => {
-    // console.log(item,"sandeep......");
-    console.log(Homebanner?.franchises, 'sandeep......');
+    
     const itemScaleAnim = scaleAnims[index] || new Animated.Value(1);
     return (
       <Animated.View
@@ -610,7 +613,7 @@ const HomeScreen = () => {
           data={Homebanner?.services ? Homebanner?.services : []}
           renderItem={renderItem}
           scrollEnabled={false}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item?.id}
           numColumns={3}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContainer}
@@ -636,7 +639,7 @@ const HomeScreen = () => {
             Homebanner?.premium_services ? Homebanner?.premium_services : []
           }
           renderItem={renderItem1}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item?.id}
           numColumns={3}
           scrollEnabled={false}
           showsVerticalScrollIndicator={false}
@@ -753,7 +756,7 @@ const HomeScreen = () => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{paddingHorizontal: 10, marginBottom: wp(8)}}
         />
-        {/* <View style={styles.consultationSection}>
+        <View style={styles.consultationSection}>
           <View style={[styles.contain1, {}]}>
             <Text style={styles.service}>Consultation</Text>
 
@@ -761,7 +764,6 @@ const HomeScreen = () => {
               onPress={() =>
                 navigation.navigate('Home1', {
                   screen: 'Consultancy',
-                 
                 })
               }
               hitSlop={{top: 10, bottom: 10, left: 10, right: 10}} // Touch area increase
@@ -789,7 +791,7 @@ const HomeScreen = () => {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.bottomCard}
           />
-        </View> */}
+        </View>
       </ScrollView>
     </View>
   );
