@@ -243,8 +243,12 @@ import {useDispatch, useSelector} from 'react-redux';
 import {consultationDetail1} from '../../../Redux/Slice/ConsultancySlice';
 import {getCosultationListApi} from '../../../Redux/Slice/ConsultancySlice';
 import Imagepath from '../../../Component/Imagepath';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 
-const ResidentalScreen = ({navigation}) => {
+const ResidentalScreen = ({route}) => {
+  const navigation = useNavigation();
+  const itemId = route?.params?.itemId;
+  
   const [textAnim] = useState(new Animated.Value(0));
   const [scaleAnim] = useState(new Animated.Value(1));
   const [scaleAnims, setScaleAnims] = useState({});
@@ -254,7 +258,9 @@ const ResidentalScreen = ({navigation}) => {
   const CosultationListData = useSelector(
     state => state.consultation.ConsultationList,
   );
-  // console.log(CosultationListData,"sdkosdkmsddof")
+  
+const focus=useIsFocused();
+
 
   const dispatch = useDispatch();
 
@@ -269,10 +275,16 @@ const ResidentalScreen = ({navigation}) => {
 
   useEffect(() => {
     apicall();
-  }, []);
+  }, [focus]);
 
   const apicall = async () => {
-    await dispatch(getCosultationListApi({url: `fetch-franchise-list?franchise_services_id=0`}));
+    await dispatch(
+      getCosultationListApi({
+        url: `fetch-franchise-list?franchise_services_id=${
+          itemId ? itemId : 0
+        }`,
+      }),
+    );
   };
 
   useEffect(() => {
@@ -396,7 +408,7 @@ const ResidentalScreen = ({navigation}) => {
 
   const calculateAverageRating = reviews => {
     const totalRatings = reviews?.reduce(
-      (sum, review) => sum +JSON.parse( review?.star),
+      (sum, review) => sum + JSON.parse(review?.star),
       0,
     );
     const averageRating =
@@ -431,14 +443,14 @@ const ResidentalScreen = ({navigation}) => {
                     : require('../../../assets/image/Remedies/Image-not.png')
                 }
                 style={styles.cardImage}
-              />       
+              />
               <View style={styles.direction}>
                 <Rating
                   type="custom"
                   tintColor={colors.white}
                   ratingCount={5}
                   imageSize={wp(3.8)}
-                   startingValue={calculateAverageRating(item?.reviews)}
+                  startingValue={calculateAverageRating(item?.reviews)}
                   ratingColor="#52B1E9"
                   readonly
                   ratingBackgroundColor={colors.lightGrey}

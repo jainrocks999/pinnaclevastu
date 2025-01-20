@@ -21,6 +21,7 @@ import {
 } from '../../../Component/ResponsiveScreen/responsive';
 import WebView from 'react-native-webview';
 import axios from 'axios';
+import Loader from '../../../Component/Loader';
 const {width} = Dimensions.get('window');
 
 // const dummyDatas = [
@@ -94,6 +95,7 @@ const {width} = Dimensions.get('window');
 // ];
 
 const CourceListDownload = ({navigation}) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [videoUri, setVideoUri] = useState('');
 
@@ -137,6 +139,7 @@ const CourceListDownload = ({navigation}) => {
 
   const apicall = async () => {
     try {
+      setIsLoading(true);
       const config = {
         method: 'get',
         maxBodyLength: Infinity,
@@ -156,7 +159,9 @@ const CourceListDownload = ({navigation}) => {
         // Toast.show(response.data.msg);
         console.log('Unexpected response status:', response);
       }
+      setIsLoading(false)
     } catch (error) {
+      setIsLoading(false)
       console.error('Error in API call:', error);
     }
   };
@@ -170,7 +175,7 @@ const CourceListDownload = ({navigation}) => {
     console.log(videoUri, 'sdjsdkdkal');
   };
 
-  const renderSubItems = ({item,index}) => (
+  const renderSubItems = ({item, index}) => (
     <View style={styles.singleSubItem}>
       {/* {console.log(item,"sandeep,.....")} */}
       <View style={[styles.direction]}>
@@ -253,7 +258,9 @@ const CourceListDownload = ({navigation}) => {
           <FlatList
             data={item.resources}
             scrollEnabled={false}
-            keyExtractor={(item, index) => item.material_id?.toString() || index.toString()} 
+            keyExtractor={(item, index) =>
+              item.material_id?.toString() || index.toString()
+            }
             renderItem={renderSubItems}
           />
         </View>
@@ -283,7 +290,7 @@ const CourceListDownload = ({navigation}) => {
           </Text>
         </View>
       </View>
-
+      {isLoading?<Loader/>:null}
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
@@ -328,7 +335,9 @@ const CourceListDownload = ({navigation}) => {
         <FlatList
           data={tutorialData?.resources}
           // keyExtractor={index => index.toString()}
-          keyExtractor={(item, index) => item.section_id?.toString() || index.toString()} 
+          keyExtractor={(item, index) =>
+            item.section_id?.toString() || index.toString()
+          }
           renderItem={renderItems}
           scrollEnabled={false}
           contentContainerStyle={{gap: 10}}

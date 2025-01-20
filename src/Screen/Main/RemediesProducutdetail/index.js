@@ -10,6 +10,7 @@ import {
   Animated,
   Share,
   Pressable,
+  BackHandler,
 } from 'react-native';
 import styles from './styles';
 import {colors} from '../../../Component/colors';
@@ -68,7 +69,17 @@ const RemediesProductDetail = ({route}) => {
 
   useEffect(() => {
     PRoductDeta();
-  }, []);
+    const backAction = () => {
+      navigation.goBack();
+      return true; 
+    };
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    ); 
+    return () => backHandler.remove();
+  }, [navigation]);
+  
   console.log('jkfdgdgdkj',item);
   const PRoductDeta = async () => {
    
