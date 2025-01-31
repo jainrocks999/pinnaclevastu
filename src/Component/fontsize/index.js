@@ -24,4 +24,5 @@ export const fontSize = {
     TwentyFour: calculateFontSize(24),
     TwentyFive: calculateFontSize(25),
     Twentysix: calculateFontSize(26),
+    Thirty: calculateFontSize(30),
 }

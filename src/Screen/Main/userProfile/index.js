@@ -22,9 +22,10 @@ import {useDispatch, useSelector} from 'react-redux';
 import Loader from '../../../Component/Loader';
 import Imagepath from '../../../Component/Imagepath';
 import {clearUserData, getUserDetailApi} from '../../../Redux/Slice/Authslice';
+import constants from '../../../Redux/constant/constants';
+import axios from 'axios';
 
 const {width} = Dimensions.get('window');
-
 const MyProfile = () => {
   const navigation = useNavigation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -35,38 +36,53 @@ const MyProfile = () => {
   const userDetail = useSelector(state => state?.Auth?.userData);
   const isUserLoading = useSelector(state => state?.Auth?.loading);
   const focus = useIsFocused();
+
+  const [count, setCount] = useState('');
+
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
         const userStatus = await AsyncStorage.getItem('user_data');
         const userData = JSON.parse(userStatus);
 
-        // console.log('virendra', userData); 
-
         if (userStatus) {
-          // await AsyncStorage.clear();
           setIsLoggedIn(true);
-          // if (userDetail.length === 0) {
-          //   await dispatch(
-          //     getUserDetailApi({
-          //       user_id: userData.user_id,
-          //       token: userData.token,
-          //       url: `profile-list?user_id=${userData.user_id}`,
-          //     }),
-          //   );
-          // }
+          apiCall(userData);
         } else {
-          navigation.navigate('Login');
           setIsLoggedIn(false);
-          // navigation.navigate('Login'); // Navigate to login screen if not logged in
         }
       } catch (error) {
         console.log('Error checking login status:', error);
       }
     };
-
     checkLoginStatus();
   }, [focus]);
+
+  const apiCall = async userData => {
+    try {
+      setIsLoading(true);
+      const config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: `${constants.mainUrl}fetch-profile-counting?user_id=${userData?.user_id}`,
+        headers: {
+          Authorization: `Bearer ${userData?.token}`,
+        },
+      };
+      //  console.log('config ',config);
+      const response = await axios.request(config);
+      setIsLoading(false);
+      // console.log('counting dmgkd ', response.data);
+      if (response?.data?.status == 200) {
+        setCount(response?.data?.data);
+      } else {
+        // Toast.show(response?.data?.msg);
+        console.log(response?.data);
+      }
+    } catch (error) {
+      console.log('Error checking login status:', error);
+    }
+  };
 
   const handleLogout = async () => {
     setIsLoading(true);
@@ -117,8 +133,14 @@ const MyProfile = () => {
   const renderItem = ({item}) => (
     <TouchableOpacity
       hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
-      style={styles.actionItem}>
+      style={styles.actionItem}
+      onPress={() =>
+        item?.title.includes('Franchise')
+          ? navigation.navigate('signupFranchise')
+          : null
+      }>
       <View style={styles.actionContent}>
+        {/* {console.log(item?.title.includes("Franchise"))} */}
         <Image source={item.image} style={styles.actionIcon} />
         <Text style={styles.actionText}>{item.title}</Text>
       </View>
@@ -179,9 +201,12 @@ const MyProfile = () => {
           ID: {userDetail?.id}
         </Text>
         <Text style={styles.profileEmail}>{userDetail?.email}</Text>
-        <Text style={[styles.profileEmail, {marginBottom: 4},
-           { opacity: userDetail.length === 0 ? 0 : 1 }
-        ]}>
+        <Text
+          style={[
+            styles.profileEmail,
+            {marginBottom: 4},
+            {opacity: userDetail.length === 0 ? 0 : 1},
+          ]}>
           +91 {userDetail?.phone}
         </Text>
         <TouchableOpacity
@@ -193,12 +218,13 @@ const MyProfile = () => {
       </View>
 
       <ScrollView style={styles.scrollContent}>
+        {/* {console.log(count,"sdmkflsmfl")} */}
         <View style={styles.statsSection}>
           <TouchableOpacity
             onPress={() =>
               navigation.navigate('Home1', {
                 screen: 'MyProfile',
-                params: {screen: 'MyOrder',params:{data:'Remedies'}},
+                params: {screen: 'MyOrder', params: {data: 'Remedies'}},
               })
             }
             hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
@@ -220,7 +246,7 @@ const MyProfile = () => {
             }
             hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
             style={styles.statItem}>
-            <Text style={styles.statValue}>10</Text>
+            <Text style={styles.statValue}>{count?.total_course || 0}</Text>
             <View style={styles.statLabelRow}>
               <Text style={styles.statLabel}>{'My Courses >'}</Text>
             </View>
@@ -237,7 +263,9 @@ const MyProfile = () => {
             }
             hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
             style={styles.statItem}>
-            <Text style={styles.statValue}>5</Text>
+            <Text style={styles.statValue}>
+              {count?.total_booking_appointment || 0}
+            </Text>
             <View style={styles.statLabelRow}>
               <Text style={styles.statLabel}>{'Appointments >'}</Text>
             </View>

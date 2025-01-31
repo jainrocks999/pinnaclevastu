@@ -75,7 +75,6 @@ const LoginScreen = ({route, navigation}) => {
 
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
 
-
   const [mobile, setMobile] = useState('');
 
   const isLoading = useSelector(state => state.Auth?.loading);

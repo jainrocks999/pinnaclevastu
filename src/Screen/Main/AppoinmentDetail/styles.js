@@ -1,7 +1,7 @@
 import {StyleSheet} from 'react-native';
 import { fontSize } from '../../../Component/fontsize';
 import { colors } from '../../../Component/colors';
-import { heightPercent, widthPrecent as wp } from '../../../Component/ResponsiveScreen/responsive';
+import { heightPercent as hp, widthPrecent as wp } from '../../../Component/ResponsiveScreen/responsive';
 
 export default StyleSheet.create({
   container: {
@@ -57,7 +57,8 @@ export default StyleSheet.create({
     zIndex: 1,
   },
   scroll:{
-    paddingBottom:heightPercent(8)
+    // flex:1,
+    paddingBottom:hp(6)
   },
   ProfileInfoSection: {
     overflow: 'hidden',
@@ -119,7 +120,7 @@ export default StyleSheet.create({
     width: wp(3.5),
   },
   textContainer: {
-    paddingVertical: 10,
+    paddingVertical: hp(4),
     paddingHorizontal: 18,
   },
   cardStar:{
@@ -141,7 +142,7 @@ export default StyleSheet.create({
   reviewForm: {
     backgroundColor: '#F1F1F1',
     paddingVertical: 20,
-    paddingHorizontal: 30,
+    // paddingHorizontal: 30,
     gap: 10,
     borderRadius:10,
     marginTop:10
@@ -195,7 +196,7 @@ export default StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 12,
     elevation: 12,
-    marginVertical:18,
+    marginVertical:15,
   },
   heightInput:{
     height:120
@@ -206,5 +207,64 @@ export default StyleSheet.create({
     width: wp(2.3),
     resizeMode: 'stretch',
     marginRight:20
+  },
+  cardContainer1: {
+    marginHorizontal: 15,
+    padding: 10,
+    marginTop: 15,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#DFE7EF',
+    shadowColor: '#bdc3c7',
+    shadowOffset: {width: 0, height: 6},
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 5, /// For Android shadow effect
+    // margin:5,
+
+    justifyContent: 'center',
+    // marginVertical: 10,
+  },
+  reviewSection: {
+    marginTop: 20,
+    backgroundColor: '#F1F1F1',
+  },
+  reviewCard: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    // alignItems: 'center',
+    // padding: 10,
+  },
+  reviewImage: {
+    width: wp(20),
+    height: wp(20),
+    resizeMode: 'cover',
+    borderRadius: 60,
+    marginBottom: 5,
+  },
+  card: {
+    paddingLeft: 15,
+    width: '70%',
+    // borderWidth:1
+  },
+  third1: {
+    marginBottom: 5,
+    fontSize: fontSize.Sixteen,
+    color: colors.heading,
+    fontFamily: 'Poppins-Medium',
+  },
+  third2: {
+    fontSize: fontSize.Fourteen,
+    color: '#51575C',
+    fontFamily: 'Poppins-Regular',
+  },
+  seeall: {
+    fontSize: fontSize.Fifteen,
+    fontFamily: 'Poppins-Regular',
+    color: colors.orange,
+    marginVertical: hp(2),
+    marginRight: 20,
+    textAlign: 'right',
   },
 });

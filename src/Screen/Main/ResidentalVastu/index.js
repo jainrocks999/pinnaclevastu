@@ -248,7 +248,6 @@ import {useIsFocused, useNavigation} from '@react-navigation/native';
 const ResidentalScreen = ({route}) => {
   const navigation = useNavigation();
   const itemId = route?.params?.itemId;
-  
   const [textAnim] = useState(new Animated.Value(0));
   const [scaleAnim] = useState(new Animated.Value(1));
   const [scaleAnims, setScaleAnims] = useState({});
@@ -258,9 +257,8 @@ const ResidentalScreen = ({route}) => {
   const CosultationListData = useSelector(
     state => state.consultation.ConsultationList,
   );
-  
-const focus=useIsFocused();
-
+  const ConsultancyLoading = useSelector(state => state?.consultation?.loading);
+  const focus = useIsFocused();
 
   const dispatch = useDispatch();
 
@@ -445,28 +443,37 @@ const focus=useIsFocused();
                 style={styles.cardImage}
               />
               <View style={styles.direction}>
-                <Rating
-                  type="custom"
-                  tintColor={colors.white}
-                  ratingCount={5}
-                  imageSize={wp(3.8)}
-                  startingValue={calculateAverageRating(item?.reviews)}
-                  ratingColor="#52B1E9"
-                  readonly
-                  ratingBackgroundColor={colors.lightGrey}
-                />
+                {calculateAverageRating(item?.reviews) != 0 ? (
+                  <Rating
+                    type="custom"
+                    tintColor={colors.white}
+                    ratingCount={5}
+                    imageSize={wp(3.8)}
+                    startingValue={calculateAverageRating(item?.reviews)}
+                    ratingColor="#52B1E9"
+                    readonly
+                    ratingBackgroundColor={colors.lightGrey}
+                  />
+                ) : null}
               </View>
             </View>
             <View style={styles.card}>
               <Text style={styles.third1}>{item.franchise_name}</Text>
+
               <Text style={[styles.third2, {marginBottom: 2}]}>
                 Services :{' '}
                 {item?.franchise_services
-                  ?.map(service => service.services_name) // Extract all services_name
+                  ?.map(service => service.service_name)
                   .join(', ')}
               </Text>
-              <Text style={styles.third2}>{item?.language}</Text>
-              <Text style={styles.third2}>Exp: {item?.experience_of_year}</Text>
+                <Text style={styles.third2}>
+                  {' '}
+                  {item?.language?.map(language => language).join(', ')}
+                </Text>
+           
+              <Text style={styles.third2}>
+                Exp: {item?.experience_of_year} year
+              </Text>
               <Text style={styles.priceText}>Price:₹ {item?.charges}</Text>
             </View>
             <Image
@@ -492,7 +499,7 @@ const focus=useIsFocused();
         </TouchableOpacity>
 
         <View style={styles.headerview}>
-          <Text style={styles.logoText}>Residential Vastu Experts</Text>
+          <Text style={styles.logoText}>{route?.params?.servicesName || 'Vastu'} Experts</Text>
         </View>
       </View>
 
@@ -552,15 +559,25 @@ const focus=useIsFocused();
           </TouchableOpacity>
         </Animated.View>
 
-        <FlatList
-          // data={DATA}
-          data={CosultationListData}
-          renderItem={renderItem3}
-          keyExtractor={item => item.id}
-          showsVerticalScrollIndicator={false}
-          scrollEnabled={false}
-          contentContainerStyle={styles.listContainer}
-        />
+        {CosultationListData.length !== 0 ? (
+          <FlatList
+            // data={DATA}
+            data={CosultationListData}
+            renderItem={renderItem3}
+            keyExtractor={item => item.id}
+            showsVerticalScrollIndicator={false}
+            scrollEnabled={false}
+            contentContainerStyle={styles.listContainer}
+          />
+        ) : (
+          !ConsultancyLoading && (
+            <View style={styles.emptyMessageContainer}>
+              <Text style={styles.emptyMessage}>
+                Sorry, no Vastu experts were found for this service.
+              </Text>
+            </View>
+          )
+        )}
       </ScrollView>
     </View>
   );

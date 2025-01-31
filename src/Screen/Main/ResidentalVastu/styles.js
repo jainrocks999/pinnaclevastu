@@ -1,6 +1,6 @@
-import { StyleSheet } from 'react-native';
-import { fontSize } from '../../../Component/fontsize';
-import { colors } from '../../../Component/colors';
+import {StyleSheet} from 'react-native';
+import {fontSize} from '../../../Component/fontsize';
+import {colors} from '../../../Component/colors';
 import {
   widthPrecent as wp,
   heightPercent as hp,
@@ -63,10 +63,9 @@ export default StyleSheet.create({
   arrowIcon: {
     height: wp(4),
     width: wp(2),
-    resizeMode: "contain"
+    resizeMode: 'contain',
   },
   main: {
-
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -74,7 +73,7 @@ export default StyleSheet.create({
     backgroundColor: colors.Resident,
     paddingVertical: 10,
     marginRight: -5,
-    marginLeft: -5
+    marginLeft: -5,
   },
   title: {
     fontSize: fontSize.Fourteen,
@@ -82,18 +81,19 @@ export default StyleSheet.create({
     color: colors.cardcolor,
   },
   servicesContainer: {
+    minHeight: '100%',
     // paddingHorizontal:15
     marginHorizontal: 5,
-    paddingBottom: hp(8)
+    paddingBottom: hp(8),
   },
   nextBtn: {
     // borderWidth:1,
     height: wp(5),
     width: wp(2.5),
     tintColor: colors.orange,
-    alignSelf: "center",
+    alignSelf: 'center',
     // marginRight: 10,
-    resizeMode: "contain"
+    resizeMode: 'contain',
   },
   listContainer: {
     margin: 10,
@@ -102,10 +102,11 @@ export default StyleSheet.create({
   },
 
   imgContainer: {
-    width: "30%"
+    width: '30%',
   },
   direction: {
-    marginTop: 4
+    marginTop: 4,
+    minHeight:12
   },
 
   cardContainer2: {
@@ -117,7 +118,7 @@ export default StyleSheet.create({
     borderWidth: 1,
     borderColor: '#DFE7EF',
     shadowColor: '#bdc3c7',
-    shadowOffset: { width: 0, height: 6 },
+    shadowOffset: {width: 0, height: 6},
     shadowOpacity: 0.5,
     shadowRadius: 10,
     elevation: 8, /// For Android shadow effect
@@ -132,8 +133,8 @@ export default StyleSheet.create({
   },
   cardImage: {
     borderRadius: 10,
-    width: '100%', 
-    height: wp(30), 
+    width: '100%',
+    height: wp(30),
     resizeMode: 'cover',
   },
 
@@ -141,7 +142,7 @@ export default StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    marginBottom: 10
+    marginBottom: 10,
   },
   third: {
     fontSize: fontSize.Fifteen,
@@ -152,10 +153,9 @@ export default StyleSheet.create({
     fontSize: fontSize.Eighteen,
     color: colors.heading,
     fontFamily: 'Poppins-Medium',
-    marginBottom: 2
+    marginBottom: 2,
   },
   third2: {
-
     fontSize: fontSize.Fourteen,
     color: '#51575C',
     fontFamily: 'Poppins-Regular',
@@ -172,5 +172,20 @@ export default StyleSheet.create({
     width: wp(2.3),
     resizeMode: 'stretch',
     marginRight: 20,
+  },
+  emptyMessageContainer: {
+    // borderWidth: 1,
+    // marginTop:wp(8),
+    margin: 'auto',
+    width:"60%",
+    padding:10,
+    // borderWidth:1
+  },
+  emptyMessage: {
+    fontSize: fontSize.Fourteen,
+    color: "#929292",
+    fontFamily: 'Poppins-Regular',
+    textAlignVertical: 'center',
+    textAlign: 'center',
   },
 });

@@ -1,14 +1,13 @@
-import { StyleSheet, Dimensions } from 'react-native';
-import { fontSize } from '../../../Component/fontsize';
-import { colors } from '../../../Component/colors';
-import { widthPrecent as wp } from '../../../Component/ResponsiveScreen/responsive';
-const { width } = Dimensions.get('window');
+import {StyleSheet, Dimensions} from 'react-native';
+import {fontSize} from '../../../Component/fontsize';
+import {colors} from '../../../Component/colors';
+import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
+const {width} = Dimensions.get('window');
 
 export default styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
-
   },
   header: {
     flexDirection: 'row',
@@ -21,7 +20,8 @@ export default styles = StyleSheet.create({
     elevation: 5,
   },
   headerview: {
-    flexDirection: 'row', alignItems: 'center'
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   logoText: {
     fontSize: fontSize.Eighteen,
@@ -52,19 +52,18 @@ export default styles = StyleSheet.create({
     height: 43,
     backgroundColor: colors.orange,
     borderRadius: 10,
-    shadowColor: colors.orange, 
-    shadowOffset: { width: 1, height: 2 }, 
-    shadowOpacity: 0.25, 
-    shadowRadius: 3.84, 
-    elevation: 5, 
+    shadowColor: colors.orange,
+    shadowOffset: {width: 1, height: 2},
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   tabText: {
-   
     fontSize: fontSize.Thirteen,
     color: colors.recorded,
     fontFamily: 'Poppins-Regular',
     textShadowColor: 'rgba(0, 0, 0, 0.5)',
-    textShadowOffset: { width: 1, height: 1 }, 
+    textShadowOffset: {width: 1, height: 1},
   },
   activeTabText: {
     color: colors.white,
@@ -76,7 +75,7 @@ export default styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',
     borderWidth: 0.5,
-    borderColor:colors.lightGrey,
+    borderColor: colors.lightGrey,
     backgroundColor: colors.white,
     borderRadius: 10,
     marginBottom: 15,
@@ -85,7 +84,6 @@ export default styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 10,
     elevation: 3,
-
   },
 
   appointmentImage: {
@@ -93,7 +91,8 @@ export default styles = StyleSheet.create({
     width: 120,
     height: 125,
     marginRight: 8,
-    marginLeft: -3
+    marginLeft: -3,
+    borderRadius: 20,
   },
   appointmentDetails: {
     flex: 1,
@@ -104,17 +103,17 @@ export default styles = StyleSheet.create({
     marginBottom: 3,
     fontSize: fontSize.Fourteen,
     color: colors.heading,
-    fontFamily: 'Poppins-Medium'
+    fontFamily: 'Poppins-Medium',
   },
   appointmentTitle1: {
     marginTop: -2,
     marginBottom: 1,
     fontSize: fontSize.Twelve,
     color: colors.paymenttext,
-    fontFamily: 'Poppins-Medium'
+    fontFamily: 'Poppins-Medium',
   },
   appointmentDate: {
-    paddingTop:5,
+    paddingTop: 5,
     fontSize: fontSize.Twelve,
     fontFamily: 'Poppins-SemiBold',
     color: colors.Headertext,
@@ -124,7 +123,7 @@ export default styles = StyleSheet.create({
     fontSize: fontSize.Twelve,
     fontFamily: 'Poppins-SemiBold',
     color: colors.Headertext,
-    paddingTop:5,
+    paddingTop: 5,
     // color: '#52B1E9',
   },
   redText: {
@@ -143,68 +142,64 @@ export default styles = StyleSheet.create({
   },
   direction1: {
     flexDirection: 'row',
-    alignItems:"center",
+    alignItems: 'center',
   },
   dateimg: {
     width: wp(3.3),
     height: wp(3.3),
-    marginRight:5,
+    marginRight: 5,
   },
- 
+
   reviewContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: -3,
   },
-  cardStar:{
-    flexDirection:'row',
-    justifyContent:"center",
-    alignItems:"center",
-    gap:6
+  cardStar: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 6,
   },
   starContainer: {
     marginVertical: 7,
-    alignSelf:"flex-start",
-    borderWidth:0.1
+    alignSelf: 'flex-start',
+    borderWidth: 0.1,
   },
-  ratingText:{
+  ratingText: {
     fontSize: fontSize.Thirteen,
-    color:"#949494"
-    },
+    color: '#949494',
+  },
   upcomingTitleStyle: {
     fontSize: fontSize.Fourteen,
     marginTop: -15,
     color: colors.heading,
-    fontFamily: 'Poppins-Medium'
+    fontFamily: 'Poppins-Medium',
   },
   upcomingTitle1Style: {
     fontSize: fontSize.Twelve,
     marginBottom: 1,
-     color: colors.paymenttext,
-    fontFamily: 'Poppins-Medium'
+    color: colors.paymenttext,
+    fontFamily: 'Poppins-Medium',
   },
   upcomingDateStyle: {
     fontSize: fontSize.Twelve,
     marginBottom: 3,
-
   },
   upcomingTimeStyle: {
     fontSize: fontSize.Twelve,
-
   },
-
+  emptyMessageContainer: {
+    margin: 'auto',
+    width: '60%',
+    padding: 10,
+    // borderWidth:1,
+  },
+  emptyMessage: {
+    fontSize: fontSize.Fourteen,
+    color: '#929292',
+    fontFamily: 'Poppins-Regular',
+    textAlignVertical: 'center',
+    textAlign: 'center',
+  },
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-

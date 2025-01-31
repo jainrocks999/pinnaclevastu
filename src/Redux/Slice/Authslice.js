@@ -3,14 +3,12 @@ import axios from 'axios';
 import Toast from 'react-native-simple-toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import constants from '../constant/constants';
-
 export const loginUser = createAsyncThunk(
   'auth/loginUser',
   async ({mobile, navigation, url, route}, {rejectWithValue}) => {
     let data = {
       phone_no: mobile,
-    };
-
+    };   
     let config = {
       method: 'post',
       maxBodyLength: Infinity,
@@ -84,6 +82,8 @@ export const signupUser = createAsyncThunk(
     {formUserData, url, navigation, route},
     {dispatch, rejectWithValue},
   ) => {
+
+    
     try {
       let config = {
         method: 'post',
@@ -92,9 +92,10 @@ export const signupUser = createAsyncThunk(
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-
+        
         data: formUserData,
       };
+      console.log('signupAsFranchiseApi', formUserData);
       console.log('shkshfskdfhsdf', config);
 
       const response = await axios.request(config);

@@ -22,6 +22,7 @@ import Group from '../assets/svg/Group.svg';
 import Group1 from '../assets/svg/Group1.svg';
 import Icon1 from '../assets/svg/Icon1.svg';
 import Icons from '../assets/svg/Icon.svg';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const {width} = Dimensions.get('window');
 
@@ -36,7 +37,8 @@ function shouldHideTabBar(route) {
     }
     if (
       focusedRouteName === 'UserProfile' ||
-      focusedRouteName === 'EditProfile'
+      focusedRouteName === 'EditProfile' ||
+      focusedRouteName === 'signupFranchise'
     ) {
       return true; // Hide for "UserProfile" and "EditProfile"
     }
@@ -46,6 +48,29 @@ function shouldHideTabBar(route) {
 }
 
 const TabBar = ({state, descriptors, navigation}) => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const checkLoginStatus = async () => {
+    try {
+      const userStatus = await AsyncStorage.getItem('user_data');
+      const userData = JSON.parse(userStatus);
+
+      // console.log('virendra', userData);
+
+      if (userStatus) {
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
+    } catch (error) {
+      console.log('Error checking login status:', error);
+    }
+  };
+
+  useEffect(() => {
+    checkLoginStatus();
+  }, [state.index]);
+
   const Icon = {
     MainStack: isFocused =>
       isFocused ? (
@@ -72,10 +97,9 @@ const TabBar = ({state, descriptors, navigation}) => {
   });
 
   const buttonWidth = dimensions.width / state.routes.length;
- const profile=  buttonWidth*state.index;
-//  console.log('kabhi khusi kabhi gam',profile)
- 
-  
+  const profile = buttonWidth * state.index;
+  //  console.log('kabhi khusi kabhi gam',profile)
+
   const tabPositionX = useSharedValue(0);
 
   const animateStyle = useAnimatedStyle(() => ({
@@ -87,10 +111,8 @@ const TabBar = ({state, descriptors, navigation}) => {
   }));
 
   useEffect(() => {
-  
-    tabPositionX.value = withTiming(profile?? buttonWidth * state.index) 
-  
-  }, [state.index,profile]);
+    tabPositionX.value = withTiming(profile ?? buttonWidth * state.index);
+  }, [state.index, profile]);
 
   const onTabBarLayout = e => {
     setDimensions({
@@ -135,7 +157,7 @@ const TabBar = ({state, descriptors, navigation}) => {
         />
         {state.routes.map((route, index) => {
           const isFocused = state.index === index;
-       
+
           const tabBarLabel =
             descriptors[route.key].options.tabBarLabel || route.name;
           const RenderIcon = Icon[route.name]
@@ -151,7 +173,7 @@ const TabBar = ({state, descriptors, navigation}) => {
             tabPositionX.value = withTiming(buttonWidth * state.index);
 
             if (!isFocused && !event.defaultPrevented) {
-              navigation.navigate(route.name);
+              navigation.navigate(route.name=="MyProfile"?isLoggedIn?"MyProfile":"Login":route.name);8
             }
           };
 

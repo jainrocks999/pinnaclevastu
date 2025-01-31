@@ -66,21 +66,21 @@ export const consultationDetail1 = createAsyncThunk(
 
 export const getAppoinment = createAsyncThunk(
   'consultation/getAppoinment',
-    async ({url,token,user_id}, {rejectWithValue}) => {
-      // console.log(url,token,user_id, 'Appoinment1 ,,,response ');
+  async ({url, token}, {rejectWithValue}) => {
+    // console.log(url,token, 'Appoinment1 ,,,response ');
     try {
       const config = {
         method: 'get',
         maxBodyLength: Infinity,
-        url: `${constant.mainUrl}${url}?user_id=${user_id}`,
+        url: `${constant.mainUrl}${url}`,
         headers: {
           Authorization: `Bearer ${token}`,
         },
       };
-      console.log('Appoinment1 ,,,response ',config);
+      // console.log('Appoinment1 ,,,response ',config);
 
       const response = await axios.request(config);
-     console.log(response.data, 'Appoinment1 ,,,response ');
+      //  console.log(response.data, 'Appoinment1 ,,,response ');
 
       if (response?.data?.status == 200) {
         // console.log(response.data, 'response.data Sandeep dfgmkdflgkdflg');
@@ -95,13 +95,49 @@ export const getAppoinment = createAsyncThunk(
     }
   },
 );
+export const signupAsFranchiseApi = createAsyncThunk(
+  'consultation/signupAsFranchiseApi',
+  async ({formUserData, url, token,navigation}, {rejectWithValue}) => {
+    console.log('consultation/signupAsFranchiseApi', formUserData, url, token);
+
+    try {
+      let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: `${constant.mainUrl}${url}`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+
+        data: formUserData,
+      };
+    // return 
+      const response = await axios.request(config);
+      console.log(response.data, 'signupAsFranchiseApi');
+
+      if (response.data.status == 200) {
+        Toast.show(response?.data?.msg);
+        navigation.replace('Home');
+      } else {
+        Toast.show(response.data.msg);
+        console.log('errrorroro', response.data);
+        return rejectWithValue(error.response?.data || error.message);
+      }
+    } catch (error) {
+      console.log('errro', error);
+
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  },
+);
 
 const consultationSlice = createSlice({
   name: 'consultation',
   initialState: {
     ConsultationList: [],
     ConsultationDetail: [],
-    Appoinment1:[],
+    Appoinment1: [],
     loading: false,
     error: null,
   },
@@ -147,6 +183,17 @@ const consultationSlice = createSlice({
         state.Appoinment1 = action.payload;
       })
       .addCase(getAppoinment.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(signupAsFranchiseApi.pending, state => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(signupAsFranchiseApi.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(signupAsFranchiseApi.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
