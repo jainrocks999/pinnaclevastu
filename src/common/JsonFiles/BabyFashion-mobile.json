@@ -1,0 +1,529 @@
+{
+  "menu": {
+    "id": 211712901342,
+    "title": "Baby Fashion -mobile",
+    "handle": "baby-fashion",
+    "created_at": "2024-02-16T19:03:02+05:30",
+    "updated_at": "2024-05-13T17:21:29+05:30",
+    "items": [
+      {
+        "id": 494696825054,
+        "title": "boy fashion ++ Rompers, T-shirts, Jeans, Party Wear, Sweaters, Nightsuits, Caps and More",
+        "subject": "#",
+        "subject_id": null,
+        "subject_params": null,
+        "type": "http",
+        "items": [
+          {
+            "id": 495949512926,
+            "title": "Shirts",
+            "subject": "boy-shirts",
+            "subject_id": 427153981662,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495949709534,
+            "title": "T-shirts",
+            "subject": "boy-t-shirts",
+            "subject_id": 427155259614,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495947612382,
+            "title": "Bodysuits & Onesies",
+            "subject": "boy-bodysuits-onesies",
+            "subject_id": 427081760990,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495949480158,
+            "title": "Rompers & Jumpsuits",
+            "subject": "boy-rompers-jumpsuits",
+            "subject_id": 427153817822,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495949578462,
+            "title": "Sleepsuits & Nightsuits",
+            "subject": "boy-sleepsuits-nightsuits",
+            "subject_id": 427154374878,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495949381854,
+            "title": "Jhablas & Jhabla Sets",
+            "subject": "boy-jhablas-jhabla-sets",
+            "subject_id": 427151818974,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495949742302,
+            "title": "Top & Bottom Sets",
+            "subject": "boy-top-bottom-sets",
+            "subject_id": 427155161310,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495949545694,
+            "title": "Shorts",
+            "subject": "boy-shorts",
+            "subject_id": 427154079966,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495949349086,
+            "title": "Jeans & Trousers",
+            "subject": "boy-jeans-trousers",
+            "subject_id": 427151687902,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495949414622,
+            "title": "Joggers & Pajamas",
+            "subject": "boy-joggers-pajamas",
+            "subject_id": 427151917278,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495949250782,
+            "title": "Dungarees",
+            "subject": "boy-dungarees",
+            "subject_id": 427083268318,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495949447390,
+            "title": "Party Wear",
+            "subject": "boy-party-wear",
+            "subject_id": 427153064158,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495949283550,
+            "title": "Ethnic Wear",
+            "subject": "boy-ethnic-wear",
+            "subject_id": 427149689054,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495947645150,
+            "title": "Caps, Booties & Mittens",
+            "subject": "boy-caps-booties-mittens",
+            "subject_id": 427146510558,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495949611230,
+            "title": "Socks & Stockings",
+            "subject": "boy-socks-stockings",
+            "subject_id": 427154407646,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495949316318,
+            "title": "Innerwear & Thermals",
+            "subject": "boy-innerwear-thermals",
+            "subject_id": 427151622366,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 498075861214,
+            "title": "Winterwear",
+            "subject": "#",
+            "subject_id": null,
+            "subject_params": null,
+            "type": "http",
+            "items": [
+              {
+                "id": 495949643998,
+                "title": "Sweaters & Cardigans",
+                "subject": "boy-sweaters-cardigans",
+                "subject_id": 427154768094,
+                "subject_params": null,
+                "type": "collection",
+                "items": []
+              },
+              {
+                "id": 495949676766,
+                "title": "Sweatshirts & Hoodies",
+                "subject": "boy-sweatshirts-hoodies",
+                "subject_id": 427154964702,
+                "subject_params": null,
+                "type": "collection",
+                "items": []
+              },
+              {
+                "id": 495949775070,
+                "title": "Winter Jackets & Coats",
+                "subject": "boy-winter-jackets-coats",
+                "subject_id": 427155554526,
+                "subject_params": null,
+                "type": "collection",
+                "items": []
+              },
+              {
+                "id": 495949807838,
+                "title": "Winter Accessories",
+                "subject": "boy-winter-accessories",
+                "subject_id": 427155620062,
+                "subject_params": null,
+                "type": "collection",
+                "items": []
+              }
+            ]
+          },
+          {
+            "id": 495949218014,
+            "title": "Fashion Accessories",
+            "subject": "boy-fashion-accessories",
+            "subject_id": 427150606558,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 501057093854,
+            "title": "Sportswear",
+            "subject": "boy-sportswear",
+            "subject_id": 429494894814,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          }
+        ]
+      },
+      {
+        "id": 494696988894,
+        "title": "girl fashion ++ Rompers, Tops, Frocks, Party Wear, Sweaters, Nightsuits, Caps and More",
+        "subject": "#",
+        "subject_id": null,
+        "subject_params": null,
+        "type": "http",
+        "items": [
+          {
+            "id": 495950921950,
+            "title": "T-shirts & Tops",
+            "subject": "girl-t-shirts-tops",
+            "subject_id": 427155292382,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495950135518,
+            "title": "Frocks & Dresses",
+            "subject": "girl-frocks-dresses",
+            "subject_id": 427151425758,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495949971678,
+            "title": "Bodysuits & Onesies",
+            "subject": "girl-bodysuits-onesies",
+            "subject_id": 427081826526,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495950332126,
+            "title": "Rompers & Jumpsuits",
+            "subject": "girl-rompers-jumpsuits",
+            "subject_id": 427153850590,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495950790878,
+            "title": "Sleepsuits & Nightsuits",
+            "subject": "girl-sleepsuits-nightsuits",
+            "subject_id": 427154473182,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495950233822,
+            "title": "Jhablas & Jhabla Sets",
+            "subject": "girl-jhablas-jhabla-sets",
+            "subject_id": 427151851742,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495950954718,
+            "title": "Top & Bottom Sets",
+            "subject": "girl-top-bottom-sets",
+            "subject_id": 427155194078,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495950364894,
+            "title": "Shorts & Skirts",
+            "subject": "girl-shorts-skirts",
+            "subject_id": 427154178270,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495950201054,
+            "title": "Jeans & Trousers",
+            "subject": "girl-jeans-trousers",
+            "subject_id": 427151720670,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495950266590,
+            "title": "Joggers & Leggings",
+            "subject": "girl-joggers-leggings",
+            "subject_id": 427151884510,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495950037214,
+            "title": "Dungarees",
+            "subject": "girl-dungarees",
+            "subject_id": 427149492446,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495950299358,
+            "title": "Party Wear",
+            "subject": "girl-party-wear",
+            "subject_id": 427153096926,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495950069982,
+            "title": "Ethnic Wear",
+            "subject": "girl-ethnic-wear",
+            "subject_id": 427149754590,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495950004446,
+            "title": "Caps, Booties & Mittens",
+            "subject": "girl-caps-booties-mittens",
+            "subject_id": 427146543326,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495950823646,
+            "title": "Socks & Stockings",
+            "subject": "girl-socks-stockings",
+            "subject_id": 427154505950,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495950168286,
+            "title": "Innerwear & Thermals",
+            "subject": "girl-innerwear-thermals",
+            "subject_id": 427151655134,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 498076025054,
+            "title": "Winterwear",
+            "subject": "#",
+            "subject_id": null,
+            "subject_params": null,
+            "type": "http",
+            "items": [
+              {
+                "id": 495950856414,
+                "title": "Sweaters & Cardigans",
+                "subject": "girl-sweaters-cardigans",
+                "subject_id": 427154833630,
+                "subject_params": null,
+                "type": "collection",
+                "items": []
+              },
+              {
+                "id": 495950889182,
+                "title": "Sweatshirts & Hoodies",
+                "subject": "girl-sweatshirts-hoodies",
+                "subject_id": 427154997470,
+                "subject_params": null,
+                "type": "collection",
+                "items": []
+              },
+              {
+                "id": 495950987486,
+                "title": "Winter Jackets & Coats",
+                "subject": "girl-winter-jackets-coats",
+                "subject_id": 427155587294,
+                "subject_params": null,
+                "type": "collection",
+                "items": []
+              },
+              {
+                "id": 495951020254,
+                "title": "Winter Accessories",
+                "subject": "girl-winter-accessories",
+                "subject_id": 427155652830,
+                "subject_params": null,
+                "type": "collection",
+                "items": []
+              }
+            ]
+          },
+          {
+            "id": 495950102750,
+            "title": "Fashion Accessories",
+            "subject": "girl-fashion-accessories",
+            "subject_id": 427150639326,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 501057126622,
+            "title": "Sportswear",
+            "subject": "girl-sportswear",
+            "subject_id": 429495058654,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          }
+        ]
+      },
+      {
+        "id": 494697021662,
+        "title": "Footwear ++ Shoes, Sandals, Slippers, Clogs, Sneakers, Bellies and More",
+        "subject": "#",
+        "subject_id": null,
+        "subject_params": null,
+        "type": "http",
+        "items": [
+          {
+            "id": 495951249630,
+            "title": "Shoes",
+            "subject": "shoes",
+            "subject_id": 427154145502,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495951053022,
+            "title": "Bellies",
+            "subject": "bellies",
+            "subject_id": 427145461982,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495951216862,
+            "title": "Sandals",
+            "subject": "sandals",
+            "subject_id": 427153948894,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495951184094,
+            "title": "Loafers",
+            "subject": "loafers",
+            "subject_id": 427152015582,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495951315166,
+            "title": "Sneakers",
+            "subject": "sneakers",
+            "subject_id": 427154538718,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 495951151326,
+            "title": "Ethnic Footwear",
+            "subject": "ethnic-footwear",
+            "subject_id": 427149557982,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 499604652254,
+            "title": "Slippers",
+            "subject": "slippers",
+            "subject_id": 427154440414,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          },
+          {
+            "id": 499604685022,
+            "title": "Clogs",
+            "subject": "clogs",
+            "subject_id": 427148869854,
+            "subject_params": null,
+            "type": "collection",
+            "items": []
+          }
+        ]
+      }
+    ]
+  }
+}

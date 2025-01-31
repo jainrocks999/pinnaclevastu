@@ -34,9 +34,12 @@ import axios from 'axios';
 import constants from '../../../Redux/constant/constants';
 import {useRoute} from '@react-navigation/native';
 import Imagepath from '../../../Component/Imagepath';
-import {getAddress} from '../../../Redux/Slice/Addresslice';
 import {shipmethod} from '../../../Redux/Slice/orderSclice';
 import Loader from '../../../Component/Loader';
+import { getCountryStateList } from '../../../Redux/Slice/countryStateSlice';
+import { fetchProduct, InitProduct } from '../../../Redux/Slice/productSlice';
+import { getProductMetafieldsApiCall } from '../../../Redux/Api';
+import { getUserDetails } from '../../../Redux/Slice/loginSlice';
 
 const Remedies12SecondComponent = () => {
   const dispatch = useDispatch();
@@ -49,17 +52,21 @@ const Remedies12SecondComponent = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [itemToRemove, setItemToRemove] = useState(null);
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
-  const cartDataList = useSelector(state => state?.cart?.CartData);
+  // const cartDataList = useSelector(state => state?.cart?.CartData);
   const localCartDataList = useSelector(
     state => state?.cart?.localStorageCartData,
   );
+ 
+  
   const cartTotalQuantity = useSelector(
     state => state?.cart?.cartTotalQuantity,
   );
   const LikeItemList = useSelector(state => state?.home?.likeProductList);
   const addressData = useSelector(state => state.address?.getaData);
-
-  const defaultAddress = addressData?.find(item => item?.is_default == 1);
+ const {userDetails} = useSelector(state => state.Login);
+  // console.log('dsfjk',userDetails?.defaultAddress);
+  const defaultAddress = userDetails?.defaultAddress;
+  // addressData?.find(item => item?.is_default == 1);
 
  
   const [userType, setUserType] = useState('');
@@ -68,7 +75,7 @@ const Remedies12SecondComponent = () => {
   const fromScreen = route?.params?.from;
 
   useEffect(() => {
-    console.log(cartDataList.length, 'cart length.....');
+   
 
     const checkLoginStatus = async () => {
       try {
@@ -79,37 +86,37 @@ const Remedies12SecondComponent = () => {
           setUserType(userData.user_type);
 
           if (fromScreen) {
-            if (localCartDataList.length > 0) {
-              for (const item of localCartDataList) {
-                await dispatch(
-                  addToCartApi({
-                    user_id: userData.user_id,
-                    itemId: item.id,
-                    qty: item.qty,
-                    user_type: userData.user_type,
-                    token: userData?.token,
-                    url: 'add-to-cart',
-                  }),
-                );
-              }
-              // await AsyncStorage.removeItem('cartItems');
-              dispatch(clearLocalCartData());
-              await dispatch(
-                getCartDataApi({
-                  token: userData.token,
-                  url: `cart?user_id=${userData.user_id}`,
-                }),
-              );
-            }
-            await dispatch(
-              getAddress({
-                user_id: userData.user_id,
-                token: userData.token,
+            // if (localCartDataList.length > 0) {
+            //   for (const item of localCartDataList) {
+            //     await dispatch(
+            //       addToCartApi({
+            //         user_id: userData.user_id,
+            //         itemId: item.id,
+            //         qty: item.qty,
+            //         user_type: userData.user_type,
+            //         token: userData?.token,
+            //         url: 'add-to-cart',
+            //       }),
+            //     );
+            //   }
+            //   // await AsyncStorage.removeItem('cartItems');
+            //   dispatch(clearLocalCartData());
+            //   await dispatch(
+            //     getCartDataApi({
+            //       token: userData.token,
+            //       url: `cart?user_id=${userData.user_id}`,
+            //     }),
+            //   );
+            // }
+            // await dispatch(
+            //   getAddress({
+            //     user_id: userData.user_id,
+            //     token: userData.token,
 
-                url: 'fetch-customer-address',
-                // navigation,
-              }),
-            );
+            //     url: 'fetch-customer-address',
+            //     // navigation,
+            //   }),
+            // );
           }
           setIsLoggedIn(true);
         } else {
@@ -126,7 +133,9 @@ const Remedies12SecondComponent = () => {
         console.log('Error checking login status:', error);
       }
     };
-
+  
+      dispatch(getCountryStateList());
+      dispatch(getUserDetails("615c78ef801b0e22521f80174b4dae2d"));
     checkLoginStatus();
   }, [fromScreen]);
 
@@ -153,39 +162,7 @@ const Remedies12SecondComponent = () => {
     }
   };
 
-  // const handleUpdateCartData = async (user_id, rowid, qty, token) => {
-  //   try {
-  //     let data = {
-  //       user_id: user_id,
-  //       rowid: rowid,
-  //       qty: qty,
-  //     };
-  //     const config = {
-  //       method: 'post',
-  //       maxBodyLength: Infinity,
-  //       url: `${constants.mainUrl}update-to-cart`,
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //         'Content-Type': 'application/json',
-  //       },
-  //       data: JSON.stringify(data),
-  //     };
-
-  //     const response = await axios.request(config);
-
-  //     if (response?.data?.status == 200) {
-  //       await dispatch(
-  //         getCartDataApi({
-  //           token: token,
-  //           url: `cart?user_id=${user_id}`,
-  //         }),
-  //       );
-  //     }
-  //   } catch (error) {
-  //     console.log('cart Quantity error ', error);
-  //   }
-  // };
-
+ 
   const handlePlaceOrder = () => {
     Animated.sequence([
       Animated.timing(buttonAnimatedValue, {
@@ -201,8 +178,9 @@ const Remedies12SecondComponent = () => {
     ]).start(() => {
       if (isLoggedIn) {
         navigation.navigate('AddressList', {
-          item: cartDataList,
+           item: localCartDataList,
           ammount: totalAmount,
+          data: defaultAddress,
         });
       } else {
         navigation.navigate('Login', {from: 'MyCart'});
@@ -231,45 +209,46 @@ const Remedies12SecondComponent = () => {
     try {
       const userStatus = await AsyncStorage.getItem('user_data');
       const userData = JSON.parse(userStatus);
-      if (userData) {
-        const cartItem = cartDataList.find(prod => prod.product_id === item.id);
-        const quantityToUpdate = cartItem ? cartItem.qty + 1 : 1;
-        if (cartItem) {
-          await handleUpdateCartData(
-            userData?.user_id,
-            cartItem.rowid,
-            quantityToUpdate,
-            userData?.token,
-            false,
-          );
-        } else {
-          await dispatch(
-            addToCartApi({
-              user_id: userData.user_id,
-              itemId: item.id,
-              qty: 1,
-              user_type: userData.user_type,
-              token: userData?.token,
-              url: 'add-to-cart',
-            }),
-          );
-          await dispatch(
-            getCartDataApi({
-              token: userData?.token,
-              url: `cart?user_id=${userData?.user_id}`,
-            }),
-          );
-        }
-        dispatch(
-          await shipmethod({
-            url: 'fetch-shipment-method',
-            token: userData?.token,
-            user_id: userData?.user_id,
-          }),
-        );
-      } else {
-        dispatch(addToCart(item));
-      }
+      // if (userData) {
+      //   const cartItem = cartDataList.find(prod => prod.product_id === item.id);
+      //   const quantityToUpdate = cartItem ? cartItem.qty + 1 : 1;
+      //   if (cartItem) {
+      //     await handleUpdateCartData(
+      //       userData?.user_id,
+      //       cartItem.rowid,
+      //       quantityToUpdate,
+      //       userData?.token,
+      //       false,
+      //     );
+      //   } else {
+      //     await dispatch(
+      //       addToCartApi({
+      //         user_id: userData.user_id,
+      //         itemId: item.id,
+      //         qty: 1,
+      //         user_type: userData.user_type,
+      //         token: userData?.token,
+      //         url: 'add-to-cart',
+      //       }),
+      //     );
+      //     await dispatch(
+      //       getCartDataApi({
+      //         token: userData?.token,
+      //         url: `cart?user_id=${userData?.user_id}`,
+      //       }),
+      //     );
+      //   }
+      //   dispatch(
+      //     await shipmethod({
+      //       url: 'fetch-shipment-method',
+      //       token: userData?.token,
+      //       user_id: userData?.user_id,
+      //     }),
+      //   );
+      // } else {
+       
+      // }
+      dispatch(addToCart(item));
     } catch (error) {
       console.error('Error adding item to cart:', error);
     }
@@ -279,43 +258,43 @@ const Remedies12SecondComponent = () => {
     const userStatus = await AsyncStorage.getItem('user_data');
     const userData = JSON.parse(userStatus);
 
-    if (userStatus) {
-      await handleUpdateCartData(
-        userData?.user_id,
-        item?.rowid,
-        item?.qty < 100 ? item?.qty + 1 : item?.qty,
-        userData?.token,
-        true,
-      );
-      console.log('quantity decrement....');
-    } else {
+    // if (userStatus) {
+    //   await handleUpdateCartData(
+    //     userData?.user_id,
+    //     item?.rowid,
+    //     item?.qty < 100 ? item?.qty + 1 : item?.qty,
+    //     userData?.token,
+    //     true,
+    //   );
+    //   console.log('quantity decrement....');
+    // } else {
       let updatedItem = {
         id: item.id,
         operation: 'increase',
       };
       dispatch(updateCartQuantity(updatedItem));
-    }
+    // }
   };
 
   const decrement = async item => {
     const userStatus = await AsyncStorage.getItem('user_data');
     const userData = JSON.parse(userStatus);
 
-    if (userStatus) {
-      await handleUpdateCartData(
-        userData?.user_id,
-        item?.rowid,
-        item?.qty > 1 ? item?.qty - 1 : item.qty,
-        userData?.token,
-        true,
-      );
-    } else {
+    // if (userStatus) {
+    //   await handleUpdateCartData(
+    //     userData?.user_id,
+    //     item?.rowid,
+    //     item?.qty > 1 ? item?.qty - 1 : item.qty,
+    //     userData?.token,
+    //     true,
+    //   );
+    // } else {
       let updatedItem = {
         id: item.id,
         operation: 'decrease',
       };
       dispatch(updateCartQuantity(updatedItem));
-    }
+    // }
   };
 
   const confirmRemoveItem = item => {
@@ -329,19 +308,20 @@ const Remedies12SecondComponent = () => {
 
     if (userStatus) {
       setIsModalVisible(false);
-      await dispatch(
-        removeCartItemApi({
-          user_id: userData?.user_id,
-          rowid: item.rowid,
-          token: userData?.token,
-        }),
-      );
-      await dispatch(
-        getCartDataApi({
-          token: userData?.token,
-          url: `cart?user_id=${userData?.user_id}`,
-        }),
-      );
+      dispatch(removeFromCart(item.id));
+      // await dispatch(
+      //   removeCartItemApi({
+      //     user_id: userData?.user_id,
+      //     rowid: item.rowid,
+      //     token: userData?.token,
+      //   }),
+      // );
+      // await dispatch(
+      //   getCartDataApi({
+      //     token: userData?.token,
+      //     url: `cart?user_id=${userData?.user_id}`,
+      //   }),
+      // );
     } else {
       setIsModalVisible(false);
       dispatch(removeFromCart(item.id));
@@ -353,33 +333,26 @@ const Remedies12SecondComponent = () => {
     let savings = 0;
     let Tax = 0;
 
-    const dataList = isLoggedIn ? cartDataList : localCartDataList;
+    const dataList =  localCartDataList;
 
     dataList?.forEach(item => {
       const discountedPrice =
-        userType === 'customers'
-          ? item?.sale_price
-          : userType === 'student'
-          ? item?.student_price
-          : userType === 'franchise'
-          ? item?.franchise_price
-          : item?.price;
-
-      // Ensure discountedPrice is valid and non-negative
+      item?.price
+     
       const validDiscountedPrice =
         discountedPrice > 0 ? discountedPrice : item?.price;
 
-      subtotal += item?.price * item.qty;
+      subtotal += JSON.parse(discountedPrice) * item.qty;
       Tax += parseFloat(item?.tax_amount || 0);
-      // Calculate savings only if discountedPrice is non-negative and lower than item price
+     
       savings += (item?.price - validDiscountedPrice) * item.qty;
     });
-
+    
     return {subtotal, savings, Tax};
   };
   const {subtotal, savings, Tax} = calculateSubtotalAndSavings();
   const totalAmount =
-    subtotal !== savings ? subtotal + Tax - savings : subtotal + Tax;
+    subtotal !== savings ? subtotal + Tax - savings : subtotal;
 
   const data2 = [
     {
@@ -415,6 +388,19 @@ const Remedies12SecondComponent = () => {
       reviewCount: 2,
     },
   ];
+
+
+   const PRoductDeta = async (item,id) => {
+  
+      if (Object.keys(item)?.length == 0) {
+      } else {
+        dispatch(InitProduct());
+         dispatch(fetchProduct(id));
+      }
+     
+     const data = await getProductMetafieldsApiCall(id);
+     navigation.navigate('ProductDetail', {data: item});
+    };
   const renderItem2 = ({item}) => (
     <View>
       <View style={styles.slide}>
@@ -469,64 +455,44 @@ const Remedies12SecondComponent = () => {
 
   const renderItem = ({item}) => (
     <View style={styles.viewinner}>
-      {/* {console.log('fsdfdsfsd;lfsd', item)} */}
-
+    
       <TouchableOpacity
-        onPress={() => navigation.navigate('ProductDetail', {data: item})}>
-        {isLoggedIn ? (
-          <Image
-            source={
-              item?.option?.image
-                ? {uri: `${Imagepath.Path}${item.option.image}`}
-                : require('../../../assets/image/Remedies/Image-not.png')
-            }
-            style={styles.image1}
-          />
-        ) : (
+        onPress={() =>PRoductDeta(item,item.productId)}>
+       
           <Image
             source={
               item?.image
-                ? {uri: `${Imagepath.Path}${item.image}`}
+                ? {uri:`${item?.image}`}
                 : require('../../../assets/image/Remedies/Image-not.png')
             }
             style={styles.image1}
           />
-        )}
+        
       </TouchableOpacity>
       <View style={styles.contentContainer}>
-        <Text style={styles.textstyle}>{item?.name}</Text>
+        <Text style={styles.textstyle}> {item?.title
+              ? item?.title.length > 15
+                ? `${item?.title.substring(0, 15)}...`
+                : item?.title
+              : ' '}</Text>
         <View style={styles.ruupebutton}>
           <View style={styles.rupees}>
-            {/* <Text style={styles.rupeestext}>₹ {item?.price}</Text> */}
-
             <Text style={styles.rupeestext}>
               ₹{' '}
               {
-                userType === 'customers' && item?.sale_price
-                  ? item?.sale_price
-                  : userType === 'student' && item?.student_price
-                  ? item?.student_price
-                  : userType === 'franchise' && item?.franchise_price
-                  ? item?.franchise_price
-                  : item?.price /* Default case when userType is null or undefined */
+                item?.price
               }
             </Text>
 
-            {isLoggedIn &&
-            (item?.sale_price < item?.price ||
-              item?.student_price < item?.price ||
-              item?.franchise_price < item?.price) &&
-            (item?.sale_price ||
-              item?.student_price ||
-              item?.franchise_price) ? (
+         {item?.compareAtPrice!=0&&item?.compareAtPrice!=null?
               <Text
                 style={[
                   styles.rupeestext,
                   {textDecorationLine: 'line-through'},
                 ]}>
-                ₹ {item?.price}
+                 ₹ {item?.compareAtPrice}
               </Text>
-            ) : null}
+              :null }
           </View>
           <View style={[styles.headerview, styles.quantitySection]}>
             <TouchableOpacity
@@ -611,7 +577,7 @@ const Remedies12SecondComponent = () => {
       {cartisLoading || isLoading ? (
         <Loader />
       ) : (
-          isLoggedIn ? cartDataList.length > 0 : localCartDataList.length > 0
+          localCartDataList.length > 0
         ) ? (
         <>
           <ScrollView contentContainerStyle={styles.scroll}>
@@ -620,19 +586,19 @@ const Remedies12SecondComponent = () => {
                 <View style={styles.toview}>
                   <Text style={styles.textDeliver}>Deliver To:</Text>
                   <Text style={styles.texttejash}>
-                    {defaultAddress?.name}, {defaultAddress?.zip_code}
+                    {defaultAddress?.firstName}{defaultAddress.lastName}, {defaultAddress?.zip}
                   </Text>
                 </View>
                 <View style={styles.loremview}>
                   <Text style={styles.loremtext}>
-                    {defaultAddress?.apartment}, {defaultAddress?.address}.{' '}
-                    {defaultAddress?.city}, {defaultAddress?.state}{' '}
+                    {defaultAddress?.address1}, {defaultAddress?.address2}.{' '}
+                    {defaultAddress?.city}, {defaultAddress?.province}{' '}
                     {`Mobile: ${defaultAddress?.phone}`}...
                   </Text>
                   <TouchableOpacity
                     onPress={() =>
                       navigation.navigate('AddressList', {
-                        item: cartDataList,
+                        item: localCartDataList,
                         ammount: totalAmount,
                         data: defaultAddress,
                       })
@@ -646,7 +612,7 @@ const Remedies12SecondComponent = () => {
             {/* {cartItemList?.length == 0 ? null : ( */}
             {/* <Text style={[styles.viewinner1,styles.third,{textAlign:"center"}]}>Cart is Empty !</Text> */}
             <FlatList
-              data={isLoggedIn ? cartDataList : localCartDataList}
+              data={localCartDataList}
               scrollEnabled={false}
               keyExtractor={item => item.id}
               renderItem={renderItem}

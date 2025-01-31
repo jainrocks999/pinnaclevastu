@@ -17,7 +17,7 @@ import {widthPrecent} from '../../../Component/ResponsiveScreen/responsive';
 import styles from './styles';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {clearcartdata} from '../../../Redux/Slice/CartSlice';
+import {clearcartdata, clearLocalCartData} from '../../../Redux/Slice/CartSlice';
 import {useDispatch, useSelector} from 'react-redux';
 import Loader from '../../../Component/Loader';
 import Imagepath from '../../../Component/Imagepath';
@@ -72,6 +72,7 @@ const MyProfile = () => {
     setIsLoading(true);
     try {
       dispatch(clearcartdata());
+      dispatch(clearLocalCartData())
       await AsyncStorage.clear();
       // navigation.navigate('Home');
       setIsLoading(false);

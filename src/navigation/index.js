@@ -165,6 +165,7 @@ import {getCartDataApi} from '../Redux/Slice/CartSlice';
 import {loadCartData} from '../Redux/Slice/CartSlice';
 import PaymentCourse from '../Screen/Main/paymentInformation/payment_Course';
 import PaymentAppointment from '../Screen/Main/paymentInformation/payment_Appointment';
+import CartWeb from '../Screen/Main/paymentInformation/CartWeb';
 const Stack = createNativeStackNavigator();
 
 function Navigate() {
@@ -213,17 +214,17 @@ function Navigate() {
   const getCartData = async () => {
 
 
-    if (userData?.user_id && userData?.token) {
+    // if (userData?.user_id && userData?.token) {
       
-      await dispatch(
-        getCartDataApi({
-          token: userData?.token,
-          url: `cart?user_id=${userData?.user_id}`,
-        }),
-      );
-    } else {
-      await dispatch(loadCartData());
-    }
+    //   await dispatch(
+    //     getCartDataApi({
+    //       token: userData?.token,
+    //       url: `cart?user_id=${userData?.user_id}`,
+    //     }),
+    //   );
+    // } else {
+    // }
+    await dispatch(loadCartData());
   };
 
   return (
@@ -250,7 +251,7 @@ function Navigate() {
         <Stack.Screen name="PaymentAppointment" component={PaymentAppointment} />
         <Stack.Screen name="Thankyou" component={ThankyouPage} />
         <Stack.Screen name="Succes" component={PaymentApp} />
-
+        <Stack.Screen name="CartWeb" component={CartWeb} />
         {/* <Stack.Screen name="Remedies" component={Remedies}/> */}
         {/* <Stack.Screen name="ProductList" component={RemediesProduct}/> */}
         <Stack.Screen name="ProductDetail" component={RemediesProductdetail} />

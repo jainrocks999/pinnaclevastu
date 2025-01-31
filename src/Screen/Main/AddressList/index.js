@@ -16,70 +16,68 @@ import {colors} from '../../../Component/colors';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getAddress, RemoveAddress } from '../../../Redux/Slice/Addresslice';
+import { RemoveAddress, removeShopifyUserAddress } from '../../../Redux/Slice/Addresslice';
 import Loader from '../../../Component/Loader';
+import { checkout } from '../../../models/Checkout';
 
 const DeliveryAddress = ({route}) => {
   const item=route?.params
   const  navigation =useNavigation();
-  const isLoading=useSelector(state=>state.address.loading);
+  
+
+  const {userDetails, isLoading} = useSelector(state => state.Login);
+   console.log('dsfjksdhfjskfhsjkf',userDetails);
+  
   const addresstoget=useSelector(state=>state.address?.getaData);
 const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
   const [selectedId, setSelectedId] = useState('');
   const [addresstoget1, setAddresstoget] = useState(addresstoget); // Address list
-  const [defaultAddress, setDefaultAddress] = useState(''); 
+  const [defaultAddress1, setDefaultAddress1] = useState(''); 
   const [sortedAddresses, setSortedAddresses] = useState([]);
    const dispatch = useDispatch()
    const focus=useIsFocused();
- useEffect(()=>{
 
-   AddressList();
+
+
+   useEffect(() => {
+    // Check for the default item in the address list
+    const defaultItem = userDetails?.defaultAddress;
  
   
- },[])
- const AddressList = async()=>{
- 
- const token = await AsyncStorage.getItem('Token');
- const userid = await AsyncStorage.getItem('user_id');
- await  dispatch(getAddress({  
-   user_id: userid,
-   
-   token: token,
+    if (defaultItem) {
+      setDefaultAddress1(defaultItem); 
+      setSelectedId(defaultItem.id);
+    }
   
-   url:'fetch-customer-address',
-   // navigation,
- }));
- }
-
-
- useEffect(() => {
-  // Check for the default item in the address list
-  const defaultItem = addresstoget?.find((item) => item?.is_default == 1);
-console.log('dkdjdsa',defaultItem?.id,addresstoget);
-
-  if (defaultItem) {
-    setDefaultAddress(defaultItem); 
-    setSelectedId(defaultItem.id);
-  }
-
-
-  const sortedData = [...addresstoget]?.sort((a, b) => b.is_default - a.is_default);
   
+    // const sortedData = [...userDetails?.addresses?.edges]?.sort((a, b) => b.id - a.id);
+    const sortAddresses = (addresses, defaultItem) => {
+      if (!addresses || !defaultItem) return []; // If data is not available, return empty array
+      
+      return [
+        ...addresses.filter(item => item?.node?.id === defaultItem.id), // Default address at the top
+        ...addresses.filter(item => item?.node?.id !== defaultItem.id), // Remaining addresses
+      ];
+    };
+    
+    // Usage
+    const sortedData = sortAddresses(userDetails?.addresses?.edges || [], defaultItem); // Pass array and default item
     setSortedAddresses(sortedData);
- 
-}, [addresstoget]);
+  }, [userDetails?.defaultAddress]);
+  
 
-
-
-
-const toggleDefaultAddress = async(item) => {
-
- 
-  setDefaultAddress(item);
-    setSelectedId(item?.id);
+  
+  
+  const toggleDefaultAddress = async(item) => {
+  
    
-   
-};
+    setDefaultAddress1(item);
+      setSelectedId(item?.id);
+     
+     
+  };
+
+
 
 
 
@@ -101,11 +99,13 @@ const handleConformPayment = () => {
       useNativeDriver: true,
     }),
   ]).start(() => {
-    navigation.navigate('Payment', {
-      data1: 'Remedies',
-      data: item,
-      adress: defaultAddress,
-    });
+      checkout(item?.item,navigation);
+
+    // navigation.navigate('Payment', {
+    //   data1: 'Remedies',
+    //   data: item,
+    //   adress: defaultAddress1,
+    // });
   });
 };
 
@@ -113,44 +113,61 @@ const handleConformPayment = () => {
 
 
  
-  const cartRemove = async item => {
-    const token = await AsyncStorage.getItem('Token');
-    const userid = await AsyncStorage.getItem('user_id');
+  const cartRemove = async (item) => {
+    
+      const token = "615c78ef801b0e22521f80174b4dae2d";
+     
+      
+      dispatch(removeShopifyUserAddress(token, item?.node?.id));
+    
+    // const token = await AsyncStorage.getItem('Token');
+    // const userid = await AsyncStorage.getItem('user_id');
 
 
-    await dispatch(
-      RemoveAddress({
-        user_id: userid,
-        customer_address_id:item,
-        token: token,
-        url: 'delete-customer-address',
-        navigation,
-      }),
-    );
+    // await dispatch(
+    //   RemoveAddress({
+    //     user_id: userid,
+    //     customer_address_id:item,
+    //     token: token,
+    //     url: 'delete-customer-address',
+    //     navigation,
+    //   }),
+    // );
   };
 
   const renderItem = ({item}) => (
-    <TouchableOpacity onPress={()=>toggleDefaultAddress(item)} style={[styles.card,{ borderColor:selectedId == item?.id?colors?.orange: '#DFE7EF',  }]}>
-     
+    // { borderColor:selectedId == item?.id?colors?.orange: '#DFE7EF',  }
+    <TouchableOpacity onPress={()=>toggleDefaultAddress(item.node)}  style={[styles.card,{ borderColor:selectedId == item?.node?.id?colors?.orange: '#DFE7EF',  }]}>
+   
     
       <View  style={styles.cardContentWrapper}>
         <View style={styles.textWrapper}>
           <View style={styles.direction}>
-            <Text style={styles.cardTitle}>{item.name}</Text>
+            <Text style={styles.cardTitle}>{item.node?.firstName} {item.node?.lastName}</Text>
             <View style={styles.editDeleteWrapper}>
               <TouchableOpacity onPress={() =>
                 
-                navigation.navigate('Address', {data: false, item:item})}>
+                navigation.navigate('Address', {data: false, item: item?.node,})}>
                 <Text style={styles.editDeleteText1}>Edit</Text>
               </TouchableOpacity>
               <View style={styles.viewLine} />
-              <TouchableOpacity onPress={() =>cartRemove(item.id)}>
+              <TouchableOpacity onPress={() =>cartRemove(item)}>
                 <Text style={styles.editDeleteText}>Delete</Text>
               </TouchableOpacity>
             </View>
           </View>
-          <Text style={styles.cardDescription}>{item?.address} {item.apartment}  {item?.city} ({item?.zip_code})</Text>
-          <Text style={styles.cardPhone}>{`Mobile :${item.phone}`}</Text>
+          <Text style={styles.cardDescription}>
+          {' '}
+                          {(item.node.address1
+                            ? item.node.address1
+                            : '') +
+                            (item.node.address2
+                              ? ' ' + item.node.address2
+                              : '')}  {item?.node?.city ?? ''} {item?.node?.zip ?? ''}
+            {/* {item?.address} {item.apartment}  {item?.city} ({item?.zip_code}) */}
+            
+            </Text>
+          <Text style={styles.cardPhone}>{`Mobile :${item?.node?.phone ?? ''}`}</Text>
         </View>
       </View>
    
@@ -197,13 +214,13 @@ const handleConformPayment = () => {
         {'Add New Address'}</Text>
       </TouchableOpacity>
       </View>
-       {sortedAddresses?.length !=0?
+       {sortedAddresses !=0?
       
        (<FlatList
-          data={sortedAddresses? sortedAddresses:[]}
+        data={sortedAddresses}
           renderItem={renderItem}
           scrollEnabled={false}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item?.node.id}
         />):
         (<View style={{}}>
         <Text>

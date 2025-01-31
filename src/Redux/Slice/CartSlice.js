@@ -233,11 +233,16 @@ const cartSlice = createSlice({
     addToCart: (state, action) => {
       const item = action.payload;
       const qty = item.qty !== undefined ? item.qty : 1;
-
+      console.log('qty ...fgfd',state.localStorageCartData)
+      
+     
       const existingItemIndex = state.localStorageCartData.findIndex(
-        cartItem => cartItem.id === item.id,
+         cartItem =>cartItem.productId == item.productId,
+          // cartItem.id=item.id
+           
+        // console.log('qty ...fgfd.',cartItem)
       );
-
+      console.log('qty ...fgfd.g.g',qty,existingItemIndex);
       if (existingItemIndex !== -1) {
 
         state.localStorageCartData[existingItemIndex].qty += qty;
@@ -248,10 +253,10 @@ const cartSlice = createSlice({
       } else {
         state.localStorageCartData.push({
           ...item,
-          qty: 1,
-          addedAt: new Date().toISOString(),
+          qty: qty,
+          // addedAt: new Date().toISOString(),
         });
-        Toast.show('Item added to cart!',Toast.LONG);
+        Toast.show('Item added to cart!');
       }
 
       AsyncStorage.setItem(

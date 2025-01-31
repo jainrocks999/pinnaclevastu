@@ -70,38 +70,29 @@ const ResidentalScreen = ({route}) => {
     let totalPriceOnly = 0;
 
     productList.forEach(product => {
+      
       const {
-        sale_price,
-        student_price,
-        franchise_price,
         price,
         qty,
-        option,
-        tax_amount,
+       
       } = product;
-      const taxRate = option.taxRate || 0;
+   
+    
 
-      const selectedPrice =
-        userType === 'customers' && sale_price
-          ? sale_price
-          : userType === 'student' && student_price
-          ? student_price
-          : userType === 'franchise' && franchise_price
-          ? franchise_price
-          : price;
+      const selectedPrice =price;
 
       const itemPrice = selectedPrice * qty;
-      const taxAmount = parseFloat(tax_amount);
-      const totalProductAmount = itemPrice + taxAmount;
+      // const taxAmount = parseFloat(tax_amount);
+      // const totalProductAmount = itemPrice + taxAmount;
 
-      totalTaxAmount += taxAmount;
-      totalAmount += totalProductAmount;
+      totalTaxAmount += 0;
+      // totalAmount += totalProductAmount;
       totalPriceOnly += itemPrice;
     });
 
     return {
       totalTaxAmount: totalTaxAmount.toFixed(2),
-      totalAmount: totalAmount.toFixed(2),
+      // totalAmount: totalAmount.toFixed(2),
       totalPriceOnly: totalPriceOnly.toFixed(2),
     };
   };
@@ -296,20 +287,24 @@ const ResidentalScreen = ({route}) => {
           },
         ]}>
         <Text style={[item.isBold ? styles.third3 : styles.third1]}>
-          {item.name}
+        {item?.title
+              ? item?.title.length > 25
+                ? `${item?.title.substring(0, 25)}...`
+                : item?.title
+              : ' '}
         </Text>
         <Text style={[styles.third2, item.isBold && {fontWeight: 'bold'}]}>
           ₹{' '}
-          {
+          {/* {
             userType === 'customers' && item?.sale_price
               ? item?.sale_price
               : userType === 'student' && item?.student_price
               ? item?.student_price
               : userType === 'franchise' && item?.franchise_price
               ? item?.franchise_price
-              : item?.price /* Default case when userType is null or undefined */
-          }
-          {/* {item.price?.toFixed(2)} */}
+              : item?.price
+          } */}
+          {item.price}
         </Text>
       </View>
     );
@@ -334,11 +329,11 @@ const ResidentalScreen = ({route}) => {
       </View>
       {loading1 ? <Loader /> : null}
       <ScrollView contentContainerStyle={styles.servicesContainer}>
-        {nav?.data1 === 'Remedies' && (
+        {/* {nav?.data1 === 'Remedies' && ( */}
           <View>
             <UserAddress data={nav?.adress} />
           </View>
-        )}
+        {/* )} */}
 
         <View style={styles.cardContainer2}>
           <FlatList
@@ -347,7 +342,7 @@ const ResidentalScreen = ({route}) => {
             renderItem={renderItem}
             scrollEnabled={false}
           />
-          <View
+          {/* <View
             style={[
               styles.card45,
               styles.borderBottom,
@@ -355,7 +350,7 @@ const ResidentalScreen = ({route}) => {
             ]}>
             <Text style={styles.third2}>{'Shipping Charges'}</Text>
             <Text style={[styles.third2]}>₹ {ship?.price}</Text>
-          </View>
+          </View> */} 
           <View
             style={[
               styles.card45,
@@ -368,7 +363,7 @@ const ResidentalScreen = ({route}) => {
 
           <View style={styles.card45}>
             <Text style={styles.third3}>{'Total Payable Amount'}</Text>
-            <Text style={[styles.third2]}>₹ {amount}</Text>
+            <Text style={[styles.third2]}>₹ {totals?.totalPriceOnly}</Text>
           </View>
         </View>
 
@@ -601,7 +596,7 @@ const ResidentalScreen = ({route}) => {
                 });
               }
             }}
-            disabled={!radioActive && cartDataList?.length != 0} // Disable the button if COD is not active
+            disabled={!radioActive && nav?.data?.item?.length != 0} // Disable the button if COD is not active
             style={[
               styles.book,
               {

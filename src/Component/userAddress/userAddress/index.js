@@ -9,13 +9,15 @@ const UserAddress = ({data}) => {
 
   return (
     <View style={styles.section}>
+      {console.log('datata',data)
+      }
         <Text style={styles.titleText}>Confirm Address</Text>
         <Text style={styles.NameText}>{data?.name}</Text>
-        <Text style={styles.smallText}>{data?.address} {data?.apartment}  {data?.city} ({data?.zip_code})
-          {/* Lorem Ipsum is simply dummy text of the printing and typesetting
-          industry.- 123456 */}
+        <Text style={styles.smallText}>{data?.address1} {data?.address2}  {data?.city} ({data?.zip})
         </Text>
-
+        <Text style={styles.smallText}>{data?.province} {data?.country}  {data?.phone} 
+         
+        </Text>
         <View
           style={[styles.checkboxWrapper, checked && styles.checkedBackground]}>
           <Checkbox

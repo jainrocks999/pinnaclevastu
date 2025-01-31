@@ -38,7 +38,7 @@ import {
   getCartDataApi,
 } from '../../../Redux/Slice/CartSlice';
 import {getUserDetailApi} from '../../../Redux/Slice/Authslice';
-import {consultationDetail1} from '../../../Redux/Slice/ConsultancySlice';
+import {consultationDetail1} from '../../../Redux/Slice/HomeSlice';
 
 let backPress = 0;
 const HomeScreen = () => {
@@ -162,35 +162,35 @@ const HomeScreen = () => {
         );
         // console.log(cartDataList.length)
         // console.log(localCartDataList.length)
-        if (cartDataList.length === 0) {
-          await dispatch(
-            getCartDataApi({
-              token: userData.token,
-              url: `cart?user_id=${userData.user_id}`,
-            }),
-          );
-        }
-        if (localCartDataList.length > 0) {
-          for (const item of localCartDataList) {
-            await dispatch(
-              addToCartApi({
-                 user_id: userData.user_id,
-                itemId: item.id,
-                qty: item.qty,
-                user_type: userData.user_type,
-                token: userData?.token,
-                url: 'add-to-cart',
-              }),
-            );
-          }
-          dispatch(clearLocalCartData());
-          await dispatch(
-            getCartDataApi({
-              token: userData.token,
-              url: `cart?user_id=${userData.user_id}`,
-            }),
-          );
-        }
+        // if (cartDataList.length === 0) {
+        //   await dispatch(
+        //     getCartDataApi({
+        //       token: userData.token,
+        //       url: `cart?user_id=${userData.user_id}`,
+        //     }),
+        //   );
+        // }
+        // if (localCartDataList.length > 0) {
+        //   for (const item of localCartDataList) {
+        //     await dispatch(
+        //       addToCartApi({
+        //          user_id: userData.user_id,
+        //         itemId: item.id,
+        //         qty: item.qty,
+        //         user_type: userData.user_type,
+        //         token: userData?.token,
+        //         url: 'add-to-cart',
+        //       }),
+        //     );
+        //   }
+        //   dispatch(clearLocalCartData());
+        //   await dispatch(
+        //     getCartDataApi({
+        //       token: userData.token,
+        //       url: `cart?user_id=${userData.user_id}`,
+        //     }),
+        //   );
+        // }
         if (userDetail.length === 0) {
           await dispatch(
             getUserDetailApi({
@@ -212,7 +212,7 @@ const HomeScreen = () => {
     setCurrentIndex(index);
   };
 
-  const handleItemClick = (index,itemId) => {
+  const handleItemClick = index => {
     const newScaleAnims = {...scaleAnims};
 
     if (!newScaleAnims[index]) {
@@ -236,9 +236,6 @@ const HomeScreen = () => {
     ]).start(() => {
       navigation.navigate('Home1', {
         screen: 'Consultancy',
-        params: {
-          itemId: itemId,
-        },
       });
     });
   };
@@ -270,8 +267,7 @@ const HomeScreen = () => {
         ]}>
         <TouchableOpacity
           style={[styles.cardContainer, {backgroundColor: item?.color_code}]}
-          onPress={() => handleItemClick(index, item.id)}>
-          {/* {console.log(item,"sadmlkasdlas")} */}
+          onPress={() => handleItemClick(index)}>
           <Image
             source={{uri: `${Imagepath.Path}${item?.logo}`}}
             style={styles.itemImg}
@@ -377,7 +373,7 @@ const HomeScreen = () => {
   };
 
   const renderItem3 = ({item, index}) => {
-    
+   
     const itemScaleAnim = scaleAnims[index] || new Animated.Value(1);
     return (
       <Animated.View
@@ -613,7 +609,7 @@ const HomeScreen = () => {
           data={Homebanner?.services ? Homebanner?.services : []}
           renderItem={renderItem}
           scrollEnabled={false}
-          keyExtractor={item => item?.id}
+          keyExtractor={item => item.id}
           numColumns={3}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContainer}
@@ -639,7 +635,7 @@ const HomeScreen = () => {
             Homebanner?.premium_services ? Homebanner?.premium_services : []
           }
           renderItem={renderItem1}
-          keyExtractor={item => item?.id}
+          keyExtractor={item => item.id}
           numColumns={3}
           scrollEnabled={false}
           showsVerticalScrollIndicator={false}
@@ -764,6 +760,7 @@ const HomeScreen = () => {
               onPress={() =>
                 navigation.navigate('Home1', {
                   screen: 'Consultancy',
+                 
                 })
               }
               hitSlop={{top: 10, bottom: 10, left: 10, right: 10}} // Touch area increase
@@ -775,7 +772,7 @@ const HomeScreen = () => {
             data={Homebanner?.franchises}
             // data={data4}
             renderItem={renderItem3}
-            keyExtractor={index => index.toString()}
+            keyExtractor={item => item.id.toString()}
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{padding: 10}}

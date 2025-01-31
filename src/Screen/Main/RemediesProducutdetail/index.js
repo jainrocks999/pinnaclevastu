@@ -8,7 +8,7 @@ import {
   FlatList,
   Dimensions,
   Animated,
-  Share,
+  Share as SocialShare,
   Pressable,
   BackHandler,
 } from 'react-native';
@@ -44,6 +44,8 @@ const RemediesProductDetail = ({route}) => {
 
   const navigation = useNavigation();
   const {width} = Dimensions.get('window');
+  const Detail1 = useSelector(state => state?.Product?.productDetails);
+  const imagearray = useSelector(state => state?.Product?.productImages);
   const Detail = useSelector(state => state.home?.RemeiesDetail?.data);
   const cartDataList = useSelector(state => state?.cart?.CartData);
   const localCartDataList = useSelector(
@@ -52,7 +54,8 @@ const RemediesProductDetail = ({route}) => {
   const cartTotalQuantity = useSelector(
     state => state?.cart?.cartTotalQuantity,
   );
-  const isLoading = useSelector(state => state.home?.loading);
+  const isLoading=useSelector(state => state.Product?.isLoading);
+ 
   const [quantity, setQuantity] = useState(1);
   const [userType, setUserType] = useState(null);
   const [isInCart, setIsInCart] = useState(false);
@@ -94,17 +97,17 @@ const RemediesProductDetail = ({route}) => {
   };
 
   const productDetaill = async item => {
-    await dispatch(
-      productDetail1({
-        url: 'fetch-single-product',
-        product_id: item.id,
-        navigation,
-      }),
-    );
+    // await dispatch(
+    //   productDetail1({
+    //     url: 'fetch-single-product',
+    //     product_id: item.id,
+    //     navigation,
+    //   }),
+    // );
   };
 
   const newArray = [];
-  (Detail?.image_data || []).forEach(item => {
+  (imagearray?.image_data || []).forEach(item => {
     const updatedItem = {
       ...item,
       image: `${Imagepath.Path}${item.image}`,
@@ -252,7 +255,7 @@ const RemediesProductDetail = ({route}) => {
       }).start(() => {
         // Add product to the cart in the background
         Addtocart(prod, {qty: quantity});
-        console.log('Added to cart:', prod);
+      
 
         // Complete the flip animation back to 0 degrees
         Animated.timing(animation, {
@@ -267,100 +270,71 @@ const RemediesProductDetail = ({route}) => {
   };
 
   const Addtocart = async (item, {qty}) => {
-    // console.log(qty,"sandeepdfmgdlfkgl.........")
-    try {
-      const userStatus = await AsyncStorage.getItem('user_data');
-      const userData = JSON.parse(userStatus);
-
-      // console.log(item);
-      if (userData) {
-        const cartItem = cartDataList.find(prod => prod.product_id === item.id);
-        const quantityToUpdate = cartItem ? cartItem.qty + qty : qty;
-
-        if (cartItem) {
-          const rowId = cartItem.rowid;
-
-          await dispatch(
-            updateCartApi({
-              user_id: userData.user_id,
-              rowid: rowId,
-              qty: quantityToUpdate,
-              token: userData.token,
-              currentQty: qty,
-              fromCartScreen: false,
-            }),
-          );
-        } else {
-          await dispatch(
-            addToCartApi({
-              user_id: userData.user_id,
-              itemId: item.id,
-              qty: qty,
-              user_type: userData.user_type,
-              token: userData?.token,
-              url: 'add-to-cart',
-            }),
-          );
-        }
-        await dispatch(
-          getCartDataApi({
-            token: userData?.token,
-            url: `cart?user_id=${userData?.user_id}`,
-          }),
-        );
-        setIsInCart(true);
-      } else {
-        const itemWithQty = {
-          ...item,
-          qty: quantity,
-        };
-        dispatch(addToCart(itemWithQty));
-        setIsInCart(true);
+   console.log('product iddd',item);
+   
+    if (item?.variants?.length != 0) {
+      const image = item?.images[0]?.src;
+      let product = {...item};
+     
+      
+      product.selectedVarient = product?.variants?.[0];
+      console.log('klgnkjg',product?.variants?.[0]?.compare_at_price,product?.variants?.[0]?.price  ,qty    );
+      let productTemp = {
+        ...product,
+        image,
+        qty:qty,
+        productId: product?.id,
+        compareAtPrice :product?.variants?.[0]?.compare_at_price,
+        price:product?.variants?.[0]?.price,
+        id: isNaN(product?.selectedVarient.id)
+          ? await product?.selectedVarient.id
+          : product?.selectedVarient.id,
+      
+        properties: {},
+      };
+      console.log('hfghkjghfdkg',productTemp);
+      if (productTemp?.availableForSale) {
+        console.log('hfghkjghfdkg',productTemp);
+        
+        dispatch(addToCart(productTemp));
       }
-    } catch (error) {
-      console.error('Error adding item to cart:', error);
     }
+ 
+
+
+
+    // try {
+    
+    //     const itemWithQty = {
+    //       ...item,
+    //       qty: quantity,
+    //     };
+
+    //     console.log('producut  detail addd to cart ',itemWithQty);
+        
+    //     dispatch(addToCart(itemWithQty));
+    //     setIsInCart(true);
+     
+    // } catch (error) {
+    //   console.error('Error adding item to cart:', error);
+    // }
   };
 
   const share = async () => {
+console.log('dtagghfjdfgdh',Detail1?.handle);
+
+    const productUrl = `https://pinnaclevastu-in/products/${Detail1.handle}`; // Product URL to share
+    const productDescription = `Check out this amazing product!`;
     try {
-      await Share.share({
-        message: 'Check out this amazing app: https://example.com',
+      await SocialShare.share({
+        title: Detail1.title, 
+        message: `${productDescription} ${productUrl}`, 
       });
     } catch (error) {
-      console.error('Error sharing:', error);
+      console.error("Couldn't share to Instagram", error);
     }
   };
 
-  // const handleUpdateCartData = async (user_id, rowid, qty, token) => {
-  //   try {
-  //     let data = {
-  //       user_id: user_id,
-  //       rowid: rowid,
-  //       qty: qty,
-  //     };
-  //     const config = {
-  //       method: 'post',
-  //       maxBodyLength: Infinity,
-  //       url: `${constants.mainUrl}update-to-cart`,
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //         'Content-Type': 'application/json',
-  //       },
-  //       data: JSON.stringify(data),
-  //     };
-
-  //     const response = await axios.request(config);
-
-  //     console.log(response.data, 'updated !sdfmlkdflsd');
-
-  //     if (response?.data?.status == 200) {
-  //       Toast.show(response.data.msg);
-  //     }
-  //   } catch (error) {
-  //     console.log('cart Quantity error ', error);
-  //   }
-  // };
 
   const AddExtraItemInCart = async checkedItems => {
     Animated.sequence([
@@ -687,7 +661,7 @@ const RemediesProductDetail = ({route}) => {
     </View>
   );
 
-  if (!Detail) {
+  if (!Detail1) {
     return (
       <View>
         <View style={styles.headerdouble}>
@@ -702,7 +676,7 @@ const RemediesProductDetail = ({route}) => {
 
           <Image source={require('../../../assets/image/Group.png')} />
         </View>
-        {!Detail ? <AnimatedLine /> : null}
+        {isLoading ? <AnimatedLine /> : null}
       </View>
     );
   }
@@ -738,13 +712,14 @@ const RemediesProductDetail = ({route}) => {
           />
         </TouchableOpacity>
       </View>
-      {Detail ? (
+
+      {Detail1 ? (
         <ScrollView contentContainerStyle={styles.servicesContainer}>
-          {newArray?.length != 0 ? (
+          {imagearray?.length != 0 ? (
             <View style={styles.welcomeCard}>
               <BannerSlider
                 onPress={item => {}}
-                data={newArray}
+                data={imagearray}
                 local={true}
                 height1={wp(60)}
               />
@@ -764,7 +739,7 @@ const RemediesProductDetail = ({route}) => {
           <View style={styles.contain}>
             {/* Aluminium Metal Strip Vastu */}
             <Text style={styles.service}>
-              {Detail?.name}
+              {Detail1?.title}
               {/* {Array.isArray(Detail) && Detail[0]?.name ? Detail[0]?.name : ''} */}
             </Text>
           </View>
@@ -781,7 +756,7 @@ const RemediesProductDetail = ({route}) => {
                       startingValue={averageRating}
                       ratingColor="#52B1E9"
                       readonly
-                      ratingBackgroundColor={colors.lightGrey} // Unfilled star color
+                      ratingBackgroundColor={colors.lightGrey} 
                     />
                   </View>
 
@@ -846,8 +821,10 @@ const RemediesProductDetail = ({route}) => {
               />
             </TouchableOpacity>
           </View>
+        
+          
           <View>
-            <Text style={styles.cont}>{Detail?.short_description}</Text>
+            <Text style={styles.cont}>{Detail1?.description}</Text>
 
             <View
               style={{
@@ -857,29 +834,15 @@ const RemediesProductDetail = ({route}) => {
                 gap: 10,
               }}>
               <Text style={[styles.third1]}>
-                {`₹ ${
-                  userType === 'customers' && Detail?.sale_price
-                    ? Detail?.sale_price
-                    : userType === 'student' && Detail?.student_price
-                    ? Detail?.student_price
-                    : userType === 'franchise' && Detail?.franchise_price
-                    ? Detail?.franchise_price
-                    : Detail?.price
-                }`}
+                {`₹ ${Detail1?.variants?.[0]?.price}`}
               </Text>
 
-              {userType &&
-              (Detail?.sale_price < Detail?.price ||
-                Detail?.student_price < Detail?.price ||
-                Detail?.franchise_price < Detail?.price) &&
-              (Detail?.sale_price ||
-                Detail?.student_price ||
-                Detail?.franchise_price) ? (
+              
                 <Text
                   style={[styles.third1, {textDecorationLine: 'line-through'}]}>
-                  ₹ {Detail?.price}
+                  ₹ {Detail1?.variants?.[0]?.price}
                 </Text>
-              ) : null}
+             
             </View>
             <View
               style={[
@@ -928,7 +891,7 @@ const RemediesProductDetail = ({route}) => {
                   if (isInCart) {                   
                     handleGoToCartAnimation(); // Navigate to the cart
                   } else {
-                    handleAddToCart(Detail); // Add to cart and update state
+                    handleAddToCart(Detail1); // Add to cart and update state
                   }
                 }}
                 style={{
@@ -969,7 +932,7 @@ const RemediesProductDetail = ({route}) => {
               renderItem={renderItems}
             />
           </View>
-          {Detail?.cross_sales?.length != 0 ? (
+          {/* {Detail?.cross_sales?.length != 0 ? (
             <View style={[styles.productsContainer, {gap: 0}]}>
               <Text style={[styles.header1, {marginLeft: 20}]}>
                 Frequently Bought Together
@@ -1017,9 +980,9 @@ const RemediesProductDetail = ({route}) => {
               // </TouchableOpacity>
               null}
             </View>
-          ) : null}
+          ) : null} */}
 
-          {Detail?.top_best_seller?.length != 0 ? (
+          {/* {Detail?.top_best_seller?.length != 0 ? (
             <View style={styles.suggestItemContainer}>
               <Text style={styles.header1}>Top Best Sellers</Text>
               <FlatList
@@ -1035,7 +998,7 @@ const RemediesProductDetail = ({route}) => {
                   setCurrentIndex(currentIndex); // Update state with the calculated index
                 }}
               />
-              {/* {console.log(Detail?.top_best_seller,"sandeepfdmkdfkgdf")} */}
+              
               <View style={styles.dotContainer}>
                 {Detail?.top_best_seller.map((_, index) => (
                   <TouchableOpacity
@@ -1049,10 +1012,10 @@ const RemediesProductDetail = ({route}) => {
                 ))}
               </View>
             </View>
-          ) : null}
+          ) : null} */}
 
           <View style={{backgroundColor: '#F1F1F1'}}>
-            {Detail?.reviews?.length === 0 ? null : (
+            {/* {Detail?.reviews?.length === 0 ? null : (
               <>
                 <View style={styles.shareview}>
                   <View style={{marginBottom: -20}}>
@@ -1081,7 +1044,7 @@ const RemediesProductDetail = ({route}) => {
                   </TouchableOpacity>
                
               </>
-            )}
+            )} */}
           </View>
         </ScrollView>
       ) : null}
