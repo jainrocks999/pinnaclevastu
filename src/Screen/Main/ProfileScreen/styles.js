@@ -56,6 +56,7 @@ export default StyleSheet.create({
 
   direction: {
     marginTop: 5,
+    minHeight:12
   },
   card: {
     paddingLeft: 15,
@@ -149,18 +150,16 @@ export default StyleSheet.create({
   cardContainer: {
     height: wp(23),
     width: wp(30),
-    margin: 5,
+    paddingHorizontal:5,
+    marginHorizontal:wp(1),
     backgroundColor: colors.white,
     borderRadius: 15,
     alignItems: 'center',
-    // justifyContent: 'center',
-
     elevation: 3, // Shadow for Android
     shadowColor: '#000', // Shadow for iOS
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 5,
-    padding: 5,
   },
 
   text: {
@@ -180,6 +179,11 @@ export default StyleSheet.create({
     fontSize: fontSize.Twenty,
     color: colors.heading,
     fontFamily: 'Poppins-Medium',
+  },
+  primText:{
+    fontSize: fontSize.Fourteen,
+    color: colors.cardcolor,
+    fontFamily: 'Poppins-Regular',
   },
   cont: {
     fontSize: fontSize.Fourteen,
@@ -286,6 +290,59 @@ export default StyleSheet.create({
     width: wp(2.3),
     resizeMode: 'stretch',
     marginRight: 20,
+  },
+  subItemContainer: {
+    marginTop: 15,
+    width: '99%',
+    alignSelf: 'center',
+    backgroundColor: colors.ordercolor,
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
+    borderColor: '#EAEAEA',
+    marginBottom: 10,
+    paddingVertical:10
+  },
+  toggleIcon2: {
+    width: wp(3.5),
+    height: wp(3.5),
+    marginRight:10,
+    resizeMode:"contain"
+  },
+  activeTitleColor: {
+    color: colors.orange,
+  },
+  activeTitleColor1: {
+    fontSize: 16,
+    color: '#F4996C',
+  },
+  coursetext2: {
+    fontSize: fontSize.Sixteen,
+    color: colors.heading,
+    fontFamily: 'Poppins-SemiBold',
+  },
+  direction1: {
+    flexDirection: 'row',
+    borderWidth: 0.1,
+    padding:5,
+  },
+  courseToggle1: {
+    width: '99%',
+    alignSelf: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    backgroundColor: '#F6F6F6',
+    marginVertical: 1,
+    borderRadius: 5,
+    marginBottom: 10,
+  },
+  activeCourseToggle: {
+    marginBottom: -20,
+    width: '99%',
+    alignSelf: 'center',
+    backgroundColor: colors.ordercolor,
   },
   // lineView:{
   //   marginTop:10,

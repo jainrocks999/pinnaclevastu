@@ -26,6 +26,7 @@ import Collapsible from 'react-native-collapsible';
 import {cancelorders, orderDetail} from '../../../Redux/Slice/orderSclice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {colors} from '../../../Component/colors';
+import Reviewform from '../../../Component/ReviewForm';
 
 const labels = [
   'Order Received',
@@ -161,11 +162,11 @@ const OrderDetail = () => {
 
   const renderItem = ({item}) => (
     <View style={styles.card}>
-      <TouchableOpacity style={styles.ImageBtn}
-      onPress={()=>
-         navigation.navigate('ProductDetail', {data:{id:item?.product_id}}) 
-      }
-      >
+      <TouchableOpacity
+        style={styles.ImageBtn}
+        onPress={() =>
+          navigation.navigate('ProductDetail', {data: {id: item?.product_id}})
+        }>
         <Image
           style={styles.cardImg}
           source={

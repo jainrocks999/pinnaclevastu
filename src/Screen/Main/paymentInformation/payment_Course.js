@@ -142,6 +142,7 @@ const PaymentCourse = ({route}) => {
         navigation.navigate('Thankyou', {
           order: response?.data,
           data: 'Courses',
+      
         });
       } else {
         setLoading(false);

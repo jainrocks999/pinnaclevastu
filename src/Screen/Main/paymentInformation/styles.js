@@ -33,9 +33,9 @@ export default StyleSheet.create({
     width: wp(2.3),
     resizeMode: 'stretch',
     marginRight: 20,
-    marginTop:-5
+    marginTop: -5,
   },
-  
+
   title: {
     fontSize: fontSize.Fourteen,
     fontFamily: 'Poppins-Regular',
@@ -80,7 +80,7 @@ export default StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: '#DFE7EF',
     marginTop: 20,
-    paddingBottom:10
+    paddingBottom: 10,
   },
 
   appItem: {
@@ -100,7 +100,7 @@ export default StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 15,
-    paddingVertical:5
+    paddingVertical: 5,
   },
   payIcon: {
     height: 25,
@@ -146,7 +146,7 @@ export default StyleSheet.create({
     position: 'absolute',
     right: 10,
   },
-  radio:{
+  radio: {
     // transform: [{ scale: 0.8 }],
     //  borderWidth: 1, // This is where you'd like 0.5 thickness effect
     // borderColor: 'red'
@@ -234,13 +234,12 @@ export default StyleSheet.create({
     // height: wp(10),
     width: '59.5%',
     fontSize: fontSize.Fourteen,
-    marginTop:3,
+    marginTop: 3,
     // borderRadius: 10,
     // borderWidth: 1.5,
     paddingHorizontal: 15,
-    color:colors.heading,
+    color: colors.heading,
     fontFamily: 'Poppins-Regular',
-
   },
   uppload: {
     fontSize: fontSize.Fifteen,
@@ -262,7 +261,7 @@ export default StyleSheet.create({
     fontFamily: 'Poppins-Regular',
   },
   payment: {
-    marginTop:5,
+    marginTop: 5,
     fontSize: fontSize.Fourteen,
     fontFamily: 'Poppins-Medium',
     color: colors.paymenttext,
@@ -274,5 +273,28 @@ export default StyleSheet.create({
     textAlign: 'center',
     marginTop: 10,
     marginBottom: 8,
+  },
+  profileText: {
+    fontFamily: 'Poppins-Bold',
+    fontSize: fontSize.Fifteen,
+    color: colors.cardcolor,
+    textAlign: 'center',
+  },
+  boldText: {
+    fontFamily: 'Poppins-Bold',
+    fontSize: fontSize.Twelve,
+    color: colors.cardcolor,
+  },
+  smallText: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: fontSize.Thirteen,
+    color: colors.cardcolor,
+  },
+  shapeDot: {
+    height: 8,
+    width: 8,
+    backgroundColor: "#bfbdbd",
+    margin: 5,
+    borderRadius: '50%',
   },
 });

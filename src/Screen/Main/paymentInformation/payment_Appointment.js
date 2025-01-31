@@ -29,6 +29,7 @@ const PaymentAppointment = ({route}) => {
   const nav = route.params?.data1;
   const services = route.params?.services;
   const formData = route.params?.formData;
+  console.log(services,"asmlksdf")
   const navigation = useNavigation();
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
   const userDetail = useSelector(state => state?.Auth?.userData);
@@ -40,55 +41,79 @@ const PaymentAppointment = ({route}) => {
   const [loading1, setLoading] = useState(false);
   const [userType, setUserType] = useState('');
   const [totals, setTotals] = useState({
+    totalServicesAmount: '',
     totalTaxAmount: '',
-    totalAmount: '',
-    totalPriceOnly: '',
+    grandTotalAmount: '',
   });
+  // const [totals, setTotals] = useState({
+  //   totalTaxAmount: '',
+  //   totalAmount: '',
+  //   totalPriceOnly: '',
+  // });
 
-  const calculateTotals = (product, userType) => {
-    const {
-      sale_price,
-      student_price,
-      franchise_price,
-      price,
-      tax_amount = 0,
-      tax_type = 'percentage',
-    } = product;
+  // const calculateTotals = (product, userType) => {
+  //   const {
+  //     sale_price,
+  //     student_price,
+  //     franchise_price,
+  //     price,
+  //     tax_amount = 0,
+  //     tax_type = 'percentage',
+  //   } = product;
 
-    // Determine the selected price based on user type.
-    const selectedPrice =
-      userType === 'customers' && sale_price
-        ? parseFloat(sale_price)
-        : userType === 'student' && student_price
-        ? parseFloat(student_price)
-        : userType === 'franchise' && franchise_price
-        ? parseFloat(franchise_price)
-        : parseFloat(price);
+  // Determine the selected price based on user type.
+  //   const selectedPrice =
+  //     userType === 'customers' && sale_price
+  //       ? parseFloat(sale_price)
+  //       : userType === 'student' && student_price
+  //       ? parseFloat(student_price)
+  //       : userType === 'franchise' && franchise_price
+  //       ? parseFloat(franchise_price)
+  //       : parseFloat(price);
 
-    const itemPrice = selectedPrice;
-    // const taxAmount =
-    // tax_type === "percentage"
-    //   ? (itemPrice * parseFloat(tax_amount)) / 100
-    //   : parseFloat(tax_amount);
-    const taxAmount =
-      tax_type === 'percentage'
-        ? (selectedPrice * tax_amount) / 100 // Calculate percentage-based tax
-        : tax_type === 'amount'
-        ? tax_amount // Fixed tax amount
-        : 0;
-    const totalProductAmount = itemPrice + taxAmount;
+  //   const itemPrice = selectedPrice;
+  //   // const taxAmount =
+  //   // tax_type === "percentage"
+  //   //   ? (itemPrice * parseFloat(tax_amount)) / 100
+  //   //   : parseFloat(tax_amount);
+  //   const taxAmount =
+  //     tax_type === 'percentage'
+  //       ? (selectedPrice * tax_amount) / 100 // Calculate percentage-based tax
+  //       : tax_type === 'amount'
+  //       ? tax_amount // Fixed tax amount
+  //       : 0;
+  //   const totalProductAmount = itemPrice + taxAmount;
 
-    return {
-      totalTaxAmount: totlaServicesPrice.toFixed(2), // Total tax amount.
-      totalAmount: totalProductAmount.toFixed(2), // Grand total amount.
-      totalPriceOnly: itemPrice.toFixed(2), // Total price before tax.
-    };
+  //   return {
+  //     totalTaxAmount: totlaServicesPrice.toFixed(2), // Total tax amount.
+  //     totalAmount: totalProductAmount.toFixed(2), // Grand total amount.
+  //     totalPriceOnly: itemPrice.toFixed(2), // Total price before tax.
+  //   };
+  // };
+
+  // const totlaServicesPrice = services.reduce(
+  //   (total, item) => total + item?.price,
+  //   0,
+  // );
+
+  const calculateTotalTax = () => {
+    let totalTax = 0;
+    let totalServicesPrice = 0;
+    services.forEach(service => {
+      const ServicesPrice = parseInt(service?.price);
+      const taxAmount = (service?.price * service.taxPercent) / 100;
+      
+      totalServicesPrice += ServicesPrice;
+
+      totalTax += taxAmount;
+
+    });
+    setTotals({
+      totalServicesAmount: totalServicesPrice,
+      totalTaxAmount: totalTax,
+      grandTotalAmount: totalServicesPrice + totalTax,
+    });
   };
-
-  const totlaServicesPrice = services.reduce(
-    (total, item) => total + item.price,
-    0,
-  );
 
   useEffect(() => {
     setTotals('');
@@ -100,19 +125,26 @@ const PaymentAppointment = ({route}) => {
     };
 
     usercheck();
+    calculateTotalTax();
   }, []);
 
-  useEffect(() => {
-    if (userType && Object.values(nav)?.filter(Boolean)?.length > 0) {
-      const calculatedTotals = calculateTotals(nav, userType);
+  function getServiceNames() {
+    const serviceNames = services.map(service => service.name).join(', ');
+    return `(${serviceNames})`;
+  }
+  // console.log(totals,"sdnfkjsddf");
 
-      setTotals(calculatedTotals);
-    }
-  }, [nav, userType]);
+  // useEffect(() => {
+  //   if (userType && Object.values(nav)?.filter(Boolean)?.length > 0) {
+  //     const calculatedTotals = calculateTotals(nav, userType);
+
+  //     setTotals(calculatedTotals);
+  //   }
+  // }, [nav, userType]);
 
   const createbyord = async item => {
     const userid = await AsyncStorage.getItem('user_id');
-    console.log(userid, 'sjdfksdfmdl');
+    // console.log(userid, 'sjdfksdfmdl');
     const selected_franchise_services = services.map(service => service.id);
     let data = {
       name: formData.name,
@@ -200,7 +232,7 @@ const PaymentAppointment = ({route}) => {
           radioActive,
           paymentId: '',
           status: 'pending',
-          amount: totals?.totalAmount,
+          amount: totals?.grandTotalAmount,
           reason: '',
           code: '',
         };
@@ -210,7 +242,7 @@ const PaymentAppointment = ({route}) => {
   };
 
   const Createorder1 = async () => {
-    let total = 100 * parseInt(totals?.totalAmount);
+    let total = 100 * parseInt(totals?.grandTotalAmount);
     var options = {
       description: 'Credits towards consultation',
       image: require('../../../assets/image/header.png'),
@@ -228,27 +260,28 @@ const PaymentAppointment = ({route}) => {
 
     try {
       const data = await RazorpayCheckout.open(options);
-
+      console.log(data, 'payment');
+      // throw new Error("Simulated payment failure");
       const transactionDetails = {
         radioActive,
         paymentId: data.razorpay_payment_id || '',
         status: data.razorpay_payment_id ? 'completed' : 'failed',
-        amount: totals?.totalAmount,
+        amount: totals?.grandTotalAmount,
         reason: data.razorpay_payment_id ? null : 'Payment ID missing',
         code: null,
       };
 
       createbyord(transactionDetails);
     } catch (error) {
+      console.log(error);
       const transactionDetails = {
         radioActive,
         paymentId: '',
         status: 'failed',
-        amount: totals?.totalAmount,
+        amount: totals?.grandTotalAmount,
         reason: error?.error?.reason || 'Transaction failed',
         code: error.code,
       };
-
       // createbyord(transactionDetails);
     }
   };
@@ -272,6 +305,41 @@ const PaymentAppointment = ({route}) => {
       {loading1 ? <Loader /> : null}
       <ScrollView contentContainerStyle={styles.servicesContainer}>
         <View style={styles.cardContainer2}>
+          {/* <Text
+            style={[
+              styles.service,
+              styles.widthOfSevices2,
+              {fontSize: fontSize.Fifteen},
+            ]}>
+            Personal Detail
+          </Text> */}
+
+          <View
+            style={{
+              marginTop: 8,
+              flexDirection: 'row',
+              justifyContent: 'flex-start',
+              paddingVertical: 2,
+            }}>
+            <Text style={styles.smallText}>{formData.name}</Text>
+            <View style={styles.shapeDot}></View>
+            <Text style={styles.smallText}>{formData.bod}</Text>
+          </View>
+
+          <View
+            style={{
+              marginTop: 8,
+              flexDirection: 'row',
+              justifyContent: 'flex-start',
+              paddingVertical: 2,
+            }}>
+            <Text style={styles.smallText}>{formData.mobile}</Text>
+            <View style={styles.shapeDot}></View>
+            <Text style={styles.smallText}>{formData.email}</Text>
+          </View>
+        </View>
+
+        <View style={styles.cardContainer2}>
           <View
             style={[
               styles.card45,
@@ -279,7 +347,21 @@ const PaymentAppointment = ({route}) => {
               {paddingTop: 0, paddingBottom: 5},
             ]}>
             <Text style={styles.third2}>{vastuExpertData?.franchise_name}</Text>
-            <Text style={[styles.third2]}>{`₹ ${totlaServicesPrice}`}</Text>
+          </View>
+          <View
+            style={[
+              styles.card45,
+              styles.borderBottom,
+              {paddingTop: 0, paddingBottom: 5},
+            ]}>
+            <Text style={[styles.third2, {width: '80%'}]}>
+              {getServiceNames()}
+            </Text>
+
+            <Text
+              style={[
+                styles.third2,
+              ]}>{`₹ ${totals?.totalServicesAmount}`}</Text>
           </View>
           <View
             style={[
@@ -293,7 +375,7 @@ const PaymentAppointment = ({route}) => {
 
           <View style={styles.card45}>
             <Text style={styles.third3}>{'Total Payable Amount'}</Text>
-            <Text style={[styles.third2]}>₹ {totals?.totalAmount}</Text>
+            <Text style={[styles.third2]}>₹ {totals?.grandTotalAmount}</Text>
           </View>
         </View>
 

@@ -57,9 +57,10 @@ const ResidentalScreen = ({navigation}) => {
   useEffect(() => {
     if (data?.franchise_services?.length > 0) {
       const defaultService = {
-        id: data.franchise_services[0]?.id,
-        name: data.franchise_services[0]?.services_name,
-        price: data.franchise_services[0]?.services_price,
+        id: data?.franchise_services[0]?.service_id,
+        name: data?.franchise_services[0]?.service_name,
+        price: data?.franchise_services[0]?.service_price,
+        taxPercent: data?.franchise_services[0]?.tax_percentage,
       };
       setServices([defaultService]);
     }
@@ -116,7 +117,9 @@ const ResidentalScreen = ({navigation}) => {
     const strTime = `${hours}:${minutes} ${ampm}`;
     return strTime;
   };
-  console.log(userDetail, '****************');
+  // console.log(userDetail, '****************');
+  // console.log(data?.franchise_services,'****************');
+
   const [formData, setFormData] = useState({
     name: userDetail?.name || '',
     email: userDetail?.email || '',
@@ -227,11 +230,10 @@ const ResidentalScreen = ({navigation}) => {
     ]).start();
 
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-    // Check if at least one service is selected
+    
     if (services.length === 0) {
       shake('services');
-      scrollToField('services'); // Scroll to services section
-      // Toast.show('Please select at least one service.');
+      scrollToField('services');
       return;
     }
     // Sequential Validation
@@ -241,10 +243,6 @@ const ResidentalScreen = ({navigation}) => {
       'mobile',
       'gender',
       'cityPincode',
-      // 'date',
-      // 'time',
-      // 'birthPlace',
-      // 'additionalInfo',
     ];
 
     for (let field of fieldsToValidate) {
@@ -278,12 +276,13 @@ const ResidentalScreen = ({navigation}) => {
 
   const handleCheckboxPress = service => {
     const isSelected = services.some(item => item.id === service.id);
-
+    
     if (isSelected) {
       setServices(services.filter(item => item.id !== service.id));
     } else {
       setServices([...services, service]);
     }
+
   };
 
   return (
@@ -322,29 +321,31 @@ const ResidentalScreen = ({navigation}) => {
               <FlatList
                 data={data?.franchise_services || []}
                 scrollEnabled={false}
-                keyExtractor={item => item?.item?.id.toString()}
+                keyExtractor={item => item?.index?.toString()}
                 renderItem={item => (
                   <View style={styles.serviceSection}>
+                   {/* { console.log(item)} */}
                     <View
                       style={[
                         styles.checkboxWrapper,
                         services.some(
-                          service => service.id === item?.item?.id,
+                          service => service.id === item?.item?.service_id,
                         ) && styles.checkedBackground,
                       ]}>
                       <Checkbox
                         status={
                           services.some(
-                            service => service.id === item?.item?.id,
+                            service => service.id === item?.item?.service_id,
                           )
                             ? 'checked'
                             : 'unchecked'
                         }
                         onPress={() =>
                           handleCheckboxPress({
-                            id: item?.item?.id,
-                            name: item?.item?.services_name,
-                            price: item?.item?.services_price,
+                            id: item?.item?.service_id,
+                            name: item?.item?.service_name,
+                            price: item?.item?.service_price,
+                            taxPercent: item?.item?.tax_percentage,
                           })
                         }
                         color="#FFF"
@@ -352,10 +353,10 @@ const ResidentalScreen = ({navigation}) => {
                       />
                     </View>
                     <Text style={styles.labelText}>
-                      {item?.item?.services_name}
+                      {item?.item?.service_name}
                     </Text>
                     <Text style={styles.priceText}>
-                      ₹ {item?.item?.services_price}
+                      ₹ {item?.item?.service_price}
                     </Text>
                   </View>
                 )}

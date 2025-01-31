@@ -21,6 +21,9 @@ import {useSelector} from 'react-redux';
 import Imagepath from '../../../Component/Imagepath';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Toast from 'react-native-simple-toast';
+import Collapsible from 'react-native-collapsible';
+import RenderHTML from 'react-native-render-html';
+import {fontSize} from '../../../Component/fontsize';
 const ResidentalScreen = ({navigation}) => {
   const userDetail = useSelector(state => state?.Auth?.userData);
   // const data = useSelector(state => state?.home?.ConsultationDetail?.data);
@@ -31,10 +34,21 @@ const ResidentalScreen = ({navigation}) => {
 
   const [scaleAnims, setScaleAnims] = useState({});
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
+  const [expandedSection, setExpandedSection] = useState(null);
 
   const data2 = [
     {
       id: '1',
+      image: require('../../../assets/image/house.png'),
+      name: 'Residential Vastu',
+    },
+    {
+      id: '2',
+      image: require('../../../assets/image/house.png'),
+      name: 'Residential Vastu',
+    },
+    {
+      id: '4',
       image: require('../../../assets/image/house.png'),
       name: 'Residential Vastu',
     },
@@ -49,6 +63,12 @@ const ResidentalScreen = ({navigation}) => {
       name: 'Gemstone',
     },
   ];
+
+  const toggleSection = sectionId => {
+    setExpandedSection(prevSection =>
+      prevSection === sectionId ? null : sectionId,
+    );
+  };
 
   const openApp = async (url, fallbackUrl) => {
     try {
@@ -79,18 +99,18 @@ const ResidentalScreen = ({navigation}) => {
     }
   };
   const copyToClipboard = async () => {
-    const textToCopy = "This is the text you want to copy"; // Replace with your desired text or URL
+    const textToCopy = 'This is the text you want to copy'; // Replace with your desired text or URL
     try {
-       await Clipboard.setString(textToCopy);
-       Toast.show({
-        type: 'success', 
-        text1: 'Copied!', 
-        text2: 'Text copied to clipboard successfully!', 
+      await Clipboard.setString(textToCopy);
+      Toast.show({
+        type: 'success',
+        text1: 'Copied!',
+        text2: 'Text copied to clipboard successfully!',
       });
     } catch (error) {
-      console.log('error',error);
-      
-      Alert.alert("Error", "Failed to copy text.");
+      console.log('error', error);
+
+      Alert.alert('Error', 'Failed to copy text.');
     }
   };
 
@@ -139,18 +159,7 @@ const ResidentalScreen = ({navigation}) => {
     ]).start();
   };
   const renderItem = ({item, index}) => {
-    
-    let backgroundColor;
-
-    if (item.services_name === 'Residential Vastu') {
-      backgroundColor = colors.card4;
-    } else if (item.services_name === 'Industrial Vastu') {
-      backgroundColor = colors.card3;
-    } else if (item.services_name === 'Gemstone') {
-      backgroundColor = colors.card2;
-    } else {
-      backgroundColor = colors.card3;
-    }
+    // console.log(item.service_name, 'sdmflkdf');
     const itemScaleAnim = scaleAnims[index] || new Animated.Value(1);
     return (
       <Animated.View
@@ -164,13 +173,8 @@ const ResidentalScreen = ({navigation}) => {
           style={[
             styles.cardContainer,
             {
-              backgroundColor: item?.color_code!=null?item?.color_code:colors.card3,
-              width:
-                data?.franchise_services.length == 1
-                  ? wp(90)
-                  : data?.franchise_services.length == 2
-                  ? wp(45)
-                  : wp(30),
+              backgroundColor:
+                item?.color_code != null ? item?.color_code : colors.card3,
             },
           ]}
           onPress={() => handleItemClick(index)}>
@@ -182,7 +186,7 @@ const ResidentalScreen = ({navigation}) => {
             }
             style={styles.image}
           />
-          <Text style={styles.text}>{item.services_name}</Text>
+          <Text style={styles.text}>{item.service_name}</Text>
         </TouchableOpacity>
       </Animated.View>
     );
@@ -195,11 +199,14 @@ const ResidentalScreen = ({navigation}) => {
         style={[styles.cardContainer1]}>
         <View style={styles.reviewCard}>
           <View style={{paddingLeft: 5}}>
-            <Image style={styles.reviewImage} source={
-              item?.images?
-              {uri:`${Imagepath?.Path}${item.images}`}:
-              require('../../../assets/image/Remedies/Image-not.png')
-              } />
+            <Image
+              style={styles.reviewImage}
+              source={
+                item?.images
+                  ? {uri: `${Imagepath?.Path}${item.images}`}
+                  : require('../../../assets/image/Remedies/Image-not.png')
+              }
+            />
             <Rating
               type="custom"
               tintColor={colors.white}
@@ -214,29 +221,28 @@ const ResidentalScreen = ({navigation}) => {
           <View style={[styles.card, {paddingLeft: 10}]}>
             <Text style={styles.third1}>{item.customer_name}</Text>
 
-            <Text style={[styles.third2, {marginTop: -8}]}>{item?.comment}</Text>
+            <Text style={[styles.third2, {marginTop: -8}]}>
+              {item?.comment}
+            </Text>
           </View>
         </View>
       </TouchableOpacity>
     );
   };
 
-
-
   const calculateAverageRating = reviews => {
     const totalRatings = reviews?.reduce(
       (sum, review) => sum + JSON.parse(review.star),
       0,
     );
-    
+
     const averageRating =
       reviews?.length > 0 ? totalRatings / reviews.length : 0;
     return averageRating.toFixed(1);
   };
 
-
   const averageRating = calculateAverageRating(data?.reviews);
-  console.log(averageRating,'averageRating');
+  console.log(averageRating, 'averageRating');
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -274,17 +280,20 @@ const ResidentalScreen = ({navigation}) => {
                 }
                 style={styles.cardImage}
               />
+
               <View style={styles.direction}>
-                <Rating
-                  type="custom"
-                  tintColor={colors.white}
-                  ratingCount={5}
-                  imageSize={wp(3.8)}
-                  startingValue={averageRating}
-                  ratingColor="#52B1E9"
-                  readonly
-                  ratingBackgroundColor={colors.lightGrey} // Unfilled star color
-                />
+                {averageRating != 0 ? (
+                  <Rating
+                    type="custom"
+                    tintColor={colors.white}
+                    ratingCount={5}
+                    imageSize={wp(3.8)}
+                    startingValue={averageRating}
+                    ratingColor="#52B1E9"
+                    readonly
+                    ratingBackgroundColor={colors.lightGrey} // Unfilled star color
+                  />
+                ) : null}
               </View>
             </View>
             <View style={styles.card}>
@@ -293,12 +302,17 @@ const ResidentalScreen = ({navigation}) => {
               <Text style={[styles.third2, {marginBottom: 3}]}>
                 Services:{' '}
                 {data?.franchise_services
-                  ?.map(service => service.services_name) // Extract all services_name
+                  ?.map(service => service.service_name) // Extract all services_name
                   .join(', ')}
               </Text>
 
-              <Text style={styles.third2}>{data?.language}</Text>
-              <Text style={styles.third2}>Exp: {data?.experience_of_year}</Text>
+              <Text style={styles.third2}>
+                {' '}
+                {data?.language?.map(language => language).join(', ')}
+              </Text>
+              <Text style={styles.third2}>
+                Exp: {data?.experience_of_year} year
+              </Text>
               {/* <Text style={styles.priceText}>
                 Price: {data?.franchise_services?.services_price}
               </Text> */}
@@ -317,37 +331,123 @@ const ResidentalScreen = ({navigation}) => {
         <View style={styles.contain}>
           <Text style={styles.service}>Specialist</Text>
         </View>
+
         <FlatList
           // data={data2}
-          data={data?.franchise_services || [].slice(0, 3)}
+          data={data?.franchise_services}
           renderItem={renderItem}
           scrollEnabled={false}
           keyExtractor={item => item.id}
           numColumns={3}
           showsVerticalScrollIndicator={false}
-          // contentContainerStyle={{
-          //   alignSelf: 'center',
-          //   justifyContent:"center",
-          //   gap: 15,
-          //   paddingHorizontal: 0,
-          //   width:"100%",
-          //   borderWidth:1
-          // }}
           contentContainerStyle={{
+            marginHorizontal: 8,
+            gap: 15,
             flexDirection: 'row',
-            justifyContent: 'center',
-            // justifyContent: data?.franchise_services.length == 1 ? "center" : "space-between", // Adjust based on item count
-            // paddingHorizontal:  data?.franchise_services?.length == 1 ? 0 : 10, // Adjust padding
-            width: '100%',
+            flexWrap: 'wrap',
+            // justifyContent: 'center',
+            // alignSelf: 'center',
+            // borderWidth: 1,
+            paddingVertical: 10,
           }}
+          // contentContainerStyle={{
+          //   flexDirection: 'row',
+          //   justifyContent: 'center',
+          //   width: '100%',
+          // }}
         />
-        <View style={{paddingHorizontal: 10}}>
-          <Text style={styles.cont}>{data?.short_description}</Text>
-        </View>
+        {data?.short_description && (
+          <View style={{paddingHorizontal: 15}}>
+            <Text style={styles.cont}>{data?.short_description}</Text>
+          </View>
+        )}
 
-        <View style={{paddingHorizontal: 10}}>
-          <Text style={styles.cont}>{data?.content}</Text>
-        </View>
+        {data?.content && (
+          <View style={{paddingHorizontal: 15}}>
+            <Text style={styles.cont}>{data?.content}</Text>
+          </View>
+        )}
+
+        {data?.label1 || data?.label2 || data?.label3 ? (
+          <View>
+            <View style={{paddingVertical: 10, marginHorizontal: 15}}>
+              <Text style={styles.service}>{data?.label1}</Text>
+              {console.log(data?.description1, 'sdf,mdsf')}
+              <RenderHTML
+                source={{
+                  html: data?.description1,
+                }}
+                // tagsStyles={{
+                //   li: {
+                //     fontSize: fontSize.Fifteen,
+                //     color: colors.cardcolor,
+                //     fontFamily: 'Poppins-Regular',
+                //   },
+                //   p: {
+                //     backgroundColor: colors.white,
+                //   },
+                //   span: {
+                //     backgroundColor: colors.white,
+                //     fontSize: fontSize.Fifteen,
+                //     color: colors.cardcolor,
+                //     fontFamily: 'Poppins-Regular',
+                //   },
+                // }}
+              />
+            </View>
+
+            <View style={{paddingVertical: 10, marginHorizontal: 15}}>
+              <Text style={styles.service}>{data?.label2}</Text>
+
+              <RenderHTML
+                source={{
+                  html: data?.description2,
+                }}
+                // tagsStyles={{
+                //   li: {
+                //     fontSize: fontSize.Fifteen,
+                //     color: colors.cardcolor,
+                //     fontFamily: 'Poppins-Regular',
+                //   },
+                //   p: {
+                //     backgroundColor: colors.white,
+                //   },
+                //   span: {
+                //     backgroundColor: colors.white,
+                //     fontSize: fontSize.Fifteen,
+                //     color: colors.cardcolor,
+                //     fontFamily: 'Poppins-Regular',
+                //   },
+                // }}
+              />
+            </View>
+            <View style={{paddingVertical: 10, marginHorizontal: 15}}>
+              <Text style={styles.service}>{data?.label3}</Text>
+              <RenderHTML
+                source={{
+                  html: data?.description3,
+                }}
+                // tagsStyles={{
+                //   li: {
+                //     fontSize: fontSize.Fifteen,
+                //     color: colors.cardcolor,
+                //     fontFamily: 'Poppins-Regular',
+                //   },
+                //   p: {
+                //     color: colors.white,
+                //     backgroundColor: colors.white,
+                //   },
+                //   span: {
+                //     backgroundColor: colors.white,
+                //     fontSize: fontSize.Fifteen,
+                //     color: colors.cardcolor,
+                //     fontFamily: 'Poppins-Regular',
+                //   },
+                // }}
+              />
+            </View>
+          </View>
+        ) : null}
 
         <View style={styles.shareview}>
           <View style={styles.rowSection}>
@@ -359,10 +459,7 @@ const ResidentalScreen = ({navigation}) => {
             </TouchableOpacity>
 
             <Text style={[styles.cont, {marginTop: 0}]}>{'Share it :'}</Text>
-            {/* <Image
-              style={styles.socialImg}
-              source={require('../../..//assets/drawer/fb.png')}
-            /> */}
+
             <TouchableOpacity
               onPress={() => openApp('fb://profile', 'https://facebook.com')}>
               <Image
@@ -380,34 +477,78 @@ const ResidentalScreen = ({navigation}) => {
                 source={require('../../../assets/drawer/instagram.png')}
               />
             </TouchableOpacity>
-            <TouchableOpacity onPress={()=>copyToClipboard()}>
+            <TouchableOpacity onPress={() => copyToClipboard()}>
               <Image
                 style={styles.socialImg}
                 source={require('../../../assets/drawer/copy.png')}
               />
             </TouchableOpacity>
           </View>
-
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.btext}>Write a Review</Text>
-          </TouchableOpacity>
         </View>
-
-        <View style={styles.reviewSection}>
+        {data?.faqdata ? (
           <View style={styles.contain}>
-            <Text style={styles.service}>User Reviews ({data?.reviews?.length})</Text>
-          </View>
-          <FlatList
-            data={data?.reviews}
-            scrollEnabled={false}
-            renderItem={renderItem3}
-            keyExtractor={item => item.id}
-            //   numColumns={3}
-            showsVerticalScrollIndicator={false}
-          />
+            <Text style={styles.service}>FAQ</Text>
+            <FlatList
+              scrollEnabled={false}
+              data={data?.faqdata}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({item, index}) => (
+                <View style={{marginTop: 10}}>
+                  <TouchableOpacity
+                    onPress={() => toggleSection(index)}
+                    style={[
+                      styles.courseToggle1,
+                      expandedSection === index && styles.activeCourseToggle,
+                    ]}>
+                    <View style={styles.direction1}>
+                      <Text
+                        style={[
+                          styles.coursetext2,
+                          expandedSection === index && styles.activeTitleColor,
+                        ]}>
+                        Q{index + 1}. {item.question}
+                      </Text>
+                    </View>
+                    <Image
+                      source={
+                        expandedSection === index
+                          ? require('../../../assets/otherApp/updown1.png')
+                          : require('../../../assets/image/arrow_icon.png')
+                      }
+                      style={[styles.toggleIcon2]}
+                    />
+                  </TouchableOpacity>
 
-          <Text style={styles.seeall}>See all Reviews</Text>
-        </View>
+                  <Collapsible collapsed={expandedSection !== index}>
+                    <View style={styles.subItemContainer}>
+                      <Text style={[styles.primText, {marginHorizontal: 15}]}>
+                        Ans :- {item?.answer}
+                      </Text>
+                    </View>
+                  </Collapsible>
+                </View>
+              )}
+            />
+          </View>
+        ) : null}
+        {data?.reviews?.length != 0 ? (
+          <View style={styles.reviewSection}>
+            <View style={styles.contain}>
+              <Text style={styles.service}>
+                User Reviews ({data?.reviews?.length})
+              </Text>
+            </View>
+            <FlatList
+              data={data?.reviews}
+              scrollEnabled={false}
+              renderItem={renderItem3}
+              keyExtractor={item => item.id}
+              //   numColumns={3}
+              showsVerticalScrollIndicator={false}
+            />
+            <Text style={styles.seeall}>See all Reviews</Text>
+          </View>
+        ) : null}
       </ScrollView>
       <TouchableOpacity onPress={handlePress} activeOpacity={1}>
         <Animated.View
@@ -445,5 +586,36 @@ const data1 = [
     image: require('../../../assets/image/Ellipse3.png'),
     name: 'Hemant',
     msg: 'VeryNice',
+  },
+];
+
+const FAQdata1 = [
+  {
+    id: '1',
+    icon: require('../../../assets/otherApp/trusted.png'), // Replace with actual icon
+    title: 'Trusted Content',
+    description:
+      'Content specially created to understand Vastu Techniques in easy way.',
+  },
+  {
+    id: '2',
+    icon: require('../../../assets/otherApp/trusted1.png'), // Replace with actual icon
+    title: 'Experienced Teachers',
+    description:
+      'Content specially created to understand Vastu Techniques in easy way.',
+  },
+  {
+    id: '3',
+    icon: require('../../../assets/otherApp/trusted2.png'), // Replace with actual icon
+    title: 'Lifetime Access',
+    description:
+      'Content specially created to understand Vastu Techniques in easy way.',
+  },
+  {
+    id: '4',
+    icon: require('../../../assets/otherApp/trusted3.png'), // Replace with actual icon
+    title: 'Certification',
+    description:
+      'Content specially created to understand Vastu Techniques in easy way.',
   },
 ];

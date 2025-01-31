@@ -15,6 +15,7 @@ import {
   useNavigation,
   DrawerActions,
   useIsFocused,
+  useRoute,
 } from '@react-navigation/native';
 import {fontSize} from '../fontsize';
 import {colors} from '../colors';
@@ -92,7 +93,18 @@ const Drawer = props => {
       style={styles.listRow}
       // style={true ? styles.specialListRow : styles.listRow}
       // onPress={item.onPress ? item.onPress : null}
-    >
+      onPress={() => {
+        navigation.navigate('Home', {
+          screen: 'Home1',
+          params: {
+            screen: 'Consultancy',
+            params: {
+              itemId: item?.id,
+              servicesName: item?.services_name,
+            },
+          },
+        });
+      }}>
       {/* <View style={styles.rowContent}> */}
       <Image
         style={styles.icon}
@@ -112,7 +124,8 @@ const Drawer = props => {
         <Image source={require('../../assets/image/header.png')} />
         <TouchableOpacity
           style={{marginRight: -3}}
-          onPress={() => props.navigation.closeDrawer()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+          onPress={() => props.navigation.closeDrawer()}
+          hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
           <Image source={require('../../assets/drawer/close.png')} />
         </TouchableOpacity>
       </View>
@@ -212,7 +225,14 @@ const Drawer = props => {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={styles.coursesListRow}>
+        <TouchableOpacity
+          style={styles.coursesListRow}
+          onPress={() => {
+            navigation.navigate('Home', {
+              screen: 'Home1',
+              params: {screen: 'Cources'},
+            });
+          }}>
           <View
             style={{
               flexDirection: 'row',

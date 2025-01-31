@@ -42,10 +42,11 @@ export default StyleSheet.create({
     fontFamily: 'Poppins-Regular',
   },
   book: {
+    flex:1,
     backgroundColor: '#6CABF4',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '100%',
+    // width: '100%',
     height: wp(13),
     borderRadius: 28,
     marginTop: hp(2),
@@ -55,4 +56,14 @@ export default StyleSheet.create({
     fontSize: fontSize.Eighteen,
     color: colors.white,
   },
+  longMsgText: {
+    fontSize: fontSize.Fifteen,
+    width: '75%', 
+    textAlign: 'center',
+    // borderWidth:1
+  },
+  pressabelText:{
+    color:"#6CABF4",
+    textDecorationLine:"underline"
+  }
 });
