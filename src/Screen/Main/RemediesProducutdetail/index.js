@@ -71,7 +71,7 @@ const RemediesProductDetail = ({route}) => {
   });
 
   useEffect(() => {
-    PRoductDeta();
+  
     const backAction = () => {
       navigation.goBack();
       return true; 
@@ -83,18 +83,8 @@ const RemediesProductDetail = ({route}) => {
     return () => backHandler.remove();
   }, [navigation]);
   
-  console.log('jkfdgdgdkj',item);
-  const PRoductDeta = async () => {
-   
-    await dispatch(
-      productDetail1({
-        url: 'fetch-single-product',
-        product_id: item?.id ? item?.id : item?.product_id,
-        navigation,
-      }),
-    );
-    // navigation.navigate("ProductDetail", { data: item })
-  };
+ 
+ 
 
   const productDetaill = async item => {
     // await dispatch(
@@ -145,11 +135,8 @@ const RemediesProductDetail = ({route}) => {
     };
     const checkIfInCart = () => {
       // console.log(userType, 'sandeep dsfksdfmsdfmsdlf');
-      const cartItem =
-        userType === undefined
-          ? localCartDataList.find(item => item.id === Detail?.id)
-          : cartDataList.find(item => item.product_id === Detail?.id);
-
+      const cartItem =localCartDataList.find(item => item.id === Detail?.id)
+          
       setCurrentItemInCart(cartItem);
     };
 
