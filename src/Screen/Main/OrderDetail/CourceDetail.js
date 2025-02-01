@@ -223,9 +223,17 @@ const CourceDetail = () => {
           <View style={styles.card}>
             {console.log(' data2?.course?.image', `${Imagepath.Path}${data2?.course?.image}`)
             }
-            <AutoHeightImage
+            {/* <AutoHeightImage
             style={{width:widthPrecent(34)}}
               // style={[styles.cardImg,{width:widthPrecent(34)}]}
+              source={
+                data2?.course?.image
+                  ? {uri: `${Imagepath.Path}${data2?.course?.image}`}
+                  : require('../../../assets/image/Remedies/Image-not.png')
+              }
+            /> */}
+            <Image
+            style={{width:widthPrecent(34),resizeMode:"contain"}}
               source={
                 data2?.course?.image
                   ? {uri: `${Imagepath.Path}${data2?.course?.image}`}

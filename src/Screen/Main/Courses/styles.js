@@ -346,7 +346,9 @@ export default StyleSheet.create({
     fontSize: fontSize.Fourteen,
     fontFamily: 'Poppins-Regular',
     width: '90%',
-    // minHeight: wp(32),
+  },
+  shortDescription:{
+    minHeight: wp(14),
   },
   price: {
     fontSize: fontSize.Fourteen,

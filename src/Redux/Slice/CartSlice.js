@@ -66,26 +66,27 @@ export const addToCartApi = createAsyncThunk(
       };
 
       const response = await axios.request(config);
-      console.log(response.data?.error, 'response.data Virendra dfgmkdflgkdflg');
-      if(response.data?.data){
+      console.log(
+        response.data?.error,
+        'response.data Virendra dfgmkdflgkdflg',
+      );
+      if (response.data?.data) {
         Toast.show(response?.data?.data?.msg);
         return;
-      }else if(response.data?.error){
+      } else if (response.data?.error) {
         Toast.show(response?.data?.message);
-
-      }
-      else{
+      } else {
         Toast.show('something went wrong');
       }
-    //   if(response.data?.error){
-    //     
-    //   }else{
-    //   if (response?.data?.data?.status == 200) {
-    //     Toast.show(response?.data?.data?.msg);
-    //   } else {
-    //     Toast.show(response?.data?.msg);
-    //   }
-    // }
+      //   if(response.data?.error){
+      //
+      //   }else{
+      //   if (response?.data?.data?.status == 200) {
+      //     Toast.show(response?.data?.data?.msg);
+      //   } else {
+      //     Toast.show(response?.data?.msg);
+      //   }
+      // }
     } catch (error) {
       console.log('cart error ', error);
       Toast.show('something went wrong');
@@ -130,7 +131,7 @@ export const updateCartApi = createAsyncThunk(
         if (!fromCartScreen) {
           Toast.show(
             `This item is already in your cart, we have increased the quantity by ${currentQty}`,
-            Toast.LONG
+            Toast.LONG,
           );
         }
       }
@@ -192,59 +193,23 @@ const cartSlice = createSlice({
     clearcartdata: (state, action) => {
       state.CartData = [];
       state.cartTotalQuantity = 0;
+      console.log(state.cartTotalQuantity, 'total quantity');
     },
-    // addToCart: (state, action) => {
-    //   const item = action.payload;
-    //   const qty = item.qty !== undefined ? item.qty : 1;
-
-    //   const existingItemIndex = state.localStorageCartData.findIndex(
-    //     cartItem => cartItem.id === item.id,
-    //   );
-
-    //   if (existingItemIndex !== -1) {
-    //     const existingItem = state.localStorageCartData[existingItemIndex];
-
-    //     if (existingItem.qty !== qty) {
-
-    //       state.localStorageCartData[existingItemIndex].qty = qty;
-    //       Toast.show(`Item quantity updated successfully!`);
-    //     } else {
-
-    //       Toast.show('Item is already added to cart!');
-    //     }
-    //   } else {
-    //     // If item doesn't exist, add it to the cart with qty 1
-    //     state.localStorageCartData.push({
-    //       ...item,
-    //       qty,
-    //       addedAt: new Date().toISOString(),
-    //     });
-    //     Toast.show('Item added to cart successfully');
-    //   }
-    //   AsyncStorage.setItem(
-    //     'cartItems',
-    //     JSON.stringify(state.localStorageCartData),
-    //   );
-    //   state.cartTotalQuantity = calculateTotalQuantity(
-    //     state.localStorageCartData,
-    //   );
-    // },
 
     addToCart: (state, action) => {
+      state.loading = true;
       const item = action.payload;
       const qty = item.qty !== undefined ? item.qty : 1;
-      console.log('qty ...fgfd',state.localStorageCartData)
-      
-     
+      console.log('qty ...fgfd', state.localStorageCartData);
+
       const existingItemIndex = state.localStorageCartData.findIndex(
-         cartItem =>cartItem.productId == item.productId,
-          // cartItem.id=item.id
-           
+        cartItem => cartItem.productId == item.productId,
+        // cartItem.id=item.id
+
         // console.log('qty ...fgfd.',cartItem)
       );
-      console.log('qty ...fgfd.g.g',qty,existingItemIndex);
+      console.log('qty ...fgfd.g.g', qty, existingItemIndex);
       if (existingItemIndex !== -1) {
-
         state.localStorageCartData[existingItemIndex].qty += qty;
 
         Toast.show(
@@ -267,6 +232,7 @@ const cartSlice = createSlice({
       state.cartTotalQuantity = calculateTotalQuantity(
         state.localStorageCartData,
       );
+      state.loading = false;
     },
 
     removeFromCart: (state, action) => {
@@ -302,8 +268,10 @@ const cartSlice = createSlice({
 
         if (operation === 'increase') {
           item.qty += 1;
+          Toast.show('Item quantity updated successfully!');
         } else if (operation === 'decrease' && item.qty > 1) {
           item.qty -= 1;
+          Toast.show('Item quantity updated successfully!');
         } else {
           Toast.show('Item quantity cannot be less than 1!');
         }
@@ -316,8 +284,6 @@ const cartSlice = createSlice({
         state.cartTotalQuantity = calculateTotalQuantity(
           state.localStorageCartData,
         );
-
-        Toast.show('Item quantity updated successfully!');
       }
     },
   },

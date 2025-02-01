@@ -12,6 +12,7 @@ export default StyleSheet.create({
   header: {
     flexDirection: 'row',
     height: wp(28),
+    // height:  screenWidth >= 750 ? wp(38) : wp(28),
     width: '100%',
     backgroundColor: '#FBF5F2',
     borderBottomLeftRadius: 30,
@@ -70,7 +71,8 @@ export default StyleSheet.create({
     paddingBottom: '15%',
   },
   profileSection: {
-    marginTop: 60,
+    // marginTop: 60,
+    marginTop: wp(17),
     gap: wp(0.5),
     alignItems: 'center',
   },
@@ -79,7 +81,8 @@ export default StyleSheet.create({
     width: wp(26),
     height: wp(26),
     borderRadius: wp(15),
-    top: screenWidth >= 750 ? -wp(22) : -wp(28),
+    // top: screenWidth >= 750 ? -wp(22) : -wp(28),
+    top:  -wp(30),
     shadowColor: "#1A1A1A",
     shadowOffset: {width: 0, height: 6},
     shadowOpacity: 0.8,

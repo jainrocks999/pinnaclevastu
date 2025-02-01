@@ -101,7 +101,7 @@
 //           <Image source={require('../../../assets/image/Group.png')} />
 //         </TouchableOpacity>
 //       </View>
-// {/* {isLoading?<Loader/>:null} */}
+// {/ {isLoading?<Loader/>:null} /}
 //       <ScrollView contentContainerStyle={styles.scroll}>
 //         <View style={styles.searchContainer}>
 //           <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -190,12 +190,13 @@ import Imagepath from '../../../Component/Imagepath';
 import {widthPrecent} from '../../../Component/ResponsiveScreen/responsive';
 import AutoHeightImage from 'react-native-auto-height-image';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import style from '../HomeScreen/style';
 
 const OtherCourses = ({navigation}) => {
   const [isLiveCourse, setIsLiveCourse] = useState(true);
   const [userType, setUserType] = useState('');
-  const placeholderText = "Search"; 
-  const [displayedText, setDisplayedText] = useState(''); 
+  const placeholderText = 'Search';
+  const [displayedText, setDisplayedText] = useState('');
   const Live_cource = useSelector(state => state?.home?.Cource);
   const isLoading = useSelector(state => state.home?.loading);
   const cartTotalQuantity = useSelector(
@@ -209,41 +210,36 @@ const OtherCourses = ({navigation}) => {
         url: 'fetch-courses-details',
         course_id: item?.id,
         navigation,
-        isLiveCourse
+        isLiveCourse,
       }),
     );
   };
 
-
   useEffect(() => {
     let currentIndex = 0;
-  
+
     const startAnimation = () => {
       const intervalId = setInterval(() => {
         if (currentIndex < placeholderText.length) {
-          
-          setDisplayedText(placeholderText.slice(0, currentIndex + 1)); 
+          setDisplayedText(placeholderText.slice(0, currentIndex + 1));
           currentIndex++;
         } else {
-          
-          currentIndex = 0; 
-          setDisplayedText(''); 
+          currentIndex = 0;
+          setDisplayedText('');
         }
-      }, 450); 
-  
+      }, 450);
+
       return intervalId;
     };
-  
+
     const intervalId = startAnimation();
-  
-    return () => clearInterval(intervalId); 
+
+    return () => clearInterval(intervalId);
   }, [placeholderText]);
 
   useEffect(() => {
-   
-      apicall();
-      getUserType();
-  
+    apicall();
+    getUserType();
   }, []);
 
   const getUserType = async () => {
@@ -269,67 +265,52 @@ const OtherCourses = ({navigation}) => {
     {id: 4, image: require('../../../assets/otherApp/courseCard2.png')},
   ];
 
-
   const [imageHeights, setImageHeights] = useState({}); // Store dynamic heights
 
   // const IMAGE_WIDTH = width * 0.9;
 
-
   const handleImageLoad = (event, id) => {
-    const { width: imgWidth, height: imgHeight } = event.nativeEvent.source;
-    const calculatedHeight = (widthPrecent(45) * imgHeight) / imgWidth; 
-    setImageHeights((prev) => ({ ...prev, [id]: calculatedHeight }));
+    const {width: imgWidth, height: imgHeight} = event.nativeEvent.source;
+    const calculatedHeight = (widthPrecent(45) * imgHeight) / imgWidth;
+    setImageHeights(prev => ({...prev, [id]: calculatedHeight}));
   };
 
   const renderCard = ({item}) => {
     return (
       <View style={styles.card}>
         <TouchableOpacity onPress={() => CouseDetail1(item)} style={{flex: 1}}>
-
-
- <Image
-               source={
-                item?.image == null
-                  ? require('../../../assets/image/Remedies/Image-not.png')
-                  : {uri: `${Imagepath.Path}${item?.image}`}
-              }
-              width={widthPrecent(45)}
-             
-
-
-              style={[
-                styles.cardImg,
-                { height: imageHeights[item.id]||widthPrecent(isLiveCourse ? 45 : 25)}, // Default height before calculation
-              ]}
-              onLoad={(e) => handleImageLoad(e, item.id)}
-              resizeMode="cover" // Change to 'cover' for no extra space
-            />
-
-
-          {/* <AutoHeightImage
+          <Image
             source={
               item?.image == null
                 ? require('../../../assets/image/Remedies/Image-not.png')
                 : {uri: `${Imagepath.Path}${item?.image}`}
             }
             width={widthPrecent(45)}
-            style={styles.cardImg}
-          /> */}
+            style={[
+              styles.cardImg,
+              {
+                height:
+                  imageHeights[item.id] || widthPrecent(isLiveCourse ? 45 : 25),
+              },
+            ]}
+            onLoad={e => handleImageLoad(e, item.id)}
+            resizeMode="cover"
+          />
+
           <View style={styles.cardInfo}>
-            { !isLiveCourse ?null:
-            <Text style={styles.DateText}>{item?.start_date}</Text>}
+            {!isLiveCourse ? null : (
+              <Text style={styles.DateText}>{item?.start_date}</Text>
+            )}
             <Text style={styles.titleText}>{item?.title}</Text>
-            <Text style={styles.regularText}>
+            <Text style={[styles.regularText,styles.shortDescription]}>
               {item?.short_description
                 ? item?.short_description.length > 45
                   ? `${item?.short_description.substring(0, 45)}...`
                   : item?.short_description
                 : ''}
             </Text>
-            {/* <Text style={styles.price}>{`₹ ${item?.price}`}</Text> */}
-            <View style={{flexDirection:"row",gap:10}}>
-            
-
+            {/*  <Text style={styles.price}>{`₹ ${item?.price}`}</Text> */}
+            <View style={{flexDirection: 'row', gap: 10}}>
               <Text style={[styles.price]}>
                 {`₹ ${
                   userType === 'customers' && item?.sale_price
@@ -349,15 +330,18 @@ const OtherCourses = ({navigation}) => {
                 item?.student_price ||
                 item?.franchise_price) ? (
                 <Text
-                  style={[styles.price, {textDecorationLine: 'line-through',color:"gray"}]}>
+                  style={[
+                    styles.price,
+                    {textDecorationLine: 'line-through', color: 'gray'},
+                  ]}>
                   ₹ {item?.price}
                 </Text>
               ) : null}
             </View>
 
-            {/* <TouchableOpacity onPress={() => CouseDetail1(item)}> */}
+             <TouchableOpacity onPress={() => CouseDetail1(item)}> 
             <Text style={styles.cardBtn}>View Details</Text>
-            {/* </TouchableOpacity> */}
+            </TouchableOpacity>
           </View>
         </TouchableOpacity>
       </View>
@@ -376,7 +360,7 @@ const OtherCourses = ({navigation}) => {
           onPress={() => navigation.navigate('Home', {screen: 'MyCart'})}
           hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
           style={styles.bagIcon}>
-           {cartTotalQuantity > 0 && (
+          {cartTotalQuantity > 0 && (
             <View style={styles.itemCount}>
               <Text style={styles.countText}>{cartTotalQuantity}</Text>
             </View>
@@ -384,7 +368,7 @@ const OtherCourses = ({navigation}) => {
           <Image source={require('../../../assets/image/Group.png')} />
         </TouchableOpacity>
       </View>
-      {/* {isLoading ? <Loader /> : null} */}
+      {/*  {isLoading ? <Loader /> : null} */}
       <ScrollView contentContainerStyle={styles.scroll}>
         <View style={styles.searchContainer}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -394,10 +378,10 @@ const OtherCourses = ({navigation}) => {
             </TouchableOpacity>
 
             <TextInput
-                    style={styles.searchInput}
-                    placeholder={displayedText} 
-                    placeholderTextColor={colors.searchBarTextColor}
-                  />
+              style={styles.searchInput}
+              placeholder={displayedText}
+              placeholderTextColor={colors.searchBarTextColor}
+            />
           </View>
           <TouchableOpacity
             style={styles.filterBtn}
