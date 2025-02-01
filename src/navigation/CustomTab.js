@@ -148,7 +148,7 @@ const TabBar = ({state, descriptors, navigation}) => {
               borderTopWidth: widthPrecent(0.6),
               borderColor: '#FFFFFF',
               position: 'absolute',
-              height: widthPrecent(15),
+              height: "100%",
               // bottom: 0,
               // top:-5,
               width: buttonWidth,
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   tab: {
-    height: 60,
+    height: '100%',
     width: '100%',
     alignItems: 'center',
     justifyContent: 'space-between',
