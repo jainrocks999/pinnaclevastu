@@ -37,9 +37,9 @@ export const checkout = async (product, navigation) => {
 
     const jsonResponse = await response.json();
    
-
+    console.log("Shopify Response:", jsonResponse?.data?.cartCreate?.cart);
     const checkoutUrl = jsonResponse?.data?.cartCreate?.cart?.checkoutUrl;
-    console.log("Shopify Response:", checkoutUrl);
+   
     if (checkoutUrl) {
 
 

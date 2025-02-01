@@ -90,12 +90,12 @@ const Drawer = props => {
 
   const renderItem = ({item}) => (
     <TouchableOpacity
-      style={styles.listRow}
-      // style={true ? styles.specialListRow : styles.listRow}
-      // onPress={item.onPress ? item.onPress : null}
-      onPress={() => {
-        navigation.navigate('Home', {
-          screen: 'Home1',
+    style={styles.listRow}
+    // style={true ? styles.specialListRow : styles.listRow}
+    // onPress={item.onPress ? item.onPress : null}
+    onPress={() => {
+      navigation.navigate('Home', {
+        screen: 'Home1',
           params: {
             screen: 'Consultancy',
             params: {

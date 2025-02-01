@@ -41,7 +41,6 @@ import AnimatedLine from '../../../Component/progressbar';
 const RemediesProductDetail = ({route}) => {
   const item = route?.params?.data;
 
-
   const navigation = useNavigation();
   const {width} = Dimensions.get('window');
   const Detail1 = useSelector(state => state?.Product?.productDetails);
@@ -54,8 +53,8 @@ const RemediesProductDetail = ({route}) => {
   const cartTotalQuantity = useSelector(
     state => state?.cart?.cartTotalQuantity,
   );
-  const isLoading=useSelector(state => state.Product?.isLoading);
- 
+  const isLoading = useSelector(state => state.Product?.isLoading);
+
   const [quantity, setQuantity] = useState(1);
   const [userType, setUserType] = useState(null);
   const [isInCart, setIsInCart] = useState(false);
@@ -74,18 +73,17 @@ const RemediesProductDetail = ({route}) => {
     PRoductDeta();
     const backAction = () => {
       navigation.goBack();
-      return true; 
+      return true;
     };
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
-      backAction
-    ); 
+      backAction,
+    );
     return () => backHandler.remove();
   }, [navigation]);
-  
-  console.log('jkfdgdgdkj',item);
+
+  console.log('jkfdgdgdkj', item);
   const PRoductDeta = async () => {
-   
     await dispatch(
       productDetail1({
         url: 'fetch-single-product',
@@ -211,7 +209,6 @@ const RemediesProductDetail = ({route}) => {
       setQuantity(quantity + 1);
     }
   };
-  
 
   const decrement = () => {
     if (quantity > 1) {
@@ -227,7 +224,6 @@ const RemediesProductDetail = ({route}) => {
       setQuantity(quantity - 1);
     }
   };
-
 
   const handleGoToCartAnimation = () => {
     if (isInCart) {
@@ -255,7 +251,6 @@ const RemediesProductDetail = ({route}) => {
       }).start(() => {
         // Add product to the cart in the background
         Addtocart(prod, {qty: quantity});
-      
 
         // Complete the flip animation back to 0 degrees
         Animated.timing(animation, {
@@ -270,71 +265,71 @@ const RemediesProductDetail = ({route}) => {
   };
 
   const Addtocart = async (item, {qty}) => {
-   console.log('product iddd',item);
-   
+    console.log('product iddd', item);
+
     if (item?.variants?.length != 0) {
       const image = item?.images[0]?.src;
       let product = {...item};
-     
-      
+
       product.selectedVarient = product?.variants?.[0];
-      console.log('klgnkjg',product?.variants?.[0]?.compare_at_price,product?.variants?.[0]?.price  ,qty    );
+      console.log(
+        'klgnkjg',
+        product?.variants?.[0]?.compare_at_price,
+        product?.variants?.[0]?.price,
+        qty,
+      );
       let productTemp = {
         ...product,
         image,
-        qty:qty,
+        qty: qty,
         productId: product?.id,
-        compareAtPrice :product?.variants?.[0]?.compare_at_price,
-        price:product?.variants?.[0]?.price,
+        compareAtPrice: product?.variants?.[0]?.compare_at_price,
+        price: product?.variants?.[0]?.price,
         id: isNaN(product?.selectedVarient.id)
           ? await product?.selectedVarient.id
           : product?.selectedVarient.id,
-      
+
         properties: {},
       };
-      console.log('hfghkjghfdkg',productTemp);
+      console.log('hfghkjghfdkg', productTemp);
       if (productTemp?.availableForSale) {
-        console.log('hfghkjghfdkg',productTemp);
-        
+        console.log('hfghkjghfdkg', productTemp);
+
         dispatch(addToCart(productTemp));
       }
     }
- 
-
-
 
     // try {
-    
+
     //     const itemWithQty = {
     //       ...item,
     //       qty: quantity,
     //     };
 
     //     console.log('producut  detail addd to cart ',itemWithQty);
-        
+
     //     dispatch(addToCart(itemWithQty));
     //     setIsInCart(true);
-     
+
     // } catch (error) {
     //   console.error('Error adding item to cart:', error);
     // }
   };
 
   const share = async () => {
-console.log('dtagghfjdfgdh',Detail1?.handle);
+    console.log('dtagghfjdfgdh', Detail1?.handle);
 
     const productUrl = `https://pinnaclevastu-in/products/${Detail1.handle}`; // Product URL to share
     const productDescription = `Check out this amazing product!`;
     try {
       await SocialShare.share({
-        title: Detail1.title, 
-        message: `${productDescription} ${productUrl}`, 
+        title: Detail1.title,
+        message: `${productDescription} ${productUrl}`,
       });
     } catch (error) {
       console.error("Couldn't share to Instagram", error);
     }
   };
-
 
   const AddExtraItemInCart = async checkedItems => {
     Animated.sequence([
@@ -524,7 +519,7 @@ console.log('dtagghfjdfgdh',Detail1?.handle);
           }
           style={styles.productImage}
         />
-        <Text style={[styles.productName, {}]}>{item.name}</Text>
+        <Text style={[styles.productName]}>{item.name}</Text>
         <Text style={[styles.productName]}>₹ {item.price}</Text>
         <View
           style={[
@@ -660,8 +655,11 @@ console.log('dtagghfjdfgdh',Detail1?.handle);
       </Collapsible>
     </View>
   );
-
-  if (!Detail1) {
+  {
+    console.log(Detail1, 'detail of products');
+  }
+  if (isLoading) {
+    console
     return (
       <View>
         <View style={styles.headerdouble}>
@@ -756,7 +754,7 @@ console.log('dtagghfjdfgdh',Detail1?.handle);
                       startingValue={averageRating}
                       ratingColor="#52B1E9"
                       readonly
-                      ratingBackgroundColor={colors.lightGrey} 
+                      ratingBackgroundColor={colors.lightGrey}
                     />
                   </View>
 
@@ -821,8 +819,7 @@ console.log('dtagghfjdfgdh',Detail1?.handle);
               />
             </TouchableOpacity>
           </View>
-        
-          
+
           <View>
             <Text style={styles.cont}>{Detail1?.description}</Text>
 
@@ -837,12 +834,10 @@ console.log('dtagghfjdfgdh',Detail1?.handle);
                 {`₹ ${Detail1?.variants?.[0]?.price}`}
               </Text>
 
-              
-                <Text
-                  style={[styles.third1, {textDecorationLine: 'line-through'}]}>
-                  ₹ {Detail1?.variants?.[0]?.price}
-                </Text>
-             
+              <Text
+                style={[styles.third1, {textDecorationLine: 'line-through'}]}>
+                ₹ {Detail1?.variants?.[0]?.price}
+              </Text>
             </View>
             <View
               style={[
@@ -888,7 +883,7 @@ console.log('dtagghfjdfgdh',Detail1?.handle);
               ]}>
               <TouchableOpacity
                 onPress={() => {
-                  if (isInCart) {                   
+                  if (isInCart) {
                     handleGoToCartAnimation(); // Navigate to the cart
                   } else {
                     handleAddToCart(Detail1); // Add to cart and update state
@@ -1079,10 +1074,7 @@ const dummyDatas = [
     id: '1',
 
     title: 'Description',
-    subItems: [
-      {title: '●', subtitle: '1 inch wide and 8 Feet Long.'},
-      
-    ],
+    subItems: [{title: '●', subtitle: '1 inch wide and 8 Feet Long.'}],
   },
   {
     id: '2',
@@ -1095,8 +1087,6 @@ const dummyDatas = [
         subtitle:
           'Metal Strip Tehnique is used to remove faults in a building and correct the elemental disbalance in a space.',
       },
-
-     
     ],
   },
   {

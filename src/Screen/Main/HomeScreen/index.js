@@ -18,7 +18,7 @@ import BannerSlider from '../../../Component/Banner';
 
 import {Rating} from 'react-native-ratings';
 import {
-  heightPercent,
+  heightPercent as hp,
   widthPrecent as wp,
 } from '../../../Component/ResponsiveScreen/responsive';
 import ImageSlider from '../../../Component/myBanner';
@@ -73,6 +73,8 @@ const HomeScreen = () => {
   const cartTotalQuantity = useSelector(
     state => state?.cart?.cartTotalQuantity,
   );
+
+  const [imageHeights, setImageHeights] = useState({});
 
   const newArray = [];
   (Homebanner?.home_slider?.[0]?.slider_items || []).forEach(item => {
@@ -157,15 +159,24 @@ const HomeScreen = () => {
       const userType = userData?.user_type;
       setUserType(userType);
       if (userType) {
-        await dispatch(
-          getAddress({
-            user_id: userData.user_id,
-            token: userData.token,
+        if (userDetail.length === 0) {
+          await dispatch(
+            getUserDetailApi({
+              token: userData.token,
+              url: `profile-list?user_id=${userData.user_id}`,
+            }),
+          );
+        }
 
-            url: 'fetch-customer-address',
-            // navigation,
-          }),
-        );
+        // await dispatch(
+        //   getAddress({
+        //     user_id: userData.user_id,
+        //     token: userData.token,
+
+        //     url: 'fetch-customer-address',
+        //     // navigation,
+        //   }),
+        // );
         // console.log(cartDataList.length)
         // console.log(localCartDataList.length)
         // if (cartDataList.length === 0) {
@@ -197,14 +208,6 @@ const HomeScreen = () => {
         //     }),
         //   );
         // }
-        if (userDetail.length === 0) {
-          await dispatch(
-            getUserDetailApi({
-              token: userData.token,
-              url: `profile-list?user_id=${userData.user_id}`,
-            }),
-          );
-        }
       }
     } catch (error) {
       console.error('Error syncing cart and address data:', error);
@@ -248,6 +251,12 @@ const HomeScreen = () => {
         },
       });
     });
+  };
+
+  const handleImageLoad = (event, id, defaultHeight) => {
+    const {width: imgWidth, height: imgHeight} = event.nativeEvent.source;
+    const calculatedHeight = (defaultHeight * imgHeight) / imgWidth;
+    setImageHeights(prev => ({...prev, [id]: calculatedHeight}));
   };
 
   const renderItem = ({item, index}) => {
@@ -330,7 +339,6 @@ const HomeScreen = () => {
           />
           <Text style={styles.text1}>{item.name}</Text>
         </ImageBackground>
-        {/* </LinearGradient> */}
       </TouchableOpacity>
     );
   };
@@ -442,7 +450,6 @@ const HomeScreen = () => {
   };
 
   const renderItem5 = ({item, index}) => {
-    // {console.log(item,"sandeep")}
     return (
       <TouchableOpacity style={[styles.card, styles.prodCard]}>
         <View style={styles.imgContainer}>
@@ -516,15 +523,32 @@ const HomeScreen = () => {
       <TouchableOpacity
         onPress={() => CouseDetail1(item)}
         style={[styles.card, {margin: 0, marginLeft: 15}]}>
-        <AutoHeightImage
+        {/* <AutoHeightImage
           source={
             item.image == null
               ? require('../../../assets/otherApp/courseCard1.png')
               : {uri: `${Imagepath.Path}${item?.image}`}
           }
           width={wp(65)}
-          style={styles.cardImg}
+          // style={styles.cardImg}
+        /> */}
+        <Image
+          source={
+            item.image == null
+              ? require('../../../assets/otherApp/courseCard1.png')
+              : {uri: `${Imagepath.Path}${item?.image}`}
+          }
+          width={wp(65)}
+          style={[
+            // styles.cardImg,
+            {
+              height: imageHeights[item.id] || wp(isLiveCourse ? 65 : 38),
+            },
+          ]}
+          onLoad={e => handleImageLoad(e, item.id, wp(65))}
+          resizeMode="cover"
         />
+
         <View style={styles.cardInfo}>
           {isLiveCourse ? (
             <Text style={styles.DateText}>{item?.start_date}</Text>
@@ -677,18 +701,17 @@ const HomeScreen = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContainer}
         />
-        {imagesilder11.length != 0 ? (
+        {/* {imagesilder11.length != 0 ? (
+          <ImageSlider
+            data={imagesilder11}
+            onPress={
+              (item, index) => console.log('hh', index, item)
 
-            <ImageSlider
-              data={imagesilder11}
-              onPress={
-                (item, index) => console.log('hh', index, item)
-
-                // alert('Item Pressed', `Item: ${JSON.stringify(item)}, Index: ${index}`)
-                // navigation.navigate('UserProfile')
-              }
-            />
-        ) : null}
+              // alert('Item Pressed', `Item: ${JSON.stringify(item)}, Index: ${index}`)
+              // navigation.navigate('UserProfile')
+            }
+          />
+        ) : null} */}
 
         <View style={[styles.contain, {marginTop: wp(2)}]}>
           <Text style={styles.service}>Premium Services</Text>
@@ -837,7 +860,7 @@ const HomeScreen = () => {
                 {
                   paddingHorizontal: 15,
                   color: '#fff',
-                  marginTop: heightPercent(19),
+                  marginTop: hp(19),
                 },
               ]}>
               How it works
@@ -953,7 +976,6 @@ const HomeScreen = () => {
               onPress={() =>
                 navigation.navigate('Home1', {
                   screen: 'Consultancy',
-                 
                 })
               }
               hitSlop={{top: 10, bottom: 10, left: 10, right: 10}} // Touch area increase
@@ -1007,8 +1029,8 @@ const HomeScreen = () => {
             honesty, and reliability.
           </Text>
           <View style={styles.cirleContainer}>
-            {data.map(item => (
-              <View
+            {data.map((item,index) => (
+              <View key={index}
                 style={{alignItems: 'center', width: '25%', borderWidth: 0}}>
                 <View style={styles.cirleItem}>
                   <Text style={styles.cirle}>{item.title}</Text>
@@ -1024,10 +1046,10 @@ const HomeScreen = () => {
               borderRadius: 15,
               overflow: 'hidden',
               marginBottom: 10,
+              // borderWidth:1
             }}>
-            <AutoHeightImage
-              width={wp(93)}
-              // style={{borderRadius: 15}}
+            <Image
+              style={styles.bannerImg2}
               // source={require('../../../assets/image/Sc.png')}
               source={require('../../../assets/otherApp/coreValuesBanner.png')}
             />
@@ -1109,7 +1131,7 @@ const HomeScreen = () => {
             />
 
             {/* Pagination Dots */}
-            <View style={[styles.dotContainer,{marginVertical:20}]}>
+            <View style={[styles.dotContainer, {marginVertical: 20}]}>
               {data5.map((item, index) => (
                 <TouchableOpacity
                   key={index}
@@ -1139,7 +1161,7 @@ const HomeScreen = () => {
           style={[styles.formContainer, {marginBottom: 0, marginTop: -50}]}>
           <Text style={[styles.service1, styles.smallHeadText]}>Cost</Text>
           <Text style={[styles.extraBoldText, {marginBottom: 20}]}>
-           Calculator
+            Calculator
           </Text>
           <View style={styles.textInputContainer}>
             <TextInput
@@ -1290,8 +1312,8 @@ const HomeScreen = () => {
           </TouchableOpacity>
 
           <View style={styles.cirleContainer}>
-            {data1.map(item => (
-              <View
+            {data1.map((item,index) => (
+              <View key={index}
                 style={{alignItems: 'center', width: '25%', borderWidth: 0}}>
                 <View style={styles.cirleItem}>
                   <Text style={styles.cirle}>{item.title}</Text>
@@ -1302,9 +1324,14 @@ const HomeScreen = () => {
           </View>
 
           <View style={{marginTop: 25}}>
-            <AutoHeightImage
+            {/* <AutoHeightImage
               width={wp(95)}
               style={{borderRadius: 15}}
+              source={require('../../../assets/otherApp/demo3.png')}
+            /> */}
+            <Image
+              // width={wp(95)}
+              style={[styles.bannerImg2, {borderRadius: 15}]}
               source={require('../../../assets/otherApp/demo3.png')}
             />
             <Text style={[styles.costCalBannerText, {bottom: 20}]}>
@@ -1344,10 +1371,21 @@ const HomeScreen = () => {
             }}
             renderItem={({item}) => (
               <TouchableOpacity style={styles.blogCard}>
-                <AutoHeightImage
+                {/* <AutoHeightImage
                   source={require('../../../assets/image/Scr2.png')}
                   width={wp(80)}
                   style={{borderTopLeftRadius: 10, borderTopRightRadius: 10}}
+                /> */}
+                <Image
+                  source={require('../../../assets/image/Scr2.png')}
+                  style={{
+                    borderTopLeftRadius: 10,
+                    borderTopRightRadius: 10,
+                    width: wp(80),
+                    height:hp(30),
+                    // borderWidth:1,
+                    // resizeMode:"contain"
+                  }}
                 />
                 <View style={styles.cardInfo}>
                   {isLiveCourse ? (

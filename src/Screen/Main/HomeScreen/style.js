@@ -63,7 +63,7 @@ export default StyleSheet.create({
 
   listContainer: {
     justifyContent: 'center',
-    marginBottom: 25,
+    marginBottom: 20,
     marginHorizontal: 5,
   },
 
@@ -89,7 +89,7 @@ export default StyleSheet.create({
   cardContainer: {
     height: wp(22),
     width: wp(30),
-    margin: 5,
+    margin: wp(1.2),
     backgroundColor: colors.white,
     borderRadius: 15,
     alignItems: 'center',
@@ -104,7 +104,8 @@ export default StyleSheet.create({
   smallCardContainer: {
     height: wp(23),
     width: wp(30),
-    margin: 5,
+    // margin: 5,
+    margin: wp(1.2),
     backgroundColor: '#FFF1CC',
     borderRadius: 15,
     alignItems: 'center',
@@ -133,7 +134,7 @@ export default StyleSheet.create({
   },
   cardContainer2: {
     width: wp(90),
-    minHeight:wp(35),
+    minHeight: wp(35),
     backgroundColor: colors.white,
     padding: 6,
     borderRadius: 10,
@@ -149,7 +150,7 @@ export default StyleSheet.create({
   },
   cardContainer3: {
     borderRadius: 10,
-    borderColor:colors.grey,
+    borderColor: colors.grey,
     borderWidth: 0.5,
     margin: 5,
     overflow: 'hidden',
@@ -555,7 +556,7 @@ export default StyleSheet.create({
     marginBottom: -hp(25),
   },
   textInputContainer: {
-    height:wp(14),
+    height: wp(14),
     backgroundColor: colors.white,
     paddingHorizontal: 15,
     // paddingVertical: 5,
@@ -565,7 +566,7 @@ export default StyleSheet.create({
     marginBottom: 10,
   },
   textInput: {
-    marginVertical:'auto',
+    marginVertical: 'auto',
     fontSize: fontSize.Fourteen,
     color: colors.heading,
     fontFamily: 'Poppins-Regular',
@@ -633,7 +634,7 @@ export default StyleSheet.create({
     paddingTop: 8,
   },
   cirletext: {
-    marginTop:10,
+    marginTop: 10,
     fontSize: fontSize.Twelve,
     fontFamily: 'Poppins-Medium',
     color: '#001227',
@@ -764,5 +765,10 @@ export default StyleSheet.create({
     color: colors.orange,
     marginTop: 20,
     borderRadius: 6,
+  },
+  bannerImg2: {
+    width: '100%',
+    height: hp(50),
+    resizeMode: 'cover',
   },
 });

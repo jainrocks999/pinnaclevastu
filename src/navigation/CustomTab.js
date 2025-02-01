@@ -23,6 +23,7 @@ import Group1 from '../assets/svg/Group1.svg';
 import Icon1 from '../assets/svg/Icon1.svg';
 import Icons from '../assets/svg/Icon.svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { widthPrecent } from '../Component/ResponsiveScreen/responsive';
 
 const {width} = Dimensions.get('window');
 
@@ -144,13 +145,13 @@ const TabBar = ({state, descriptors, navigation}) => {
               // borderColor: '#FFFFFF',
 
               // backgroundColor: "rgba(173, 216, 230, 0.15)",
-              borderTopWidth: 3,
+              borderTopWidth: widthPrecent(0.6),
               borderColor: '#FFFFFF',
               position: 'absolute',
-              height: 55,
-              bottom: 0,
+              height: widthPrecent(15),
+              // bottom: 0,
+              // top:-5,
               width: buttonWidth,
-              top: -0.2,
               backgroundColor: 'rgba(173, 216, 230, 0.15)',
             },
           ]}
@@ -197,7 +198,7 @@ export default memo(TabBar);
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.orange,
-    height: 60,
+    height: widthPrecent(15),
     alignItems: 'center',
     justifyContent: 'space-around',
     borderTopLeftRadius: 10,
