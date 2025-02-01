@@ -65,7 +65,7 @@ const Address = ({route}) => {
         state: item?.item?.province,
       }));
     }
-  }, [item.data, item]);
+  }, [item?.item,item.data]);
 
   useEffect(() => {
     dispatch(getCountryStateList());

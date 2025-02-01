@@ -34,12 +34,6 @@ import Imagepath from '../../../Component/Imagepath';
 import LinearGradient from 'react-native-linear-gradient';
 import AutoHeightImage from 'react-native-auto-height-image';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {getAddress} from '../../../Redux/Slice/Addresslice';
-import {
-  addToCartApi,
-  clearLocalCartData,
-  getCartDataApi,
-} from '../../../Redux/Slice/CartSlice';
 import {getUserDetailApi} from '../../../Redux/Slice/Authslice';
 import {consultationDetail1} from '../../../Redux/Slice/ConsultancySlice';
 import {Dropdown} from 'react-native-element-dropdown';
@@ -157,15 +151,6 @@ const HomeScreen = () => {
       const userType = userData?.user_type;
       setUserType(userType);
       if (userType) {
-        await dispatch(
-          getAddress({
-            user_id: userData.user_id,
-            token: userData.token,
-
-            url: 'fetch-customer-address',
-            // navigation,
-          }),
-        );
         // console.log(cartDataList.length)
         // console.log(localCartDataList.length)
         // if (cartDataList.length === 0) {
@@ -684,8 +669,7 @@ const HomeScreen = () => {
               onPress={
                 (item, index) => console.log('hh', index, item)
 
-                // alert('Item Pressed', `Item: ${JSON.stringify(item)}, Index: ${index}`)
-                // navigation.navigate('UserProfile')
+               
               }
             />
         ) : null}
@@ -704,26 +688,19 @@ const HomeScreen = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContainer}
         />
-
         <View style={styles.contain2}>
           <View style={[styles.contain1, {marginBottom: 15}]}>
             <Text style={styles.service}>Best Products</Text>
             <TouchableOpacity
-              onPress={() =>
-                navigation.navigate('Home1', {
-                  screen: 'Remedie12',
-                  params: {screen: 'Remedies'},
-                })
-              }
               hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
               <Text style={styles.service1}>VIEW ALL</Text>
             </TouchableOpacity>
           </View>
           <FlatList
-            data={Homebanner?.remedies?.slice(0, 5)}
+            data={Homebanner?.remedies?.slice(0, 5) || []} // Ensure data is always an array
             renderItem={renderItem5}
-            keyExtractor={item => item.id}
-            horizontal
+            keyExtractor={item => item.id?.toString()} // Ensure key is string
+            horizontal={true}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={[
               styles.cardContainer0,
@@ -735,6 +712,7 @@ const HomeScreen = () => {
               setCurrentIndex(currentIndex);
             }}
           />
+
           <View style={[styles.dotContainer, {marginTop: -10}]}>
             {Homebanner?.remedies?.slice(0, 5).map((item, index) => (
               <TouchableOpacity
@@ -749,7 +727,6 @@ const HomeScreen = () => {
             ))}
           </View>
         </View>
-
         <View style={[styles.contain, {marginTop: 10}]}>
           <Text style={styles.service}>Courses</Text>
         </View>
@@ -953,7 +930,6 @@ const HomeScreen = () => {
               onPress={() =>
                 navigation.navigate('Home1', {
                   screen: 'Consultancy',
-                 
                 })
               }
               hitSlop={{top: 10, bottom: 10, left: 10, right: 10}} // Touch area increase
@@ -1007,8 +983,9 @@ const HomeScreen = () => {
             honesty, and reliability.
           </Text>
           <View style={styles.cirleContainer}>
-            {data.map(item => (
+            {data?.map((item, index) => (
               <View
+                key={item.id || index} 
                 style={{alignItems: 'center', width: '25%', borderWidth: 0}}>
                 <View style={styles.cirleItem}>
                   <Text style={styles.cirle}>{item.title}</Text>
@@ -1027,8 +1004,6 @@ const HomeScreen = () => {
             }}>
             <AutoHeightImage
               width={wp(93)}
-              // style={{borderRadius: 15}}
-              // source={require('../../../assets/image/Sc.png')}
               source={require('../../../assets/otherApp/coreValuesBanner.png')}
             />
             <LinearGradient
@@ -1071,7 +1046,7 @@ const HomeScreen = () => {
               renderItem={({item}) => (
                 <View style={styles.testimonalsCardWrapper}>
                   <View style={styles.testimonalsCard}>
-                    {/* Text Content */}
+                 
                     <Text style={styles.cardUserNameText}>
                       {'Krishnaveni Ji'}
                     </Text>
@@ -1084,7 +1059,7 @@ const HomeScreen = () => {
                         startingValue={2}
                         ratingColor="#F4C76C"
                         readonly
-                        ratingBackgroundColor={colors.lightGrey} // Unfilled star color
+                        ratingBackgroundColor={colors.lightGrey} 
                       />
                     </View>
                     <Text style={styles.testimonalsCardContant}>
@@ -1093,14 +1068,13 @@ const HomeScreen = () => {
                     </Text>
                   </View>
 
-                  {/* Image Wrapper */}
                   <View style={styles.CardProfileImage}>
                     <Image
                       source={require('../../../assets/image/Remedies/Image-not.png')}
                       style={{
                         width: '100%',
                         height: '100%',
-                        resizeMode: 'cover', // Ensures full image display
+                        resizeMode: 'cover',
                       }}
                     />
                   </View>
@@ -1108,7 +1082,7 @@ const HomeScreen = () => {
               )}
             />
 
-            {/* Pagination Dots */}
+           
             <View style={[styles.dotContainer,{marginVertical:20}]}>
               {data5.map((item, index) => (
                 <TouchableOpacity
@@ -1290,8 +1264,10 @@ const HomeScreen = () => {
           </TouchableOpacity>
 
           <View style={styles.cirleContainer}>
-            {data1.map(item => (
+
+          {data?.map((item, index) => (
               <View
+                key={item.id || index} 
                 style={{alignItems: 'center', width: '25%', borderWidth: 0}}>
                 <View style={styles.cirleItem}>
                   <Text style={styles.cirle}>{item.title}</Text>
@@ -1318,12 +1294,7 @@ const HomeScreen = () => {
           <View style={[styles.contain1, {marginBottom: 15}]}>
             <Text style={styles.service}>Latest Blogs</Text>
             <TouchableOpacity
-              // onPress={() =>
-              //   navigation.navigate('Home1', {
-              //     screen: 'Remedie12',
-              //     params: {screen: 'Remedies'},
-              //   })
-              // }
+             
               hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
               <Text style={styles.service1}>VIEW ALL</Text>
             </TouchableOpacity>
@@ -1362,7 +1333,7 @@ const HomeScreen = () => {
                     hassles can be dealing with Windows activation
                     notifications. It feels... like every time we turn around,
                   </Text>
-                  {/* <Text style={styles.price}>{`₹ ${item?.price}`}</Text> */}
+               
 
                   <Text style={styles.blogCardBtnText}>{'View Details >'}</Text>
                 </View>
@@ -1376,7 +1347,6 @@ const HomeScreen = () => {
             data={data5}
             renderItem={renderItem4}
             keyExtractor={item => item.id}
-            // numColumns={3}
             scrollEnabled={false}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.bottomCard}

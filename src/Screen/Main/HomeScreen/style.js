@@ -253,7 +253,6 @@ export default StyleSheet.create({
     // margin: 10,
     paddingRight: 10,
     flexDirection: 'row',
-    flexWrap: 'wrap',
     justifyContent: 'center',
     gap: 10,
   },

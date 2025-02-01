@@ -269,11 +269,44 @@ const OtherCourses = ({navigation}) => {
     {id: 4, image: require('../../../assets/otherApp/courseCard2.png')},
   ];
 
+
+  const [imageHeights, setImageHeights] = useState({}); // Store dynamic heights
+
+  // const IMAGE_WIDTH = width * 0.9;
+
+
+  const handleImageLoad = (event, id) => {
+    const { width: imgWidth, height: imgHeight } = event.nativeEvent.source;
+    const calculatedHeight = (widthPrecent(45) * imgHeight) / imgWidth; 
+    setImageHeights((prev) => ({ ...prev, [id]: calculatedHeight }));
+  };
+
   const renderCard = ({item}) => {
     return (
       <View style={styles.card}>
         <TouchableOpacity onPress={() => CouseDetail1(item)} style={{flex: 1}}>
-          <AutoHeightImage
+
+
+ <Image
+               source={
+                item?.image == null
+                  ? require('../../../assets/image/Remedies/Image-not.png')
+                  : {uri: `${Imagepath.Path}${item?.image}`}
+              }
+              width={widthPrecent(45)}
+             
+
+
+              style={[
+                styles.cardImg,
+                { height: imageHeights[item.id]||widthPrecent(isLiveCourse ? 45 : 25)}, // Default height before calculation
+              ]}
+              onLoad={(e) => handleImageLoad(e, item.id)}
+              resizeMode="cover" // Change to 'cover' for no extra space
+            />
+
+
+          {/* <AutoHeightImage
             source={
               item?.image == null
                 ? require('../../../assets/image/Remedies/Image-not.png')
@@ -281,7 +314,7 @@ const OtherCourses = ({navigation}) => {
             }
             width={widthPrecent(45)}
             style={styles.cardImg}
-          />
+          /> */}
           <View style={styles.cardInfo}>
             { !isLiveCourse ?null:
             <Text style={styles.DateText}>{item?.start_date}</Text>}

@@ -82,10 +82,6 @@ const RemediesProductDetail = ({route}) => {
     ); 
     return () => backHandler.remove();
   }, [navigation]);
-  
- 
- 
-
   const productDetaill = async item => {
     // await dispatch(
     //   productDetail1({
