@@ -32,7 +32,6 @@ import {useIsFocused, useNavigation} from '@react-navigation/native';
 import Loader from '../../../Component/Loader';
 import Imagepath from '../../../Component/Imagepath';
 import LinearGradient from 'react-native-linear-gradient';
-// import AutoHeightImage from 'react-native-auto-height-image';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getUserDetailApi} from '../../../Redux/Slice/Authslice';
 import {consultationDetail1} from '../../../Redux/Slice/ConsultancySlice';

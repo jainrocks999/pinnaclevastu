@@ -2,8 +2,6 @@ import axios from "axios";
 import { GraphQlAdminConfig, ProductMetafieldsQuery } from "../../common/queries";
 import { convertProductId } from "../../common/shopifyConverter";
 
-
-
 export const getProductMetafieldsApiCall = (product_id) => {
     try {
       return new Promise((resolve, reject) => {
