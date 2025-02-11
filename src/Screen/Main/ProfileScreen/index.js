@@ -501,8 +501,13 @@ const ResidentalScreen = ({navigation}) => {
               keyExtractor={item => item.id}
               //   numColumns={3}
               showsVerticalScrollIndicator={false}
+              contentContainerStyle={{
+                paddingBottom:15
+              }}
             />
-            <Text style={styles.seeall}>See all Reviews</Text>
+            {data?.reviews?.length >= 5 ? (
+              <Text style={styles.seeall}>See all Reviews</Text>
+            ) : null}
           </View>
         ) : null}
       </ScrollView>

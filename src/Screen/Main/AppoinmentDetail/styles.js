@@ -263,7 +263,7 @@ export default StyleSheet.create({
     fontSize: fontSize.Fifteen,
     fontFamily: 'Poppins-Regular',
     color: colors.orange,
-    marginVertical: hp(2),
+    marginVertical: hp(0.5),
     marginRight: 20,
     textAlign: 'right',
   },

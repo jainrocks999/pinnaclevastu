@@ -188,7 +188,6 @@ import Loader from '../../../Component/Loader';
 import {useIsFocused} from '@react-navigation/native';
 import Imagepath from '../../../Component/Imagepath';
 import {widthPrecent} from '../../../Component/ResponsiveScreen/responsive';
-import AutoHeightImage from 'react-native-auto-height-image';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import style from '../HomeScreen/style';
 
