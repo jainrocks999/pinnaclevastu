@@ -154,7 +154,7 @@ const RemediesProductList = ({route}) => {
     }
     // getProductMetafieldsApiCall(productId)
     const data = await getProductMetafieldsApiCall(id);
-    console.log('datata get by meta feild', id);
+    console.log('datata get by meta feild', id,data);
     navigation.navigate('ProductDetail', {data: item});
   };
 

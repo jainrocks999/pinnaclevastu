@@ -22,7 +22,11 @@ import { fetchCategory } from '../../../Redux/Slice/collectionSlice';
 
 const Remedies = ({navigation}) => {
   const Remediesproduct = useSelector(state => state.home?.Remedi?.data);
-  const category =useSelector(state =>state.collection?.CategoryList)
+   const category = useSelector(state =>
+    state.collection?.CategoryList?.filter(
+      item => item.title !== "Recorded Courses" && item.title !== "Live Course"
+    )
+  );
   const cartTotalQuantity = useSelector(
     state => state?.cart?.cartTotalQuantity,
   );

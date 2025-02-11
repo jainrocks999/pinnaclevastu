@@ -23,7 +23,7 @@ import Imagepath from '../../../Component/Imagepath';
 import {cancelorders, orderDetail} from '../../../Redux/Slice/orderSclice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {colors} from '../../../Component/colors';
-import AutoHeightImage from 'react-native-auto-height-image';
+// import AutoHeightImage from 'react-native-auto-height-image';
 
 const labels = [
   'Order Received',
