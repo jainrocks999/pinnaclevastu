@@ -52,7 +52,7 @@ export default StyleSheet.create({
 
   scrollview: {
     paddingBottom: 20,
-    paddingHorizontal: 15,
+    // paddingHorizontal: 15,
     paddingVertical: 5,
     marginTop: hp(2),
     // borderWidth:1
@@ -68,10 +68,10 @@ export default StyleSheet.create({
     backgroundColor: colors.white,
     borderRadius: 10,
     borderWidth: 1,
-   
     padding: 15,
     marginBottom: 10,
-    elevation: 3,
+    elevation: 10,
+    marginHorizontal:15
   },
   cardContentWrapper: {
     flexDirection: 'row',

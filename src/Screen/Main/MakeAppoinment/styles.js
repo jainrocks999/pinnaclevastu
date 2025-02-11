@@ -120,6 +120,11 @@ export default StyleSheet.create({
     fontFamily: 'Poppins-Regular',
     backgroundColor: colors.white,
     color: colors.heading,
+    elevation:10,
+    shadowColor: '#bdc3c7',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.2,
+    shadowRadius: 15,
   },
   input1: {
     //  height: wp(13),
@@ -179,6 +184,11 @@ export default StyleSheet.create({
     fontFamily: 'Poppins-Regular',
     backgroundColor: colors.white,
     color: colors.heading,
+    elevation:10,
+    shadowColor: '#bdc3c7',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.2,
+    shadowRadius: 15,
   },
 
   serviceSection: {

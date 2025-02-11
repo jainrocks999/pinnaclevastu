@@ -22,7 +22,6 @@ import {
 import WebView from 'react-native-webview';
 import axios from 'axios';
 import Loader from '../../../Component/Loader';
-const {width} = Dimensions.get('window');
 
 // const dummyDatas = [
 //   {
@@ -117,7 +116,8 @@ const CourceListDownload = ({navigation}) => {
     const startAnimation = () => {
       const intervalId = setInterval(() => {
         if (currentIndex < placeholderText.length) {
-          setDisplayedText(placeholderText.slice(0, currentIndex + 1));
+          setDisplayedText(prev => placeholderText.slice(0, currentIndex + 1)); 
+
           currentIndex++;
         } else {
           currentIndex = 0;
@@ -131,7 +131,7 @@ const CourceListDownload = ({navigation}) => {
     const intervalId = startAnimation();
 
     return () => clearInterval(intervalId);
-  }, [placeholderText]);
+  }, []);
 
   useEffect(() => {
     apicall();
@@ -188,7 +188,7 @@ const CourceListDownload = ({navigation}) => {
                 ? require('../../../assets/otherApp/fileIcon.png')
                 : null
             }
-            // Replace with your icon
+       
             style={styles.subItemIcon}
           />
         </TouchableOpacity>

@@ -25,7 +25,7 @@ import {
   productDetail1,
   RemediesCategory,
 } from '../../../Redux/Slice/HomeSlice';
-import { fetchCollection } from '../../../Redux/Slice/collectionSlice';
+import {fetchCollection} from '../../../Redux/Slice/collectionSlice';
 import {
   addToCart,
   addToCartApi,
@@ -37,18 +37,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-simple-toast';
 import axios from 'axios';
 import constants from '../../../Redux/constant/constants';
-import { fetchProduct, InitProduct } from '../../../Redux/Slice/productSlice';
-import { getProductMetafieldsApiCall } from '../../../Redux/Api';
+import {fetchProduct, InitProduct} from '../../../Redux/Slice/productSlice';
+import {getProductMetafieldsApiCall} from '../../../Redux/Api';
 
 const RemediesProductList = ({route}) => {
   const name1 = route?.params;
- 
+
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [userType, setUserType] = useState('');
   const RemediesCategor1 = useSelector(state => state.collection?.products);
- 
-  
+
   const RemediesCategor = useSelector(state => state.home?.RemeiesCat?.data);
   const cartDataList = useSelector(state => state?.cart?.CartData);
   const cartTotalQuantity = useSelector(
@@ -62,7 +61,7 @@ const RemediesProductList = ({route}) => {
   const [filteredDataSource, setFilteredDataSource] = useState([]);
   const [masterDataSource, setMasterDataSource] = useState([]);
   const win = Dimensions.get('window');
- 
+
   const placeholderText = 'Search';
   const [displayedText, setDisplayedText] = useState('');
 
@@ -72,7 +71,8 @@ const RemediesProductList = ({route}) => {
     const startAnimation = () => {
       const intervalId = setInterval(() => {
         if (currentIndex < placeholderText.length) {
-          setDisplayedText(placeholderText.slice(0, currentIndex + 1));
+          // setDisplayedText(placeholderText.slice(0, currentIndex + 1));
+          setDisplayedText(prev => placeholderText.slice(0, currentIndex + 1));
           currentIndex++;
         } else {
           currentIndex = 0;
@@ -86,17 +86,17 @@ const RemediesProductList = ({route}) => {
     const intervalId = startAnimation();
 
     return () => clearInterval(intervalId);
-  }, [placeholderText]);
+  }, []);
 
-useEffect(()=>{
-  RemediesProductcategory();
-},[])
+  useEffect(() => {
+    RemediesProductcategory();
+  }, []);
 
   // useEffect(() => {
   //   if (focus) {
   //     setMasterDataSource(RemediesCategor || []);
   //     setFilteredDataSource(RemediesCategor || []);
-  //     setSearch(''); 
+  //     setSearch('');
   //   }
   // }, [RemediesCategor]);
   const searchFilterFunction = text => {
@@ -124,7 +124,6 @@ useEffect(()=>{
   useEffect(() => {
     const getUserType = async () => {
       try {
-       
         // Get user data from AsyncStorage
         const userStatus = await AsyncStorage.getItem('user_data');
         const userData = userStatus ? JSON.parse(userStatus) : null;
@@ -137,20 +136,16 @@ useEffect(()=>{
     };
 
     getUserType();
-   
   }, []);
 
   const RemediesProductcategory = async () => {
     // console.log('virendra miahra category call api resposne ',name1?.item.id);
     await dispatch(fetchCollection(name1?.item.id));
- 
   };
-  const PRoductDeta = async (item,id) => {
-  
-console.log('itemem',id);
+  const PRoductDeta = async (item, id) => {
+    console.log('itemem', id);
 
     dispatch(clearRemeiesDetail1());
-
 
     if (Object.keys(item).length == 0) {
     } else {
@@ -158,64 +153,48 @@ console.log('itemem',id);
       dispatch(fetchProduct(id));
     }
     // getProductMetafieldsApiCall(productId)
-  const data = await getProductMetafieldsApiCall(id);
-  console.log('datata get by meta feild',id);
-   navigation.navigate('ProductDetail', {data: item});
+    const data = await getProductMetafieldsApiCall(id);
+    console.log('datata get by meta feild', id);
+    navigation.navigate('ProductDetail', {data: item});
   };
 
   const Addtocard = async item => {
     try {
+      if (item?.variants?.length != 0) {
+        const image = item.variants?.edges?.[0]?.node?.image?.src;
+        let product = {...item};
+        product.selectedVarient = item.variants?.edges?.[0];
+        let productTemp = {
+          ...product,
+          image,
+          qty: 1,
+          productId: product?.id,
+          compareAtPrice: item?.variants?.edges?.[0].node?.compareAtPrice,
+          price: item?.variants?.edges?.[0].node?.price.amount,
+          id: isNaN(product?.selectedVarient?.node?.id)
+            ? await product?.selectedVarient?.node?.id
+            : product?.selectedVarient?.node?.id,
 
+          properties: {},
+        };
+        console.log('before add to cart ', productTemp);
+        if (productTemp?.availableForSale) {
+          console.log('hfghkjghfdkg', product?.selectedVarient.id);
 
-  if (item?.variants?.length != 0) {
-      const image = item.variants?.edges?.[0]?.node?.image?.src;
-      let product = {...item};
-      product.selectedVarient = item.variants?.edges?.[0];
-      let productTemp = {
-        ...product,
-        image,
-        qty:1,
-        productId: product?.id,
-        compareAtPrice :item?.variants?.edges?.[0].node?.compareAtPrice,
-        price:item?.variants?.edges?.[0].node?.price.amount,
-        id: isNaN(product?.selectedVarient?.node?.id)
-          ? await product?.selectedVarient?.node?.id
-          : product?.selectedVarient?.node?.id,
-       
-        properties: {},
-      };
-      console.log('before add to cart ',productTemp);
-      if (productTemp?.availableForSale) {
-        console.log('hfghkjghfdkg',product?.selectedVarient.id);
-        
           dispatch(addToCart(productTemp));
+        }
       }
-    }
-
-
-
-
-
-
-
-
-
-
-        // dispatch(addToCart({...item,selectedVarient: item?.variants?.edges[0]?.node}));
-      
+      // dispatch(addToCart({...item,selectedVarient: item?.variants?.edges[0]?.node}));
     } catch (error) {
       console.error('Error adding item to cart:', error);
     }
   };
   const renderItem = ({item}) => (
-
- 
-    
     <View style={styles.slide}>
-      <TouchableOpacity onPress={() => PRoductDeta(item,item?.node?.id)}>
+      <TouchableOpacity onPress={() => PRoductDeta(item, item?.node?.id)}>
         <View style={styles.image}>
-        {/* {  console.log('item get the data ',item?.node?.variants?.edges?.[0]?.node?.image?.src)} */}
-          
+          {/* {  console.log('item get the data ',item?.node?.variants?.edges?.[0]?.node?.image?.src)} */}
+
           <Image
             source={
               item?.node?.variants?.edges?.[0]?.node?.image?.src
@@ -235,18 +214,15 @@ console.log('itemem',id);
           </Text>
           <View style={styles.priceText}>
             <Text style={[styles.third]}>
-              {`₹ ${
-                item?.node?.variants?.edges?.[0].node?.price.amount
-              }`}
+              {`₹ ${item?.node?.variants?.edges?.[0].node?.price.amount}`}
             </Text>
-            {item?.node?.variants?.edges?.[0].node?.compareAtPrice?
-            
+            {item?.node?.variants?.edges?.[0].node?.compareAtPrice ? (
               <Text
                 style={[styles.third, {textDecorationLine: 'line-through'}]}>
-                ₹ {item?.node?.variants?.edges?.[0].node?.compareAtPrice?.amount}
+                ₹{' '}
+                {item?.node?.variants?.edges?.[0].node?.compareAtPrice?.amount}
               </Text>
-:null}
-         
+            ) : null}
           </View>
 
           <View style={styles.direction}>

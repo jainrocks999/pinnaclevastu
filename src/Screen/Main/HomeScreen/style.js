@@ -40,7 +40,9 @@ export default StyleSheet.create({
     marginVertical: 15,
     backgroundColor: colors.ordercolor,
     borderRadius: 20,
-    elevation: 3,
+    // elevation: 3,
+    // shadowRadius: 20,
+    // shadowColor: '#bdc3c7',
     paddingHorizontal: 15,
   },
   searchInput: {
@@ -71,7 +73,8 @@ export default StyleSheet.create({
     backgroundColor: colors.white,
     borderRadius: 15,
     elevation: 3,
-    shadowColor: '#000', // Shadow for iOS
+    // shadowColor: '#000', // Shadow for iOS
+    shadowColor: '#bdc3c7',
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.2,
     shadowRadius: 5,
@@ -94,11 +97,11 @@ export default StyleSheet.create({
     borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 3, // Shadow for Android
-    shadowColor: '#000', // Shadow for iOS
+    elevation: 10, // Shadow for Android
+    shadowColor: '#bdc3c7',
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.2,
-    shadowRadius: 5,
+    shadowRadius: 15,
     padding: 4,
   },
   smallCardContainer: {
@@ -110,11 +113,11 @@ export default StyleSheet.create({
     borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 3,
-    shadowColor: '#000',
+    elevation: 10,
+    shadowColor: '#bdc3c7',
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.2,
-    shadowRadius: 5,
+    shadowRadius: 15,
     paddingHorizontal: 4,
   },
   itemContainer: {
@@ -666,7 +669,8 @@ export default StyleSheet.create({
     paddingVertical: wp(10),
     backgroundColor: '#fff',
     borderRadius: wp(5),
-    shadowColor: '#000',
+    // shadowColor: '#000',
+    shadowColor: '#bdc3c7',
     shadowOffset: {width: 0, height: 6},
     shadowOpacity: 0.2,
     shadowRadius: 6,
@@ -701,11 +705,15 @@ export default StyleSheet.create({
     position: 'absolute', // Makes the image float
     top: 0, // Places the image on top of the card
     alignSelf: 'center', // Centers the image horizontally with the card
-    shadowColor: '#000',
+    shadowColor: '#202020',
+    // shadowColor: '#bdc3c7',
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.3,
     shadowRadius: 5,
-    elevation: 5,
+    elevation: 30,
+    borderWidth:2,
+    borderColor:colors.white,
+    marginVertical:20
   },
   costCalBannerImg: {
     height: wp(80),

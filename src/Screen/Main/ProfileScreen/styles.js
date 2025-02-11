@@ -38,7 +38,7 @@ export default StyleSheet.create({
     marginVertical: 15,
     backgroundColor: '#fff',
     borderRadius: 10,
-    elevation: 3,
+    // elevation: 3,
     paddingHorizontal: 15,
   },
 
@@ -155,8 +155,9 @@ export default StyleSheet.create({
     backgroundColor: colors.white,
     borderRadius: 15,
     alignItems: 'center',
-    elevation: 3, // Shadow for Android
-    shadowColor: '#000', // Shadow for iOS
+    elevation: 10, // Shadow for Android
+    // shadowColor: '#000', // Shadow for iOS
+    shadowColor: '#bdc3c7',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 5,

@@ -129,7 +129,8 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginTop: hp(2),
-    elevation: 3,
+    // marginBottom:20,
+    elevation: 10,
     width: '100%',
     borderWidth: 0.5,
     borderColor: colors.lightGrey,
@@ -277,7 +278,7 @@ export default StyleSheet.create({
     // shadowOffset: { width: 0, height: wp(0.5) }, // Shadow offset with wp
     // shadowOpacity: 0.1,
     // shadowRadius: 10,
-    elevation: 1,
+    elevation: 10,
     margin: 5,
     overflow: 'hidden',
   },

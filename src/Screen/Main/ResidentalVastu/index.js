@@ -315,7 +315,8 @@ const ResidentalScreen = ({route}) => {
     const startAnimation = () => {
       const intervalId = setInterval(() => {
         if (currentIndex < placeholderText.length) {
-          setDisplayedText(placeholderText.slice(0, currentIndex + 1));
+          // setDisplayedText(placeholderText.slice(0, currentIndex + 1));
+          setDisplayedText(prev => placeholderText.slice(0, currentIndex + 1)); 
           currentIndex++;
         } else {
           currentIndex = 0;
@@ -329,7 +330,7 @@ const ResidentalScreen = ({route}) => {
     const intervalId = startAnimation();
 
     return () => clearInterval(intervalId);
-  }, [placeholderText]);
+  }, []);
 
   const slideText = direction => {
     const newIndex =

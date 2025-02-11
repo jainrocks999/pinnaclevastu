@@ -39,7 +39,8 @@ export default StyleSheet.create({
     marginHorizontal: 12,
     backgroundColor: colors.ordercolor,
     borderRadius: 20,
-    elevation: 3,
+    // shadowColor: '#bdc3c7',
+    // elevation: 10,
     paddingHorizontal: 15,
   },
   searchInput: {
@@ -99,7 +100,7 @@ export default StyleSheet.create({
     borderColor: colors.lightGrey,
     margin: 7,
     overflow: 'hidden',
-    elevation: 1,
+    elevation: 10,
     // shadowColor: colors.black,
     // shadowOffset: { width: 0, height: wp(0.5) }, // Shadow offset with wp
     // shadowOpacity: 0.1,
@@ -170,7 +171,7 @@ export default StyleSheet.create({
   },
 
   titleText: {
-    // minHeight: wp(11),
+    minHeight: wp(11),
   },
   priceText: {
     marginTop: 5,

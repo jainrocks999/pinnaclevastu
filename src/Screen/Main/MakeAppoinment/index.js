@@ -321,7 +321,7 @@ const ResidentalScreen = ({navigation}) => {
               <FlatList
                 data={data?.franchise_services || []}
                 scrollEnabled={false}
-                keyExtractor={item => item?.index?.toString()}
+                keyExtractor={(item,index) => index?.toString()}
                 renderItem={item => (
                   <View style={styles.serviceSection}>
                    {/* { console.log(item)} */}
@@ -440,7 +440,7 @@ const ResidentalScreen = ({navigation}) => {
               <Animated.View
                 style={[{transform: [{translateX: shakeAnimation.name}]}]}>
                 <TextInput
-                  style={[styles.input, {elevation: 5}]}
+                  style={styles.input}
                   placeholder="Name"
                   placeholderTextColor={colors.placeholder}
                   value={formData.name}
@@ -731,11 +731,7 @@ const ResidentalScreen = ({navigation}) => {
         
           </View>
         )}
-        {/* <TouchableOpacity
-          onPress={handleSubmit}
-          style={styles.book}>
-          <Text style={styles.btext1}>SUBMIT</Text>
-        </TouchableOpacity> */}     
+      
       </ScrollView>
 
       <TouchableOpacity onPress={handleSubmit} activeOpacity={1}>

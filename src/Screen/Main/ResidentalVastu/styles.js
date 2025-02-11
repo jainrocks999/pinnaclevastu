@@ -38,7 +38,9 @@ export default StyleSheet.create({
     marginVertical: 15,
     backgroundColor: colors.ordercolor,
     borderRadius: 20,
-    elevation: 3,
+    // elevation: 20,
+    // shadowColor:"#000",
+    // shadowColor: '#bdc3c7',
     paddingHorizontal: 15,
   },
   searchInput: {
@@ -106,7 +108,7 @@ export default StyleSheet.create({
   },
   direction: {
     marginTop: 4,
-    minHeight:12
+    minHeight: 12,
   },
 
   cardContainer2: {
@@ -177,13 +179,13 @@ export default StyleSheet.create({
     // borderWidth: 1,
     // marginTop:wp(8),
     margin: 'auto',
-    width:"60%",
-    padding:10,
+    width: '60%',
+    padding: 10,
     // borderWidth:1
   },
   emptyMessage: {
     fontSize: fontSize.Fourteen,
-    color: "#929292",
+    color: '#929292',
     fontFamily: 'Poppins-Regular',
     textAlignVertical: 'center',
     textAlign: 'center',

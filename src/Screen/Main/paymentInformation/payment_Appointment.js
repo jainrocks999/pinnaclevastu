@@ -30,7 +30,7 @@ const PaymentAppointment = ({route}) => {
   const services = route.params?.services;
   
   const formData = route.params?.formData;
-  console.log(services,"asmlksdf")
+  // console.log(services,"asmlksdf")
   const navigation = useNavigation();
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
   const userDetail = useSelector(state => state?.Auth?.userData);
@@ -146,7 +146,12 @@ const PaymentAppointment = ({route}) => {
   const createbyord = async item => {
     const userid = await AsyncStorage.getItem('user_id');
     // console.log(userid, 'sjdfksdfmdl');
-    const selected_franchise_services = services.map(service => service.id);
+    // const selected_franchise_services = services.map(service => service.id);
+    const selected_franchise_services = services.map(service => ({
+      service_id: service.id,
+      service_price: service.price
+    }));
+    console.log(selected_franchise_services,"ssfjdskldf")
     let data = {
       name: formData.name,
       email: formData.email,

@@ -741,6 +741,7 @@ const CourseDetail = ({route}) => {
             renderItem={renderItem}
             scrollEnabled={false}
             showsVerticalScrollIndicator={false}
+            contentContainerStyle={{paddingVertical:10}}
           />
         </View>
       </ScrollView>

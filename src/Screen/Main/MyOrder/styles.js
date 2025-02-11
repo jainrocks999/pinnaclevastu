@@ -30,7 +30,8 @@ export default StyleSheet.create({
     marginVertical: 15,
     backgroundColor: colors.ordercolor,
     borderRadius: 20,
-    elevation: 3,
+    // elevation: 10,
+    // shadowColor: '#bdc3c7',
     paddingHorizontal: 15,
   },
   searchInput: {

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   Modal,
+  FlatList,
   PermissionsAndroid,
   Animated,
   Vibration,
@@ -22,11 +23,11 @@ import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {useDispatch, useSelector} from 'react-redux';
 import {Dropdown} from 'react-native-element-dropdown';
 import Loader from '../../../Component/Loader';
-import {FlatList} from 'react-native-gesture-handler';
-import {Avatar, Checkbox} from 'react-native-paper';
+import {Checkbox} from 'react-native-paper';
 import {signupAsFranchiseApi} from '../../../Redux/Slice/ConsultancySlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import constants from '../../../Redux/constant/constants';
+import axios from 'axios';
 
 const SignUpFranchise = ({route}) => {
   //   console.log(route, '######');
@@ -35,9 +36,9 @@ const SignUpFranchise = ({route}) => {
   const navigation = useNavigation();
   // console.log(userDetail,"sd,l;f");
   const dispatch = useDispatch();
-  const [value, setValue] = useState(null);
-  const [value2, setValue2] = useState(null);
-
+  const [countryOptions, setCountryOptions] = useState([]);
+  const [stateOptions, setStateOptions] = useState([]);
+  const [cityOptions, setCityOptions] = useState([]);
   const [servicesFields, setServicesFields] = useState([
     {serviceId: '', charges: ''},
   ]);
@@ -48,7 +49,7 @@ const SignUpFranchise = ({route}) => {
 
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
 
-  const [visible, setVisible] = useState(false);
+  // const [visible, setVisible] = useState(false);
   const [isuserselectimage, setIsuserselectimage] = useState(false);
   const isLoading = useSelector(state => state.Auth?.loading);
 
@@ -100,6 +101,11 @@ const SignUpFranchise = ({route}) => {
     yearOfExp: '',
     specialization: '',
   });
+  useEffect(() => {
+    getCountryOptionsData();
+    getStateOptionsData(formData.country || 0);
+    getCityOptionsData(formData.stateName || 0);
+  }, [formData.country,formData.stateName]);
 
   const formatDate = date => {
     if (!date) return 'Date of Birth';
@@ -439,17 +445,77 @@ const SignUpFranchise = ({route}) => {
     });
   };
 
+  const getCountryOptionsData = async () => {
+    try {
+      const config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: `${constants.mainUrl}fetch-country-list`,
+        headers: {},
+      };
+
+      const response = await axios.request(config);
+
+      if (response?.data?.status == 200) {
+        // console.log(response.data.data, 'dropdown data');
+        setCountryOptions(response?.data?.data);
+      } else {
+        console.log(response?.data.data);
+      }
+    } catch (error) {
+      console.log('dropdown error ', error);
+    }
+  };
+  const getStateOptionsData = async country_id => {
+    try {
+      const config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: `${constants.mainUrl}fetch-state-list?country_id=${country_id}`,
+        headers: {},
+      };
+
+      const response = await axios.request(config);
+
+      if (response?.data?.status == 200) {
+        // console.log(response.data.data, 'dropdown data');
+        setStateOptions(response?.data?.data);
+      } else {
+        console.log(response?.data.data);
+      }
+    } catch (error) {
+      console.log('dropdown error ', error);
+    }
+  };
+  const getCityOptionsData=async (state_id)=>{
+    try {
+      const config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: `${constants.mainUrl}fetch-city-list?state_id=${state_id}`,
+        headers: {},
+      };
+
+      const response = await axios.request(config);
+
+      if (response?.data?.status == 200) {
+        // console.log(response.data.data, 'dropdown data');
+        setCityOptions(response?.data?.data);
+      } else {
+        console.log(response?.data.data);
+      }
+    } catch (error) {
+      console.log('dropdown error ', error);
+    }
+  }
+
   const data = [
     {label: 'Male', value: 'male'},
     {label: 'Female', value: 'female'},
     {label: 'Transgender', value: 'transgender'},
   ];
 
-  const countryOptions = [
-    {label: 'India', value: 'India'},
-    {label: 'USA', value: 'USA'},
-    {label: 'UK', value: 'UK'},
-  ];
+
 
   const languageOptions = [
     {label: 'Hindi', value: 'Hindi'},
@@ -457,11 +523,7 @@ const SignUpFranchise = ({route}) => {
     {label: 'Gujarati', value: 'Gujarati'},
   ];
 
-  const stateOptions = [
-    {label: 'Maharashtra', value: 'Maharashtra'},
-    {label: 'Gujarat', value: 'Gujarat'},
-    {label: 'Madhyapradesh', value: 'Madhyapredesh'},
-  ];
+
 
   const getFilteredServices = currentServiceId => {
     const selectedServiceIds = servicesFields
@@ -783,21 +845,6 @@ const SignUpFranchise = ({route}) => {
                         source={require('../../../assets/image/arrow_icon.png')}
                       />
                     )}
-                    renderItem={item => (
-                      <View style={styles.item}>
-                        <Text style={styles.textItem}>
-                          {item.services_name}
-                        </Text>
-                        {item.services_name == value && (
-                          <AntDesign
-                            style={styles.icon}
-                            color="black"
-                            name="Safety"
-                            size={20}
-                          />
-                        )}
-                      </View>
-                    )}
                   />
                   <View style={[styles.input, styles.inputShadow, {flex: 1}]}>
                     <TextInput
@@ -829,8 +876,8 @@ const SignUpFranchise = ({route}) => {
                 <Dropdown
                   style={[styles.input, styles.inputShadow]}
                   data={countryOptions}
-                  labelField="label"
-                  valueField="value"
+                  labelField="name"
+                  valueField="id"
                   placeholder={'Country'}
                   placeholderStyle={[
                     styles.inputText,
@@ -843,7 +890,7 @@ const SignUpFranchise = ({route}) => {
                   selectedTextStyle={styles.selectedText}
                   itemTextStyle={styles.inputText}
                   value={formData.country}
-                  onChange={text => handleInputChange('country', text.value)}
+                  onChange={text => handleInputChange('country', text.id)}
                   renderRightIcon={() => (
                     <Image
                       style={{
@@ -852,19 +899,6 @@ const SignUpFranchise = ({route}) => {
                       }}
                       source={require('../../../assets/image/arrow_icon.png')}
                     />
-                  )}
-                  renderItem={item => (
-                    <View style={styles.item}>
-                      <Text style={styles.textItem}>{item.label}</Text>
-                      {item.value == value && (
-                        <AntDesign
-                          style={styles.icon}
-                          color="black"
-                          name="Safety"
-                          size={20}
-                        />
-                      )}
-                    </View>
                   )}
                 />
               </Animated.View>
@@ -877,8 +911,8 @@ const SignUpFranchise = ({route}) => {
                 <Dropdown
                   style={[styles.input, styles.inputShadow]}
                   data={stateOptions}
-                  labelField="label"
-                  valueField="value"
+                  labelField="name"
+                  valueField="id"
                   placeholder="state"
                   placeholderStyle={[
                     styles.inputText,
@@ -891,7 +925,7 @@ const SignUpFranchise = ({route}) => {
                   selectedTextStyle={styles.selectedText}
                   itemTextStyle={styles.inputText}
                   value={formData.stateName}
-                  onChange={text => handleInputChange('stateName', text.value)}
+                  onChange={text => handleInputChange('stateName', text.id)}
                   renderRightIcon={() => (
                     <Image
                       style={{
@@ -901,39 +935,45 @@ const SignUpFranchise = ({route}) => {
                       source={require('../../../assets/image/arrow_icon.png')}
                     />
                   )}
-                  renderItem={item => (
-                    <View style={styles.item}>
-                      <Text style={styles.textItem}>{item.label}</Text>
-                      {item.value == value && (
-                        <AntDesign
-                          style={styles.icon}
-                          color="black"
-                          name="Safety"
-                          size={20}
-                        />
-                      )}
-                    </View>
-                  )}
                 />
               </Animated.View>
             </View>
           </View>
 
           <View style={{flexDirection: 'row'}}>
-            <View style={[styles.inputmain, {flex: 1}]}>
-              <Text style={styles.title2}>City*</Text>
-              <View style={[styles.input, styles.inputShadow]}>
-                <Animated.View
-                  style={[{transform: [{translateX: shakeAnimation.city}]}]}>
-                  <TextInput
-                    style={styles.inputText}
-                    placeholder="City"
-                    placeholderTextColor={colors.placeholder}
-                    value={formData.city}
-                    onChangeText={text => handleInputChange('city', text)}
-                  />
-                </Animated.View>
-              </View>
+               <View style={[styles.inputmain, {flex: 1}]}>
+               <Text style={styles.title2}>City*</Text>
+              <Animated.View
+                style={[{transform: [{translateX: shakeAnimation.stateName}]}]}>
+                <Dropdown
+                  style={[styles.input, styles.inputShadow]}
+                  data={cityOptions}
+                  labelField="name"
+                  valueField="id"
+                   placeholder="City"
+                  placeholderStyle={[
+                    styles.inputText,
+                    {color: colors.placeholder},
+                  ]}
+                  search
+                  inputSearchStyle={styles.inputSearchStyle}
+                  iconStyle={styles.iconStyle}
+                  searchPlaceholder="Search..."
+                  selectedTextStyle={styles.selectedText}
+                  itemTextStyle={styles.inputText}
+                  value={formData.city}
+                  onChange={text => handleInputChange('city', text.id)}
+                  renderRightIcon={() => (
+                    <Image
+                      style={{
+                        height: 8,
+                        width: 15,
+                      }}
+                      source={require('../../../assets/image/arrow_icon.png')}
+                    />
+                  )}
+                />
+              </Animated.View>
             </View>
 
             <View style={[styles.inputmain, {flex: 1}]}>

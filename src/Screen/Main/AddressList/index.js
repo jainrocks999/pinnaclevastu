@@ -200,6 +200,7 @@ const DeliveryAddress = ({route}) => {
             alignItems: 'center',
             paddingHorizontal: 3,
             marginBottom: 15,
+            marginHorizontal:15
           }}>
           <Text style={styles.cardTitle}>{'Saved Address'}</Text>
           <TouchableOpacity
@@ -219,6 +220,7 @@ const DeliveryAddress = ({route}) => {
             renderItem={renderItem}
             scrollEnabled={false}
             keyExtractor={item => item?.node.id}
+            contentContainerStyle={{paddingVertical:20}}
           />
         ) : (
           <View style={{}}>

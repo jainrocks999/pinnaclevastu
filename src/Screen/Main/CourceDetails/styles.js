@@ -365,7 +365,7 @@ export default StyleSheet.create({
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.2,
     shadowRadius: 5,
-    elevation: 3,
+    elevation: 10,
   },
   icon: {
     width: wp(10),

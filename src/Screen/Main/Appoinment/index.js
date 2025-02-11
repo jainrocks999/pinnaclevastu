@@ -91,9 +91,8 @@ const Appointment = ({route}) => {
 
   useEffect(() => {
     APPoinemet();
-    // setAppointmentsData(appoinment1);
   }, []);
-
+  
   const APPoinemet = async status => {
     const token = await AsyncStorage.getItem('Token');
     const userid = await AsyncStorage.getItem('user_id');
@@ -131,11 +130,7 @@ const Appointment = ({route}) => {
     });
   };
 
-  // useEffect(() => {
-  //    handleTabClick('upcoming');
-  // }, [selectedTab]);
-
-  const handleTabClick =  tab => {
+  const handleTabClick = tab => {
     setSelectedTab(tab);
     APPoinemet(tab);
   };
@@ -181,7 +176,6 @@ const Appointment = ({route}) => {
 
   const renderAppointment = ({item, index}) => {
     const itemScaleAnim = scaleAnims[index] || new Animated.Value(1);
-
     return (
       <Animated.View
         style={[
@@ -204,17 +198,11 @@ const Appointment = ({route}) => {
             <Text
               style={[
                 styles.appointmentTitle,
-                selectedTab == 'upcoming' && styles.upcomingTitleStyle,
+                item?.status == 'upcoming' && styles.upcomingTitleStyle,
               ]}>
               {item.franchise_details?.franchise_name}
             </Text>
-            {/* <Text
-              style={[
-                styles.appointmentTitle1,
-                selectedTab == 'upcoming' && styles.upcomingTitle1Style,
-              ]}>
-              {'Appointment'}
-            </Text> */}
+          
             <View style={styles.direction1}>
               <Image
                 source={require('../../../assets/image/cale.png')}
@@ -223,8 +211,8 @@ const Appointment = ({route}) => {
               <Text
                 style={[
                   styles.appointmentDate,
-                  selectedTab == 'completed' && styles.redText,
-                  selectedTab == 'upcoming' && styles.upcomingDateStyle,
+                  item?.status == 'completed' && styles.redText,
+                  item?.status == 'upcoming' && styles.upcomingDateStyle,
                 ]}>
                 {formatDateDirectly(item?.booking_date)}
               </Text>
@@ -237,32 +225,30 @@ const Appointment = ({route}) => {
               <Text
                 style={[
                   styles.appointmentTime,
-                  selectedTab == 'completed' && styles.redText,
-                  selectedTab == 'upcoming' && styles.upcomingTimeStyle, // Conditional styling for time
+                  item?.status == 'completed' && styles.redText,
+                  item?.status == 'upcoming' && styles.upcomingTimeStyle, // Conditional styling for time
                 ]}>
                 {convertToAmPm(item.booking_time)}
               </Text>
             </View>
-            {selectedTab == 'completed' && (
+            {item?.status == 'completed' && (
               <View style={styles.reviewContainer}>
-    
-                  <View style={styles.cardStar}>
-                    <Rating
-                      type="custom"
-                      ratingColor="#52B1E9"
-                      startingValue={item?.franchise_details?.reviews_star}
-                      tintColor="#fff"
-                      imageSize={12}
-                      readonly
-                      ratingBackgroundColor={'#D8E3E980'}
-                      style={styles.starContainer}
-                    />
-                    <Text style={styles.ratingText}>
-                      {' '}
-                      {item?.franchise_details?.franchise_reviews?.length}{' '}
-                      reviews
-                    </Text>
-                  </View>
+                <View style={styles.cardStar}>
+                  <Rating
+                    type="custom"
+                    ratingColor="#52B1E9"
+                    startingValue={item?.franchise_details?.reviews_star}
+                    tintColor="#fff"
+                    imageSize={12}
+                    readonly
+                    ratingBackgroundColor={'#D8E3E980'}
+                    style={styles.starContainer}
+                  />
+                  <Text style={styles.ratingText}>
+                    {' '}
+                    {item?.franchise_details?.franchise_reviews?.length} reviews
+                  </Text>
+                </View>
               </View>
             )}
           </View>
@@ -271,7 +257,7 @@ const Appointment = ({route}) => {
               source={require('../../../assets/otherApp/arrowcom.png')}
               style={[
                 styles.arrowIcon,
-                selectedTab == 'upcoming' && styles.arrowIconup,
+                item?.status == 'upcoming' && styles.arrowIconup,
               ]}
             />
           </View>
@@ -305,7 +291,7 @@ const Appointment = ({route}) => {
       </View>
       <ScrollView
         contentContainerStyle={{
-          paddingHorizontal: 20,
+          // paddingHorizontal: 20,
           paddingBottom: heightPercent(10),
           minHeight: '100%',
         }}>

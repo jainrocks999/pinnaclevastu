@@ -32,7 +32,7 @@ import {useIsFocused, useNavigation} from '@react-navigation/native';
 import Loader from '../../../Component/Loader';
 import Imagepath from '../../../Component/Imagepath';
 import LinearGradient from 'react-native-linear-gradient';
-import AutoHeightImage from 'react-native-auto-height-image';
+// import AutoHeightImage from 'react-native-auto-height-image';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getUserDetailApi} from '../../../Redux/Slice/Authslice';
 import {consultationDetail1} from '../../../Redux/Slice/ConsultancySlice';
@@ -118,7 +118,8 @@ const HomeScreen = () => {
     const startAnimation = () => {
       const intervalId = setInterval(() => {
         if (currentIndex < placeholderText.length) {
-          setDisplayedText(placeholderText.slice(0, currentIndex + 1));
+          // setDisplayedText(placeholderText.slice(0, currentIndex + 1));
+          setDisplayedText(prev => placeholderText.slice(0, currentIndex + 1)); 
           currentIndex++;
         } else {
           currentIndex = 0;
@@ -132,7 +133,7 @@ const HomeScreen = () => {
     const intervalId = startAnimation();
 
     return () => clearInterval(intervalId);
-  }, [placeholderText]);
+  }, []);
 
   const calculateAverageRating = data => {
     if (!data?.length) return 0;

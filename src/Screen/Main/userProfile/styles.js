@@ -83,11 +83,15 @@ export default StyleSheet.create({
     borderRadius: wp(15),
     // top: screenWidth >= 750 ? -wp(22) : -wp(28),
     top:  -wp(30),
-    shadowColor: "#1A1A1A",
     shadowOffset: {width: 0, height: 6},
     shadowOpacity: 0.8,
     shadowRadius: 10,
-    elevation: 8,
+    // elevation: 8,
+    elevation: 50,
+    // shadowColor: "#1A1A1A",
+    shadowColor: "#000",
+    borderWidth:2,
+    borderColor:"#F9F9F9"
   },
   profileName: {
     fontSize: fontSize.Seventeen,

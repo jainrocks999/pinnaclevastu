@@ -8,8 +8,8 @@ buildscript {
         minSdkVersion = 24
         compileSdkVersion = 35
         targetSdkVersion = 34
-        ndkVersion = "26.1.10909125"
-        kotlinVersion = "1.9.24"
+        ndkVersion = "27.1.12297006"
+        kotlinVersion = "2.0.21"
     }
    
     repositories {
@@ -21,17 +21,10 @@ buildscript {
         classpath("com.android.tools.build:gradle")
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath('com.google.gms:google-services:4.4.0')
-         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.5' 
-   
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.5' 
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
     }
     }
 }
 
 apply plugin: "com.facebook.react.rootproject"
-
-// Add the configurations.all block here
-configurations.all {
-    resolutionStrategy {
-        force 'com.facebook.react:react-native:0.76.2' // Ensure this matches your React Native version
-    }
-}

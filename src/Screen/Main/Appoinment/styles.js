@@ -37,6 +37,7 @@ export default styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 10,
     backgroundColor: colors.ordercolor,
+    marginHorizontal:20
   },
   tab: {
     alignSelf: 'center',
@@ -78,12 +79,14 @@ export default styles = StyleSheet.create({
     borderColor: colors.lightGrey,
     backgroundColor: colors.white,
     borderRadius: 10,
-    marginBottom: 15,
+    // marginBottom: 15,
+    marginTop:15,
     shadowColor: '#1A1A1A',
     shadowOffset: {width: 0, height: 6},
     shadowOpacity: 0.5,
     shadowRadius: 10,
-    elevation: 3,
+    elevation: 10,
+    marginHorizontal:20,
   },
 
   appointmentImage: {

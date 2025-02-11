@@ -195,9 +195,7 @@ const ResidentalScreen = ({navigation}) => {
   const filteredReviews = showAll ? data?.reviews : data?.reviews?.slice(0, 3);
   const renderItem3 = ({item}) => {
     return (
-      <TouchableOpacity
-       
-        style={[styles.cardContainer1]}>
+      <TouchableOpacity style={[styles.cardContainer1]}>
         <View style={styles.reviewCard}>
           <View style={{paddingLeft: 5}}>
             <Image
@@ -243,7 +241,7 @@ const ResidentalScreen = ({navigation}) => {
   };
 
   const averageRating = calculateAverageRating(data?.reviews);
-  console.log(averageRating, 'averageRating');
+  // console.log(averageRating, 'averageRating');
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -378,22 +376,6 @@ const ResidentalScreen = ({navigation}) => {
                 source={{
                   html: data?.description1,
                 }}
-                // tagsStyles={{
-                //   li: {
-                //     fontSize: fontSize.Fifteen,
-                //     color: colors.cardcolor,
-                //     fontFamily: 'Poppins-Regular',
-                //   },
-                //   p: {
-                //     backgroundColor: colors.white,
-                //   },
-                //   span: {
-                //     backgroundColor: colors.white,
-                //     fontSize: fontSize.Fifteen,
-                //     color: colors.cardcolor,
-                //     fontFamily: 'Poppins-Regular',
-                //   },
-                // }}
               />
             </View>
 
@@ -404,22 +386,6 @@ const ResidentalScreen = ({navigation}) => {
                 source={{
                   html: data?.description2,
                 }}
-                // tagsStyles={{
-                //   li: {
-                //     fontSize: fontSize.Fifteen,
-                //     color: colors.cardcolor,
-                //     fontFamily: 'Poppins-Regular',
-                //   },
-                //   p: {
-                //     backgroundColor: colors.white,
-                //   },
-                //   span: {
-                //     backgroundColor: colors.white,
-                //     fontSize: fontSize.Fifteen,
-                //     color: colors.cardcolor,
-                //     fontFamily: 'Poppins-Regular',
-                //   },
-                // }}
               />
             </View>
             <View style={{paddingVertical: 10, marginHorizontal: 15}}>
@@ -428,23 +394,6 @@ const ResidentalScreen = ({navigation}) => {
                 source={{
                   html: data?.description3,
                 }}
-                // tagsStyles={{
-                //   li: {
-                //     fontSize: fontSize.Fifteen,
-                //     color: colors.cardcolor,
-                //     fontFamily: 'Poppins-Regular',
-                //   },
-                //   p: {
-                //     color: colors.white,
-                //     backgroundColor: colors.white,
-                //   },
-                //   span: {
-                //     backgroundColor: colors.white,
-                //     fontSize: fontSize.Fifteen,
-                //     color: colors.cardcolor,
-                //     fontFamily: 'Poppins-Regular',
-                //   },
-                // }}
               />
             </View>
           </View>
@@ -486,52 +435,58 @@ const ResidentalScreen = ({navigation}) => {
             </TouchableOpacity>
           </View>
         </View>
-        {data?.faqdata ? (
-          <View style={styles.contain}>
-            <Text style={styles.service}>FAQ</Text>
-            <FlatList
-              scrollEnabled={false}
-              data={data?.faqdata}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({item, index}) => (
-                <View style={{marginTop: 10}}>
-                  <TouchableOpacity
-                    onPress={() => toggleSection(index)}
-                    style={[
-                      styles.courseToggle1,
-                      expandedSection === index && styles.activeCourseToggle,
-                    ]}>
-                    <View style={styles.direction1}>
-                      <Text
+        {data?.faqdata != undefined
+          ? data?.faqdata[0]?.answer != null &&
+            data?.faqdata[0]?.question != null && (
+              <View style={styles.contain}>
+                <Text style={styles.service}>FAQ</Text>
+                <FlatList
+                  scrollEnabled={false}
+                  data={data?.faqdata}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={({item, index}) => (
+                    <View style={{marginTop: 10}}>
+                      <TouchableOpacity
+                        onPress={() => toggleSection(index)}
                         style={[
-                          styles.coursetext2,
-                          expandedSection === index && styles.activeTitleColor,
+                          styles.courseToggle1,
+                          expandedSection === index &&
+                            styles.activeCourseToggle,
                         ]}>
-                        Q{index + 1}. {item.question}
-                      </Text>
-                    </View>
-                    <Image
-                      source={
-                        expandedSection === index
-                          ? require('../../../assets/otherApp/updown1.png')
-                          : require('../../../assets/image/arrow_icon.png')
-                      }
-                      style={[styles.toggleIcon2]}
-                    />
-                  </TouchableOpacity>
+                        <View style={styles.direction1}>
+                          <Text
+                            style={[
+                              styles.coursetext2,
+                              expandedSection === index &&
+                                styles.activeTitleColor,
+                            ]}>
+                            Q{index + 1}. {item.question}
+                          </Text>
+                        </View>
+                        <Image
+                          source={
+                            expandedSection === index
+                              ? require('../../../assets/otherApp/updown1.png')
+                              : require('../../../assets/image/arrow_icon.png')
+                          }
+                          style={[styles.toggleIcon2]}
+                        />
+                      </TouchableOpacity>
 
-                  <Collapsible collapsed={expandedSection !== index}>
-                    <View style={styles.subItemContainer}>
-                      <Text style={[styles.primText, {marginHorizontal: 15}]}>
-                        Ans :- {item?.answer}
-                      </Text>
+                      <Collapsible collapsed={expandedSection !== index}>
+                        <View style={styles.subItemContainer}>
+                          <Text
+                            style={[styles.primText, {marginHorizontal: 15}]}>
+                            Ans :- {item?.answer}
+                          </Text>
+                        </View>
+                      </Collapsible>
                     </View>
-                  </Collapsible>
-                </View>
-              )}
-            />
-          </View>
-        ) : null}
+                  )}
+                />
+              </View>
+            )
+          : null}
         {data?.reviews?.length != 0 ? (
           <View style={styles.reviewSection}>
             <View style={styles.contain}>

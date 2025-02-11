@@ -47,7 +47,9 @@ useEffect(() => {
       const intervalId = setInterval(() => {
         if (currentIndex < placeholderText.length) {
           
-          setDisplayedText(placeholderText.slice(0, currentIndex + 1)); 
+          // setDisplayedText(placeholderText.slice(0, currentIndex + 1)); 
+          setDisplayedText(prev => placeholderText.slice(0, currentIndex + 1)); 
+
           currentIndex++;
         } else {
           
@@ -62,7 +64,7 @@ useEffect(() => {
     const intervalId = startAnimation();
   
     return () => clearInterval(intervalId); 
-  }, [placeholderText]);
+  }, []);
   useEffect(() => {
     setSelectedTab(route?.params?.data);
     if (focus) {
