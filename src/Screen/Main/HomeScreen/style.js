@@ -611,7 +611,7 @@ export default StyleSheet.create({
   CoreValues: {
     fontFamily: 'Poppins-Regular',
     fontSize: fontSize.Sixteen,
-    color: '#001227',
+   
     width: '95%',
   },
   cirleContainer: {
@@ -780,8 +780,8 @@ export default StyleSheet.create({
   },
 
   containe: {
-    marginVertical: 15,
-    padding: 10,
+    // marginVertical: 15,
+    // padding: 10,
   },
   imageContaine: {
     alignItems: 'center',
@@ -796,16 +796,15 @@ export default StyleSheet.create({
   },
   cardContaine: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 15,
-    marginTop: 20,
+    marginTop: 0,
     borderRadius: 10,
    
   },
   cardIco: {
-    width: 50,
-    height: 50,
+    width: 20,
+    height: 20,
     resizeMode: 'contain',
   },
   textContaine: {

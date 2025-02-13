@@ -265,18 +265,17 @@ const HomeScreen = () => {
           },
         ]}>
         <TouchableOpacity
-          style={[styles.cardContainer, {backgroundColor: item?.background_color}]}
+          style={[
+            styles.cardContainer,
+            {backgroundColor: item?.background_color},
+          ]}
           onPress={() => handleItemClick(index, item.id, item.services_name)}>
           {/* <Image
             source={{uri:'' }}
             style={styles.itemImg}
           /> */}
 
-<SvgUri
-    width="30%"
-    height="30%"
-    uri={item?.CardImage}
-  />
+          <SvgUri width="30%" height="30%" uri={item?.CardImage} />
           <Text style={styles.text}>{item.text}</Text>
         </TouchableOpacity>
       </Animated.View>
@@ -293,12 +292,18 @@ const HomeScreen = () => {
             transform: [{scale: itemScaleAnim}], // Apply scale animation to the view
           },
         ]}>
-        <TouchableOpacity style={[styles.smallCardContainer,{backgroundColor:item?.card_bg_color}]}>
+        <TouchableOpacity
+          style={[
+            styles.smallCardContainer,
+            {backgroundColor: item?.card_bg_color},
+          ]}>
           <Image
             source={{uri: `${item?.CardImage}`}}
             style={[styles.itemImg, {resizeMode: 'contain'}]}
           />
-          <Text style={[styles.smallCardtext,{color:item?.text_color}]}>{item.text}</Text>
+          <Text style={[styles.smallCardtext, {color: item?.text_color}]}>
+            {item.text}
+          </Text>
         </TouchableOpacity>
       </Animated.View>
     );
@@ -495,13 +500,13 @@ const HomeScreen = () => {
     );
   };
 
-  const renderItem6 = ({index}) => {
+  const renderItem6 = ({item,index}) => {
     return (
       <TouchableOpacity
-        style={[{height: wp(70), width: wp(55)}, styles.cardContainer3]}>
+        style={[{height: wp(70), width: wp(55)}, styles.cardContainer3]}>  
         <ImageBackground
           // resizeMode="contain"
-          source={require('../../../assets/otherApp/featureBanner.png')}
+          source={{uri:item?.mob_card_background}}
           style={{height: '100%', width: '100%'}}>
           <LinearGradient
             colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.7)']}
@@ -512,7 +517,7 @@ const HomeScreen = () => {
             }}
           />
           <Text style={styles.serialNoText}>{index + 1}</Text>
-          <Text style={[styles.text2]}>Pick a Suitable Course</Text>
+          <Text style={[styles.text2]}>{item?.card_text}</Text>
         </ImageBackground>
         {/* </LinearGradient> */}
       </TouchableOpacity>
@@ -693,7 +698,7 @@ const HomeScreen = () => {
         <View style={styles.contain}>
           <Text style={styles.service}>Our Services</Text>
         </View>
-       
+
         <FlatList
           data={homeData?.our_services ? homeData?.our_services : []}
           renderItem={renderItem}
@@ -714,91 +719,97 @@ const HomeScreen = () => {
           />
         ) : null} */}
 
-<View style={styles.containe}>
-  <FlatList
-    data={homeData?.image_banner2 || []}
-    horizontal
-    pagingEnabled={false}
-    
-    decelerationRate="fast"
-    snapToAlignment="center"
-    showsHorizontalScrollIndicator={false}
-    renderItem={({ item, index }) => (
-      <TouchableOpacity
-        onPress={() => onPress(item, index)}
-        style={[
-          styles.imageContaine,
-          { width: wp(85), marginRight: 10, borderColor: item.border_color, backgroundColor: item?.background_color, },
-        ]}
-      >
-        {/* <Image
-          source={{ uri: item.image }}
-          style={styles.imag}
-          resizeMode="cover"
-        /> */}
+        <View style={styles.containe}>
+          <FlatList
+            data={homeData?.image_banner2 || []}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={[
+            
+              {paddingHorizontal: 10, marginBottom: wp(0)},
+            ]}
+            onMomentumScrollEnd={e => {
+              const contentOffsetX = e.nativeEvent.contentOffset.x;
+              const currentIndex = Math.round(contentOffsetX / wp(85));
+              setCurrentIndex(currentIndex);
+            }}
+            renderItem={({item, index}) => (
+              <TouchableOpacity
+                onPress={() => onPress(item, index)}
+                style={[
+                  styles.imageContaine,
+                  {
+                    width: wp(85),
+                    marginRight: 10,
+                    borderColor: item.border_color,
+                    backgroundColor: item?.background_color,
+                  },
+                ]}>
 
-<View
-    style={[
-      styles.cardContaine,
-    ]}
-  >
-    {item?.cardIcon2?.endsWith('.svg') ? (
-  <SvgUri
-    width={100}
-    height={100}
-    uri={item?.cardIcon1}
-  />
-) : (
-  <Image source={{ uri:item?.cardIcon1 }} style={styles.cardIco} />
-)}
-    
+                <View style={[styles.cardContaine]}>
+                  <View style={{marginLeft: -6}}>
+                    {item?.cardIcon2?.endsWith('.svg') ? (
+                      <SvgUri
+                        width={100}
+                        height={100}
+                        uri={item?.cardIcon1}
+                        resizeMode="contain"
+                      />
+                    ) : (
+                      <Image
+                        source={{uri: item?.cardIcon1}}
+                        style={{
+                          width: 100,
+                          height: 100,
+                          resizeMode: 'contain',
+                        }}
+                      />
+                    )}
+                  </View>
 
-   
-    <View style={styles.textContaine}>
-      <Text style={[styles.titl, { color: item?.text_color }]}>
-        {item?.title}
-      </Text>
-      <Text style={[styles.subtitl, { color: item?.text_color }]}>
-        {item?.title2}
-      </Text>
-    </View>
-{console.log( item?.cardIcon2)}
-{item?.cardIcon2?.endsWith('.svg') ? (
-  <SvgUri
-    width={25}
-    height={25}
-    uri={item?.cardIcon2}
-  />
-) : (
-  <Image
-    source={{ uri: item?.cardIcon2 }}
-    style={styles.cardIco}
-  />
-)}
+                  <View style={styles.textContaine}>
+                    <Text style={[styles.titl, {color: item?.text_color}]}>
+                      {item?.title}
+                    </Text>
+                    <Text style={[styles.subtitl, {color: item?.text_color}]}>
+                      {item?.title2}
+                    </Text>
+                  </View>
+                  {item?.cardIcon2?.endsWith('.svg') ? (
+                    <SvgUri width={20} height={20} uri={item?.cardIcon2} />
+                  ) : (
+                    <Image
+                      source={{uri: item?.cardIcon2}}
+                      style={styles.cardIco}
+                    />
+                  )}
+                </View>
+              </TouchableOpacity>
+            )}
+           
+          />
 
-    {/* <Image source={{ uri: item?.cardIcon2 }} style={styles.cardIco} /> */}
-  </View>
-      </TouchableOpacity>
-    )}
-    contentContainerStyle={{
-      paddingLeft: 20 / 2,
-      paddingRight: 20 / 2,
-    }}
-  />
+<View style={[styles.dotContainer, {marginTop: 10}]}>
+            {homeData?.image_banner2?.map((item, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[styles.dot, currentIndex === index && styles.activeDot]}
+                onPress={() => {
+                  if (index < (homeData?.image_banner2?.map || [])) {
+                    handleImageChange(index);
+                  }
+                }}
+              />
+            ))}
+          </View>
+        </View>
 
-  {/* ✅ New Card UI (Fixed) */}
- 
-</View>
-
-        <View style={[styles.contain, {marginTop: wp(2)}]}>
+        <View style={[styles.contain, {marginTop: wp(0)}]}>
           <Text style={styles.service}>Premium Services</Text>
         </View>
         <FlatList
-          data={
-            homeData?.premium_services ?homeData?.premium_services : []
-          }
+          data={homeData?.premium_services ? homeData?.premium_services : []}
           renderItem={renderItem1}
-          // keyExtractor={item => item.id}
           numColumns={3}
           scrollEnabled={false}
           showsVerticalScrollIndicator={false}
@@ -933,15 +944,16 @@ const HomeScreen = () => {
                   marginTop: hp(19),
                 },
               ]}>
-              How it works
+            {homeData?.how_it_works?.content?.work_heading}
             </Text>
             <Text style={[styles.subHeadText, {marginBottom: 20}]}>
-              Become a professional consultant in 3 simple steps
+            {homeData?.how_it_works?.content?.description}
+              {/* Become a professional consultant in 3 simple steps */}
             </Text>
             <FlatList
-              data={Homebanner?.remedies?.slice(0, 3)}
+              data={homeData?.how_it_works?.cards?.slice(0, 3)}
               renderItem={renderItem6}
-              keyExtractor={item => item.id}
+              // keyExtractor={item => item.id}
               horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{
@@ -1015,32 +1027,37 @@ const HomeScreen = () => {
         </View>
 
         <View style={{backgroundColor: '#faf6ed', marginTop: 25}}>
-        <ImageBackground
-          // resizeMode="contain"
-          source={{uri: `${homeData?.remedies?.content?.mob_background_image}`}}
-          style={{height: hp(32), width: '100%',}}>
-          <View style={[styles.contain1, {marginTop: 20}]}>
-            <Text style={styles.service}>Remedies</Text>
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate('Home1', {
-                  screen: 'Remedie12',
-                  params: {screen: 'Remedies'},
-                })
-              }
-              hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-              <Text style={styles.service1}>VIEW ALL</Text>
-            </TouchableOpacity>
-          </View>
-         
-          <FlatList
-            data={homeData?.remedies?.cards?.slice(0, 5)}
-            renderItem={renderItem2}
-            keyExtractor={item => item.id}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{paddingHorizontal: 10, marginBottom: wp(8)}}
-          />
+          <ImageBackground
+            // resizeMode="contain"
+            source={{
+              uri: `${homeData?.remedies?.content?.mob_background_image}`,
+            }}
+            style={{height: hp(32), width: '100%'}}>
+            <View style={[styles.contain1, {marginTop: 20}]}>
+              <Text style={styles.service}>Remedies</Text>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate('Home1', {
+                    screen: 'Remedie12',
+                    params: {screen: 'Remedies'},
+                  })
+                }
+                hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+                <Text style={styles.service1}>VIEW ALL</Text>
+              </TouchableOpacity>
+            </View>
+
+            <FlatList
+              data={homeData?.remedies?.cards?.slice(0, 5)}
+              renderItem={renderItem2}
+              keyExtractor={item => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                paddingHorizontal: 10,
+                marginBottom: wp(8),
+              }}
+            />
           </ImageBackground>
         </View>
 
@@ -1092,27 +1109,27 @@ const HomeScreen = () => {
             ))}
           </View>
         </View>
-
         <View style={[styles.contain1, {}]}>
-          <Text style={styles.service}>Core Values</Text>
+          <Text style={[styles.service,{color:homeData?.core_values?.content?.heading_color}]}>{homeData?.core_values?.content?.heading}</Text>
         </View>
         <View style={[{paddingHorizontal: 15, paddingVertical: 20}]}>
-          <Text style={styles.CoreValues}>
-            We’re passionate & believe in motivating leadership. We focus to
+          <Text style={[styles.CoreValues,{ color: homeData?.core_values?.content?.description_color}]}>
+            {homeData?.core_values?.content?.description}
+            {/* We’re passionate & believe in motivating leadership. We focus to
             move forward in faith than following a superstitious path.
             Relentless growth but not alone: We aim at team building and its
             management. We believe in doing the right things with integrity,
-            honesty, and reliability.
+            honesty, and reliability. */}
           </Text>
           <View style={styles.cirleContainer}>
-            {data?.map((item, index) => (
+            {homeData?.core_values?.items?.map((item, index) => (
               <View
                 key={item.id || index}
                 style={{alignItems: 'center', width: '25%', borderWidth: 0}}>
                 <View style={styles.cirleItem}>
-                  <Text style={styles.cirle}>{item.title}</Text>
+                  <Text style={styles.cirle}>{item.stat_value}</Text>
                 </View>
-                <Text style={styles.cirletext}>{item?.name}</Text>
+                <Text style={styles.cirletext}>{item?.stat_label}</Text>
               </View>
             ))}
           </View>
@@ -1128,9 +1145,10 @@ const HomeScreen = () => {
             <Image
               style={styles.bannerImg2}
               // source={require('../../../assets/image/Sc.png')}
-              source={require('../../../assets/otherApp/coreValuesBanner.png')}
+              // source={require('../../../assets/otherApp/coreValuesBanner.png')}
+              source={{uri:homeData?.core_values?.content?.mob_image}}
             />
-            <LinearGradient
+            {/* <LinearGradient
               colors={['rgba(0,0,0,0)', '#003251']}
               style={{
                 position: 'absolute',
@@ -1139,13 +1157,14 @@ const HomeScreen = () => {
                 bottom: 0,
                 top: 0,
               }}
-            />
-            <Text style={[styles.costCalBannerText, {bottom: 20}]}>
+            /> */}
+            {/* <Text style={[styles.costCalBannerText, {bottom: 20}]}>
               We’re passionate & believe in motivating leadership.
-            </Text>
+            </Text> */}
           </View>
         </View>
-
+        {console.log('hdfhfdhjjkjkdsjdsjsdjkksj',homeData?.custom_testimonial)
+        }
         <View style={styles.testimonalSection}>
           <View style={{alignSelf: 'center', borderWidth: 0.1}}>
             <Text style={styles.Testimonals}>Testimonials</Text>
