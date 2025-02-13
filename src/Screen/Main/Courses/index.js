@@ -219,7 +219,7 @@ const OtherCourses = ({navigation}) => {
               <Text style={styles.countText}>{cartTotalQuantity}</Text>
             </View>
           )}
-          <Image source={require('../../../assets/image/Group.png')} />
+          <Image source={require('../../../assets/image/small_bag.png')} />
         </TouchableOpacity>
       </View>
       {/*  {isLoading ? <Loader /> : null} */}
