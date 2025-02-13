@@ -656,7 +656,7 @@ const RemediesProductDetail = ({route}) => {
             <Text style={styles.logoText1}>Product Detail</Text>
           </View>
 
-          <Image source={require('../../../assets/image/Group.png')} />
+          <Image source={require('../../../assets/image/small_bag.png')} />
         </View>
         {isLoading ? <AnimatedLine /> : null}
       </View>
@@ -690,7 +690,7 @@ const RemediesProductDetail = ({route}) => {
           )}
           <Image
             style={styles.bagBtn}
-            source={require('../../../assets/image/Group.png')}
+            source={require('../../../assets/image/small_bag.png')}
           />
         </TouchableOpacity>
       </View>

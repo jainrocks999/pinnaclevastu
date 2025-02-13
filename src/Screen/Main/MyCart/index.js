@@ -548,7 +548,7 @@ const Remedies12SecondComponent = () => {
               <Text style={styles.countText}>{cartTotalQuantity}</Text>
             </View>
           )}
-          <Image source={require('../../../assets/image/Group.png')} />
+          <Image source={require('../../../assets/image/small_bag.png')} />
         </TouchableOpacity>
       </View>
       <View

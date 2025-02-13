@@ -284,7 +284,7 @@ const RemediesProductList = ({route}) => {
           )}
           <Image
             style={styles.bagBtn}
-            source={require('../../../assets/image/Group.png')}
+            source={require('../../../assets/image/small_bag.png')}
           />
         </TouchableOpacity>
       </View>
