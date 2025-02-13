@@ -109,7 +109,7 @@ export default StyleSheet.create({
     width: wp(30),
     // margin: 5,
     margin: wp(1.2),
-    backgroundColor: '#FFF1CC',
+    // backgroundColor: '#FFF1CC',
     borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
@@ -778,4 +778,56 @@ export default StyleSheet.create({
     height: hp(50),
     resizeMode: 'cover',
   },
+
+  containe: {
+    marginVertical: 15,
+    padding: 10,
+  },
+  imageContaine: {
+    alignItems: 'center',
+    borderWidth: 2,
+    borderRadius: 10,
+    overflow: 'hidden',
+    // borderWidth: 2,
+  },
+  imag: {
+    width: '100%',
+    borderRadius: 10,
+  },
+  cardContaine: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 15,
+    marginTop: 20,
+    borderRadius: 10,
+   
+  },
+  cardIco: {
+    width: 50,
+    height: 50,
+    resizeMode: 'contain',
+  },
+  textContaine: {
+    flex: 1,
+    marginHorizontal: 0,
+  },
+  titl: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  subtitl: {
+    fontSize: 14,
+    textAlign: 'center',
+    marginTop: 5,
+  },
+
+
+
+
+
+
+
+
 });

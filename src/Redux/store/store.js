@@ -26,10 +26,12 @@ import ColloctrionSclice from "../Slice/collectionSlice"
 import ProductSclice from "../Slice/productSlice";
 import LoginSclice from "../Slice/loginSlice";
 import countryStateReducer from '../Slice/countryStateSlice';
+import HomeBannerReducer from '../Slice/HomeBannerSlice';
 const store = configureStore({
   reducer: {
     Auth: authSlice,
     home: homeSlice,
+    HomeBanner: HomeBannerReducer,
     address: Addresslice,
     order: Orderslice,
     cart: CartSlice,

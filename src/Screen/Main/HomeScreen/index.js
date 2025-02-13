@@ -37,7 +37,7 @@ import {getUserDetailApi} from '../../../Redux/Slice/Authslice';
 import {consultationDetail1} from '../../../Redux/Slice/ConsultancySlice';
 import {Dropdown} from 'react-native-element-dropdown';
 import WebView from 'react-native-webview';
-
+import {SvgUri} from 'react-native-svg';
 let backPress = 0;
 const HomeScreen = () => {
   const flatListRef = useRef(null);
@@ -53,10 +53,11 @@ const HomeScreen = () => {
   const [displayedText, setDisplayedText] = useState('');
   const [displayedText1, setDisplayedText1] = useState('');
 
+  const homeData = useSelector(state => state?.HomeBanner);
+
   const userDetail = useSelector(state => state?.Auth?.userData);
 
   const Homebanner = useSelector(state => state.home?.HomeBanner?.data);
-
   const isLoading = useSelector(state => state.home?.loading);
 
   const cartDataList = useSelector(state => state?.cart?.CartData);
@@ -68,15 +69,14 @@ const HomeScreen = () => {
   );
 
   const [imageHeights, setImageHeights] = useState({});
-
   const newArray = [];
-  (Homebanner?.home_slider?.[0]?.slider_items || []).forEach(item => {
-    const updatedItem = {
-      ...item,
-      image: `${Imagepath.Path}${item.image}`,
-    };
-
-    newArray.push(updatedItem);
+  // (Homebanner?.home_slider?.[0]?.slider_items || []).forEach(item => {
+  (homeData?.image_banner || []).forEach(item => {
+    // const updatedItem = {
+    //   ...item,
+    //   image: `${Imagepath.Path}${item.image}`,
+    // };
+    newArray.push(...item.slider);
   });
 
   const imagesilder11 = [];
@@ -118,7 +118,7 @@ const HomeScreen = () => {
       const intervalId = setInterval(() => {
         if (currentIndex < placeholderText.length) {
           // setDisplayedText(placeholderText.slice(0, currentIndex + 1));
-          setDisplayedText(prev => placeholderText.slice(0, currentIndex + 1)); 
+          setDisplayedText(prev => placeholderText.slice(0, currentIndex + 1));
           currentIndex++;
         } else {
           currentIndex = 0;
@@ -254,6 +254,7 @@ const HomeScreen = () => {
   };
 
   const renderItem = ({item, index}) => {
+    // console.log(homeData?.our_services,"asad")
     const itemScaleAnim = scaleAnims[index] || new Animated.Value(1);
     return (
       <Animated.View
@@ -264,13 +265,19 @@ const HomeScreen = () => {
           },
         ]}>
         <TouchableOpacity
-          style={[styles.cardContainer, {backgroundColor: item?.color_code}]}
+          style={[styles.cardContainer, {backgroundColor: item?.background_color}]}
           onPress={() => handleItemClick(index, item.id, item.services_name)}>
-          <Image
-            source={{uri: `${Imagepath.Path}${item?.logo}`}}
+          {/* <Image
+            source={{uri:'' }}
             style={styles.itemImg}
-          />
-          <Text style={styles.text}>{item.services_name}</Text>
+          /> */}
+
+<SvgUri
+    width="30%"
+    height="30%"
+    uri={item?.CardImage}
+  />
+          <Text style={styles.text}>{item.text}</Text>
         </TouchableOpacity>
       </Animated.View>
     );
@@ -286,12 +293,12 @@ const HomeScreen = () => {
             transform: [{scale: itemScaleAnim}], // Apply scale animation to the view
           },
         ]}>
-        <TouchableOpacity style={[styles.smallCardContainer]}>
+        <TouchableOpacity style={[styles.smallCardContainer,{backgroundColor:item?.card_bg_color}]}>
           <Image
-            source={{uri: `${Imagepath.Path}${item?.logo}`}}
+            source={{uri: `${item?.CardImage}`}}
             style={[styles.itemImg, {resizeMode: 'contain'}]}
           />
-          <Text style={styles.smallCardtext}>{item.services_name}</Text>
+          <Text style={[styles.smallCardtext,{color:item?.text_color}]}>{item.text}</Text>
         </TouchableOpacity>
       </Animated.View>
     );
@@ -320,8 +327,8 @@ const HomeScreen = () => {
         }
         style={[{height: wp(40), width: wp(46)}, styles.cardContainer3]}>
         <ImageBackground
-          resizeMode="contain"
-          source={{uri: `${Imagepath.Path}${item.image}`}}
+          // resizeMode="contain"
+          source={{uri: `${item.CardImage}`}}
           style={{height: '100%', width: '100%', backgroundColor: '#fff'}}>
           <LinearGradient
             colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.7)']}
@@ -331,7 +338,7 @@ const HomeScreen = () => {
               width: '100%',
             }}
           />
-          <Text style={styles.text1}>{item.name}</Text>
+          <Text style={styles.text1}>{item.card_text}</Text>
         </ImageBackground>
       </TouchableOpacity>
     );
@@ -686,36 +693,112 @@ const HomeScreen = () => {
         <View style={styles.contain}>
           <Text style={styles.service}>Our Services</Text>
         </View>
+       
         <FlatList
-          data={Homebanner?.services ? Homebanner?.services : []}
+          data={homeData?.our_services ? homeData?.our_services : []}
           renderItem={renderItem}
           scrollEnabled={false}
-          keyExtractor={item => item.id}
+          // keyExtractor={item => item.id}
           numColumns={3}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContainer}
         />
-        {imagesilder11.length != 0 ? (
+        {/* {imagesilder11.length != 0 ? (
           <ImageSlider
             data={imagesilder11}
             onPress={
               (item, index) => console.log('hh', index, item)
 
-              // alert('Item Pressed', `Item: ${JSON.stringify(item)}, Index: ${index}`)
-              // navigation.navigate('UserProfile')
+              
             }
           />
-        ) : null}
+        ) : null} */}
+
+<View style={styles.containe}>
+  <FlatList
+    data={homeData?.image_banner2 || []}
+    horizontal
+    pagingEnabled={false}
+    
+    decelerationRate="fast"
+    snapToAlignment="center"
+    showsHorizontalScrollIndicator={false}
+    renderItem={({ item, index }) => (
+      <TouchableOpacity
+        onPress={() => onPress(item, index)}
+        style={[
+          styles.imageContaine,
+          { width: wp(85), marginRight: 10, borderColor: item.border_color, backgroundColor: item?.background_color, },
+        ]}
+      >
+        {/* <Image
+          source={{ uri: item.image }}
+          style={styles.imag}
+          resizeMode="cover"
+        /> */}
+
+<View
+    style={[
+      styles.cardContaine,
+    ]}
+  >
+    {item?.cardIcon2?.endsWith('.svg') ? (
+  <SvgUri
+    width={100}
+    height={100}
+    uri={item?.cardIcon1}
+  />
+) : (
+  <Image source={{ uri:item?.cardIcon1 }} style={styles.cardIco} />
+)}
+    
+
+   
+    <View style={styles.textContaine}>
+      <Text style={[styles.titl, { color: item?.text_color }]}>
+        {item?.title}
+      </Text>
+      <Text style={[styles.subtitl, { color: item?.text_color }]}>
+        {item?.title2}
+      </Text>
+    </View>
+{console.log( item?.cardIcon2)}
+{item?.cardIcon2?.endsWith('.svg') ? (
+  <SvgUri
+    width={25}
+    height={25}
+    uri={item?.cardIcon2}
+  />
+) : (
+  <Image
+    source={{ uri: item?.cardIcon2 }}
+    style={styles.cardIco}
+  />
+)}
+
+    {/* <Image source={{ uri: item?.cardIcon2 }} style={styles.cardIco} /> */}
+  </View>
+      </TouchableOpacity>
+    )}
+    contentContainerStyle={{
+      paddingLeft: 20 / 2,
+      paddingRight: 20 / 2,
+    }}
+  />
+
+  {/* ✅ New Card UI (Fixed) */}
+ 
+</View>
 
         <View style={[styles.contain, {marginTop: wp(2)}]}>
           <Text style={styles.service}>Premium Services</Text>
         </View>
         <FlatList
           data={
-            Homebanner?.premium_services ? Homebanner?.premium_services : []
+            homeData?.premium_services ?homeData?.premium_services : []
           }
           renderItem={renderItem1}
-          keyExtractor={item => item.id}
+          // keyExtractor={item => item.id}
           numColumns={3}
           scrollEnabled={false}
           showsVerticalScrollIndicator={false}
@@ -932,6 +1015,10 @@ const HomeScreen = () => {
         </View>
 
         <View style={{backgroundColor: '#faf6ed', marginTop: 25}}>
+        <ImageBackground
+          // resizeMode="contain"
+          source={{uri: `${homeData?.remedies?.content?.mob_background_image}`}}
+          style={{height: hp(32), width: '100%',}}>
           <View style={[styles.contain1, {marginTop: 20}]}>
             <Text style={styles.service}>Remedies</Text>
             <TouchableOpacity
@@ -945,14 +1032,16 @@ const HomeScreen = () => {
               <Text style={styles.service1}>VIEW ALL</Text>
             </TouchableOpacity>
           </View>
+         
           <FlatList
-            data={Homebanner?.remedies?.slice(0, 5)}
+            data={homeData?.remedies?.cards?.slice(0, 5)}
             renderItem={renderItem2}
             keyExtractor={item => item.id}
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{paddingHorizontal: 10, marginBottom: wp(8)}}
           />
+          </ImageBackground>
         </View>
 
         <View style={styles.consultationSection}>
@@ -1018,7 +1107,7 @@ const HomeScreen = () => {
           <View style={styles.cirleContainer}>
             {data?.map((item, index) => (
               <View
-                key={item.id || index} 
+                key={item.id || index}
                 style={{alignItems: 'center', width: '25%', borderWidth: 0}}>
                 <View style={styles.cirleItem}>
                   <Text style={styles.cirle}>{item.title}</Text>
@@ -1081,7 +1170,6 @@ const HomeScreen = () => {
               renderItem={({item}) => (
                 <View style={styles.testimonalsCardWrapper}>
                   <View style={styles.testimonalsCard}>
-                 
                     <Text style={styles.cardUserNameText}>
                       {'Krishnaveni Ji'}
                     </Text>
@@ -1094,7 +1182,7 @@ const HomeScreen = () => {
                         startingValue={2}
                         ratingColor="#F4C76C"
                         readonly
-                        ratingBackgroundColor={colors.lightGrey} 
+                        ratingBackgroundColor={colors.lightGrey}
                       />
                     </View>
                     <Text style={styles.testimonalsCardContant}>
@@ -1117,8 +1205,7 @@ const HomeScreen = () => {
               )}
             />
 
-           
-            <View style={[styles.dotContainer,{marginVertical:20}]}>
+            <View style={[styles.dotContainer, {marginVertical: 20}]}>
               {data5.map((item, index) => (
                 <TouchableOpacity
                   key={index}
@@ -1299,10 +1386,9 @@ const HomeScreen = () => {
           </TouchableOpacity>
 
           <View style={styles.cirleContainer}>
-
-          {data?.map((item, index) => (
+            {data?.map((item, index) => (
               <View
-                key={item.id || index} 
+                key={item.id || index}
                 style={{alignItems: 'center', width: '25%', borderWidth: 0}}>
                 <View style={styles.cirleItem}>
                   <Text style={styles.cirle}>{item.title}</Text>
@@ -1334,7 +1420,6 @@ const HomeScreen = () => {
           <View style={[styles.contain1, {marginBottom: 15}]}>
             <Text style={styles.service}>Latest Blogs</Text>
             <TouchableOpacity
-             
               hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
               <Text style={styles.service1}>VIEW ALL</Text>
             </TouchableOpacity>
@@ -1366,7 +1451,7 @@ const HomeScreen = () => {
                     borderTopLeftRadius: 10,
                     borderTopRightRadius: 10,
                     width: wp(80),
-                    height:hp(30),
+                    height: hp(30),
                     // borderWidth:1,
                     // resizeMode:"contain"
                   }}
@@ -1384,7 +1469,6 @@ const HomeScreen = () => {
                     hassles can be dealing with Windows activation
                     notifications. It feels... like every time we turn around,
                   </Text>
-               
 
                   <Text style={styles.blogCardBtnText}>{'View Details >'}</Text>
                 </View>

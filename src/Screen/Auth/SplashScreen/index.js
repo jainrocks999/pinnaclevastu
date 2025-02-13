@@ -1,13 +1,30 @@
 import { Image, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect } from 'react'
 import { colors } from '../../../Component/colors';
+import { useDispatch } from 'react-redux';
+import {
+  homeApiCall,
+  setHomeBanners,
+  settingJsonCall,
+} from "../../../Redux/Slice/HomeBannerSlice";
 
 const SplashScreen =({navigation})=> {
+  const dispatch =useDispatch();
+
+
     useEffect(() => {
+
         setTimeout(() => {
           navigation.replace('Home');
         }, 2000);
       }, []);
+useEffect(()=>{
+  CallApi();
+},[])
+
+const CallApi = async () => {
+  await dispatch(homeApiCall()); // Correct function call
+};
   return (
     <View style={styles.main}>
      <View style={styles.contain}>   
