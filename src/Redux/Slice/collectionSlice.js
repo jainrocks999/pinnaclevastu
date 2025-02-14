@@ -181,7 +181,9 @@ export const fetchCategory =(
       });
       return axios
         .request(GraphQlConfig(data))
-        .then(response => {  
+        .then(response => {
+          console.log('cateteggghfhfhhf',response.data);
+            
           dispatch(
             SUCCESS({
               CategoryList:response?.data?.data?.collections?.nodes

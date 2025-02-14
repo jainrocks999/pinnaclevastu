@@ -653,7 +653,7 @@ export default StyleSheet.create({
     fontSize: fontSize.Twenty,
     fontFamily: 'Poppins-Medium',
     color: '#324356',
-    marginTop: 20,
+    marginTop: 15,
   },
   testimonalsCardWrapper: {
     width: wp(100),
@@ -699,12 +699,12 @@ export default StyleSheet.create({
     height: wp(22),
     borderRadius: wp(11), // Circular Image
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    // alignItems: 'center',
+    // justifyContent: 'center',
     overflow: 'hidden', // Prevents cutting
     position: 'absolute', // Makes the image float
     top: 0, // Places the image on top of the card
-    alignSelf: 'center', // Centers the image horizontally with the card
+    // alignSelf: 'center', // Centers the image horizontally with the card
     shadowColor: '#202020',
     // shadowColor: '#bdc3c7',
     shadowOffset: {width: 0, height: 4},
@@ -732,7 +732,7 @@ export default StyleSheet.create({
   },
   videoContianer: {
     borderRadius: 20,
-    overflow: 'hidden',
+     overflow: 'hidden',
     marginRight: 10,
   },
   highlightImg: {

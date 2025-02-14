@@ -68,6 +68,22 @@ const HomeScreen = () => {
     state => state?.cart?.cartTotalQuantity,
   );
 
+  const getYouTubeEmbedUrl1 = (url) => {
+    const videoId = url.split('v=')[1]?.split('&')[0]; // Extract video ID
+    return `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=1&showinfo=0&rel=0&modestbranding=1&fs=1`;
+  };
+  
+  const getYouTubeEmbedUrl = (url) => {
+    if (url.includes("youtube.com") || url.includes("youtu.be")) {
+      const videoIdMatch = url.match(/(?:v=|\/)([0-9A-Za-z_-]{11})/);
+      const videoId = videoIdMatch ? videoIdMatch[1] : null;
+      return videoId
+        ? `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=1&rel=0&modestbranding=1&fs=1`
+        : url;
+    }
+    
+    return url; // Return normal video URL as is (e.g., .mp4)
+  };
   const [imageHeights, setImageHeights] = useState({});
   const newArray = [];
   // (Homebanner?.home_slider?.[0]?.slider_items || []).forEach(item => {
@@ -1163,16 +1179,21 @@ const HomeScreen = () => {
             </Text> */}
           </View>
         </View>
-        {console.log('hdfhfdhjjkjkdsjdsjsdjkksj',homeData?.custom_testimonial)
-        }
-        <View style={styles.testimonalSection}>
+      
+           <ImageBackground
+            // resizeMode="contain"
+            source={{
+              uri: `${homeData?.custom_testimonial?.content?.mob_background_image}`,
+            }}
+            style={styles.testimonalSection}>
+        <View >
           <View style={{alignSelf: 'center', borderWidth: 0.1}}>
-            <Text style={styles.Testimonals}>Testimonials</Text>
+            <Text style={styles.Testimonals}>{homeData?.custom_testimonial?.content?.heading}</Text>
           </View>
           <View style={{marginTop: 10, paddingVertical: 5}}>
             <FlatList
-              data={data5}
-              keyExtractor={item => item.id}
+              data={homeData?.custom_testimonial?.custom_review?homeData?.custom_testimonial?.custom_review:[]}
+              // keyExtractor={item => item.id}
               horizontal
               showsHorizontalScrollIndicator={false}
               pagingEnabled
@@ -1186,11 +1207,11 @@ const HomeScreen = () => {
                 const currentIndex = Math.round(contentOffsetX / wp(100));
                 setCurrentIndex(currentIndex);
               }}
-              renderItem={({item}) => (
+              renderItem={({item,index}) => (
                 <View style={styles.testimonalsCardWrapper}>
                   <View style={styles.testimonalsCard}>
                     <Text style={styles.cardUserNameText}>
-                      {'Krishnaveni Ji'}
+                      {item?.reviewer_name}
                     </Text>
                     <View style={styles.starContainer}>
                       <Rating
@@ -1198,25 +1219,25 @@ const HomeScreen = () => {
                         tintColor={colors.white}
                         ratingCount={5}
                         imageSize={16}
-                        startingValue={2}
+                        startingValue={3}
                         ratingColor="#F4C76C"
                         readonly
                         ratingBackgroundColor={colors.lightGrey}
                       />
                     </View>
                     <Text style={styles.testimonalsCardContant}>
-                      {item.review ||
-                        "“Am really grateful to be a part of the pinnacle vastu. It gives immense opportunity for everyone associated with it. It's an amazing experience working with this organisation! Vastu products are of high quality & value. Everything is done very professionally.”"}
+                     {item?.review_text}
                     </Text>
                   </View>
 
                   <View style={styles.CardProfileImage}>
                     <Image
-                      source={require('../../../assets/image/Remedies/Image-not.png')}
+                    source={{uri:item?.mob_review_image}}
+                      // source={require('../../../assets/image/Remedies/Image-not.png')}
                       style={{
                         width: '100%',
                         height: '100%',
-                        resizeMode: 'cover',
+                        // resizeMode: 'cover',
                       }}
                     />
                   </View>
@@ -1225,7 +1246,7 @@ const HomeScreen = () => {
             />
 
             <View style={[styles.dotContainer, {marginVertical: 20}]}>
-              {data5.map((item, index) => (
+              {homeData?.custom_testimonial?.custom_review?.map((item, index) => (
                 <TouchableOpacity
                   key={index}
                   style={[
@@ -1237,8 +1258,11 @@ const HomeScreen = () => {
               ))}
             </View>
           </View>
-        </View>
 
+          {console.log('hdfhfdhjjkjkdsjdsjsdjkksj',homeData?.custom_testimonial)
+        }
+        </View>
+        </ImageBackground>
         <ImageBackground
           style={styles.costCalBannerImg}
           source={require('../../../assets/otherApp/costCal.png')}>
@@ -1317,10 +1341,12 @@ const HomeScreen = () => {
           </TouchableOpacity>
         </LinearGradient>
 
+      
+
         <View style={[styles.contain, {marginTop: 30}]}>
           <Text
-            style={[styles.service, {textAlign: 'center', marginVertical: 10}]}>
-            Captured Highlights
+            style={[styles.service, {textAlign: 'center', marginVertical: 10,color:homeData?.captured_highlights?.title_color}]}>
+           {homeData?.captured_highlights?.title}
           </Text>
         </View>
 
@@ -1349,20 +1375,23 @@ const HomeScreen = () => {
           </TouchableOpacity>
         </View>
         <FlatList
-          data={Homebanner?.remedies?.slice(0, 3)}
+          data={isPhoto ?homeData?.captured_highlights?.image:homeData?.captured_highlights?.video}
           renderItem={({item}) => {
             return isPhoto ? (
               <Image
                 style={styles.highlightImg}
-                source={require('../../../assets/otherApp/highlightsImg.png')}
+                source={{uri:item.mob_photo}}
+                // source={require('../../../assets/otherApp/highlightsImg.png')}
               />
             ) : (
-              <View style={styles.videoContianer}>
+              <View style={[styles.videoContianer,{height: wp(50), width: wp(85)}]}>
                 <WebView
-                  source={{
-                    uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-                  }}
-                  style={{height: wp(50), width: wp(85)}}
+                  // source={{
+                  //   uri:  item.video_url
+                  //    uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+                  // }}
+                  source={{ uri: getYouTubeEmbedUrl(item.video_url) }}
+                   style={{ height:'100%',width:'100%'}}
                   javaScriptEnabled={true}
                   domStorageEnabled={true}
                   allowsFullscreenVideo={true}
@@ -1375,22 +1404,15 @@ const HomeScreen = () => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{paddingHorizontal: 10}}
         />
+         
         <View style={[styles.contain]}>
-          <Text style={[styles.service1, {textDecorationLine: 'none'}]}>
-            Since 2010
+          <Text style={[styles.service1, {textDecorationLine: 'none',color:homeData?.about_pinnacle_vastu?.content?.subheading_color}]}>
+           {homeData?.about_pinnacle_vastu?.content?.subheading}
           </Text>
-          <Text style={styles.service}>About Pinnacle Vastu</Text>
+          <Text style={[styles.service,{color:homeData?.about_pinnacle_vastu?.content?.heading_color}]}>{homeData?.about_pinnacle_vastu?.content?.heading}</Text>
 
-          <Text style={styles.selectedText}>
-            Occult Sciences is a concept of healing and therapeutic energies
-            that extends a better living style, and Pinnacle Vastu is
-            extensively working on the remedies and practical analysis of the
-            situation. From learning to implementing, Pinnacle Vastu offers it
-            all. With over 60 franchises spread across India including Dubai and
-            Australia, Pinnacle Vastu is dedicated to the services like Vastu,
-            Numerology, and Astrology Consultancy, Courses, and Remedies. In
-            all, Pinnacle Vastu is a one-stop destination for Occult Sciences
-            and its application.
+          <Text style={[styles.selectedText,{color:homeData?.about_pinnacle_vastu?.content?.description_color}]}>
+          {homeData?.about_pinnacle_vastu?.content?.description}
           </Text>
 
           <TouchableOpacity onPress={() => console.log('hy!')}>
@@ -1398,21 +1420,21 @@ const HomeScreen = () => {
               style={[
                 styles.cardBtn,
                 styles.btnFontSize,
-                {marginVertical: 15},
+                {marginVertical: 15,color:homeData?.about_pinnacle_vastu?.content?.button_text_color},
               ]}>
-              Read More
+            {homeData?.about_pinnacle_vastu?.content?.button_text}
             </Text>
           </TouchableOpacity>
 
           <View style={styles.cirleContainer}>
-            {data?.map((item, index) => (
+            {homeData?.about_pinnacle_vastu?.items?.map((item, index) => (
               <View
                 key={item.id || index}
                 style={{alignItems: 'center', width: '25%', borderWidth: 0}}>
                 <View style={styles.cirleItem}>
-                  <Text style={styles.cirle}>{item.title}</Text>
+                  <Text style={styles.cirle}>{item.stat_value}</Text>
                 </View>
-                <Text style={styles.cirletext}>{item?.name}</Text>
+                <Text style={styles.cirletext}>{item?.stat_label}</Text>
               </View>
             ))}
           </View>
@@ -1426,12 +1448,13 @@ const HomeScreen = () => {
             <Image
               // width={wp(95)}
               style={[styles.bannerImg2, {borderRadius: 15}]}
-              source={require('../../../assets/otherApp/demo3.png')}
+              source={{uri:homeData?.about_pinnacle_vastu?.content?.mob_image}}
+              // source={require('../../../assets/otherApp/demo3.png')}
             />
-            <Text style={[styles.costCalBannerText, {bottom: 20}]}>
+            {/* <Text style={[styles.costCalBannerText, {bottom: 20}]}>
               We believe in doing the right things with integrity, honesty, and
               reliability.
-            </Text>
+            </Text> */}
           </View>
         </View>
 
