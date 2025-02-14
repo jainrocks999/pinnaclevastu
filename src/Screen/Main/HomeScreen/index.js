@@ -38,6 +38,8 @@ import {consultationDetail1} from '../../../Redux/Slice/ConsultancySlice';
 import {Dropdown} from 'react-native-element-dropdown';
 import WebView from 'react-native-webview';
 import {SvgUri} from 'react-native-svg';
+import {fetchCollection} from '../../../Redux/Slice/collectionSlice';
+
 let backPress = 0;
 const HomeScreen = () => {
   const flatListRef = useRef(null);
@@ -52,6 +54,8 @@ const HomeScreen = () => {
   const placeholderText = 'Search';
   const [displayedText, setDisplayedText] = useState('');
   const [displayedText1, setDisplayedText1] = useState('');
+
+  const RemediesCategor1 = useSelector(state => state.collection?.products);
 
   const homeData = useSelector(state => state?.HomeBanner);
 
@@ -109,6 +113,7 @@ const HomeScreen = () => {
 
   const apicall = async () => {
     await dispatch(Banner({url: 'home-slider'}));
+    await dispatch(fetchCollection('gid://shopify/Collection/488102920499'));
   };
 
   useEffect(() => {
@@ -251,6 +256,16 @@ const HomeScreen = () => {
     const {width: imgWidth, height: imgHeight} = event.nativeEvent.source;
     const calculatedHeight = (defaultHeight * imgHeight) / imgWidth;
     setImageHeights(prev => ({...prev, [id]: calculatedHeight}));
+  };
+
+  const extractFirstItem = htmlString => {
+    const plainText = htmlString.replace(/<[^>]+>/g, ' ');
+
+    const firstItem = plainText
+      ?.split('\n')
+      .filter(line => line?.trim() !== '')[0];
+
+    return firstItem?.trim();
   };
 
   const renderItem = ({item, index}) => {
@@ -500,13 +515,13 @@ const HomeScreen = () => {
     );
   };
 
-  const renderItem6 = ({item,index}) => {
+  const renderItem6 = ({item, index}) => {
     return (
       <TouchableOpacity
-        style={[{height: wp(70), width: wp(55)}, styles.cardContainer3]}>  
+        style={[{height: wp(70), width: wp(55)}, styles.cardContainer3]}>
         <ImageBackground
           // resizeMode="contain"
-          source={{uri:item?.mob_card_background}}
+          source={{uri: item?.mob_card_background}}
           style={{height: '100%', width: '100%'}}>
           <LinearGradient
             colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.7)']}
@@ -529,20 +544,16 @@ const HomeScreen = () => {
       <TouchableOpacity
         onPress={() => CouseDetail1(item)}
         style={[styles.card, {margin: 0, marginLeft: 15}]}>
-        {/* <AutoHeightImage
-          source={
-            item.image == null
-              ? require('../../../assets/otherApp/courseCard1.png')
-              : {uri: `${Imagepath.Path}${item?.image}`}
-          }
-          width={wp(65)}
-          // style={styles.cardImg}
-        /> */}
         <Image
+          // source={
+          //   item.image == null
+          //     ? require('../../../assets/otherApp/courseCard1.png')
+          //     : {uri: `${Imagepath.Path}${item?.image}`}
+          // }
           source={
-            item.image == null
-              ? require('../../../assets/otherApp/courseCard1.png')
-              : {uri: `${Imagepath.Path}${item?.image}`}
+            item?.node?.variants?.edges?.[0]?.node?.image?.src
+              ? {uri: `${item?.node?.variants?.edges?.[0]?.node?.image?.src}`}
+              : require('../../../assets/image/Remedies/Image-not.png')
           }
           width={wp(65)}
           style={[
@@ -559,42 +570,37 @@ const HomeScreen = () => {
           {isLiveCourse ? (
             <Text style={styles.DateText}>{item?.start_date}</Text>
           ) : null}
-          <Text style={styles.titleText}>{item?.title}</Text>
+          <Text style={styles.titleText}>
+            {' '}
+            {item?.node?.title
+              ? item?.node?.title.length > 20
+                ? `${item?.node?.title.substring(0, 20)}...`
+                : item?.node.title
+              : ' '}
+          </Text>
 
           <Text style={styles.regularText}>
-            {item?.short_description
-              ? item?.short_description.length > 45
-                ? `${item?.short_description.substring(0, 45)}...`
-                : item?.short_description
-              : ''}
+            {extractFirstItem(item?.node?.descriptionHtml)?.length > 45
+              ? `${extractFirstItem(item?.node?.descriptionHtml).substring(
+                  0,
+                  45,
+                )}...`
+              : extractFirstItem(item?.node?.descriptionHtml) || ''}
           </Text>
           {/* <Text style={styles.price}>{`₹ ${item?.price}`}</Text> */}
 
           <View style={{flexDirection: 'row', gap: 10}}>
             <Text style={[styles.price]}>
-              {`₹ ${
-                userType === 'customers' && item?.sale_price
-                  ? item?.sale_price
-                  : userType === 'student' && item?.student_price
-                  ? item?.student_price
-                  : userType === 'franchise' && item?.franchise_price
-                  ? item?.franchise_price
-                  : item?.price
-              }`}
+              {`₹ ${item?.node?.variants?.edges?.[0].node?.price.amount}`}
             </Text>
-            {userType &&
-            (item?.sale_price < item?.price ||
-              item?.student_price < item?.price ||
-              item?.franchise_price < item?.price) &&
-            (item?.sale_price ||
-              item?.student_price ||
-              item?.franchise_price) ? (
+            {item?.node?.variants?.edges?.[0].node?.compareAtPrice ? (
               <Text
                 style={[
                   styles.price,
                   {textDecorationLine: 'line-through', color: 'gray'},
                 ]}>
-                ₹ {item?.price}
+                ₹{' '}
+                {item?.node?.variants?.edges?.[0].node?.compareAtPrice?.amount}
               </Text>
             ) : null}
           </View>
@@ -719,13 +725,12 @@ const HomeScreen = () => {
           />
         ) : null} */}
 
-        <View style={styles.containe}>
+        <View style={[styles.containe, {marginVertical: 10}]}>
           <FlatList
             data={homeData?.image_banner2 || []}
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={[
-            
               {paddingHorizontal: 10, marginBottom: wp(0)},
             ]}
             onMomentumScrollEnd={e => {
@@ -745,13 +750,12 @@ const HomeScreen = () => {
                     backgroundColor: item?.background_color,
                   },
                 ]}>
-
-                <View style={[styles.cardContaine]}>
+                <View style={[styles.cardContaine, {paddingRight: 10}]}>
                   <View style={{marginLeft: -6}}>
                     {item?.cardIcon2?.endsWith('.svg') ? (
                       <SvgUri
-                        width={100}
-                        height={100}
+                        width={wp(20)}
+                        height={wp(28)}
                         uri={item?.cardIcon1}
                         resizeMode="contain"
                       />
@@ -768,15 +772,13 @@ const HomeScreen = () => {
                   </View>
 
                   <View style={styles.textContaine}>
-                    <Text style={[styles.titl, {color: item?.text_color}]}>
-                      {item?.title}
-                    </Text>
+                    <Text style={[styles.titl]}>{item?.title}</Text>
                     <Text style={[styles.subtitl, {color: item?.text_color}]}>
                       {item?.title2}
                     </Text>
                   </View>
                   {item?.cardIcon2?.endsWith('.svg') ? (
-                    <SvgUri width={20} height={20} uri={item?.cardIcon2} />
+                    <SvgUri width={15} height={15} uri={item?.cardIcon2} />
                   ) : (
                     <Image
                       source={{uri: item?.cardIcon2}}
@@ -786,10 +788,9 @@ const HomeScreen = () => {
                 </View>
               </TouchableOpacity>
             )}
-           
           />
 
-<View style={[styles.dotContainer, {marginTop: 10}]}>
+          <View style={[styles.dotContainer, {marginTop: 10}]}>
             {homeData?.image_banner2?.map((item, index) => (
               <TouchableOpacity
                 key={index}
@@ -894,11 +895,12 @@ const HomeScreen = () => {
           <FlatList
             ref={flatListRef}
             contentContainerStyle={[styles.cardContainer0, {gap: 0}]}
-            data={
-              isLiveCourse
-                ? Homebanner?.live_courses?.slice(0, 4) || []
-                : Homebanner?.recoded_courses?.slice(0, 4) || []
-            }
+            // data={
+            //   isLiveCourse
+            //     ? Homebanner?.live_courses?.slice(0, 4) || []
+            //     : Homebanner?.recoded_courses?.slice(0, 4) || []
+            // }
+            data={RemediesCategor1 ? RemediesCategor1 : []}
             renderItem={renderCard}
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -944,10 +946,10 @@ const HomeScreen = () => {
                   marginTop: hp(19),
                 },
               ]}>
-            {homeData?.how_it_works?.content?.work_heading}
+              {homeData?.how_it_works?.content?.work_heading}
             </Text>
             <Text style={[styles.subHeadText, {marginBottom: 20}]}>
-            {homeData?.how_it_works?.content?.description}
+              {homeData?.how_it_works?.content?.description}
               {/* Become a professional consultant in 3 simple steps */}
             </Text>
             <FlatList
@@ -1110,10 +1112,20 @@ const HomeScreen = () => {
           </View>
         </View>
         <View style={[styles.contain1, {}]}>
-          <Text style={[styles.service,{color:homeData?.core_values?.content?.heading_color}]}>{homeData?.core_values?.content?.heading}</Text>
+          <Text
+            style={[
+              styles.service,
+              {color: homeData?.core_values?.content?.heading_color},
+            ]}>
+            {homeData?.core_values?.content?.heading}
+          </Text>
         </View>
         <View style={[{paddingHorizontal: 15, paddingVertical: 20}]}>
-          <Text style={[styles.CoreValues,{ color: homeData?.core_values?.content?.description_color}]}>
+          <Text
+            style={[
+              styles.CoreValues,
+              {color: homeData?.core_values?.content?.description_color},
+            ]}>
             {homeData?.core_values?.content?.description}
             {/* We’re passionate & believe in motivating leadership. We focus to
             move forward in faith than following a superstitious path.
@@ -1146,7 +1158,7 @@ const HomeScreen = () => {
               style={styles.bannerImg2}
               // source={require('../../../assets/image/Sc.png')}
               // source={require('../../../assets/otherApp/coreValuesBanner.png')}
-              source={{uri:homeData?.core_values?.content?.mob_image}}
+              source={{uri: homeData?.core_values?.content?.mob_image}}
             />
             {/* <LinearGradient
               colors={['rgba(0,0,0,0)', '#003251']}
@@ -1163,8 +1175,7 @@ const HomeScreen = () => {
             </Text> */}
           </View>
         </View>
-        {console.log('hdfhfdhjjkjkdsjdsjsdjkksj',homeData?.custom_testimonial)
-        }
+        {/* {console.log('hdfhfdhjjkjkdsjdsjsdjkksj', homeData?.custom_testimonial)} */}
         <View style={styles.testimonalSection}>
           <View style={{alignSelf: 'center', borderWidth: 0.1}}>
             <Text style={styles.Testimonals}>Testimonials</Text>
