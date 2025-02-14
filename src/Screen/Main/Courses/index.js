@@ -1,4 +1,3 @@
-
 import {
   View,
   Text,
@@ -12,7 +11,11 @@ import React, {useEffect, useState} from 'react';
 import styles from './styles';
 
 import {colors} from '../../../Component/colors';
-import {clearRemeiesDetail1, CourceDetailApi, CourceLis} from '../../../Redux/Slice/HomeSlice';
+import {
+  clearRemeiesDetail1,
+  CourceDetailApi,
+  CourceLis,
+} from '../../../Redux/Slice/HomeSlice';
 import {useDispatch, useSelector} from 'react-redux';
 import Loader from '../../../Component/Loader';
 import {useIsFocused} from '@react-navigation/native';
@@ -20,9 +23,9 @@ import Imagepath from '../../../Component/Imagepath';
 import {widthPrecent} from '../../../Component/ResponsiveScreen/responsive';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import style from '../HomeScreen/style';
-import { fetchCollection } from '../../../Redux/Slice/collectionSlice';
-import { fetchProduct, InitProduct } from '../../../Redux/Slice/productSlice';
-import { getProductMetafieldsApiCall } from '../../../Redux/Api';
+import {fetchCollection} from '../../../Redux/Slice/collectionSlice';
+import {fetchProduct, InitProduct} from '../../../Redux/Slice/productSlice';
+import {getProductMetafieldsApiCall} from '../../../Redux/Api';
 
 const OtherCourses = ({navigation}) => {
   const [isLiveCourse, setIsLiveCourse] = useState(true);
@@ -37,21 +40,18 @@ const OtherCourses = ({navigation}) => {
   );
   const focus = useIsFocused();
   const dispatch = useDispatch();
-  const CouseDetail1 = async( item,id) => {
+  const CouseDetail1 = async (item, id) => {
+    dispatch(clearRemeiesDetail1());
 
-    
-        dispatch(clearRemeiesDetail1());
-    
-    
-        if (Object.keys(item).length == 0) {
-        } else {
-          dispatch(InitProduct());
-          dispatch(fetchProduct(id));
-        }
-      const data = await getProductMetafieldsApiCall(id);
-      console.log('datata get by meta feild',id);
-      navigation.navigate('CourseDetail', {coursetype: isLiveCourse});
-      //  navigation.navigate('ProductDetail', {data: item});
+    if (Object.keys(item).length == 0) {
+    } else {
+      dispatch(InitProduct());
+      dispatch(fetchProduct(id));
+    }
+    const data = await getProductMetafieldsApiCall(id);
+    console.log('datata get by meta feild', id);
+    navigation.navigate('CourseDetail', {coursetype: isLiveCourse});
+    //  navigation.navigate('ProductDetail', {data: item});
     // await dispatch(
     //   CourceDetailApi({
     //     url: 'fetch-courses-details',
@@ -97,10 +97,7 @@ const OtherCourses = ({navigation}) => {
   };
 
   const apicall = async () => {
-
-
- await dispatch(fetchCollection("gid://shopify/Collection/488102920499"));
-
+    await dispatch(fetchCollection('gid://shopify/Collection/488102920499'));
 
     // await dispatch(CourceLis({url: 'fetch-courses', slug: 'live'}));
   };
@@ -127,23 +124,24 @@ const OtherCourses = ({navigation}) => {
     setImageHeights(prev => ({...prev, [id]: calculatedHeight}));
   };
 
-
-
-  const extractFirstItem = (htmlString) => {
+  const extractFirstItem = htmlString => {
     // 1. Sabhi HTML tags remove karne ke liye regex
-    const plainText = htmlString.replace(/<[^>]+>/g, " ");
-  
+    const plainText = htmlString.replace(/<[^>]+>/g, ' ');
+
     // 2. Pehli line ya pehli list item extract karna
-    const firstItem = plainText?.split("\n").filter(line => line?.trim() !== "")[0];
-  
+    const firstItem = plainText
+      ?.split('\n')
+      .filter(line => line?.trim() !== '')[0];
+
     return firstItem?.trim();
   };
-
 
   const renderCard = ({item}) => {
     return (
       <View style={styles.card}>
-        <TouchableOpacity onPress={() => CouseDetail1(item,item?.node?.id)} style={{flex: 1}}>
+        <TouchableOpacity
+          onPress={() => CouseDetail1(item, item?.node?.id)}
+          style={{flex: 1}}>
           <Image
             source={
               item?.node?.variants?.edges?.[0]?.node?.image?.src
@@ -155,7 +153,8 @@ const OtherCourses = ({navigation}) => {
               styles.cardImg,
               {
                 height:
-                  imageHeights[item?.node?.id] || widthPrecent(isLiveCourse ? 45 : 25),
+                  imageHeights[item?.node?.id] ||
+                  widthPrecent(isLiveCourse ? 45 : 25),
               },
             ]}
             onLoad={e => handleImageLoad(e, item?.node?.id)}
@@ -165,36 +164,45 @@ const OtherCourses = ({navigation}) => {
             {!isLiveCourse ? null : (
               <Text style={styles.DateText}>{item?.start_date}</Text>
             )}
-            <Text style={styles.titleText}> {item?.node?.title
-              ? item?.node?.title.length > 20
-                ? `${item?.node?.title.substring(0, 20)}...`
-                : item?.node.title
-              : ' '}</Text>
-            <Text style={[styles.regularText,styles.shortDescription]}>
-            {extractFirstItem(item?.node?.descriptionHtml)?.length > 45
-  ? `${extractFirstItem(item?.node?.descriptionHtml).substring(0, 45)}...`
-  : extractFirstItem(item?.node?.descriptionHtml) || ''}
+            <Text style={styles.titleText}>
+              {' '}
+              {item?.node?.title
+                ? item?.node?.title.length > 20
+                  ? `${item?.node?.title.substring(0, 20)}...`
+                  : item?.node.title
+                : ' '}
             </Text>
-           
+            <Text style={[styles.regularText, styles.shortDescription]}>
+              {extractFirstItem(item?.node?.descriptionHtml)?.length > 45
+                ? `${extractFirstItem(item?.node?.descriptionHtml).substring(
+                    0,
+                    45,
+                  )}...`
+                : extractFirstItem(item?.node?.descriptionHtml) || ''}
+            </Text>
+
             <View style={{flexDirection: 'row', gap: 10}}>
               <Text style={[styles.price]}>
-              {`₹ ${
-                item?.node?.variants?.edges?.[0].node?.price.amount
-              }`}
+                {`₹ ${item?.node?.variants?.edges?.[0].node?.price.amount}`}
               </Text>
-              {item?.node?.variants?.edges?.[0].node?.compareAtPrice?(
+              {item?.node?.variants?.edges?.[0].node?.compareAtPrice ? (
                 <Text
                   style={[
                     styles.price,
                     {textDecorationLine: 'line-through', color: 'gray'},
                   ]}>
-                  ₹ {item?.node?.variants?.edges?.[0].node?.compareAtPrice?.amount}
+                  ₹{' '}
+                  {
+                    item?.node?.variants?.edges?.[0].node?.compareAtPrice
+                      ?.amount
+                  }
                 </Text>
               ) : null}
             </View>
 
-             <TouchableOpacity onPress={() => CouseDetail1(item,item?.node?.id)}> 
-            <Text style={styles.cardBtn}>View Details</Text>
+            <TouchableOpacity
+              onPress={() => CouseDetail1(item, item?.node?.id)}>
+              <Text style={styles.cardBtn}>View Details</Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
@@ -250,7 +258,9 @@ const OtherCourses = ({navigation}) => {
             disabled={isLiveCourse}
             onPress={async () => {
               setIsLiveCourse(true);
-              await dispatch(fetchCollection("gid://shopify/Collection/488102920499"));
+              await dispatch(
+                fetchCollection('gid://shopify/Collection/488102920499'),
+              );
               // await dispatch(CourceLis({url: 'fetch-courses', slug: 'live'}));
             }}>
             <Text
@@ -267,7 +277,9 @@ const OtherCourses = ({navigation}) => {
             disabled={!isLiveCourse}
             onPress={async () => {
               setIsLiveCourse(false);
-              await dispatch(fetchCollection("gid://shopify/Collection/488102953267"));
+              await dispatch(
+                fetchCollection('gid://shopify/Collection/488102953267'),
+              );
               // await dispatch(
               //   CourceLis({url: 'fetch-courses', slug: 'recorded'}),
               // );

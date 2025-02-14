@@ -611,7 +611,7 @@ export default StyleSheet.create({
   CoreValues: {
     fontFamily: 'Poppins-Regular',
     fontSize: fontSize.Sixteen,
-   
+
     width: '95%',
   },
   cirleContainer: {
@@ -711,9 +711,9 @@ export default StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 30,
-    borderWidth:2,
-    borderColor:colors.white,
-    marginVertical:20
+    borderWidth: 2,
+    borderColor: colors.white,
+    marginVertical: 20,
   },
   costCalBannerImg: {
     height: wp(80),
@@ -800,7 +800,6 @@ export default StyleSheet.create({
     alignItems: 'center',
     marginTop: 0,
     borderRadius: 10,
-   
   },
   cardIco: {
     width: 20,
@@ -812,21 +811,16 @@ export default StyleSheet.create({
     marginHorizontal: 0,
   },
   titl: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    // textAlign: 'center',
+    color: colors.heading,
+    fontSize: fontSize.Sixteen,
+    fontFamily: 'Poppins-Medium',
   },
   subtitl: {
-    fontSize: 14,
-    textAlign: 'center',
-    marginTop: 5,
+    // marginTop: 5,
+    // textAlign: 'center',
+    fontSize: fontSize.Sixteen,
+    fontFamily: 'Poppins-SemiBold',
+    
   },
-
-
-
-
-
-
-
-
 });
