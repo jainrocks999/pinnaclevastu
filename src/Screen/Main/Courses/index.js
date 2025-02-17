@@ -30,7 +30,7 @@ import {getProductMetafieldsApiCall} from '../../../Redux/Api';
 const OtherCourses = ({navigation}) => {
   const [isLiveCourse, setIsLiveCourse] = useState(true);
   const [userType, setUserType] = useState('');
-  const RemediesCategor1 = useSelector(state => state.collection?.products);
+  const RemediesCategor1 = useSelector(state => state.collection?.courseData);
   const placeholderText = 'Search';
   const [displayedText, setDisplayedText] = useState('');
   const Live_cource = useSelector(state => state?.home?.Cource);

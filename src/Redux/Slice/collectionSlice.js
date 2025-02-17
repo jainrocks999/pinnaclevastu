@@ -22,10 +22,10 @@ import {
 } from '../../common/queries';
 import Toast from 'react-native-simple-toast';
 
-
 const initialState = {
   products: [],
-  CategoryList:[],
+  courseData: [],
+  CategoryData: [],
   collectionId: '',
   collectionTitle: '',
   isLoading: false,
@@ -56,7 +56,6 @@ const initialState = {
   // isGridLoading: false,
   // collectionName: ''
 };
-
 export const CollectionSlice = createSlice({
   name: 'collection',
   initialState,
@@ -66,8 +65,20 @@ export const CollectionSlice = createSlice({
     },
     SUCCESS: (state, action) => {
       state.isLoading = false;
-      state.CategoryList=action.payload.CategoryList;
+      state.CategoryList = action.payload.CategoryList;
       state.products = action.payload.products;
+      state.collectionId = action.payload.collectionId;
+      state.collectionSize = action.payload.collectionSize;
+      state.collectionTitle = action.payload.collectionTitle;
+      state.filters = action.payload.filters;
+      state.endCursor = action.payload.endCursor;
+      state.error = action.payload.error;
+      state.countData = action.payload.countData;
+    },
+    GET_COURSEDATA_SUCCESS: (state, action) => {
+      state.isLoading = false;
+      state.CategoryList = action.payload.CategoryList;
+      state.courseData = action.payload.products;
       state.collectionId = action.payload.collectionId;
       state.collectionSize = action.payload.collectionSize;
       state.collectionTitle = action.payload.collectionTitle;
@@ -109,6 +120,7 @@ export const {
   SUCCESS,
   FAILED,
   INITIAL,
+  GET_COURSEDATA_SUCCESS,
   GET_FILTER_SUCCESS,
   GET_COLLECTION_LOADING,
   GET_BANNER_LOADING,
@@ -167,26 +179,22 @@ export const GetSortOrder = async (collectionHandle, collectionsort) => {
   ];
 };
 
-export const fetchCategory =(
-
-) => {
+export const fetchCategory = () => {
   return async dispatch => {
     try {
       dispatch(LOADING());
-    
-     
+
       let data = JSON.stringify({
         query: categoryList,
-      
       });
       return axios
         .request(GraphQlConfig(data))
         .then(response => {
-          console.log('cateteggghfhfhhf',response.data);
-            
+          console.log('cateteggghfhfhhf', response.data);
+
           dispatch(
             SUCCESS({
-              CategoryList:response?.data?.data?.collections?.nodes
+              CategoryList: response?.data?.data?.collections?.nodes,
             }),
           );
         })
@@ -201,9 +209,6 @@ export const fetchCategory =(
   };
 };
 
-
-
-
 export const fetchCollection = (
   collectionId,
   // CollectionTitle,
@@ -212,12 +217,12 @@ export const fetchCollection = (
   return async dispatch => {
     try {
       dispatch(LOADING());
-     console.log('collectionId',collectionId);
-     
+      console.log('collectionId', collectionId);
+
       let data = JSON.stringify({
         query: getProducts,
         variables: {
-          id:collectionId,
+          id: collectionId,
           // id: convertCollectionId(collectionId),
           first: 10,
           after: null,
@@ -226,19 +231,31 @@ export const fetchCollection = (
       return axios
         .request(GraphQlConfig(data))
         .then(response => {
-        
-          
-          dispatch(
-            SUCCESS({
-              
-               products: response?.data?.data?.collection?.products?.edges,
-               filters: response?.data?.data?.collection?.products?.filters,
-               endCursor: response?.data?.data?.collection?.products?.pageInfo,
+          const isCourseIncluded =
+            response?.data?.data?.collection?.title
+              ?.toLowerCase()
+              .includes('course') || false;
+          if (isCourseIncluded) {
+            dispatch(
+              GET_COURSEDATA_SUCCESS({
+                products: response?.data?.data?.collection?.products?.edges,
+                filters: response?.data?.data?.collection?.products?.filters,
+                endCursor: response?.data?.data?.collection?.products?.pageInfo,
                 collectionId: collectionId,
-              //  collectionSize: collectionSize,
-              // collectionTitle: CollectionTitle,
-            }),
-          );
+              }),
+            );
+          } else {
+            dispatch(
+              SUCCESS({
+                products: response?.data?.data?.collection?.products?.edges,
+                filters: response?.data?.data?.collection?.products?.filters,
+                endCursor: response?.data?.data?.collection?.products?.pageInfo,
+                collectionId: collectionId,
+                //  collectionSize: collectionSize,
+                // collectionTitle: CollectionTitle,
+              }),
+            );
+          }
         })
         .catch(error => {
           console.log(error);

@@ -1,6 +1,7 @@
 import {createSlice} from '@reduxjs/toolkit';
 import axios from 'axios';
 import {
+  ACCESS_TOKEN,
   Authentication,
   FILTER_URL,
   MAIN_URL,
@@ -17,10 +18,14 @@ import {getThemdata} from '../../models/them';
 import {ACCESSTOKEN} from '../../common/shopifyClient';
 import {getProductMetafieldsApiCall} from '../services/ApiService';
 import {getSimilerProducts} from '../../models/getSimilerProduct';
+// import {GetExtraData, GraphQlConfig} from '../../common/queries';
+import {GetExtraData, GraphQlConfig} from '../../common/queries';
+import Config from '../../common/config.json';
 // import { processProducts } from "./CollectionSlice";
 
 const initialState = {
   isLoading: true,
+  isExtraDataLoading: false,
   error: '',
   slider1: [],
   slider2: [],
@@ -44,15 +49,18 @@ const initialState = {
   image_banner2: [],
   our_services: [],
   premium_services: [],
-  courses: [],
   custom_testimonial: [],
-  best_Products: [],
   how_it_works: [],
   remedies: [],
   core_values: [],
   captured_highlights: [],
   about_pinnacle_vastu: [],
+  best_Products_section: [],
+  best_Products: [],
+  featured_blog_section: [],
   featured_blog: [],
+  courses_section: [],
+  course: [],
 };
 
 export const HomeBannerSlice = createSlice({
@@ -84,20 +92,45 @@ export const HomeBannerSlice = createSlice({
       state.image_banner2 = action.payload.image_banner2;
       state.our_services = action.payload.our_services;
       state.premium_services = action.payload.premium_services;
-      state.courses = action.payload.courses;
       state.custom_testimonial = action.payload.custom_testimonial;
-      state.best_Products = action.payload.best_Products;
       state.how_it_works = action.payload.how_it_works;
       state.remedies = action.payload.remedies;
       state.core_values = action.payload.core_values;
       state.captured_highlights = action.payload.captured_highlights;
       state.about_pinnacle_vastu = action.payload.about_pinnacle_vastu;
-      state.featured_blog = action.payload.featured_blog;
+      state.best_Products_section = action.payload.best_Products_section;
+      state.featured_blog_section = action.payload.featured_blog_section;
+      state.courses_section = action.payload.courses_section;
     },
     FAILED: (state, action) => {
       state.error = action.payload.error;
       state.isLoading = false;
     },
+    GET_EXTRADATA_LOADING: state => {
+      state.isExtraDataLoading = true;
+    },
+    GET_EXTRADATA_FAILED: (state, action) => {
+      state.error = action.payload.error;
+      state.isExtraDataLoading = false;
+    },
+    GET_COURSES_SUCCESS: (state, action) => {
+      state.isExtraDataLoading = false;
+      state.error = '';
+      state.course = action.payload;
+    },
+    // GET_COURSES_FAILED: (state, action) => {
+    //   state.error = action.payload.error;
+    //   state.isExtraDataLoading = false;
+    // },
+    GET_BEST_PROD_SUCCESS: (state, action) => {
+      state.isExtraDataLoading = false;
+      state.error = '';
+      state.best_Products = action.payload;
+    },
+    // GET_BEST_PROD_LOADING: state => {
+    //   state.isLoading = true;
+    // },
+
     GET_SEARCH_SUCCESS: (state, action) => {
       state.error = '';
       state.returnSearchResult = action.payload.returnSearchResult;
@@ -121,6 +154,15 @@ export const {
   LOADING,
   SUCCESS,
   FAILED,
+
+  GET_EXTRADATA_LOADING,
+  GET_EXTRADATA_FAILED,
+  GET_COURSES_SUCCESS,
+  GET_BEST_PROD_SUCCESS,
+  // GET_COURSES_LOADING,
+  // GET_BEST_PROD_LOADING,
+  // GET_BEST_PROD_FAILED,
+
   GET_SEARCH_SUCCESS,
   COLOR_TRENDS_LOADING,
   COLOR_TRENDS_SUCCESS,
@@ -137,15 +179,15 @@ export const setHomeBanners = (homeData, isDateUpdate) => {
       let image_banner2 = [];
       let our_services = [];
       let premium_services = [];
-      let courses = [];
       let custom_testimonial = [];
-      let best_Products = [];
       let how_it_works = [];
       let remedies = [];
       let core_values = [];
       let captured_highlights = [];
       let about_pinnacle_vastu = [];
-      let featured_blog = [];
+      let courses_section = [];
+      let best_Products_section = [];
+      let featured_blog_section = [];
 
       let slider1 = [];
       let slider11 = [];
@@ -167,15 +209,15 @@ export const setHomeBanners = (homeData, isDateUpdate) => {
         image_banner2 = element.image_banner2;
         our_services = element.our_services;
         premium_services = element.premium_services;
-        courses = element.courses;
         custom_testimonial = element.custom_testimonial;
-        best_Products = element.best_Products;
         how_it_works = element.how_it_works;
         remedies = element.remedies;
         core_values = element.core_values;
         captured_highlights = element.captured_highlights;
         about_pinnacle_vastu = element.about_pinnacle_vastu;
-        featured_blog = element.featured_blog;
+        best_Products_section = element.best_Products_section;
+        courses_section = element.courses_section;
+        featured_blog_section = element.featured_blog_section;
 
         slider1 = element.slider1;
         slider11 = element.slider11;
@@ -214,15 +256,15 @@ export const setHomeBanners = (homeData, isDateUpdate) => {
           image_banner2: image_banner2,
           our_services: our_services,
           premium_services: premium_services,
-          courses: courses,
           custom_testimonial: custom_testimonial,
-          best_Products: best_Products,
           how_it_works: how_it_works,
           remedies: remedies,
           core_values: core_values,
           captured_highlights: captured_highlights,
           about_pinnacle_vastu: about_pinnacle_vastu,
-          featured_blog: featured_blog,
+          best_Products_section: best_Products_section,
+          courses_section: courses_section,
+          featured_blog_section: featured_blog_section,
 
           isLoading: false,
           error: '',
@@ -332,20 +374,20 @@ export const modifyHomeObject = async currentval => {
       let image_banner2 = [];
       let our_services = [];
       let premium_services = [];
-      let courses = [];
       let custom_testimonial = [];
-      let best_Products = [];
       let how_it_works = [];
       let remedies = [];
       let core_values = [];
       let captured_highlights = [];
       let about_pinnacle_vastu = [];
-      let featured_blog = [];
+      let best_Products_section = [];
+      let courses_section = [];
+      let featured_blog_section = [];
 
       for (const key in currentval) {
         if (currentval.hasOwnProperty(key)) {
           const element = currentval[key];
-          console.log(element, '--------element');
+          // console.log(element, '--------element');
 
           if (
             element.type === 'our-services' &&
@@ -460,14 +502,13 @@ export const modifyHomeObject = async currentval => {
               Object.values(element?.blocks)?.forEach(item => {
                 data.push(item?.settings);
                 updatedData = data?.map(item => {
-              
                   replaceImage = item.mobile_image.replace(
                     'shopify://shop_images/',
                     'https://cdn.shopify.com/s/files/1/0920/1041/4387/files/',
-                  );   
+                  );
                   return {
                     ...item,
-                    silderImage:  replaceImage
+                    silderImage: replaceImage,
                   };
                 });
               });
@@ -479,7 +520,7 @@ export const modifyHomeObject = async currentval => {
             }
           }
 
-         if (
+          if (
             element.type == 'card_with_icon' &&
             Object.keys(element.blocks)?.length > 0
           ) {
@@ -501,10 +542,10 @@ export const modifyHomeObject = async currentval => {
                   ...item,
                   cardIcon1: replace_icon,
                   cardIcon2: replace_icon2,
-                }
+                };
               });
             });
-            image_banner2=updatedData;
+            image_banner2 = updatedData;
           }
           if (
             element.type == 'how-it-works' &&
@@ -564,7 +605,7 @@ export const modifyHomeObject = async currentval => {
                   'shopify://shop_images/',
                   'https://cdn.shopify.com/s/files/1/0920/1041/4387/files/',
                 );
-                
+
                 image.push({...data[key].settings, mob_photo: replaceImage});
               } else if (key.startsWith('video_')) {
                 video.push(data[key].settings);
@@ -577,8 +618,6 @@ export const modifyHomeObject = async currentval => {
               video,
             };
           }
-        
-
           if (
             element.type == 'about-pinnacle-vastu' &&
             Object.keys(element.blocks)?.length > 0
@@ -597,6 +636,32 @@ export const modifyHomeObject = async currentval => {
                 mob_image: replaceBgImage,
               },
               items: data,
+            };
+          }
+          if (element.type == 'courses') {
+            courses_section = {
+              content: {
+                ...element.settings,
+              },
+            };
+          }
+          if (element.type == 'featured-collection-2') {
+            best_Products_section = {
+              content: {
+                ...element.settings,
+              },
+            };
+          }
+          if (element.type == 'featured-blog') {
+            let replaceBgImage = element.settings?.background_image?.replace(
+              'shopify://shop_images/',
+              'https://cdn.shopify.com/s/files/1/0920/1041/4387/files/',
+            );
+            featured_blog_section = {
+              content: {
+                ...element.settings,
+                mob_background_image: replaceBgImage,
+              },
             };
           }
         }
@@ -988,7 +1053,10 @@ export const modifyHomeObject = async currentval => {
         how_it_works,
         core_values,
         captured_highlights,
-        about_pinnacle_vastu
+        about_pinnacle_vastu,
+        courses_section,
+        best_Products_section,
+        featured_blog_section,
       };
       homeData.push(homeObject);
 
@@ -1325,6 +1393,105 @@ export const fetchCollectionColorTrends = (collectionId, CollectionTitle) => {
     } catch (e) {
       console.log('collection.catch2', e);
       dispatch(COLOR_TRENDS_FAILED({error: e.massage}));
+    }
+  };
+};
+
+export const fetchExtraCollectonHome = (collectionHandle, dataOf) => {
+  return async dispatch => {
+    try {
+      dispatch(GET_EXTRADATA_LOADING());
+      const query = `
+      query {
+           collectionByHandle(handle: "${collectionHandle}") {
+          id
+          products(first: 10) {
+            edges {
+              node {
+                id
+                title
+                description
+                handle
+                availableForSale
+                productType
+                vendor
+                tags
+                totalInventory
+                createdAt
+                updatedAt
+                featuredImage {
+                  url
+                }
+                priceRange {
+                  minVariantPrice {
+                    amount
+                    currencyCode
+                  }
+                  maxVariantPrice {
+                    amount
+                    currencyCode
+                  }
+                }
+                  variants(first: 10) {
+            edges {
+              node {
+                id
+                price {
+                  amount
+                  currencyCode
+                }
+                compareAtPrice {
+                  amount
+                  currencyCode
+                }
+                image {
+                  src
+                  altText
+                }
+              }
+            }
+              }
+              }
+            }
+          }
+        }
+      }
+    `;
+      const response = await fetch(Config.Shopify.graphqlUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Shopify-Storefront-Access-Token': Config?.Shopify.storeAccessToken,
+        },
+        body: JSON.stringify({query}),
+      });
+
+      const result = await response.json();
+      console.log(
+        'Products virendra jhbdjhsdjhsdfs:',
+        result?.data?.collectionByHandle?.products?.edges,
+      );
+
+      const products = result?.data?.collectionByHandle?.products?.edges;
+      const transformedProducts = products.map(item => item.node);
+      if (dataOf == 'courses') {
+        dispatch(GET_COURSES_SUCCESS(transformedProducts));
+      } else {
+        dispatch(
+          GET_BEST_PROD_SUCCESS({
+            collectionId:
+              result?.data?.collectionByHandle?.id?.match(/(\d+)$/)[0],
+
+            products: transformedProducts,
+          }),
+        );
+      }
+    } catch (error) {
+      console.error('Error fetching collection:', error);
+
+      dispatch(
+        GET_EXTRADATA_FAILED({error: error.message || 'An error occurred'}),
+      );
     }
   };
 };
