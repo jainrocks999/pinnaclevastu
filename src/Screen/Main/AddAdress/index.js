@@ -136,9 +136,10 @@ const Address = ({route}) => {
       Toast.show(errorMessage);
       return;
     }
-
-    const access_Token = '615c78ef801b0e22521f80174b4dae2d';
-
+    const userStatus = await AsyncStorage.getItem('user_data');
+    const userData = JSON.parse(userStatus)
+  
+    
     const nameParts = formData.name.split(' ');
 
     const firstName = nameParts[0];
@@ -161,7 +162,7 @@ const Address = ({route}) => {
     if (item.data == false) {
       dispatch(
         updateShopifyUserAddress(
-          access_Token,
+          userData?.shopify_access_token,
           item.item.id,
           inputs,
           navigation,
@@ -170,7 +171,7 @@ const Address = ({route}) => {
       );
     } else {
       dispatch(
-        addShopifyuserAddress(access_Token, inputs, navigation, saveInfo),
+        addShopifyuserAddress(userData?.shopify_access_token, inputs, navigation, saveInfo),
       );
     }
 

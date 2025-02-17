@@ -181,9 +181,7 @@ export const fetchCategory =(
       });
       return axios
         .request(GraphQlConfig(data))
-        .then(response => {
-          console.log('cateteggghfhfhhf',response.data);
-            
+        .then(response => {  
           dispatch(
             SUCCESS({
               CategoryList:response?.data?.data?.collections?.nodes
@@ -206,20 +204,22 @@ export const fetchCategory =(
 
 export const fetchCollection = (
   collectionId,
+  first
   // CollectionTitle,
   // collectionSize,
 ) => {
   return async dispatch => {
     try {
       dispatch(LOADING());
-     console.log('collectionId',collectionId);
+      console.log('colletion resposneeneenen' , collectionId,
+        first);
      
       let data = JSON.stringify({
         query: getProducts,
         variables: {
           id:collectionId,
           // id: convertCollectionId(collectionId),
-          first: 10,
+          first: first==0?10:first,
           after: null,
         },
       });
@@ -227,6 +227,7 @@ export const fetchCollection = (
         .request(GraphQlConfig(data))
         .then(response => {
         
+          console.log('colletion resposneeneenen' ,response?.data?.data?.products?.edges);
           
           dispatch(
             SUCCESS({

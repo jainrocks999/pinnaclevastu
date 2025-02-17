@@ -66,7 +66,7 @@ const Remedies12SecondComponent = () => {
  const {userDetails} = useSelector(state => state.Login);
   // console.log('dsfjk',userDetails?.defaultAddress);
   const defaultAddress = userDetails?.defaultAddress;
-  // addressData?.find(item => item?.is_default == 1);
+  // addressData?.find(item => item?.is_default == 1)
 
  
   const [userType, setUserType] = useState('');
@@ -78,45 +78,17 @@ const Remedies12SecondComponent = () => {
    
 
     const checkLoginStatus = async () => {
+    
       try {
         const userStatus = await AsyncStorage.getItem('user_data');
         const userData = JSON.parse(userStatus);
-
+        dispatch(getCountryStateList());
+        dispatch(getUserDetails(userData?.shopify_access_token));
         if (userStatus) {
           setUserType(userData.user_type);
 
           if (fromScreen) {
-            // if (localCartDataList.length > 0) {
-            //   for (const item of localCartDataList) {
-            //     await dispatch(
-            //       addToCartApi({
-            //         user_id: userData.user_id,
-            //         itemId: item.id,
-            //         qty: item.qty,
-            //         user_type: userData.user_type,
-            //         token: userData?.token,
-            //         url: 'add-to-cart',
-            //       }),
-            //     );
-            //   }
-            //   // await AsyncStorage.removeItem('cartItems');
-            //   dispatch(clearLocalCartData());
-            //   await dispatch(
-            //     getCartDataApi({
-            //       token: userData.token,
-            //       url: `cart?user_id=${userData.user_id}`,
-            //     }),
-            //   );
-            // }
-            // await dispatch(
-            //   getAddress({
-            //     user_id: userData.user_id,
-            //     token: userData.token,
-
-            //     url: 'fetch-customer-address',
-            //     // navigation,
-            //   }),
-            // );
+           
           }
           setIsLoggedIn(true);
         } else {
@@ -134,9 +106,8 @@ const Remedies12SecondComponent = () => {
       }
     };
   
-      dispatch(getCountryStateList());
-      dispatch(getUserDetails("615c78ef801b0e22521f80174b4dae2d"));
-    checkLoginStatus();
+   
+  checkLoginStatus();
   }, [fromScreen]);
 
   const handleUpdateCartData = async (user_id, rowid, qty, token, fromCart) => {
@@ -455,7 +426,7 @@ const Remedies12SecondComponent = () => {
 
   const renderItem = ({item}) => (
     <View style={styles.viewinner}>
-    
+ 
       <TouchableOpacity
         onPress={() =>PRoductDeta(item,item.productId)}>
        
@@ -484,7 +455,7 @@ const Remedies12SecondComponent = () => {
               }
             </Text>
 
-         {item?.compareAtPrice!=0&&item?.compareAtPrice!=null?
+         {/* {item?.compareAtPrice!=0&&item?.compareAtPrice!=null?
               <Text
                 style={[
                   styles.rupeestext,
@@ -492,7 +463,7 @@ const Remedies12SecondComponent = () => {
                 ]}>
                  ₹ {item?.compareAtPrice}
               </Text>
-              :null }
+              :null } */}
           </View>
           <View style={[styles.headerview, styles.quantitySection]}>
             <TouchableOpacity
@@ -619,7 +590,7 @@ const Remedies12SecondComponent = () => {
               contentContainerStyle={styles.viewinner1}
             />
             {/* )} */}
-
+{/* 
             <View style={styles.main}>
               <Text style={styles.header1}>You May Also Like</Text>
               <FlatList
@@ -630,7 +601,7 @@ const Remedies12SecondComponent = () => {
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{marginBottom: 15}}
               />
-            </View>
+            </View> */}
           </ScrollView>
           <View style={styles.subtotalsavingyview}>
             <View style={styles.summaryview}>

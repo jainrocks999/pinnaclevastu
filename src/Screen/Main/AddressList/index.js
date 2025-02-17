@@ -28,8 +28,7 @@ const DeliveryAddress = ({route}) => {
   const navigation = useNavigation();
 
   const {userDetails, isLoading} = useSelector(state => state.Login);
-  console.log('dsfjksdhfjskfhsjkf', userDetails);
-
+ 
   const addresstoget = useSelector(state => state.address?.getaData);
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
   const [selectedId, setSelectedId] = useState('');
@@ -83,7 +82,13 @@ const DeliveryAddress = ({route}) => {
         useNativeDriver: true,
       }),
     ]).start(() => {
-      checkout(item?.item, navigation);
+      console.log('slknnfklfdlkgn',item.item);
+      if(item.item.availableForSale!=false){
+        
+        
+        checkout(item?.item, navigation);
+       }
+     
 
       // navigation.navigate('Payment', {
       //   data1: 'Remedies',
@@ -94,9 +99,10 @@ const DeliveryAddress = ({route}) => {
   };
 
   const cartRemove = async item => {
-    const token = '615c78ef801b0e22521f80174b4dae2d';
-
-    dispatch(removeShopifyUserAddress(token, item?.node?.id));
+    // const access_Token = '615c78ef801b0e22521f80174b4dae2d';
+    const userStatus = await AsyncStorage.getItem('user_data');
+    const userData = JSON.parse(userStatus)
+    dispatch(removeShopifyUserAddress(userData?.shopify_access_token, item?.node?.id));
 
     // const token = await AsyncStorage.getItem('Token');
     // const userid = await AsyncStorage.getItem('user_id');

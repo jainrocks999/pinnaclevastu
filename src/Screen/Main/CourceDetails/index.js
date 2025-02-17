@@ -25,13 +25,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 import WebView from 'react-native-webview';
 import constants from '../../../Redux/constant/constants';
+import { checkout } from '../../../models/Checkout';
+import { convertVariantId } from '../../../common/shopifyConverter';
 
 const {width} = Dimensions.get('window');
 
 const CourseDetail = ({route}) => {
   const navigation = useNavigation();
-  const coursetype = route?.params?.coursetype;
-
+  const coursetype = route?.params?.coursetype; 
+  const Detail1 = useSelector(state => state?.Product?.productDetails);
+    const imagearray = useSelector(state => state?.Product?.productImages);
   const [userType, setUserType] = useState('');
   const CourceDetailA = useSelector(state => state?.home?.CourceDetailA);
   const isLoading = useSelector(state => state.home?.loading);
@@ -232,7 +235,38 @@ const CourseDetail = ({route}) => {
       }),
     ]).start(() => {
       if (userType) {
-        navigation.navigate('PaymentCourse', {data1: CourceDetailA});
+console.log(Detail1);
+
+
+
+ if (Detail1?.variants?.length != 0) {
+      const image = Detail1?.images[0]?.src;
+      let product = {...Detail1};
+
+      product.selectedVarient = product?.variants?.[0];
+     
+      let productTemp = {
+        ...product,
+        image,
+        qty: 1,
+        productId: product?.id,
+        compareAtPrice: product?.variants?.[0]?.compare_at_price,
+        price: product?.variants?.[0]?.price,
+        id: isNaN(product?.selectedVarient.id)
+          ?  convertVariantId(product?.selectedVarient.id)
+          :convertVariantId( product?.selectedVarient.id),
+
+        properties: {},
+      };
+  
+    if(productTemp?.availableForSal!=false){
+      checkout([productTemp], navigation);
+    }
+       
+      }
+    
+         
+        // navigation.navigate('PaymentCourse', {data1: CourceDetailA});
       } else {
         navigation.navigate('Login', {from: 'CourseDetails'});
       }
@@ -380,52 +414,41 @@ const CourseDetail = ({route}) => {
           ) : (
             <Image
               source={
-                CourceDetailA?.image
-                  ? {uri: `${Imagepath.Path}${CourceDetailA?.image}`}
+                Detail1?.images?.[0]?.src
+                  ? {uri: Detail1?.images?.[0]?.src}
                   : require('../../../assets/image/Remedies/Image-not.png')
               }
+              resizeMode='cover'
               style={styles.img1}
             />
           )}
         </TouchableOpacity>
         <View style={styles.advanceview}>
-          <Text style={styles.advancetext}>{CourceDetailA?.title} </Text>
-          {/* Advance Vastu Course */}
+          <Text style={styles.advancetext}>{Detail1?.title} </Text>
+        {console.log('Detail1>.................',Detail1)
+        }
 
           <Text style={styles.learntext}>
-            {CourceDetailA?.short_description != null
-              ? CourceDetailA?.short_description
+            {Detail1?.description!= null
+              ? Detail1?.description
               : ''}
           </Text>
           <View style={styles.direction}>
             {/* <Text style={styles.ruppestext}>{`₹ ${CourceDetailA?.price}`}</Text> */}
             <View style={{flexDirection: 'row', gap: 10}}>
               <Text style={[styles.ruppestext]}>
-                {`₹ ${
-                  userType === 'customers' && CourceDetailA?.sale_price
-                    ? CourceDetailA?.sale_price
-                    : userType === 'student' && CourceDetailA?.student_price
-                    ? CourceDetailA?.student_price
-                    : userType === 'franchise' && CourceDetailA?.franchise_price
-                    ? CourceDetailA?.franchise_price
-                    : CourceDetailA?.price
-                }`}
+              {`₹ ${Detail1?.variants?.[0]?.price}`}
               </Text>
-              {userType &&
-              (CourceDetailA?.sale_price < CourceDetailA?.price ||
-                CourceDetailA?.student_price < CourceDetailA?.price ||
-                CourceDetailA?.franchise_price < CourceDetailA?.price) &&
-              (CourceDetailA?.sale_price ||
-                CourceDetailA?.student_price ||
-                CourceDetailA?.franchise_price) ? (
+             
+             
                 <Text
                   style={[
                     styles.ruppestext,
                     {textDecorationLine: 'line-through', color: 'gray'},
                   ]}>
-                  ₹ {CourceDetailA?.price}
+                  {`₹ ${Detail1?.variants?.[0]?.price}`}
                 </Text>
-              ) : null}
+             
             </View>
             <TouchableOpacity onPress={() => handleShare()}>
               <Image
@@ -741,24 +764,15 @@ const CourseDetail = ({route}) => {
             renderItem={renderItem}
             scrollEnabled={false}
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{paddingVertical:10}}
           />
         </View>
       </ScrollView>
 
       <View style={styles.scrollview}>
         <View style={styles.listItem}>
-          <Text style={styles.listItemText}>{CourceDetailA?.title}</Text>
+          <Text style={styles.listItemText}>{Detail1?.title}</Text>
           <Text style={[styles.listitem1]}>
-            {`₹ ${
-              userType === 'customers' && CourceDetailA?.sale_price
-                ? CourceDetailA?.sale_price
-                : userType === 'student' && CourceDetailA?.student_price
-                ? CourceDetailA?.student_price
-                : userType === 'franchise' && CourceDetailA?.franchise_price
-                ? CourceDetailA?.franchise_price
-                : CourceDetailA?.price
-            }`}
+          {`₹ ${Detail1?.variants?.[0]?.price}`}
           </Text>
         </View>
         <Animated.View

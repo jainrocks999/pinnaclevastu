@@ -14,7 +14,7 @@ export const convertAddressId = (id) => {
 };
 
 export const convertVariantId = (id) => {
-  return btoa(`gid://shopify/ProductVariant/${id}`);
+  return (`gid://shopify/ProductVariant/${id}`);
 };
 
 export const convertVariantIdNum = (id) => {

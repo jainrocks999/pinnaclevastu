@@ -84,7 +84,7 @@ const OTPPAGE = ({route}) => {
     }
 
     if (enteredCode != loginUserData.OTP) {
-      console.log(loginUserData.OTP, 'sdjfskflsdfmsdlkdm');
+      console.log(loginUserData, 'sdjfskflsdfmsdlkdm');
       Toast.show('The entered OTP is incorrect.');
       setIsLoading(false);
       return;

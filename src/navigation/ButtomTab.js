@@ -25,10 +25,10 @@ const Tab = createBottomTabNavigator();
 export default function BottomTab() {
   const [activeTab, setActiveTab] = useState('MainStack');
   const [circleVisible, setCircleVisible] = useState('MainStack');
-  const isLoading = useSelector(state => state.home?.loading);
+ // const isLoading = useSelector(state => state.home?.loading);
   const cartisLoading = useSelector(state => state.cart?.loading);
-  const addressisLoading = useSelector(state => state.address?.loading);
-  const orderisLoading = useSelector(state => state.order?.loading);
+  // const addressisLoading = useSelector(state => state.address?.loading);
+  // const orderisLoading = useSelector(state => state.order?.loading);
   const collection1=useSelector(state => state.collection?.isLoading);
   const PDP=useSelector(state => state.Product?.isLoading);
 
@@ -40,7 +40,7 @@ export default function BottomTab() {
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      {isLoading || collection1|| PDP || cartisLoading || addressisLoading || orderisLoading || ConsultancyLoading? (
+      { collection1|| PDP || cartisLoading ||  ConsultancyLoading? (
         <Loader />
       ) : null}
       <Tab.Navigator
@@ -95,7 +95,7 @@ export default function BottomTab() {
                 <Text
                   style={{
                     color: colors.white,
-                    fontSize: fontSize.Twelve,
+                    fontSize: fontSize.Ten,
                     fontFamily: 'Poppins-Regular',
                     width: '100%',
                   }}>
@@ -139,7 +139,7 @@ export default function BottomTab() {
                 <Text
                   style={{
                     color: colors.white,
-                    fontSize: fontSize.Twelve,
+                    fontSize: fontSize.Ten,
                     fontFamily: 'Poppins-Regular',
                     width: '100%',
                   }}>
@@ -183,7 +183,7 @@ export default function BottomTab() {
                 <Text
                   style={{
                     color: colors.white,
-                    fontSize: fontSize.Twelve,
+                    fontSize: fontSize.Ten,
                     fontFamily: 'Poppins-Regular',
                     width: '100%',
                   }}>
@@ -227,7 +227,7 @@ export default function BottomTab() {
                 <Text
                   style={{
                     color: colors.white,
-                    fontSize: fontSize.Twelve,
+                    fontSize: fontSize.Ten,
                     fontFamily: 'Poppins-Regular',
                     width: '100%',
                     textAlign: 'center',
@@ -272,7 +272,7 @@ export default function BottomTab() {
                 <Text
                   style={{
                     color: colors.white,
-                    fontSize: fontSize.Twelve,
+                    fontSize: fontSize.Ten,
                     fontFamily: 'Poppins-Regular',
                     width: '100%',
                     textAlign: 'center',

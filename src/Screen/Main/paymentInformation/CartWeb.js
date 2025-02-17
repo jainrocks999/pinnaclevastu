@@ -29,12 +29,16 @@ const CartWeb = (props) => {
   useEffect(() => {
     const goBack = () => {
       navigation.goBack();
-      return true;
+      return true; 
     };
-    BackHandler?.addEventListener("hardwareBackPress", () => goBack());
-    return () =>
-      BackHandler?.removeEventListener("hardwareBackPress", () => goBack());
+
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", goBack);
+
+    return () => {
+      backHandler.remove(); 
+    };
   }, []);
+
   let isConnected = true;
   const webViewRef = useRef(null);
   function shouldOverrideUrlLoading(event) {
@@ -65,9 +69,9 @@ const CartWeb = (props) => {
               onNavigationStateChange={async (event) => {
                 console.log(
                   "event......=----------????",
-                  event.url == "https://manaiya.com/"
+                  event.url == " https://pinnaclevastu-in.myshopify.com/"
                 );
-                if (event.url == "https://manaiya.com/") {
+                if (event.url == "https://pinnaclevastu-in.myshopify.com/") {
                   navigation.replace("MainStack");
                 }
               }}

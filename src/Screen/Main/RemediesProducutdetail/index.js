@@ -37,6 +37,7 @@ import axios from 'axios';
 import {productDetail1} from '../../../Redux/Slice/HomeSlice';
 import {useNavigation} from '@react-navigation/native';
 import AnimatedLine from '../../../Component/progressbar';
+import { convertVariantId } from '../../../common/shopifyConverter';
 
 const RemediesProductDetail = ({route}) => {
   const item = route?.params?.data;
@@ -257,9 +258,8 @@ const RemediesProductDetail = ({route}) => {
 
       product.selectedVarient = product?.variants?.[0];
       console.log(
-        'klgnkjg',
-        product?.variants?.[0]?.compare_at_price,
-        product?.variants?.[0]?.price,
+        'klgnkjg',product?.selectedVarient.id,
+        
         qty,
       );
       let productTemp = {
@@ -269,15 +269,15 @@ const RemediesProductDetail = ({route}) => {
         productId: product?.id,
         compareAtPrice: product?.variants?.[0]?.compare_at_price,
         price: product?.variants?.[0]?.price,
-        id: isNaN(product?.selectedVarient.id)
-          ? await product?.selectedVarient.id
-          : product?.selectedVarient.id,
-
+       id: isNaN(product?.selectedVarient.id)
+                ?  convertVariantId(product?.selectedVarient.id)
+                :convertVariantId( product?.selectedVarient.id),
+      
         properties: {},
       };
-      console.log('hfghkjghfdkg', productTemp);
+    
       if (productTemp?.availableForSale) {
-        console.log('hfghkjghfdkg', productTemp);
+      
 
         dispatch(addToCart(productTemp));
       }

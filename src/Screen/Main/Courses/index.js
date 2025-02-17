@@ -7,7 +7,7 @@ import {
   Image,
   TextInput,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import styles from './styles';
 
 import {colors} from '../../../Component/colors';
@@ -29,12 +29,12 @@ import {getProductMetafieldsApiCall} from '../../../Redux/Api';
 
 const OtherCourses = ({navigation}) => {
   const [isLiveCourse, setIsLiveCourse] = useState(true);
+  const scrollViewRef = useRef(null);
   const [userType, setUserType] = useState('');
   const RemediesCategor1 = useSelector(state => state.collection?.products);
   const placeholderText = 'Search';
   const [displayedText, setDisplayedText] = useState('');
-  const Live_cource = useSelector(state => state?.home?.Cource);
-  const isLoading = useSelector(state => state.home?.loading);
+  const [countdata, setCountdata] = useState(0);
   const cartTotalQuantity = useSelector(
     state => state?.cart?.cartTotalQuantity,
   );
@@ -96,8 +96,32 @@ const OtherCourses = ({navigation}) => {
     setUserType(userType);
   };
 
+  const handleScroll = async event => {
+    // const {layoutMeasurement, contentOffset, contentSize} = event.nativeEvent;
+    // if (layoutMeasurement.height + contentOffset.y >= contentSize.height - 20) {
+      // {isLiveCourse?
+      //   setCountdata(countdata+10);
+      //   await dispatch(fetchCollection( 'gid://shopify/Collection/488102920499',countdata)):
+
+      // }
+      if (isLiveCourse) {
+        setCountdata(countdata + 10);
+        await dispatch(
+          fetchCollection('gid://shopify/Collection/488102920499', countdata),
+        );
+      } else {
+        setCountdata(countdata + 10);
+        await dispatch(
+          fetchCollection('gid://shopify/Collection/488102953267', countdata),
+        );
+      }
+    // }
+  };
+
   const apicall = async () => {
-    await dispatch(fetchCollection('gid://shopify/Collection/488102920499'));
+    await dispatch(
+      fetchCollection('gid://shopify/Collection/488102920499', countdata),
+    );
 
     // await dispatch(CourceLis({url: 'fetch-courses', slug: 'live'}));
   };
@@ -231,7 +255,12 @@ const OtherCourses = ({navigation}) => {
         </TouchableOpacity>
       </View>
       {/*  {isLoading ? <Loader /> : null} */}
-      <ScrollView contentContainerStyle={styles.scroll}>
+        <View style={[styles.scroll]}>
+      {/* <ScrollView
+        ref={scrollViewRef}
+        onScroll={handleScroll}
+        scrollEventThrottle={400}
+        contentContainerStyle={[styles.scroll, {flexGrow: 1}]}> */}
         <View style={styles.searchContainer}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <TouchableOpacity
@@ -259,7 +288,10 @@ const OtherCourses = ({navigation}) => {
             onPress={async () => {
               setIsLiveCourse(true);
               await dispatch(
-                fetchCollection('gid://shopify/Collection/488102920499'),
+                fetchCollection(
+                  'gid://shopify/Collection/488102920499',
+                  countdata,
+                ),
               );
               // await dispatch(CourceLis({url: 'fetch-courses', slug: 'live'}));
             }}>
@@ -278,7 +310,10 @@ const OtherCourses = ({navigation}) => {
             onPress={async () => {
               setIsLiveCourse(false);
               await dispatch(
-                fetchCollection('gid://shopify/Collection/488102953267'),
+                fetchCollection(
+                  'gid://shopify/Collection/488102953267',
+                  countdata,
+                ),
               );
               // await dispatch(
               //   CourceLis({url: 'fetch-courses', slug: 'recorded'}),
@@ -298,9 +333,16 @@ const OtherCourses = ({navigation}) => {
           data={RemediesCategor1 ? RemediesCategor1 : []}
           renderItem={renderCard}
           scrollEnabled={false}
+          numColumns={2}
+          keyExtractor={(item, index) => index.toString()}
+          nestedScrollEnabled={true}
+          onEndReachedThreshold={0.5}
+          onEndReached={() => handleScroll()}
+          //  style={{ flex: 1 }} 
           // numColumns={2}
         />
-      </ScrollView>
+      {/* </ScrollView> */}
+      </View>
     </View>
   );
 };

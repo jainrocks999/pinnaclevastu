@@ -262,6 +262,7 @@ export default StyleSheet.create({
 
   scroll: {
     paddingBottom: hp(8),
+    flex:1
     // marginHorizontal:15,
   },
 
@@ -305,7 +306,7 @@ export default StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'flex-start',
-    gap: 12,
+    // gap: 20,
   },
 
   card: {
@@ -313,7 +314,9 @@ export default StyleSheet.create({
     backgroundColor: '#FBF5F2',
     borderRadius: 10,
     marginBottom: 10,
-    // borderWidth:6
+    marginRight:10,
+    overflow:'hidden',
+    //  borderWidth:6
   },
   cardImg: {
     //  width: '100%',

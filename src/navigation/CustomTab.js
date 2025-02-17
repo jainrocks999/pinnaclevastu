@@ -174,7 +174,7 @@ const TabBar = ({state, descriptors, navigation}) => {
             tabPositionX.value = withTiming(buttonWidth * state.index);
 
             if (!isFocused && !event.defaultPrevented) {
-              navigation.navigate(route.name=="MyProfile"?isLoggedIn?"MyProfile":"Login":route.name);8
+              navigation.navigate(route.name=="MyProfile"?isLoggedIn?"MyProfile":"Login":route.name)
             }
           };
 
@@ -198,7 +198,7 @@ export default memo(TabBar);
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.orange,
-    height: widthPrecent(15),
+    height: widthPrecent(16),
     alignItems: 'center',
     justifyContent: 'space-around',
     borderTopLeftRadius: 10,

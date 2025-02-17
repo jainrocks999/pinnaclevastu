@@ -66,7 +66,7 @@ const TabBarButton = ({
       </Animated.View>
       <Text style={{
         color: colors.white,
-        fontSize: fontSize.Twelve,
+        fontSize: fontSize.Eleven,
         fontFamily: 'Poppins-Regular',
         width: '100%',
         textAlign: 'center',

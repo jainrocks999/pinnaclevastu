@@ -3,10 +3,12 @@ import Config from "../common/config.json";
 
 export const checkout = async (product, navigation) => {
   let lineItemsToAdd = product.map((item) => ({
-    merchandiseId: item.id, // Cart API ke liye merchandiseId ka use hota hai
+    
+    
+    merchandiseId: item.id, 
     quantity: item.qty,
   }));
-
+  console.log('virensraHDKSHSAKD',lineItemsToAdd)
   const query = `
     mutation CartCreate {
       cartCreate(input: {

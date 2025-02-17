@@ -131,10 +131,70 @@ const HomeScreen = () => {
     await dispatch(Banner({url: 'home-slider'}));
     await dispatch(fetchCollection('gid://shopify/Collection/488102920499'));
   };
-
+  const fetchCollectionProducts = async (collectionHandle) => {
+    const API_URL = 'https://pinnaclevastu-in.myshopify.com/api/2024-04/graphql.json';
+    const ACCESS_TOKEN = '8ea4b65a8295bd4422deae6604953ac7';
+  
+    // 📝 Fetch all available fields inside node
+    const query = `
+      query {
+        collectionByHandle(handle: "${collectionHandle}") {
+          id
+          products(first: 10) {
+            edges {
+              node {
+                id
+                title
+                description
+                handle
+                availableForSale
+                productType
+                vendor
+                tags
+                totalInventory
+                createdAt
+                updatedAt
+                featuredImage {
+                  url
+                }
+                priceRange {
+                  minVariantPrice {
+                    amount
+                    currencyCode
+                  }
+                  maxVariantPrice {
+                    amount
+                    currencyCode
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `;
+  
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Shopify-Storefront-Access-Token': ACCESS_TOKEN,
+        },
+        body: JSON.stringify({ query }),
+      });
+  
+      const result = await response.json();
+      console.log('Products virendra jhbdjhsdjhsdfs:', result.data.collectionByHandle.products.edges);
+      return result.data.collectionByHandle.products.edges;
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      return [];
+    }
+  };
   useEffect(() => {
     let currentIndex = 0;
-
+    fetchCollectionProducts('frontpage');
     const startAnimation = () => {
       const intervalId = setInterval(() => {
         if (currentIndex < placeholderText.length) {
@@ -629,30 +689,32 @@ const HomeScreen = () => {
     );
   };
 
-  useEffect(() => {
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      handleBackButtonClick,
-    );
-    return () => backHandler.remove();
-  }, []);
+  const [backPress, setBackPress] = useState(0);
 
   const handleBackButtonClick = () => {
     if (navigation.isFocused()) {
       if (backPress > 0) {
         BackHandler.exitApp();
-        backPress = 0;
+        setBackPress(0);
       } else {
-        backPress++;
+        setBackPress(prev => prev + 1);
         ToastAndroid.show('Press again to exit app', ToastAndroid.SHORT);
-        setTimeout(() => {
-          backPress = 0;
-        }, 2000);
-        BackHandler.removeEventListener('hardwareBackPress');
+        setTimeout(() => setBackPress(0), 2000);
       }
       return true;
     }
+    return false;
   };
+
+  useEffect(() => {
+  
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      handleBackButtonClick
+    );
+
+    return () => backHandler.remove();
+  }, [backPress, navigation]);
 
   const coursesOptions = [
     {label: 'label1', value: 'value1'},
@@ -1271,8 +1333,8 @@ const HomeScreen = () => {
             </View>
           </View>
 
-          {console.log('hdfhfdhjjkjkdsjdsjsdjkksj',homeData?.custom_testimonial)
-        }
+          {/* {console.log('hdfhfdhjjkjkdsjdsjsdjkksj',homeData?.custom_testimonial)
+        } */}
         </View>
         </ImageBackground>
         <ImageBackground

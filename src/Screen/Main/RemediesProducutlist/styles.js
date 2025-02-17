@@ -89,7 +89,8 @@ export default StyleSheet.create({
   },
   Scroll: {
     // paddingHorizontal: 12,
-    paddingBottom: hp(10),
+    paddingBottom: hp(7),
+    // flex:1
   },
 
   slide: {
