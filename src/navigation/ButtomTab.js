@@ -25,14 +25,15 @@ const Tab = createBottomTabNavigator();
 export default function BottomTab() {
   const [activeTab, setActiveTab] = useState('MainStack');
   const [circleVisible, setCircleVisible] = useState('MainStack');
- // const isLoading = useSelector(state => state.home?.loading);
+  // const isLoading = useSelector(state => state.home?.loading);
+  const isExtraDataLoading = useSelector(state => state?.HomeBanner?.isExtraDataLoading);
   const cartisLoading = useSelector(state => state.cart?.loading);
   // const addressisLoading = useSelector(state => state.address?.loading);
-  // const orderisLoading = useSelector(state => state.order?.loading);
-  const collection1=useSelector(state => state.collection?.isLoading);
-  const PDP=useSelector(state => state.Product?.isLoading);
+  const orderisLoading = useSelector(state => state.order?.loading);
+  const collection1 = useSelector(state => state.collection?.isLoading);
+  const PDP = useSelector(state => state.Product?.isLoading);
 
-  const ConsultancyLoading =useSelector(state=>state?.consultation?.loading)
+  const ConsultancyLoading = useSelector(state => state?.consultation?.loading);
   const handleTabPress = tab => {
     setCircleVisible(tab);
     setActiveTab(tab);
@@ -40,7 +41,15 @@ export default function BottomTab() {
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      { collection1|| PDP || cartisLoading ||  ConsultancyLoading? (
+      {
+      // isLoading ||
+      isExtraDataLoading ||
+      collection1 ||
+      PDP ||
+      cartisLoading ||
+      // addressisLoading ||
+      orderisLoading ||
+      ConsultancyLoading ? (
         <Loader />
       ) : null}
       <Tab.Navigator

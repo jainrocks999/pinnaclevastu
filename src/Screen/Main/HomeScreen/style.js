@@ -284,6 +284,7 @@ export default StyleSheet.create({
     fontFamily: 'Poppins-SemiBold',
   },
   prodNameText: {
+    marginVertical: 5,
     color: '#143F71',
     marginTop: -6,
     fontSize: fontSize.Sixteen,
@@ -471,7 +472,7 @@ export default StyleSheet.create({
   },
   addToCartBtn: {
     position: 'absolute',
-    top: 20,
+    top: 30,
     right: 10,
     marginVertical: 5,
     backgroundColor: colors.orange,
@@ -732,7 +733,7 @@ export default StyleSheet.create({
   },
   videoContianer: {
     borderRadius: 20,
-     overflow: 'hidden',
+    overflow: 'hidden',
     marginRight: 10,
   },
   highlightImg: {
@@ -821,6 +822,5 @@ export default StyleSheet.create({
     // textAlign: 'center',
     fontSize: fontSize.Sixteen,
     fontFamily: 'Poppins-SemiBold',
-    
   },
 });

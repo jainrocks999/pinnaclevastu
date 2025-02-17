@@ -23,7 +23,7 @@ export const getProductsCount = `query getCollectionProductCount($id: ID!, $firs
   }
 }`;
 
-export const categoryList  = `
+export const categoryList = `
 query {
   collections(first:100){
     nodes{
@@ -35,9 +35,7 @@ query {
     }
   }
 }
-  `
-
-
+  `;
 
 export const ProductMetafieldsQuery = `
  query($id: ID!) {
@@ -59,6 +57,43 @@ export const ProductMetafieldsQuery = `
 }
 `;
 
+export const GetExtraData = `
+query {
+  collectionByHandle(handle: "live-course") {
+    id
+    products(first: 10) {
+      edges {
+        node {
+          id
+          title
+          description
+          handle
+          availableForSale
+          productType
+          vendor
+          tags
+          totalInventory
+          createdAt
+          updatedAt
+          featuredImage {
+            url
+          }
+          priceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+            maxVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+        }
+      }
+    }
+  }
+}
+`;
 
 export const RegisterUser =
   'mutation customerCreate($input: CustomerCreateInput!) { customerCreate(input: $input) { customer { firstName lastName email phone acceptsMarketing } customerUserErrors { field message code } } }';

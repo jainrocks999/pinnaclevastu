@@ -26,6 +26,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {
   Banner,
   clearRemedis,
+  clearRemeiesDetail1,
   CourceDetailApi,
 } from '../../../Redux/Slice/HomeSlice';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
@@ -39,6 +40,9 @@ import {Dropdown} from 'react-native-element-dropdown';
 import WebView from 'react-native-webview';
 import {SvgUri} from 'react-native-svg';
 import {fetchCollection} from '../../../Redux/Slice/collectionSlice';
+import {fetchExtraCollectonHome} from '../../../Redux/Slice/HomeBannerSlice';
+import {fetchProduct, InitProduct} from '../../../Redux/Slice/productSlice';
+import {getProductMetafieldsApiCall} from '../../../Redux/Api';
 
 let backPress = 0;
 const HomeScreen = () => {
@@ -58,6 +62,7 @@ const HomeScreen = () => {
   const RemediesCategor1 = useSelector(state => state.collection?.products);
 
   const homeData = useSelector(state => state?.HomeBanner);
+  // console.log(homeData, '<----');
 
   const userDetail = useSelector(state => state?.Auth?.userData);
 
@@ -72,20 +77,20 @@ const HomeScreen = () => {
     state => state?.cart?.cartTotalQuantity,
   );
 
-  const getYouTubeEmbedUrl1 = (url) => {
+  const getYouTubeEmbedUrl1 = url => {
     const videoId = url.split('v=')[1]?.split('&')[0]; // Extract video ID
     return `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=1&showinfo=0&rel=0&modestbranding=1&fs=1`;
   };
-  
-  const getYouTubeEmbedUrl = (url) => {
-    if (url.includes("youtube.com") || url.includes("youtu.be")) {
+
+  const getYouTubeEmbedUrl = url => {
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
       const videoIdMatch = url.match(/(?:v=|\/)([0-9A-Za-z_-]{11})/);
       const videoId = videoIdMatch ? videoIdMatch[1] : null;
       return videoId
         ? `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=1&rel=0&modestbranding=1&fs=1`
         : url;
     }
-    
+
     return url; // Return normal video URL as is (e.g., .mp4)
   };
   const [imageHeights, setImageHeights] = useState({});
@@ -109,27 +114,39 @@ const HomeScreen = () => {
     imagesilder11.push(updatedItem);
   });
 
-  const CouseDetail1 = async item => {
-    await dispatch(
-      CourceDetailApi({
-        url: 'fetch-courses-details',
-        course_id: item?.id,
-        navigation,
-      }),
-    );
+  const Detail1 = async (item, id) => {
+    dispatch(clearRemeiesDetail1());
+    if (Object.keys(item).length == 0) {
+    } else {
+      dispatch(InitProduct());
+      dispatch(fetchProduct(id));
+    }
+    // const data = await getProductMetafieldsApiCall(id);
+    // console.log('datata get by meta feild', id);
   };
   const focus = useIsFocused();
 
   useEffect(() => {
-    if (focus) {
-      apicall();
-      getUserType();
-    }
-  }, [focus]);
+    // if (focus) {
+    apicall();
+    getUserType();
+    // }
+  }, []);
 
   const apicall = async () => {
-    await dispatch(Banner({url: 'home-slider'}));
-    await dispatch(fetchCollection('gid://shopify/Collection/488102920499'));
+    // await dispatch(Banner({url: 'home-slider'}));
+    await dispatch(
+      fetchExtraCollectonHome(
+        homeData?.courses_section?.content?.live_courses,
+        'courses',
+      ),
+    );
+    await dispatch(
+      fetchExtraCollectonHome(
+        homeData?.best_Products_section?.content?.collection,
+        'best_prod',
+      ),
+    );
   };
   const fetchCollectionProducts = async (collectionHandle) => {
     const API_URL = 'https://pinnaclevastu-in.myshopify.com/api/2024-04/graphql.json';
@@ -332,16 +349,6 @@ const HomeScreen = () => {
     const {width: imgWidth, height: imgHeight} = event.nativeEvent.source;
     const calculatedHeight = (defaultHeight * imgHeight) / imgWidth;
     setImageHeights(prev => ({...prev, [id]: calculatedHeight}));
-  };
-
-  const extractFirstItem = htmlString => {
-    const plainText = htmlString.replace(/<[^>]+>/g, ' ');
-
-    const firstItem = plainText
-      ?.split('\n')
-      .filter(line => line?.trim() !== '')[0];
-
-    return firstItem?.trim();
   };
 
   const renderItem = ({item, index}) => {
@@ -548,10 +555,15 @@ const HomeScreen = () => {
 
   const renderItem5 = ({item, index}) => {
     return (
-      <TouchableOpacity style={[styles.card, styles.prodCard]}>
+      <TouchableOpacity
+        style={[styles.card, styles.prodCard]}
+        onPress={() => {
+          Detail1(item, item?.id),
+            navigation.navigate('ProductDetail', {data: item});
+        }}>
         <View style={styles.imgContainer}>
           <Image
-            source={{uri: `${Imagepath.Path}${item.image}`}}
+            source={{uri: item?.featuredImage?.url}}
             width={'100%'}
             height={'100%'}
             resizeMode="contain"
@@ -559,11 +571,19 @@ const HomeScreen = () => {
           />
         </View>
         <View style={styles.cardInfo}>
-          <Text style={styles.prodNameText}>{'Amethyst Bracelet'}</Text>
+          <Text style={styles.prodNameText}>{item?.title}</Text>
 
           <View style={{flexDirection: 'row', gap: 10}}>
-            <Text style={styles.prodPriceText}>{`₹ 905.00`}</Text>
-            <Text style={styles.prodCrossPriceText}>{`₹ 1205.00`}</Text>
+            <Text style={styles.prodPriceText}>
+              {' '}
+              {`₹ ${item?.variants?.edges?.[0].node?.price.amount}`}
+            </Text>
+            {item?.variants?.edges?.[0].node?.compareAtPrice ? (
+              <Text
+                style={
+                  styles.prodCrossPriceText
+                }>{`₹ ${item?.variants?.edges?.[0].node?.compareAtPrice?.amount}`}</Text>
+            ) : null}
           </View>
           <View style={styles.starContainer}>
             <Rating
@@ -618,17 +638,15 @@ const HomeScreen = () => {
   const renderCard = ({item}) => {
     return (
       <TouchableOpacity
-        onPress={() => CouseDetail1(item)}
+        onPress={() => {
+          Detail1(item, item?.id),
+            navigation.navigate('CourseDetail', {coursetype: isLiveCourse});
+        }}
         style={[styles.card, {margin: 0, marginLeft: 15}]}>
         <Image
-          // source={
-          //   item.image == null
-          //     ? require('../../../assets/otherApp/courseCard1.png')
-          //     : {uri: `${Imagepath.Path}${item?.image}`}
-          // }
           source={
-            item?.node?.variants?.edges?.[0]?.node?.image?.src
-              ? {uri: `${item?.node?.variants?.edges?.[0]?.node?.image?.src}`}
+            item?.featuredImage?.url
+              ? {uri: `${item?.featuredImage?.url}`}
               : require('../../../assets/image/Remedies/Image-not.png')
           }
           width={wp(65)}
@@ -648,40 +666,35 @@ const HomeScreen = () => {
           ) : null}
           <Text style={styles.titleText}>
             {' '}
-            {item?.node?.title
-              ? item?.node?.title.length > 20
-                ? `${item?.node?.title.substring(0, 20)}...`
-                : item?.node.title
+            {item?.title
+              ? item?.title.length > 20
+                ? `${item?.title.substring(0, 20)}...`
+                : item?.title
               : ' '}
           </Text>
 
           <Text style={styles.regularText}>
-            {extractFirstItem(item?.node?.descriptionHtml)?.length > 45
-              ? `${extractFirstItem(item?.node?.descriptionHtml).substring(
-                  0,
-                  45,
-                )}...`
-              : extractFirstItem(item?.node?.descriptionHtml) || ''}
+            {item?.description?.length > 45
+              ? `${item?.description.substring(0, 45)}...`
+              : item?.description || ''}
           </Text>
-          {/* <Text style={styles.price}>{`₹ ${item?.price}`}</Text> */}
 
           <View style={{flexDirection: 'row', gap: 10}}>
             <Text style={[styles.price]}>
-              {`₹ ${item?.node?.variants?.edges?.[0].node?.price.amount}`}
+              {`₹ ${item?.variants?.edges?.[0].node?.price.amount}`}
             </Text>
-            {item?.node?.variants?.edges?.[0].node?.compareAtPrice ? (
+            {item?.variants?.edges?.[0].node?.compareAtPrice ? (
               <Text
                 style={[
                   styles.price,
                   {textDecorationLine: 'line-through', color: 'gray'},
                 ]}>
-                ₹{' '}
-                {item?.node?.variants?.edges?.[0].node?.compareAtPrice?.amount}
+                ₹ {item?.variants?.edges?.[0].node?.compareAtPrice?.amount}
               </Text>
             ) : null}
           </View>
 
-          {/* <TouchableOpacity onPress={() => CouseDetail1(item)}> */}
+          {/* <TouchableOpacity onPress={() => CouseDetail1(item, item?.node?.id)}> */}
           <Text style={styles.cardBtn}>View Details</Text>
           {/* </TouchableOpacity> */}
         </View>
@@ -902,8 +915,9 @@ const HomeScreen = () => {
               <Text style={styles.service1}>VIEW ALL</Text>
             </TouchableOpacity>
           </View>
+          {/* {console.log(homeData?.best_Products)} */}
           <FlatList
-            data={Homebanner?.remedies?.slice(0, 5) || []} // Ensure data is always an array
+            data={homeData?.best_Products?.products || []} // Ensure data is always an array
             renderItem={renderItem5}
             keyExtractor={item => item.id?.toString()} // Ensure key is string
             horizontal={true}
@@ -920,12 +934,12 @@ const HomeScreen = () => {
           />
 
           <View style={[styles.dotContainer, {marginTop: -10}]}>
-            {Homebanner?.remedies?.slice(0, 5).map((item, index) => (
+            {homeData?.best_Products?.products?.map((item, index) => (
               <TouchableOpacity
                 key={index}
                 style={[styles.dot, currentIndex === index && styles.activeDot]}
                 onPress={() => {
-                  if (index < (Homebanner?.remedies?.slice(0, 5) || [])) {
+                  if (index < (homeData?.best_Products?.products || [])) {
                     handleImageChange(index);
                   }
                 }}
@@ -943,6 +957,12 @@ const HomeScreen = () => {
             disabled={isLiveCourse}
             onPress={async () => {
               setIsLiveCourse(true);
+              await dispatch(
+                fetchExtraCollectonHome(
+                  homeData?.courses_section?.content?.live_courses,
+                  'courses',
+                ),
+              );
             }}>
             <Text
               style={[
@@ -958,6 +978,12 @@ const HomeScreen = () => {
             style={[styles.switchBtn, !isLiveCourse ? styles.activeBtn : null]}
             onPress={async () => {
               setIsLiveCourse(false);
+              await dispatch(
+                fetchExtraCollectonHome(
+                  homeData?.courses_section?.content?.recorded_courses,
+                  'courses',
+                ),
+              );
             }}>
             <Text
               style={[
@@ -973,12 +999,7 @@ const HomeScreen = () => {
           <FlatList
             ref={flatListRef}
             contentContainerStyle={[styles.cardContainer0, {gap: 0}]}
-            // data={
-            //   isLiveCourse
-            //     ? Homebanner?.live_courses?.slice(0, 4) || []
-            //     : Homebanner?.recoded_courses?.slice(0, 4) || []
-            // }
-            data={RemediesCategor1 ? RemediesCategor1 : []}
+            data={homeData?.course ? homeData?.course : []}
             renderItem={renderCard}
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -991,20 +1012,12 @@ const HomeScreen = () => {
           />
 
           <View style={styles.dotContainer}>
-            {(isLiveCourse
-              ? Homebanner?.live_courses?.slice(0, 4) || []
-              : Homebanner?.recoded_courses?.slice(0, 4) || []
-            ).map((item, index) => (
+            {(homeData?.course || []).map((item, index) => (
               <TouchableOpacity
                 key={index}
                 style={[styles.dot, currentIndex === index && styles.activeDot]}
                 onPress={() => {
-                  if (
-                    index <
-                    (isLiveCourse
-                      ? Homebanner?.live_courses?.slice(0, 4) || []
-                      : Homebanner?.recoded_courses?.slice(0, 4) || [])
-                  ) {
+                  if (index < (homeData?.course || [])) {
                     handleImageChange(index);
                   }
                 }}
@@ -1253,89 +1266,96 @@ const HomeScreen = () => {
             </Text> */}
           </View>
         </View>
-      
-           <ImageBackground
-            // resizeMode="contain"
-            source={{
-              uri: `${homeData?.custom_testimonial?.content?.mob_background_image}`,
-            }}
-            style={styles.testimonalSection}>
-        <View >
-          <View style={{alignSelf: 'center', borderWidth: 0.1}}>
-            <Text style={styles.Testimonals}>{homeData?.custom_testimonial?.content?.heading}</Text>
-          </View>
-          <View style={{marginTop: 10, paddingVertical: 5}}>
-            <FlatList
-              data={homeData?.custom_testimonial?.custom_review?homeData?.custom_testimonial?.custom_review:[]}
-              // keyExtractor={item => item.id}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              pagingEnabled
-              snapToAlignment="center"
-              decelerationRate="fast"
-              snapToInterval={wp(100)}
-              ref={flatListRef}
-              scrollEventThrottle={16}
-              onMomentumScrollEnd={e => {
-                const contentOffsetX = e.nativeEvent.contentOffset.x;
-                const currentIndex = Math.round(contentOffsetX / wp(100));
-                setCurrentIndex(currentIndex);
-              }}
-              renderItem={({item,index}) => (
-                <View style={styles.testimonalsCardWrapper}>
-                  <View style={styles.testimonalsCard}>
-                    <Text style={styles.cardUserNameText}>
-                      {item?.reviewer_name}
-                    </Text>
-                    <View style={styles.starContainer}>
-                      <Rating
-                        type="custom"
-                        tintColor={colors.white}
-                        ratingCount={5}
-                        imageSize={16}
-                        startingValue={3}
-                        ratingColor="#F4C76C"
-                        readonly
-                        ratingBackgroundColor={colors.lightGrey}
+
+        <ImageBackground
+          // resizeMode="contain"
+          source={{
+            uri: `${homeData?.custom_testimonial?.content?.mob_background_image}`,
+          }}
+          style={styles.testimonalSection}>
+          <View>
+            <View style={{alignSelf: 'center', borderWidth: 0.1}}>
+              <Text style={styles.Testimonals}>
+                {homeData?.custom_testimonial?.content?.heading}
+              </Text>
+            </View>
+            <View style={{marginTop: 10, paddingVertical: 5}}>
+              <FlatList
+                data={
+                  homeData?.custom_testimonial?.custom_review
+                    ? homeData?.custom_testimonial?.custom_review
+                    : []
+                }
+                // keyExtractor={item => item.id}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                pagingEnabled
+                snapToAlignment="center"
+                decelerationRate="fast"
+                snapToInterval={wp(100)}
+                ref={flatListRef}
+                scrollEventThrottle={16}
+                onMomentumScrollEnd={e => {
+                  const contentOffsetX = e.nativeEvent.contentOffset.x;
+                  const currentIndex = Math.round(contentOffsetX / wp(100));
+                  setCurrentIndex(currentIndex);
+                }}
+                renderItem={({item, index}) => (
+                  <View style={styles.testimonalsCardWrapper}>
+                    <View style={styles.testimonalsCard}>
+                      <Text style={styles.cardUserNameText}>
+                        {item?.reviewer_name}
+                      </Text>
+                      <View style={styles.starContainer}>
+                        <Rating
+                          type="custom"
+                          tintColor={colors.white}
+                          ratingCount={5}
+                          imageSize={16}
+                          startingValue={3}
+                          ratingColor="#F4C76C"
+                          readonly
+                          ratingBackgroundColor={colors.lightGrey}
+                        />
+                      </View>
+                      <Text style={styles.testimonalsCardContant}>
+                        {item?.review_text}
+                      </Text>
+                    </View>
+
+                    <View style={styles.CardProfileImage}>
+                      <Image
+                        source={{uri: item?.mob_review_image}}
+                        // source={require('../../../assets/image/Remedies/Image-not.png')}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          // resizeMode: 'cover',
+                        }}
                       />
                     </View>
-                    <Text style={styles.testimonalsCardContant}>
-                     {item?.review_text}
-                    </Text>
                   </View>
+                )}
+              />
 
-                  <View style={styles.CardProfileImage}>
-                    <Image
-                    source={{uri:item?.mob_review_image}}
-                      // source={require('../../../assets/image/Remedies/Image-not.png')}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        // resizeMode: 'cover',
-                      }}
+              <View style={[styles.dotContainer, {marginVertical: 20}]}>
+                {homeData?.custom_testimonial?.custom_review?.map(
+                  (item, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      style={[
+                        styles.dot,
+                        currentIndex === index && styles.activeDot,
+                      ]}
+                      onPress={() => handleImageChange(index)}
                     />
-                  </View>
-                </View>
-              )}
-            />
-
-            <View style={[styles.dotContainer, {marginVertical: 20}]}>
-              {homeData?.custom_testimonial?.custom_review?.map((item, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={[
-                    styles.dot,
-                    currentIndex === index && styles.activeDot,
-                  ]}
-                  onPress={() => handleImageChange(index)}
-                />
-              ))}
+                  ),
+                )}
+              </View>
             </View>
-          </View>
 
-          {/* {console.log('hdfhfdhjjkjkdsjdsjsdjkksj',homeData?.custom_testimonial)
-        } */}
-        </View>
+            {/* {console.log('hdfhfdhjjkjkdsjdsjsdjkksj',homeData?.custom_testimonial)} */}
+          </View>
         </ImageBackground>
         <ImageBackground
           style={styles.costCalBannerImg}
@@ -1415,12 +1435,17 @@ const HomeScreen = () => {
           </TouchableOpacity>
         </LinearGradient>
 
-      
-
         <View style={[styles.contain, {marginTop: 30}]}>
           <Text
-            style={[styles.service, {textAlign: 'center', marginVertical: 10,color:homeData?.captured_highlights?.title_color}]}>
-           {homeData?.captured_highlights?.title}
+            style={[
+              styles.service,
+              {
+                textAlign: 'center',
+                marginVertical: 10,
+                color: homeData?.captured_highlights?.title_color,
+              },
+            ]}>
+            {homeData?.captured_highlights?.title}
           </Text>
         </View>
 
@@ -1449,23 +1474,31 @@ const HomeScreen = () => {
           </TouchableOpacity>
         </View>
         <FlatList
-          data={isPhoto ?homeData?.captured_highlights?.image:homeData?.captured_highlights?.video}
+          data={
+            isPhoto
+              ? homeData?.captured_highlights?.image
+              : homeData?.captured_highlights?.video
+          }
           renderItem={({item}) => {
             return isPhoto ? (
               <Image
                 style={styles.highlightImg}
-                source={{uri:item.mob_photo}}
+                source={{uri: item.mob_photo}}
                 // source={require('../../../assets/otherApp/highlightsImg.png')}
               />
             ) : (
-              <View style={[styles.videoContianer,{height: wp(50), width: wp(85)}]}>
+              <View
+                style={[
+                  styles.videoContianer,
+                  {height: wp(50), width: wp(85)},
+                ]}>
                 <WebView
                   // source={{
                   //   uri:  item.video_url
                   //    uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
                   // }}
-                  source={{ uri: getYouTubeEmbedUrl(item.video_url) }}
-                   style={{ height:'100%',width:'100%'}}
+                  source={{uri: getYouTubeEmbedUrl(item.video_url)}}
+                  style={{height: '100%', width: '100%'}}
                   javaScriptEnabled={true}
                   domStorageEnabled={true}
                   allowsFullscreenVideo={true}
@@ -1478,15 +1511,36 @@ const HomeScreen = () => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{paddingHorizontal: 10}}
         />
-         
-        <View style={[styles.contain]}>
-          <Text style={[styles.service1, {textDecorationLine: 'none',color:homeData?.about_pinnacle_vastu?.content?.subheading_color}]}>
-           {homeData?.about_pinnacle_vastu?.content?.subheading}
-          </Text>
-          <Text style={[styles.service,{color:homeData?.about_pinnacle_vastu?.content?.heading_color}]}>{homeData?.about_pinnacle_vastu?.content?.heading}</Text>
 
-          <Text style={[styles.selectedText,{color:homeData?.about_pinnacle_vastu?.content?.description_color}]}>
-          {homeData?.about_pinnacle_vastu?.content?.description}
+        <View style={[styles.contain]}>
+          <Text
+            style={[
+              styles.service1,
+              {
+                textDecorationLine: 'none',
+                color:
+                  homeData?.about_pinnacle_vastu?.content?.subheading_color,
+              },
+            ]}>
+            {homeData?.about_pinnacle_vastu?.content?.subheading}
+          </Text>
+          <Text
+            style={[
+              styles.service,
+              {color: homeData?.about_pinnacle_vastu?.content?.heading_color},
+            ]}>
+            {homeData?.about_pinnacle_vastu?.content?.heading}
+          </Text>
+
+          <Text
+            style={[
+              styles.selectedText,
+              {
+                color:
+                  homeData?.about_pinnacle_vastu?.content?.description_color,
+              },
+            ]}>
+            {homeData?.about_pinnacle_vastu?.content?.description}
           </Text>
 
           <TouchableOpacity onPress={() => console.log('hy!')}>
@@ -1494,9 +1548,13 @@ const HomeScreen = () => {
               style={[
                 styles.cardBtn,
                 styles.btnFontSize,
-                {marginVertical: 15,color:homeData?.about_pinnacle_vastu?.content?.button_text_color},
+                {
+                  marginVertical: 15,
+                  color:
+                    homeData?.about_pinnacle_vastu?.content?.button_text_color,
+                },
               ]}>
-            {homeData?.about_pinnacle_vastu?.content?.button_text}
+              {homeData?.about_pinnacle_vastu?.content?.button_text}
             </Text>
           </TouchableOpacity>
 
@@ -1522,7 +1580,7 @@ const HomeScreen = () => {
             <Image
               // width={wp(95)}
               style={[styles.bannerImg2, {borderRadius: 15}]}
-              source={{uri:homeData?.about_pinnacle_vastu?.content?.mob_image}}
+              source={{uri: homeData?.about_pinnacle_vastu?.content?.mob_image}}
               // source={require('../../../assets/otherApp/demo3.png')}
             />
             {/* <Text style={[styles.costCalBannerText, {bottom: 20}]}>
