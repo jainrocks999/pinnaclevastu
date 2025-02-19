@@ -19,7 +19,12 @@ import {heightPercent} from '../../../Component/ResponsiveScreen/responsive';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {courceorderDetail, orderDetail, orderlistapi, orderlistcource} from '../../../Redux/Slice/orderSclice';
+import {
+  courceorderDetail,
+  orderDetail,
+  orderlistapi,
+  orderlistcource,
+} from '../../../Redux/Slice/orderSclice';
 import Imagepath from '../../../Component/Imagepath';
 import Loader from '../../../Component/Loader';
 
@@ -28,83 +33,90 @@ const {width} = Dimensions.get('window');
 const MyOrder = ({route}) => {
   const navigation = useNavigation();
 
+  const product = useSelector(state => state?.order?.orderList1);
+  // console.log(product,"product");
 
-  const product = useSelector(state => state?.order?.orderList1?.data);
-  
-  const cource =useSelector(state => state?.order?.orderCource?.data);
+  const cource = useSelector(state => state?.order?.orderCource?.data);
 
-  const loading1 = useSelector(state => state?.order?.loading); 
+  const loading1 = useSelector(state => state?.order?.loading);
   const [selectedTab, setSelectedTab] = useState('Remedies');
   const focus = useIsFocused();
   const dispatch = useDispatch();
-  const placeholderText = "Search"; 
-  const [displayedText, setDisplayedText] = useState(''); 
+  const placeholderText = 'Search';
+  const [displayedText, setDisplayedText] = useState('');
 
-useEffect(() => {
+  useEffect(() => {
     let currentIndex = 0;
-  
+
     const startAnimation = () => {
       const intervalId = setInterval(() => {
         if (currentIndex < placeholderText.length) {
-          
-          // setDisplayedText(placeholderText.slice(0, currentIndex + 1)); 
-          setDisplayedText(prev => placeholderText.slice(0, currentIndex + 1)); 
+          // setDisplayedText(placeholderText.slice(0, currentIndex + 1));
+          setDisplayedText(prev => placeholderText.slice(0, currentIndex + 1));
 
           currentIndex++;
         } else {
-          
-          currentIndex = 0; 
-          setDisplayedText(''); 
+          currentIndex = 0;
+          setDisplayedText('');
         }
-      }, 450); 
-  
+      }, 450);
+
       return intervalId;
     };
-  
+
     const intervalId = startAnimation();
-  
-    return () => clearInterval(intervalId); 
+
+    return () => clearInterval(intervalId);
   }, []);
   useEffect(() => {
     setSelectedTab(route?.params?.data);
     if (focus) {
-      apicall()
+      apicall();
       const backAction = () => {
         navigation.reset({
           index: 0,
           routes: [{name: 'UserProfile'}],
-        })
-        return true; 
+        });
+        return true;
       };
-      
-      const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-  
-      return () => backHandler.remove(); 
+
+      const backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        backAction,
+      );
+
+      return () => backHandler.remove();
     }
   }, [navigation]);
 
   const apicall = async () => {
-  
     try {
-
       const token = await AsyncStorage.getItem('Token');
       const userid = await AsyncStorage.getItem('user_id');
+      const userData = await AsyncStorage.getItem('user_data');
 
+      console.log(JSON.parse(userData).shopify_access_token);
+      // console.log((userData.shopify_access_token),"shopify_access_token")
+      // const access_token = JSON.parse(userData.shopify_access_token);
       if (!token || !userid) {
         console.error('Token or User ID is missing.');
         return;
       }
-       await dispatch(
-        orderlistcource({id: userid, token: token, url: 'fetch-courses-order'}),
-      );
+
+      // orderlistcource({id: userid, token: token, url: 'fetch-courses-order'}),
+
       await dispatch(
-        orderlistapi({id: userid, token: token, url: 'fetch-order'}),
+        orderlistapi({
+          id: userid,
+          token: token,
+          url: 'shopify-customer-order-list',
+          accessToken: JSON.parse(userData).shopify_access_token,
+        }),
       );
     } catch (error) {
       console.error('Error in API call:', error);
     }
   };
-
 
   const OrderDetails = async item => {
     const token = await AsyncStorage.getItem('Token');
@@ -133,9 +145,6 @@ useEffect(() => {
       }),
     );
   };
-
- 
-
 
   const orders = [
     {
@@ -166,30 +175,39 @@ useEffect(() => {
 
   const renderOrderItem = ({item}) => (
     <View style={styles.orderCard}>
-      <Text style={styles.orderNo}>Order No: {item.code}</Text>
+      {console.log(item?.node?.lineItems?.nodes[0], 'sandeep')}
+      <Text style={styles.orderNo}>Order No: {item?.node?.orderNumber}</Text>
 
       <View style={styles.horizontalSeparator} />
       <View style={styles.productContainer}>
+        {console.log(
+          // item?.node?.lineItems?.nodes[0]?.variant?.image?.url,
+          item?.node?.totalPrice?.amount,
+          'sdsds',
+        )}
         <Image
           source={
-            item?.products?.[0]?.product_image
-              ? {uri: `${Imagepath.Path}${item?.products?.[0]?.product_image}`}
+            item?.node?.lineItems?.nodes[0]?.variant?.image?.url
+              ? {uri: `${item?.node?.lineItems?.nodes[0]?.variant?.image?.url}`}
               : require('../../../assets/otherApp/order3.png')
           }
           style={styles.productImage}
         />
         <View style={styles.productDetails}>
           <Text style={styles.productName}>
-            {item?.products?.[0]?.product_name}
+            {item?.node?.lineItems?.nodes[0]?.title}
           </Text>
           <Text style={styles.productQuantity}>
             Total Quantity:{' '}
-            {item?.products?.reduce(
-              (sum, product) => sum + (product.qty || 0),
+            {item?.node?.lineItems?.nodes?.reduce(
+              (total, item) => total + item.quantity,
               0,
             )}
+            {/* {item?.node?.lineItems?.nodes[0]?.quantity} */}
           </Text>
-          <Text style={styles.productName}>Total: ₹ {item?.amount}</Text>
+          <Text style={styles.productName}>
+            Total: ₹ {item?.node?.totalPrice?.amount}
+          </Text>
         </View>
       </View>
       {item?.status?.label ? (
@@ -232,13 +250,11 @@ useEffect(() => {
               ? {uri: `${Imagepath.Path}${item?.course?.image}`}
               : require('../../../assets/otherApp/order3.png')
           }
-          resizeMode='contain'
+          resizeMode="contain"
           style={styles.productImage1}
         />
         <View style={styles.productDetails}>
-          <Text style={styles.productName}>
-            {item?.course_title}
-          </Text>
+          <Text style={styles.productName}>{item?.course_title}</Text>
           {/* <Text style={styles.productQuantity}>
            Total Quantity:{' '}
             {item?.products?.reduce(
@@ -250,7 +266,7 @@ useEffect(() => {
           <Text style={styles.productName}>Total: ₹ {item?.amount}</Text>
         </View>
       </View>
-      {item?.status? (
+      {/* {item?.status ? (
         <Text
           style={[
             styles.statusText,
@@ -262,12 +278,14 @@ useEffect(() => {
                   ? '#d63939'
                   : item?.status == 'completed'
                   ? '#2fb344'
-                  :item?.status == 'pending'?'#f6ad55':null ,
+                  : item?.status == 'pending'
+                  ? '#f6ad55'
+                  : null,
             },
           ]}>
           {item?.status}
         </Text>
-      ) : null}
+      ) : null} */}
       <TouchableOpacity
         onPress={
           () => OrderDetails1(item)
@@ -282,7 +300,7 @@ useEffect(() => {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity
-          hitSlop={{bottom:10,top:10,left:10,right:10}}
+          hitSlop={{bottom: 10, top: 10, left: 10, right: 10}}
           onPress={() =>
             navigation.reset({
               index: 0,
@@ -304,16 +322,19 @@ useEffect(() => {
         contentContainerStyle={{flexGrow: 1, paddingBottom: heightPercent(10)}}>
         <View style={styles.searchContainer}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <TouchableOpacity   hitSlop={{bottom:10,top:10,left:10,right:10}}>
-                          <Image source={require('../../../assets/image/SearchIcon.png')} />
-          </TouchableOpacity>
-          <TextInput
-                    style={styles.searchInput}
-                    placeholder={displayedText} 
-                    placeholderTextColor={colors.searchBarTextColor}
-                  />
+            <TouchableOpacity
+              hitSlop={{bottom: 10, top: 10, left: 10, right: 10}}>
+              <Image source={require('../../../assets/image/SearchIcon.png')} />
+            </TouchableOpacity>
+            <TextInput
+              style={styles.searchInput}
+              placeholder={displayedText}
+              placeholderTextColor={colors.searchBarTextColor}
+            />
           </View>
-          <TouchableOpacity style={styles.filterBtn}   hitSlop={{bottom:10,top:10,left:10,right:10}}>
+          <TouchableOpacity
+            style={styles.filterBtn}
+            hitSlop={{bottom: 10, top: 10, left: 10, right: 10}}>
             <Image source={require('../../../assets/image/Vector.png')} />
           </TouchableOpacity>
         </View>
@@ -337,30 +358,26 @@ useEffect(() => {
             </TouchableOpacity>
           ))}
         </View>
-       {selectedTab=='Remedies'?
-       ( <FlatList
-          data={product}
-          keyExtractor={item => item.id}
-          scrollEnabled={false}
-          renderItem={renderOrderItem}
-          contentContainerStyle={styles.ordersList}
-        />):
-        
-        selectedTab=='Courses'?
 
-        (
-          
+        {selectedTab == 'Remedies' ? (
           <FlatList
-          data={cource}
-          keyExtractor={item => item.id}
-          scrollEnabled={false}
-          renderItem={renderOrderItem1}
-          contentContainerStyle={styles.ordersList}
-        />
-      
-      ):(<Text>Consultation</Text>)
-        
-        }
+            data={product}
+            keyExtractor={item => item.id}
+            scrollEnabled={false}
+            renderItem={renderOrderItem}
+            contentContainerStyle={styles.ordersList}
+          />
+        ) : selectedTab == 'Courses' ? (
+          <FlatList
+            data={cource}
+            keyExtractor={item => item.id}
+            scrollEnabled={false}
+            renderItem={renderOrderItem1}
+            contentContainerStyle={styles.ordersList}
+          />
+        ) : (
+          <Text>Consultation</Text>
+        )}
       </ScrollView>
       {/* {console.log(product, 'sandeep...')} */}
     </View>
