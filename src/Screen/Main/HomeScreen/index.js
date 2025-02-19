@@ -56,7 +56,19 @@ const HomeScreen = () => {
   const [userType, setUserType] = useState('');
   const [isLiveCourse, setIsLiveCourse] = useState(true);
   const [isPhoto, setIsPhoto] = useState(true);
+  const [course, setCourse] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
+  // const [currentIndex1, setCurrentIndex1] = useState(0);
+  // const [currentIndex2, setCurrentIndex2] = useState(0);
+  // const [currentIndex3, setCurrentIndex3] = useState(0);
+  // const [currentIndex4, setCurrentIndex4] = useState(0);
+  const [currentIndex1, setCurrentIndex1] = useState({
+    imgBannerIndex2: 0,
+    bestProdIndex: 0,
+    courseIndex: 0,
+    cousultationIndex: 0,
+    reviewIndex: 0,
+  });
   const dispatch = useDispatch();
   const placeholderText = 'Search';
   const [displayedText, setDisplayedText] = useState('');
@@ -68,7 +80,6 @@ const HomeScreen = () => {
   const submitedEnqury = useSelector(state => state?.home?.submitedEnqury);
  
   const userDetail = useSelector(state => state?.Auth?.userData);
-
   const Homebanner = useSelector(state => state.home?.HomeBanner?.data);
   const isLoading = useSelector(state => state.home?.loading);
   const cartTotalQuantity = useSelector(
@@ -195,16 +206,12 @@ const HomeScreen = () => {
   const apicall = async () => {
     await dispatch(Banner({url: 'home-slider'}));
     await dispatch(
-      fetchExtraCollectonHome(
-        homeData?.courses_section?.content?.live_courses,
-        'courses',
-      ),
+      fetchExtraCollectonHome(homeData?.courses_section?.content?.live_courses),
     );
     await dispatch(CourceLis({url: 'fetch-course-data'}));
     await dispatch(
       fetchExtraCollectonHome(
         homeData?.best_Products_section?.content?.collection,
-        'best_prod',
       ),
     );
   };
@@ -357,7 +364,8 @@ const HomeScreen = () => {
             styles.cardContainer,
             {backgroundColor: item?.background_color},
           ]}
-          onPress={() => handleItemClick(index, item.id, item.services_name)}>
+          // onPress={() => handleItemClick(index, item.id, item.services_name)}
+        >
           {/* <Image
             source={{uri:'' }}
             style={styles.itemImg}
@@ -796,7 +804,7 @@ const HomeScreen = () => {
           data={homeData?.our_services ? homeData?.our_services : []}
           renderItem={renderItem}
           scrollEnabled={false}
-          // keyExtractor={item => item.id}
+          keyExtractor={(item, index) => index}
           numColumns={3}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContainer}
@@ -815,6 +823,10 @@ const HomeScreen = () => {
         <View style={[styles.containe, {marginVertical: 10}]}>
           <FlatList
             data={homeData?.image_banner2 || []}
+            keyExtractor={(item, index) => index}
+            pagingEnabled
+            snapToAlignment="center"
+            decelerationRate="fast"
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={[
@@ -823,11 +835,14 @@ const HomeScreen = () => {
             onMomentumScrollEnd={e => {
               const contentOffsetX = e.nativeEvent.contentOffset.x;
               const currentIndex = Math.round(contentOffsetX / wp(85));
-              setCurrentIndex(currentIndex);
+              setCurrentIndex1({
+                ...currentIndex1,
+                imgBannerIndex2: currentIndex,
+              });
             }}
             renderItem={({item, index}) => (
               <TouchableOpacity
-                onPress={() => onPress(item, index)}
+                // onPress={() => onPress(item, index)}
                 style={[
                   styles.imageContaine,
                   {
@@ -835,6 +850,7 @@ const HomeScreen = () => {
                     marginRight: 10,
                     borderColor: item.border_color,
                     backgroundColor: item?.background_color,
+                    minHeight:wp(25)
                   },
                 ]}>
                 <View style={[styles.cardContaine, {paddingRight: 10}]}>
@@ -881,7 +897,10 @@ const HomeScreen = () => {
             {homeData?.image_banner2?.map((item, index) => (
               <TouchableOpacity
                 key={index}
-                style={[styles.dot, currentIndex === index && styles.activeDot]}
+                style={[
+                  styles.dot,
+                  currentIndex1.imgBannerIndex2 === index && styles.activeDot,
+                ]}
                 onPress={() => {
                   if (index < (homeData?.image_banner2?.map || [])) {
                     handleImageChange(index);
@@ -898,6 +917,7 @@ const HomeScreen = () => {
         <FlatList
           data={homeData?.premium_services ? homeData?.premium_services : []}
           renderItem={renderItem1}
+          keyExtractor={(item, index) => index}
           numColumns={3}
           scrollEnabled={false}
           showsVerticalScrollIndicator={false}
@@ -907,15 +927,33 @@ const HomeScreen = () => {
           <View style={[styles.contain1, {marginBottom: 15}]}>
             <Text style={styles.service}>Best Products</Text>
             <TouchableOpacity
-              hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+              hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
+              onPress={() => {
+                navigation.navigate('Home1', {
+                  screen: 'Remedie12',
+                  params: {
+                    screen: 'ProductList',
+                    params: {
+                      item: {
+                        id: homeData?.best_Products?.collectionId,
+                        title: 'Products',
+                      },
+                      Id: false,
+                    },
+                  },
+                });
+              }}>
               <Text style={styles.service1}>VIEW ALL</Text>
             </TouchableOpacity>
           </View>
           {/* {console.log(homeData?.best_Products)} */}
           <FlatList
-            data={homeData?.best_Products?.products || []} // Ensure data is always an array
+            data={homeData?.best_Products?.products || []}
             renderItem={renderItem5}
-            keyExtractor={item => item.id?.toString()} // Ensure key is string
+            pagingEnabled
+            snapToAlignment="center"
+            decelerationRate="fast"
+            keyExtractor={(item, index) => index}
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={[
@@ -925,7 +963,7 @@ const HomeScreen = () => {
             onMomentumScrollEnd={e => {
               const contentOffsetX = e.nativeEvent.contentOffset.x;
               const currentIndex = Math.round(contentOffsetX / wp(65));
-              setCurrentIndex(currentIndex);
+              setCurrentIndex1({...currentIndex1, bestProdIndex: currentIndex});
             }}
           />
 
@@ -933,7 +971,10 @@ const HomeScreen = () => {
             {homeData?.best_Products?.products?.map((item, index) => (
               <TouchableOpacity
                 key={index}
-                style={[styles.dot, currentIndex === index && styles.activeDot]}
+                style={[
+                  styles.dot,
+                  currentIndex1.bestProdIndex == index && styles.activeDot,
+                ]}
                 onPress={() => {
                   if (index < (homeData?.best_Products?.products || [])) {
                     handleImageChange(index);
@@ -995,15 +1036,19 @@ const HomeScreen = () => {
           <FlatList
             ref={flatListRef}
             contentContainerStyle={[styles.cardContainer0, {gap: 0}]}
+            pagingEnabled
+            snapToAlignment="center"
+            decelerationRate="fast"
             data={homeData?.course ? homeData?.course : []}
             renderItem={renderCard}
+            keyExtractor={(item) => item.id}
             horizontal
             showsHorizontalScrollIndicator={false}
             scrollEventThrottle={16}
             onMomentumScrollEnd={e => {
               const contentOffsetX = e.nativeEvent.contentOffset.x;
               const currentIndex = Math.round(contentOffsetX / wp(65)); // Calculate index based on item width
-              setCurrentIndex(currentIndex); // Update the current index state
+              setCurrentIndex1({...currentIndex1, courseIndex: currentIndex});
             }}
           />
 
@@ -1011,7 +1056,10 @@ const HomeScreen = () => {
             {(homeData?.course || []).map((item, index) => (
               <TouchableOpacity
                 key={index}
-                style={[styles.dot, currentIndex === index && styles.activeDot]}
+                style={[
+                  styles.dot,
+                  currentIndex1.courseIndex == index && styles.activeDot,
+                ]}
                 onPress={() => {
                   if (index < (homeData?.course || [])) {
                     handleImageChange(index);
@@ -1042,7 +1090,7 @@ const HomeScreen = () => {
             <FlatList
               data={homeData?.how_it_works?.cards?.slice(0, 3)}
               renderItem={renderItem6}
-              // keyExtractor={item => item.id}
+              keyExtractor={(item, index) =>index}
               horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{
@@ -1095,7 +1143,8 @@ const HomeScreen = () => {
                 placeholderStyle={[styles.inputText, {color: '#7B93AF'}]}
                 selectedTextStyle={styles.selectedText}
                 itemTextStyle={styles.inputText}
-                value={''}
+                value={course}
+                onChange={text => setCourse(text.value)}
                 renderRightIcon={() => (
                   <Image
                     style={{
@@ -1209,7 +1258,7 @@ const HomeScreen = () => {
             <FlatList
               data={homeData?.remedies?.cards?.slice(0, 5)}
               renderItem={renderItem2}
-              keyExtractor={item => item.id}
+              keyExtractor={(item, index) =>index}
               horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{
@@ -1238,6 +1287,9 @@ const HomeScreen = () => {
           <FlatList
             data={Homebanner?.franchises}
             // data={data4}
+            pagingEnabled
+            snapToAlignment="center"
+            decelerationRate="fast"
             renderItem={renderItem3}
             keyExtractor={item => item.id.toString()}
             horizontal
@@ -1248,14 +1300,20 @@ const HomeScreen = () => {
             onMomentumScrollEnd={e => {
               const contentOffsetX = e.nativeEvent.contentOffset.x;
               const currentIndex = Math.round(contentOffsetX / wp(90));
-              setCurrentIndex(currentIndex);
+              setCurrentIndex1({
+                ...currentIndex1,
+                cousultationIndex: currentIndex,
+              });
             }}
           />
           <View style={[styles.dotContainer, {marginTop: 15}]}>
             {Homebanner?.franchises.map((item, index) => (
               <TouchableOpacity
                 key={item.id}
-                style={[styles.dot, currentIndex == index && styles.activeDot]}
+                style={[
+                  styles.dot,
+                  currentIndex1.cousultationIndex == index && styles.activeDot,
+                ]}
                 onPress={() => {
                   if (index < Homebanner?.franchises.length) {
                     handleImageChange(index);
@@ -1284,11 +1342,6 @@ const HomeScreen = () => {
               {color: homeData?.core_values?.content?.description_color},
             ]}>
             {homeData?.core_values?.content?.description}
-            {/* We’re passionate & believe in motivating leadership. We focus to
-            move forward in faith than following a superstitious path.
-            Relentless growth but not alone: We aim at team building and its
-            management. We believe in doing the right things with integrity,
-            honesty, and reliability. */}
           </Text>
           <View style={styles.cirleContainer}>
             {homeData?.core_values?.items?.map((item, index) => (
@@ -1352,7 +1405,7 @@ const HomeScreen = () => {
                     ? homeData?.custom_testimonial?.custom_review
                     : []
                 }
-                // keyExtractor={item => item.id}
+                keyExtractor={(item, index) =>index}
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 pagingEnabled
@@ -1364,7 +1417,10 @@ const HomeScreen = () => {
                 onMomentumScrollEnd={e => {
                   const contentOffsetX = e.nativeEvent.contentOffset.x;
                   const currentIndex = Math.round(contentOffsetX / wp(100));
-                  setCurrentIndex(currentIndex);
+                  setCurrentIndex1({
+                    ...currentIndex1,
+                    reviewIndex: currentIndex,
+                  });
                 }}
                 renderItem={({item, index}) => (
                   <View style={styles.testimonalsCardWrapper}>
@@ -1411,7 +1467,7 @@ const HomeScreen = () => {
                       key={index}
                       style={[
                         styles.dot,
-                        currentIndex === index && styles.activeDot,
+                        currentIndex1.reviewIndex == index && styles.activeDot,
                       ]}
                       onPress={() => handleImageChange(index)}
                     />
@@ -1572,7 +1628,7 @@ const HomeScreen = () => {
               </View>
             );
           }}
-          keyExtractor={item => item.id}
+          keyExtractor={(item, index) => index}
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{paddingHorizontal: 10}}
@@ -1673,18 +1729,8 @@ const HomeScreen = () => {
               styles.cardContainer0,
               {paddingHorizontal: 10, marginBottom: wp(8)},
             ]}
-            onMomentumScrollEnd={e => {
-              const contentOffsetX = e.nativeEvent.contentOffset.x;
-              const currentIndex = Math.round(contentOffsetX / wp(80));
-              setCurrentIndex(currentIndex);
-            }}
             renderItem={({item}) => (
               <TouchableOpacity style={styles.blogCard}>
-                {/* <AutoHeightImage
-                  source={require('../../../assets/image/Scr2.png')}
-                  width={wp(80)}
-                  style={{borderTopLeftRadius: 10, borderTopRightRadius: 10}}
-                /> */}
                 <Image
                   source={require('../../../assets/image/Scr2.png')}
                   style={{
@@ -1692,8 +1738,6 @@ const HomeScreen = () => {
                     borderTopRightRadius: 10,
                     width: wp(80),
                     height: hp(30),
-                    // borderWidth:1,
-                    // resizeMode:"contain"
                   }}
                 />
                 <View style={styles.cardInfo}>
@@ -1721,7 +1765,7 @@ const HomeScreen = () => {
           <FlatList
             data={data5}
             renderItem={renderItem4}
-            keyExtractor={item => item.id}
+            // keyExtractor={item => item.id}
             scrollEnabled={false}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.bottomCard}
