@@ -35,6 +35,77 @@ export const Banner = createAsyncThunk(
   },
 );
 
+export const CourceLis = createAsyncThunk(
+  'home/CourceLis',
+  async ({url,}, {rejectWithValue}) => {
+  
+
+    try {
+      const config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: `${constant.mainUrl}${url}`,
+        headers: {},
+      };
+
+      const response = await axios.request(config);
+      console.log('Coureseedfgdfgfgh ', url,response.data);
+      if (response?.data?.status == 200) {
+        return response?.data?.data;
+      } else {
+        Toast.show(response?.data?.msg);
+      }
+    } catch (error) {
+      console.log('banner error ', error);
+
+      return rejectWithValue(
+        error.response ? error.response.data : error.message,
+      );
+    }
+  },
+);
+
+
+
+
+export const submitEnquryApi = createAsyncThunk(
+  'home/submitEnquryApi',
+  async (
+    { Requestdata, url,  },
+    { rejectWithValue},
+  ) => {
+
+    // console.log(Requestdata,"sandeep>>>>>")
+    try {
+      let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: `${constant.mainUrl}${url}`,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        
+        data:  Requestdata,
+      };
+      // console.log('shkshfskdfhsdf', config);
+
+      const response = await axios.request(config);
+      // console.log('sfkjlsglksgsgs', response);
+
+      if (response?.data?.status == 200) {
+        // Toast.show("Course enquiry submitted successfully!");
+        Toast.show(response?.data?.msg);
+        return response?.data?.status
+      } else {
+        Toast.show(response?.data?.msg);
+        console.log('errrorroro', response.data);
+        return rejectWithValue(error.response?.data || error.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  },
+);
 export const DrawerApi = createAsyncThunk(
   'home/DrawerApi',
   async ({url}, {rejectWithValue}) => {
@@ -189,35 +260,7 @@ export const productDetail1 = createAsyncThunk(
   },
 );
 
-export const CourceLis = createAsyncThunk(
-  'home/CourceLis',
-  async ({url, slug}, {rejectWithValue}) => {
-    console.log('Coureseedfgdfgfgh ', url, slug);
 
-    try {
-      const config = {
-        method: 'get',
-        maxBodyLength: Infinity,
-        url: `${constant.mainUrl}${url}?slug=${slug}`,
-        headers: {},
-      };
-
-      const response = await axios.request(config);
-
-      if (response?.data?.status == 200) {
-        return response?.data?.data;
-      } else {
-        Toast.show(response?.data?.msg);
-      }
-    } catch (error) {
-      console.log('banner error ', error);
-
-      return rejectWithValue(
-        error.response ? error.response.data : error.message,
-      );
-    }
-  },
-);
 
 export const CourceDetailApi = createAsyncThunk(
   'home/CourceDetailApi',
@@ -291,6 +334,7 @@ const homeSlice = createSlice({
     Cource: [],
     CourceDetailA: [],
     likeProductList: [],
+    submitedEnqury:false,
     loading: false,
     error: null,
   },
@@ -317,6 +361,31 @@ const homeSlice = createSlice({
       })
       .addCase(Banner.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(CourceLis.pending, state => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(CourceLis.fulfilled, (state, action) => {
+        state.loading = false;
+        state.Cource = action.payload;
+      })
+      .addCase(CourceLis.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(submitEnquryApi.pending, state => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(submitEnquryApi.fulfilled, (state, action) => {
+        state.loading = false;
+        state.submitedEnqury=true
+      })
+      .addCase(submitEnquryApi.rejected, (state, action) => {
+        state.loading = false;
+        state.submitedEnqury=false;
         state.error = action.payload;
       })
 
@@ -371,18 +440,7 @@ const homeSlice = createSlice({
         state.error = action.payload;
       })
 
-      .addCase(CourceLis.pending, state => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(CourceLis.fulfilled, (state, action) => {
-        state.loading = false;
-        state.Cource = action.payload;
-      })
-      .addCase(CourceLis.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
+      
 
       .addCase(CourceDetailApi.pending, state => {
         state.loading = true;

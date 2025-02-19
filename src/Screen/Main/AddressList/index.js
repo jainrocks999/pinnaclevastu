@@ -83,11 +83,11 @@ const DeliveryAddress = ({route}) => {
       }),
     ]).start(() => {
       console.log('slknnfklfdlkgn',item.item);
-      if(item.item.availableForSale!=false){
+      // if(item.item.availableForSale!=false){
         
         
         checkout(item?.item, navigation);
-       }
+      // }
      
 
       // navigation.navigate('Payment', {

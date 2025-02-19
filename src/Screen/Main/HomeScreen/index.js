@@ -15,7 +15,7 @@ import {
 import styles from './style';
 import {colors} from '../../../Component/colors';
 import BannerSlider from '../../../Component/Banner';
-
+import Toast from 'react-native-simple-toast';
 import {Rating} from 'react-native-ratings';
 import {
   heightPercent as hp,
@@ -28,6 +28,8 @@ import {
   clearRemedis,
   clearRemeiesDetail1,
   CourceDetailApi,
+  CourceLis,
+  submitEnquryApi,
 } from '../../../Redux/Slice/HomeSlice';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import Loader from '../../../Component/Loader';
@@ -43,6 +45,7 @@ import {fetchCollection} from '../../../Redux/Slice/collectionSlice';
 import {fetchExtraCollectonHome} from '../../../Redux/Slice/HomeBannerSlice';
 import {fetchProduct, InitProduct} from '../../../Redux/Slice/productSlice';
 import {getProductMetafieldsApiCall} from '../../../Redux/Api';
+import {addToCart} from '../../../Redux/Slice/CartSlice';
 
 let backPress = 0;
 const HomeScreen = () => {
@@ -59,23 +62,81 @@ const HomeScreen = () => {
   const [displayedText, setDisplayedText] = useState('');
   const [displayedText1, setDisplayedText1] = useState('');
 
-  const RemediesCategor1 = useSelector(state => state.collection?.products);
-
   const homeData = useSelector(state => state?.HomeBanner);
-  // console.log(homeData, '<----');
 
+  const Cource1 = useSelector(state => state?.home?.Cource);
+  const submitedEnqury = useSelector(state => state?.home?.submitedEnqury);
+ 
   const userDetail = useSelector(state => state?.Auth?.userData);
 
   const Homebanner = useSelector(state => state.home?.HomeBanner?.data);
   const isLoading = useSelector(state => state.home?.loading);
-
-  const cartDataList = useSelector(state => state?.cart?.CartData);
-  const localCartDataList = useSelector(
-    state => state?.cart?.localStorageCartData,
-  );
   const cartTotalQuantity = useSelector(
     state => state?.cart?.cartTotalQuantity,
   );
+
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    course: '',
+    city: '',
+  });
+
+  const handleInputChange = (key, value) => {
+    setFormData(prevState => ({
+      ...prevState,
+      [key]: value,
+    }));
+  };
+
+  const handleSubmit = async () => {
+    console.log('Submitted Data:', formData);
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    const {name, email, phone, course} = formData;
+   
+    if (name === '') {
+      Toast.show("Username is required!");
+      return;
+    // } else if (email === '') {
+    //   Toast.show("Useremail is required!");
+    //   return;
+    // } else if (!emailRegex.test(email)) {
+    //   Toast.show("valid email is required!");
+    //   return;
+     } else if (phone === '') {
+      Toast.show("phone is required!");
+      return;
+    } else if (phone < 10) {
+      Toast.show("phone number must be of 10 digit!");
+      return;
+    } else if (course === '') {
+      Toast.show("course is required!");
+      return;
+    } else {
+      await dispatch(
+        submitEnquryApi({
+          url: 'lead-generate',
+          Requestdata: {
+            name,
+            email,
+            contact_no: phone,
+            course,
+          },
+        }),
+      
+      
+      );
+      {submitedEnqury? setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        course: '',
+        city: '',
+      }):null}
+      console.log(submitedEnqury,'jhiofhjnfjhni 24343423432')
+    }
+  };
 
   const getYouTubeEmbedUrl1 = url => {
     const videoId = url.split('v=')[1]?.split('&')[0]; // Extract video ID
@@ -91,7 +152,7 @@ const HomeScreen = () => {
         : url;
     }
 
-    return url; // Return normal video URL as is (e.g., .mp4)
+    return url;
   };
   const [imageHeights, setImageHeights] = useState({});
   const newArray = [];
@@ -121,26 +182,25 @@ const HomeScreen = () => {
       dispatch(InitProduct());
       dispatch(fetchProduct(id));
     }
-    // const data = await getProductMetafieldsApiCall(id);
-    // console.log('datata get by meta feild', id);
   };
   const focus = useIsFocused();
 
   useEffect(() => {
-    // if (focus) {
-    apicall();
-    getUserType();
-    // }
-  }, []);
+    if (focus) {
+      apicall();
+      getUserType();
+    }
+  }, [focus]);
 
   const apicall = async () => {
-    // await dispatch(Banner({url: 'home-slider'}));
+    await dispatch(Banner({url: 'home-slider'}));
     await dispatch(
       fetchExtraCollectonHome(
         homeData?.courses_section?.content?.live_courses,
         'courses',
       ),
     );
+    await dispatch(CourceLis({url: 'fetch-course-data'}));
     await dispatch(
       fetchExtraCollectonHome(
         homeData?.best_Products_section?.content?.collection,
@@ -148,74 +208,46 @@ const HomeScreen = () => {
       ),
     );
   };
-  const fetchCollectionProducts = async (collectionHandle) => {
-    const API_URL = 'https://pinnaclevastu-in.myshopify.com/api/2024-04/graphql.json';
-    const ACCESS_TOKEN = '8ea4b65a8295bd4422deae6604953ac7';
-  
-    // 📝 Fetch all available fields inside node
-    const query = `
-      query {
-        collectionByHandle(handle: "${collectionHandle}") {
-          id
-          products(first: 10) {
-            edges {
-              node {
-                id
-                title
-                description
-                handle
-                availableForSale
-                productType
-                vendor
-                tags
-                totalInventory
-                createdAt
-                updatedAt
-                featuredImage {
-                  url
-                }
-                priceRange {
-                  minVariantPrice {
-                    amount
-                    currencyCode
-                  }
-                  maxVariantPrice {
-                    amount
-                    currencyCode
-                  }
-                }
-              }
-            }
-          }
+
+  const Addtocard = async item => {
+    console.log('jfdnkjsdfksjskjfs hhhh', item.variants?.edges?.[0]);
+
+    try {
+      if (item?.variants?.length != 0) {
+        const image = item.variants?.edges?.[0]?.node?.image?.src;
+        let product = {...item};
+        product.selectedVarient = item.variants?.edges?.[0];
+        let productTemp = {
+          ...product,
+          image,
+          qty: 1,
+          productId: product?.id,
+          compareAtPrice: item?.variants?.edges?.[0].node?.compareAtPrice,
+          price: item?.variants?.edges?.[0].node?.price.amount,
+          id: isNaN(product?.selectedVarient?.node?.id)
+            ? await product?.selectedVarient?.node?.id
+            : product?.selectedVarient?.node?.id,
+
+          properties: {},
+        };
+        console.log('before add to cart ', productTemp);
+        if (productTemp?.availableForSale) {
+          console.log('hfghkjghfdkg', product?.selectedVarient.id);
+
+          dispatch(addToCart(productTemp));
         }
       }
-    `;
-  
-    try {
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Storefront-Access-Token': ACCESS_TOKEN,
-        },
-        body: JSON.stringify({ query }),
-      });
-  
-      const result = await response.json();
-      console.log('Products virendra jhbdjhsdjhsdfs:', result.data.collectionByHandle.products.edges);
-      return result.data.collectionByHandle.products.edges;
+      // dispatch(addToCart({...item,selectedVarient: item?.variants?.edges[0]?.node}));
     } catch (error) {
-      console.error('Error fetching products:', error);
-      return [];
+      console.error('Error adding item to cart:', error);
     }
   };
+
   useEffect(() => {
     let currentIndex = 0;
-    fetchCollectionProducts('frontpage');
     const startAnimation = () => {
       const intervalId = setInterval(() => {
         if (currentIndex < placeholderText.length) {
-          // setDisplayedText(placeholderText.slice(0, currentIndex + 1));
           setDisplayedText(prev => placeholderText.slice(0, currentIndex + 1));
           currentIndex++;
         } else {
@@ -259,47 +291,6 @@ const HomeScreen = () => {
             }),
           );
         }
-
-        // await dispatch(
-        //   getAddress({
-        //     user_id: userData.user_id,
-        //     token: userData.token,
-
-        //     url: 'fetch-customer-address',
-        //     // navigation,
-        //   }),
-        // );
-        // console.log(cartDataList.length)
-        // console.log(localCartDataList.length)
-        // if (cartDataList.length === 0) {
-        //   await dispatch(
-        //     getCartDataApi({
-        //       token: userData.token,
-        //       url: `cart?user_id=${userData.user_id}`,
-        //     }),
-        //   );
-        // }
-        // if (localCartDataList.length > 0) {
-        //   for (const item of localCartDataList) {
-        //     await dispatch(
-        //       addToCartApi({
-        //          user_id: userData.user_id,
-        //         itemId: item.id,
-        //         qty: item.qty,
-        //         user_type: userData.user_type,
-        //         token: userData?.token,
-        //         url: 'add-to-cart',
-        //       }),
-        //     );
-        //   }
-        //   dispatch(clearLocalCartData());
-        //   await dispatch(
-        //     getCartDataApi({
-        //       token: userData.token,
-        //       url: `cart?user_id=${userData.user_id}`,
-        //     }),
-        //   );
-        // }
       }
     } catch (error) {
       console.error('Error syncing cart and address data:', error);
@@ -322,15 +313,14 @@ const HomeScreen = () => {
 
     setScaleAnims(newScaleAnims);
 
-    // Trigger the animation sequence for the clicked item
     Animated.sequence([
       Animated.timing(newScaleAnims[index], {
-        toValue: 0.96, // Shrink to 30% of the original size
+        toValue: 0.96,
         duration: 400,
         useNativeDriver: true,
       }),
       Animated.timing(newScaleAnims[index], {
-        toValue: 1, // Return to original size
+        toValue: 1,
         duration: 400,
         useNativeDriver: true,
       }),
@@ -598,8 +588,15 @@ const HomeScreen = () => {
             />
             <Text style={[styles.third3]}>{32} reviews</Text>
           </View>
-
-          <TouchableOpacity style={styles.addToCartBtn}>
+          <TouchableOpacity
+            onPress={() => {
+              if (item?.availableForSale == true) {
+                Addtocard(item);
+              } else {
+                Toast.show('This product  is currently not available for sale');
+              }
+            }}
+            style={styles.addToCartBtn}>
             <Image
               source={require('../../../assets/image/bagSmall.png')}
               style={styles.addCartIcon}
@@ -720,10 +717,9 @@ const HomeScreen = () => {
   };
 
   useEffect(() => {
-  
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
-      handleBackButtonClick
+      handleBackButtonClick,
     );
 
     return () => backHandler.remove();
@@ -1056,7 +1052,7 @@ const HomeScreen = () => {
             />
           </View>
 
-          <LinearGradient
+          {/* <LinearGradient
             colors={['#52B0E8', '#FF9770']}
             start={{x: 0, y: 0}}
             end={{x: 1, y: 1}}
@@ -1112,6 +1108,76 @@ const HomeScreen = () => {
               />
             </View>
             <TouchableOpacity>
+              <Text style={[styles.cardBtn, styles.submitBtn]}>
+                Submit Details
+              </Text>
+            </TouchableOpacity>
+          </LinearGradient> */}
+
+          <LinearGradient
+            colors={['#52B0E8', '#FF9770']}
+            start={{x: 0, y: 0}}
+            end={{x: 1, y: 1}}
+            style={styles.formContainer}>
+            <Text style={[styles.service1, styles.smallHeadText]}>Enquire</Text>
+            <Text style={[styles.extraBoldText, {marginBottom: 20}]}>
+              About Course
+            </Text>
+
+            <View style={styles.textInputContainer}>
+              <TextInput
+                placeholder="Your Name"
+                placeholderTextColor={'#7B93AF'}
+                style={styles.textInput}
+                value={formData.name}
+                onChangeText={text => handleInputChange('name', text)}
+              />
+            </View>
+
+            <View style={styles.textInputContainer}>
+              <TextInput
+                placeholder="Email"
+                placeholderTextColor={'#7B93AF'}
+                style={styles.textInput}
+                value={formData.email}
+                onChangeText={text => handleInputChange('email', text)}
+              />
+            </View>
+
+            <View style={styles.textInputContainer}>
+              <TextInput
+                placeholder="Phone Number"
+                placeholderTextColor={'#7B93AF'}
+                style={styles.textInput}
+                value={formData.phone}
+                onChangeText={text => handleInputChange('phone', text)}
+                keyboardType="numeric"
+              />
+            </View>
+
+            <View style={styles.textInputContainer}>
+              <Dropdown
+                style={[styles.input]}
+                data={Cource1}
+                labelField="lable"
+                valueField="lable"
+                placeholder={'Courses'}
+                placeholderStyle={[styles.inputText, {color: '#7B93AF'}]}
+                selectedTextStyle={styles.selectedText}
+                itemTextStyle={styles.inputText}
+                value={formData.course}
+                onChange={item => handleInputChange('course', item.lable)}
+                renderRightIcon={() => (
+                  <Image
+                    style={{height: 8, width: 15}}
+                    source={require('../../../assets/image/arrow_icon.png')}
+                  />
+                )}
+              />
+            </View>
+
+            {/* Submit Button */}
+            <TouchableOpacity onPress={() => handleSubmit()}>
               <Text style={[styles.cardBtn, styles.submitBtn]}>
                 Submit Details
               </Text>
@@ -1667,130 +1733,6 @@ const HomeScreen = () => {
 };
 
 export default HomeScreen;
-const data = [
-  {
-    id: '1',
-    image: require('../../../assets/image/Group1x.png'),
-    title: '2K',
-    name: 'Completed Projects',
-  },
-  {
-    id: '2',
-    image: require('../../../assets/image/Group1x.png'),
-    title: '3K',
-    name: 'Student Trained',
-  },
-  {
-    id: '3',
-    image: require('../../../assets/image/Group1x.png'),
-    title: '90K',
-    name: 'Order Products',
-  },
-  {
-    id: '4',
-    image: require('../../../assets/image/Group1x.png'),
-    title: '60+',
-    name: 'Franchise',
-  },
-];
-const data1 = [
-  {
-    id: '1',
-    title: '99+',
-    name: 'Trusted by Million Clients',
-  },
-  {
-    id: '2',
-    title: '25+',
-    name: 'Years of Experience',
-  },
-  {
-    id: '3',
-    title: '10+',
-    name: 'Types of Horoscopes',
-  },
-  {
-    id: '4',
-    title: '99+',
-    name: 'Qualified Astrologers',
-  },
-];
-
-const BannerImg = [
-  {id: '1', image: require('../../../assets/image/bannerImg1.png')},
-  {id: '2', image: require('../../../assets/image/bannerImg2.png')},
-  {id: '3', image: require('../../../assets/image/bannerImg3.png')},
-];
-
-const data6 = [
-  {
-    id: '1',
-    image: require('../../../assets/image/house.png'),
-    name: 'Residential Vastu',
-  },
-  {
-    id: '2',
-    image: require('../../../assets/image/house.png'),
-    name: 'Commercial Vastu',
-  },
-  {
-    id: '3',
-    image: require('../../../assets/image/industry.png'),
-    name: 'Insustrial Vastu',
-  },
-  {
-    id: '4',
-    image: require('../../../assets/image/numerology.png'),
-    name: 'Numerology Report',
-  },
-  {
-    id: '5',
-    image: require('../../../assets/image/Layer_x.png'),
-    name: 'Gemstone',
-  },
-  {
-    id: '6',
-    image: require('../../../assets/image/beads.png'),
-    name: 'Rudraksha',
-  },
-];
-
-const data2 = [
-  {
-    id: '1',
-    image: require('../../../assets/image/numerology.png'),
-    name: 'Numerology Report',
-  },
-  {
-    id: '2',
-    image: require('../../../assets/image/g2.png'),
-    name: 'Vastu Evaluation Report',
-  },
-  {
-    id: '3',
-    image: require('../../../assets/image/astro.png'),
-    name: 'Astro Vastu Fortune Report',
-  },
-];
-const LiveCourseData = [
-  {id: 1, image: require('../../../assets/otherApp/courseCard1.png')},
-  {id: 2, image: require('../../../assets/otherApp/courseCard1.png')},
-  {id: 3, image: require('../../../assets/otherApp/courseCard1.png')},
-  {id: 4, image: require('../../../assets/otherApp/courseCard1.png')},
-];
-const RecordedCourseData = [
-  {id: 1, image: require('../../../assets/otherApp/courseCard2.png')},
-  {id: 2, image: require('../../../assets/otherApp/courseCard2.png')},
-  {id: 3, image: require('../../../assets/otherApp/courseCard2.png')},
-  {id: 4, image: require('../../../assets/otherApp/courseCard2.png')},
-];
-
-const imagesilder1 = [
-  {id: '1', image: require('../../../assets/image/bannerImg1.png')},
-  {id: '2', image: require('../../../assets/image/bannerImg2.png')},
-  {id: '3', image: require('../../../assets/image/bannerImg3.png')},
-];
-
 const data5 = [
   {
     id: '1',
@@ -1806,49 +1748,5 @@ const data5 = [
     id: '3',
     image: require('../../../assets/image/credit-card.png'),
     name: 'Secure Payments',
-  },
-];
-
-const data4 = [
-  {
-    id: '1',
-    image: require('../../../assets/image/Rectangle.png'),
-    name: 'Acharya',
-    title: 'Shreni Rajbhandary',
-    address: 'Services : Residential Vastu, Industrial Vastu, Gemstone',
-    rating: '5 reviews',
-  },
-  {
-    id: '2',
-    image: require('../../../assets/image/Rectangle.png'),
-    name: '3d-Acharya',
-    title: 'Shreni Rajbhandary',
-    address: 'Services : Residential Vastu, Industrial Vastu, Gemstone',
-    rating: '5 reviews',
-  },
-  {
-    id: '3',
-    image: require('../../../assets/image/Rectangle.png'),
-    name: '3d-Acharya',
-    title: 'Shreni Rajbhandary',
-    address: 'Services : Residential Vastu, Industrial Vastu, Gemstone',
-    rating: '5 reviews',
-  },
-];
-const data3 = [
-  {
-    id: '1',
-    image: require('../../../assets/image/Remid.png'),
-    name: 'Bracelets',
-  },
-  {
-    id: '2',
-    image: require('../../../assets/image/Remid.png'),
-    name: '3d-Remedies',
-  },
-  {
-    id: '3',
-    image: require('../../../assets/image/Remid.png'),
-    name: '3d-Remedies',
   },
 ];

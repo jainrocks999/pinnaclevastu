@@ -242,8 +242,19 @@ const [countdata,setCountdata]=useState(0);
               />
             ) : null}
           </View>
+          
           <TouchableOpacity
-            onPress={() => Addtocard(item?.node)}
+            onPress={() =>{
+              if(item?.node?.availableForSale==true){
+                Addtocard(item?.node)
+              }else{
+                Toast.show('This product  is currently not available for sale');
+              }
+            }
+          }
+              
+              
+             
             style={styles.buttonstylefirst}>
             <Text style={styles.buttonstyle}>Add to Cart</Text>
           </TouchableOpacity>

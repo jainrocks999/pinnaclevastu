@@ -27,7 +27,7 @@ import WebView from 'react-native-webview';
 import constants from '../../../Redux/constant/constants';
 import { checkout } from '../../../models/Checkout';
 import { convertVariantId } from '../../../common/shopifyConverter';
-
+import Toast from 'react-native-simple-toast';
 const {width} = Dimensions.get('window');
 
 const CourseDetail = ({route}) => {
@@ -258,9 +258,12 @@ console.log(Detail1);
 
         properties: {},
       };
+  console.log(productTemp,'fjfjff');
   
-    if(productTemp?.availableForSal!=false){
+    if(productTemp?.availableForSale){
       checkout([productTemp], navigation);
+    }else{
+      Toast.show('This course is currently not available for sale');
     }
        
       }

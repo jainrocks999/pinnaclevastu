@@ -12,20 +12,18 @@ import { WebView } from "react-native-webview";
 // import {fetchAllOrders} from '../../redux/actions/orderAction';
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "../../../Component/Loader";
-import { clearLocalCartData } from "../../../Redux/Slice/CartSlice";
+import { clearcartdata, clearLocalCartData } from "../../../Redux/Slice/CartSlice";
 
 
 const CartWeb = (props) => {
   var isFromCart = props.route.params.isFromCart;
-  console.log("isFromCart--->", isFromCart);
+  // console.log("isFromCart--->", isFromCart);
   const navigation = props.navigation;
   const dispatch = useDispatch();
   const [URI, setURI] = useState(props.route.params.Url);
   console.log("URI", props.route.params.Url);
 
-  useEffect(() => {
-    dispatch(clearLocalCartData());
-  }, []);
+ 
   useEffect(() => {
     const goBack = () => {
       navigation.goBack();
@@ -69,7 +67,7 @@ const CartWeb = (props) => {
               onNavigationStateChange={async (event) => {
                 console.log(
                   "event......=----------????",
-                  event.url == " https://pinnaclevastu-in.myshopify.com/"
+                  event.url
                 );
                 if (event.url == "https://pinnaclevastu-in.myshopify.com/") {
                   navigation.replace("MainStack");
@@ -99,11 +97,26 @@ const CartWeb = (props) => {
               ignoreSslError={true}
               onNavigationStateChange={async (event) => {
                 console.log(
-                  "event......=----------????",
-                  event.url == "https://manaiya.com/"
+                  "event......",
+                  event
                 );
-                if (event.url == "https://manaiya.com/") {
-                  navigation.navigate("MainStack");
+
+                if (event.title === "Checkout - pinnaclevastu-in") {
+                 
+                  await dispatch(clearLocalCartData());
+                  await dispatch(clearcartdata());
+                  // navigation.reset({
+                  //   index: 0,
+                  //   routes: [{ name: "Home" }],
+                  // });
+                }
+
+                if (event.url === "https://pinnaclevastu-in.myshopify.com/") {
+                  navigation.reset({
+                    index: 0,
+                    routes: [{ name: "Home" }],
+                  });
+                  // navigation.replace("Home");
                 }
               }}
               onReceivedError={(error) => {
@@ -116,7 +129,7 @@ const CartWeb = (props) => {
               domStorageEnabled={true}
               onError={(error) => console.log("error--", error)}
               startInLoadingState={true}
-              renderLoading={() => <Loader />}
+              renderLoading={() => <Loader loading={true} />}
               injectedJavaScript={runFirst}
             />
           )

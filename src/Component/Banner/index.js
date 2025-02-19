@@ -85,7 +85,7 @@ const BannerSlider = ({
               // resizeMode: 'center',
             },
           ]}
-          source={height1 == wp(60) ? {uri: item.silderImage} : {uri: item.silderImage}}
+          source={height1 == wp(60) ? {uri: item.image} : {uri: item.silderImage}}
         />
       </TouchableOpacity>
     );

@@ -250,18 +250,13 @@ const RemediesProductDetail = ({route}) => {
   };
 
   const Addtocart = async (item, {qty}) => {
-    console.log('product iddd', item);
+   
 
     if (item?.variants?.length != 0) {
       const image = item?.images[0]?.src;
       let product = {...item};
 
       product.selectedVarient = product?.variants?.[0];
-      console.log(
-        'klgnkjg',product?.selectedVarient.id,
-        
-        qty,
-      );
       let productTemp = {
         ...product,
         image,
@@ -276,11 +271,11 @@ const RemediesProductDetail = ({route}) => {
         properties: {},
       };
     
-      if (productTemp?.availableForSale) {
+   
       
 
         dispatch(addToCart(productTemp));
-      }
+      
     }
 
     // try {
@@ -699,6 +694,8 @@ const RemediesProductDetail = ({route}) => {
         <ScrollView contentContainerStyle={styles.servicesContainer}>
           {imagearray?.length != 0 ? (
             <View style={styles.welcomeCard}>
+              {console.log(imagearray,'hiiififiid')}
+              
               <BannerSlider
                 onPress={item => {}}
                 data={imagearray}
@@ -858,7 +855,7 @@ const RemediesProductDetail = ({route}) => {
                 {
                   transform: [
                     {
-                      rotateX: halfFlipInterpolate, // Smoothly flips the button
+                      rotateX: halfFlipInterpolate,
                     },
                   ],
                 },
@@ -868,9 +865,15 @@ const RemediesProductDetail = ({route}) => {
               <TouchableOpacity
                 onPress={() => {
                   if (isInCart) {
-                    handleGoToCartAnimation(); // Navigate to the cart
+                    handleGoToCartAnimation(); 
                   } else {
-                    handleAddToCart(Detail1); // Add to cart and update state
+                    if(Detail1?.availableForSale==true){
+                      handleAddToCart(Detail1);
+                    }else{
+                      Toast.show('This product  is currently not available for sale');
+                    }
+                  
+                 
                   }
                 }}
                 style={{
