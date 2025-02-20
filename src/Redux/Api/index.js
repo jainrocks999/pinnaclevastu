@@ -18,6 +18,8 @@ export const getProductMetafieldsApiCall = (product_id) => {
         //   .catch(reject);
         getProductMetafields(product_id)
           .then((metafield) => {
+            console.log('metafeild datat getjhjjhh',metafield);
+            
             resolve({ metafields: metafield });
           })
           .catch((err) => {

@@ -153,7 +153,7 @@ const [countdata,setCountdata]=useState(0);
     // getProductMetafieldsApiCall(productId)
     const data = await getProductMetafieldsApiCall(id);
     console.log('datata get by meta feild', id,data);
-    navigation.navigate('ProductDetail', {data: item});
+    navigation.navigate('ProductDetail', {data: item,data1:data});
   };
 
   const Addtocard = async item => {
@@ -238,7 +238,7 @@ const [countdata,setCountdata]=useState(0);
                 startingValue={item?.rating}
                 ratingColor="#52B1E9"
                 readonly
-                ratingBackgroundColor={colors.lightGrey} // Unfilled star color
+                ratingBackgroundColor={colors.lightGrey}
               />
             ) : null}
           </View>

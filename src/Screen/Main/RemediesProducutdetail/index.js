@@ -11,6 +11,7 @@ import {
   Share as SocialShare,
   Pressable,
   BackHandler,
+  LogBox
 } from 'react-native';
 import styles from './styles';
 import {colors} from '../../../Component/colors';
@@ -39,8 +40,10 @@ import {useNavigation} from '@react-navigation/native';
 import AnimatedLine from '../../../Component/progressbar';
 import { convertVariantId } from '../../../common/shopifyConverter';
 
+LogBox.ignoreAllLogs();
 const RemediesProductDetail = ({route}) => {
-  const item = route?.params?.data;
+  const item = route?.params?.data1?.metafields;
+console.log('jgjhkgfhkkhgkh',item);
 
   const navigation = useNavigation();
   const {width} = Dimensions.get('window');
@@ -67,11 +70,10 @@ const RemediesProductDetail = ({route}) => {
 
   const halfFlipInterpolate = animation.interpolate({
     inputRange: [0, 90],
-    outputRange: ['0deg', '90deg'], // Rotate only up to 90 degrees
+    outputRange: ['0deg', '90deg'],
   });
 
   useEffect(() => {
-  
     const backAction = () => {
       navigation.goBack();
       return true;
@@ -577,12 +579,12 @@ const RemediesProductDetail = ({route}) => {
 
   const renderItems = ({item}) => (
     <View style={styles.paddings}>
-      {/* {console.log('slksflk', item)} */}
+      {console.log('slksflk', item?.key)}
       <TouchableOpacity
-        onPress={() => toggleSection(item.desc_data_id)}
+        onPress={() => toggleSection(item.id)}
         style={[
           styles.courseToggle1,
-          expandedSection === item.desc_data_id && styles.activeCourseToggle,
+          expandedSection === item.id && styles.activeCourseToggle,
         ]}>
         <View style={styles.direction1}>
           {/* <Text
@@ -595,32 +597,33 @@ const RemediesProductDetail = ({route}) => {
           <Text
             style={[
               styles.coursetext2,
-              expandedSection === item.desc_data_id && styles.activeTitleColor,
+              expandedSection === item.id && styles.activeTitleColor,
             ]}>
-            {item.label}
+            {item.key=='faqs_1_question_'?item?.value:null}
           </Text>
         </View>
         <Image
           source={
-            expandedSection === item.desc_data_id
+            expandedSection === item.id
               ? require('../../../assets/otherApp/updown.png')
               : require('../../../assets/image/arrow_icon.png')
           }
           style={[
             styles.toggleIcon2,
-            expandedSection !== item.desc_data_id
+            expandedSection !== item.id
               ? {resizeMode: 'contain'}
               : null,
           ]}
         />
       </TouchableOpacity>
-
-      <Collapsible collapsed={expandedSection !== item.desc_data_id}>
+      {item.key=='faqs_1_question_'?
+      <Collapsible collapsed={expandedSection !== item.id}>
         <View style={styles.subItemContainer}>
+        
           <RenderHTML
             contentWidth={width}
             source={{
-              html: item.description,
+              html: item?.value,
             }}
           />
         </View>
@@ -631,12 +634,10 @@ const RemediesProductDetail = ({route}) => {
             renderItem={renderSubItems}
           />
         </View> */}
-      </Collapsible>
+      </Collapsible>:null}
     </View>
   );
-  {
-    console.log(Detail1, 'detail of products');
-  }
+ 
   if (isLoading) {
     console
     return (
@@ -694,7 +695,6 @@ const RemediesProductDetail = ({route}) => {
         <ScrollView contentContainerStyle={styles.servicesContainer}>
           {imagearray?.length != 0 ? (
             <View style={styles.welcomeCard}>
-              {console.log(imagearray,'hiiififiid')}
               
               <BannerSlider
                 onPress={item => {}}
@@ -906,10 +906,13 @@ const RemediesProductDetail = ({route}) => {
 
           <View style={{marginTop: 10, marginHorizontal: 15}}>
             <FlatList
-              data={Detail?.desc_data?.filter(
-                item => item.description !== null && item.label !== null,
-              )}
-              keyExtractor={item => item.desc_data_id.toString()}
+            data={item.filter(
+              item => item.key == 'faqs_1_question_',
+            )}
+              // data={Detail?.desc_data?.filter(
+              //   item => item.description !== null && item.label !== null,
+              // )}
+              keyExtractor={item => item.id.toString()}
               scrollEnabled={false}
               renderItem={renderItems}
             />

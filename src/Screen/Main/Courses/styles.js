@@ -304,7 +304,7 @@ export default StyleSheet.create({
     marginTop: wp(5),
     marginHorizontal: wp(3),
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    // flexWrap: 'wrap',
     justifyContent: 'flex-start',
     // gap: 20,
   },

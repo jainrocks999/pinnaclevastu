@@ -113,7 +113,7 @@ const HomeScreen = () => {
     //   Toast.show("Useremail is required!");
     //   return;
     // } else if (!emailRegex.test(email)) {
-    //   Toast.show("valid email is required!");
+    //   Toast.show("valid email is required!");  
     //   return;
      } else if (phone === '') {
       Toast.show("phone is required!");

@@ -34,7 +34,6 @@ const MyOrder = ({route}) => {
   const navigation = useNavigation();
 
   const product = useSelector(state => state?.order?.orderList1);
-  // console.log(product,"product");
 
   const cource = useSelector(state => state?.order?.orderCource?.data);
 
@@ -51,7 +50,6 @@ const MyOrder = ({route}) => {
     const startAnimation = () => {
       const intervalId = setInterval(() => {
         if (currentIndex < placeholderText.length) {
-          // setDisplayedText(placeholderText.slice(0, currentIndex + 1));
           setDisplayedText(prev => placeholderText.slice(0, currentIndex + 1));
 
           currentIndex++;
@@ -180,11 +178,6 @@ const MyOrder = ({route}) => {
 
       <View style={styles.horizontalSeparator} />
       <View style={styles.productContainer}>
-        {console.log(
-          // item?.node?.lineItems?.nodes[0]?.variant?.image?.url,
-          item?.node?.totalPrice?.amount,
-          'sdsds',
-        )}
         <Image
           source={
             item?.node?.lineItems?.nodes[0]?.variant?.image?.url
