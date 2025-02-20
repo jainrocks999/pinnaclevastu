@@ -80,11 +80,11 @@ export const orderlistapi = createAsyncThunk(
   'Order1/orderlistapi',
 
   async ({id, token, url, accessToken}, {rejectWithValue}) => {
-    console.log(
-      `${constants.mainUrl}${url}?user_id=${id}&access_token=${accessToken}`,
-      'sdsdfsdfsd',
-    ),
-      console.log('get to cart data action ', url, id, token);
+    // console.log(
+    //   `${constants.mainUrl}${url}?user_id=${id}&access_token=${accessToken}`,
+    //   'sdsdfsdfsd',
+    // ),
+      // console.log('get to cart data action ', url, id, token);
 
     try {
       const config = {
@@ -98,10 +98,10 @@ export const orderlistapi = createAsyncThunk(
       };
 
       const response = await axios.request(config);
-      console.log(
-        response?.data?.data?.customer?.orders?.edges,
-        'responseData...',
-      );
+      // console.log(
+      //   response?.data?.data?.customer?.orders?.edges,
+      //   'responseData...',
+      // );
       if (response.data.status == 200) {
         // Toast.show(response.data.msg);
         // navigation.navigate('Details')

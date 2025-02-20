@@ -93,7 +93,7 @@ const MyOrder = ({route}) => {
       const userid = await AsyncStorage.getItem('user_id');
       const userData = await AsyncStorage.getItem('user_data');
 
-      console.log(JSON.parse(userData).shopify_access_token);
+      // console.log(JSON.parse(userData).shopify_access_token);
       // console.log((userData.shopify_access_token),"shopify_access_token")
       // const access_token = JSON.parse(userData.shopify_access_token);
       if (!token || !userid) {
@@ -173,33 +173,40 @@ const MyOrder = ({route}) => {
 
   const renderOrderItem = ({item}) => (
     <View style={styles.orderCard}>
-      {console.log(item?.node?.lineItems?.nodes[0], 'sandeep')}
+      {/* {console.log(
+        item?.node?.lineItems?.edges[0].node?.variant?.product?.featuredImage
+          ?.url,
+        'item data',
+      )} */}
       <Text style={styles.orderNo}>Order No: {item?.node?.orderNumber}</Text>
 
       <View style={styles.horizontalSeparator} />
       <View style={styles.productContainer}>
         <Image
           source={
-            item?.node?.lineItems?.nodes[0]?.variant?.image?.url
-              ? {uri: `${item?.node?.lineItems?.nodes[0]?.variant?.image?.url}`}
+            item?.node?.lineItems?.edges[0].node?.variant?.product
+              ?.featuredImage?.url
+              ? {
+                  uri: `${item?.node?.lineItems?.edges[0].node?.variant?.product?.featuredImage?.url}`,
+                }
               : require('../../../assets/otherApp/order3.png')
           }
           style={styles.productImage}
         />
         <View style={styles.productDetails}>
           <Text style={styles.productName}>
-            {item?.node?.lineItems?.nodes[0]?.title}
+            {item?.node?.lineItems?.edges[0].node?.variant?.product?.title}
           </Text>
           <Text style={styles.productQuantity}>
             Total Quantity:{' '}
-            {item?.node?.lineItems?.nodes?.reduce(
-              (total, item) => total + item.quantity,
+            {item?.node?.lineItems?.edges?.reduce(
+              (total, currentItem) =>
+                total + (currentItem?.node?.quantity || 0),
               0,
             )}
-            {/* {item?.node?.lineItems?.nodes[0]?.quantity} */}
           </Text>
           <Text style={styles.productName}>
-            Total: ₹ {item?.node?.totalPrice?.amount}
+            Total: ₹ { item?.node?.originalTotalPrice.amount}
           </Text>
         </View>
       </View>
@@ -223,8 +230,11 @@ const MyOrder = ({route}) => {
       ) : null}
       <TouchableOpacity
         onPress={
-          () => OrderDetails(item)
-          // navigation.navigate('OrderDetail')
+          () => {
+            // console.log(item);
+            navigation.navigate('OrderDetail', {data: item});
+          }
+          // OrderDetails(item)
         }
         style={styles.detailsButton}>
         <Text style={styles.detailsButtonText}>Details</Text>
@@ -355,7 +365,7 @@ const MyOrder = ({route}) => {
         {selectedTab == 'Remedies' ? (
           <FlatList
             data={product}
-            keyExtractor={item => item.id}
+            keyExtractor={(item, index) => index}
             scrollEnabled={false}
             renderItem={renderOrderItem}
             contentContainerStyle={styles.ordersList}
@@ -372,7 +382,6 @@ const MyOrder = ({route}) => {
           <Text>Consultation</Text>
         )}
       </ScrollView>
-      {/* {console.log(product, 'sandeep...')} */}
     </View>
   );
 };

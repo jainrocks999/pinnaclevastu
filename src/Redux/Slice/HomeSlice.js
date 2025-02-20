@@ -37,9 +37,7 @@ export const Banner = createAsyncThunk(
 
 export const CourceLis = createAsyncThunk(
   'home/CourceLis',
-  async ({url,}, {rejectWithValue}) => {
-  
-
+  async ({url}, {rejectWithValue}) => {
     try {
       const config = {
         method: 'get',
@@ -49,7 +47,7 @@ export const CourceLis = createAsyncThunk(
       };
 
       const response = await axios.request(config);
-      console.log('Coureseedfgdfgfgh ', url,response.data);
+      // console.log('Coureseedfgdfgfgh ', url, response.data);
       if (response?.data?.status == 200) {
         return response?.data?.data;
       } else {
@@ -65,16 +63,9 @@ export const CourceLis = createAsyncThunk(
   },
 );
 
-
-
-
 export const submitEnquryApi = createAsyncThunk(
   'home/submitEnquryApi',
-  async (
-    { Requestdata, url,  },
-    { rejectWithValue},
-  ) => {
-
+  async ({Requestdata, url}, {rejectWithValue}) => {
     // console.log(Requestdata,"sandeep>>>>>")
     try {
       let config = {
@@ -84,8 +75,8 @@ export const submitEnquryApi = createAsyncThunk(
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-        
-        data:  Requestdata,
+
+        data: Requestdata,
       };
       // console.log('shkshfskdfhsdf', config);
 
@@ -95,7 +86,7 @@ export const submitEnquryApi = createAsyncThunk(
       if (response?.data?.status == 200) {
         // Toast.show("Course enquiry submitted successfully!");
         Toast.show(response?.data?.msg);
-        return response?.data?.status
+        return response?.data?.status;
       } else {
         Toast.show(response?.data?.msg);
         console.log('errrorroro', response.data);
@@ -260,8 +251,6 @@ export const productDetail1 = createAsyncThunk(
   },
 );
 
-
-
 export const CourceDetailApi = createAsyncThunk(
   'home/CourceDetailApi',
   async ({url, course_id, navigation, isLiveCourse}, {rejectWithValue}) => {
@@ -334,7 +323,7 @@ const homeSlice = createSlice({
     Cource: [],
     CourceDetailA: [],
     likeProductList: [],
-    submitedEnqury:false,
+    submitedEnqury: false,
     loading: false,
     error: null,
   },
@@ -379,13 +368,13 @@ const homeSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(submitEnquryApi.fulfilled, (state, action) => {
+      .addCase(submitEnquryApi.fulfilled, state => {
         state.loading = false;
-        state.submitedEnqury=true
+        state.submitedEnqury = true;
       })
       .addCase(submitEnquryApi.rejected, (state, action) => {
         state.loading = false;
-        state.submitedEnqury=false;
+        state.submitedEnqury = false;
         state.error = action.payload;
       })
 
@@ -440,8 +429,6 @@ const homeSlice = createSlice({
         state.error = action.payload;
       })
 
-      
-
       .addCase(CourceDetailApi.pending, state => {
         state.loading = true;
         state.error = null;
@@ -465,7 +452,7 @@ const homeSlice = createSlice({
       .addCase(likedProductListApi.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      })
+      });
   },
 });
 

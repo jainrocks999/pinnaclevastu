@@ -78,7 +78,6 @@ const HomeScreen = () => {
 
   const Cource1 = useSelector(state => state?.home?.Cource);
   const submitedEnqury = useSelector(state => state?.home?.submitedEnqury);
- 
   const userDetail = useSelector(state => state?.Auth?.userData);
   const Homebanner = useSelector(state => state.home?.HomeBanner?.data);
   const isLoading = useSelector(state => state.home?.loading);
@@ -105,24 +104,24 @@ const HomeScreen = () => {
     console.log('Submitted Data:', formData);
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     const {name, email, phone, course} = formData;
-   
+
     if (name === '') {
-      Toast.show("Username is required!");
+      Toast.show('Username is required!');
       return;
-    // } else if (email === '') {
-    //   Toast.show("Useremail is required!");
-    //   return;
-    // } else if (!emailRegex.test(email)) {
-    //   Toast.show("valid email is required!");  
-    //   return;
-     } else if (phone === '') {
-      Toast.show("phone is required!");
+      } else if (email === '') {
+        Toast.show("Useremail is required!");
+        return;
+      } else if (!emailRegex.test(email)) {
+        Toast.show("valid email is required!");
+        return;
+    } else if (phone === '') {
+      Toast.show('phone is required!');
       return;
     } else if (phone < 10) {
-      Toast.show("phone number must be of 10 digit!");
+      Toast.show('phone number must be of 10 digit!');
       return;
     } else if (course === '') {
-      Toast.show("course is required!");
+      Toast.show('course is required!');
       return;
     } else {
       await dispatch(
@@ -135,17 +134,7 @@ const HomeScreen = () => {
             course,
           },
         }),
-      
-      
       );
-      {submitedEnqury? setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        course: '',
-        city: '',
-      }):null}
-      console.log(submitedEnqury,'jhiofhjnfjhni 24343423432')
     }
   };
 
@@ -202,6 +191,18 @@ const HomeScreen = () => {
       getUserType();
     }
   }, [focus]);
+
+  useEffect(() => {
+    if (submitedEnqury) {
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        course: '',
+        city: '',
+      });
+    }
+  }, [submitedEnqury]);
 
   const apicall = async () => {
     await dispatch(Banner({url: 'home-slider'}));
@@ -850,7 +851,7 @@ const HomeScreen = () => {
                     marginRight: 10,
                     borderColor: item.border_color,
                     backgroundColor: item?.background_color,
-                    minHeight:wp(25)
+                    minHeight: wp(25),
                   },
                 ]}>
                 <View style={[styles.cardContaine, {paddingRight: 10}]}>
@@ -1041,7 +1042,7 @@ const HomeScreen = () => {
             decelerationRate="fast"
             data={homeData?.course ? homeData?.course : []}
             renderItem={renderCard}
-            keyExtractor={(item) => item.id}
+            keyExtractor={item => item.id}
             horizontal
             showsHorizontalScrollIndicator={false}
             scrollEventThrottle={16}
@@ -1090,7 +1091,7 @@ const HomeScreen = () => {
             <FlatList
               data={homeData?.how_it_works?.cards?.slice(0, 3)}
               renderItem={renderItem6}
-              keyExtractor={(item, index) =>index}
+              keyExtractor={(item, index) => index}
               horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{
@@ -1258,7 +1259,7 @@ const HomeScreen = () => {
             <FlatList
               data={homeData?.remedies?.cards?.slice(0, 5)}
               renderItem={renderItem2}
-              keyExtractor={(item, index) =>index}
+              keyExtractor={(item, index) => index}
               horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{
@@ -1405,7 +1406,7 @@ const HomeScreen = () => {
                     ? homeData?.custom_testimonial?.custom_review
                     : []
                 }
-                keyExtractor={(item, index) =>index}
+                keyExtractor={(item, index) => index}
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 pagingEnabled
