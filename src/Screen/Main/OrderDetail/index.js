@@ -28,6 +28,8 @@ import {cancelorders, orderDetail} from '../../../Redux/Slice/orderSclice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {colors} from '../../../Component/colors';
 import Reviewform from '../../../Component/ReviewForm';
+import { fetchProduct, InitProduct } from '../../../Redux/Slice/productSlice';
+import { clearRemeiesDetail1 } from '../../../Redux/Slice/HomeSlice';
 
 const labels = [
   'Order Received',
@@ -55,7 +57,7 @@ const customStyles = {
   currentStepLabelColor: '#02A883',
 };
 
-const OrderDetail = () => {
+const OrderDetail = ({route}) => {
   const navigation = useNavigation();
   const data2 = useSelector(state => state?.order?.orderD);
   const loading1 = useSelector(state => state?.order?.loading);
@@ -68,6 +70,9 @@ const OrderDetail = () => {
   const [isFocus, setIsFocus] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isCollapsed1, setIsCollapsed1] = useState(true);
+
+  const orderDetailItem = route?.params?.data?.node;
+
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
   };
@@ -161,16 +166,26 @@ const OrderDetail = () => {
     return `${day} ${month} ${year}`;
   };
 
-  const data = [
-    {label: '1', value: '1'},
-    {label: '2', value: '2'},
-    {label: '3', value: '3'},
-    {label: '4', value: '4'},
-    {label: '5', value: '5'},
-    {label: '6', value: '6'},
-    {label: '7', value: '7'},
-    {label: '8', value: '8'},
-  ];
+  const PRoductDeta = async (item,id) => {
+    dispatch(clearRemeiesDetail1());
+
+    if (Object.keys(item).length == 0) {
+    } else {
+      dispatch(InitProduct());
+      dispatch(fetchProduct(id));
+    }
+    // getProductMetafieldsApiCall(productId)
+    navigation.navigate('ProductDetail');
+  };
+
+  const calculateSubTotal = items => {
+    return items
+      .reduce((total, item) => {
+        const itemPrice = parseFloat(item?.node?.variant?.price?.amount || 0);
+        return total + itemPrice * item?.node?.quantity;
+      }, 0)
+      .toFixed(2);
+  };
 
   // const onPageChange = position => {
   //   setCurrentPosition(position);
@@ -178,28 +193,29 @@ const OrderDetail = () => {
 
   const renderItem = ({item}) => (
     <View style={styles.card}>
+
       <TouchableOpacity
         style={styles.ImageBtn}
-        onPress={() =>
-          navigation.navigate('ProductDetail', {data: {id: item?.product_id}})
+        onPress={
+          () => PRoductDeta(item,item?.node?.variant?.product?.id)
         }>
         <Image
           style={styles.cardImg}
           source={
-            item?.product_image
-              ? {uri: `${Imagepath.Path}${item?.product_image}`}
+            item?.node?.variant?.product?.featuredImage?.url
+              ? {uri: `${item?.node?.variant?.product?.featuredImage?.url}`}
               : require('../../../assets/image/Remedies/Image-not.png')
           }
         />
       </TouchableOpacity>
       <View style={styles.cardInfo}>
         <Text style={[styles.itemNameText, {marginBottom: 10}]}>
-          {item.product_name}
+          {item?.node?.variant?.product?.title}
         </Text>
         <View style={styles.quantitySection}>
           <Text style={styles.productName}>Quantity:</Text>
 
-          <Text style={styles.productQuantity}>{item?.qty}</Text>
+          <Text style={styles.productQuantity}>{item?.node?.quantity}</Text>
           {/* <Dropdown
             style={[styles.dropdown, isFocus]}
             selectedTextStyle={styles.productQuantity}
@@ -218,7 +234,9 @@ const OrderDetail = () => {
             }}
           /> */}
         </View>
-        <Text style={styles.productName}>Total: ₹ {item?.price}</Text>
+        <Text style={styles.productName}>
+          Total: ₹ {item?.node?.variant?.price?.amount}
+        </Text>
         {/* {data2?.status?.value !== 'canceled' &&
         data2?.status?.value !== 'completed' &&data2?.payment?.status?.value!=='failed'&&
         data2?.shipment?.shipment_status !== 'not_delivered' &&
@@ -275,7 +293,10 @@ const OrderDetail = () => {
           </TouchableOpacity>
           <Text style={styles.logoText}>Orders detail</Text>
         </View>
-        <Text style={styles.logoText}>{`Order No: ${data2?.code}`}</Text>
+        <Text
+          style={
+            styles.logoText
+          }>{`Order No: ${orderDetailItem?.orderNumber}`}</Text>
       </View>
 
       <ScrollView
@@ -321,10 +342,9 @@ const OrderDetail = () => {
               </Text>
             </View>
           ) : null}
-
           <FlatList
-            data={data2?.products}
-            keyExtractor={item => item.id.toString()}
+            data={orderDetailItem?.lineItems?.edges}
+            keyExtractor={(item, index) => index}
             renderItem={renderItem}
             scrollEnabled={false}
             contentContainerStyle={styles.listContainer}
@@ -467,14 +487,15 @@ const OrderDetail = () => {
         ) : null}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Order Summary</Text>
-
           <View
             style={[
               styles.listRow,
               {borderTopWidth: 1, borderColor: '#DFE7EF', marginBottom: -10},
             ]}>
             <Text style={styles.rowLabel}>Subtotal</Text>
-            <Text style={styles.rowLabel}>{`₹ ${data2?.sub_total}`}</Text>
+            <Text style={styles.rowLabel}>{`₹ ${calculateSubTotal(
+              orderDetailItem.lineItems?.edges,
+            )}`}</Text>
           </View>
           <View
             style={[
@@ -482,11 +503,17 @@ const OrderDetail = () => {
               {borderBottomWidth: 1, borderColor: '#DFE7EF'},
             ]}>
             <Text style={styles.rowLabel}>Shipping charges</Text>
-            <Text style={styles.rowLabel}>{`₹ ${data2?.shipping_amount}`}</Text>
+            <Text
+              style={
+                styles.rowLabel
+              }>{`₹ ${orderDetailItem?.totalShippingPrice?.amount}`}</Text>
           </View>
           <View style={[styles.listRow]}>
             <Text style={styles.TaxText}>Tax</Text>
-            <Text style={styles.rowLabel}>{`₹ ${data2?.tax_amount}`}</Text>
+            <Text
+              style={
+                styles.rowLabel
+              }>{`₹ ${orderDetailItem?.totalTax?.amount}`}</Text>
           </View>
           <View
             style={[
@@ -494,7 +521,9 @@ const OrderDetail = () => {
               {borderTopWidth: 1, borderColor: '#DFE7EF'},
             ]}>
             <Text style={styles.totalText}>Total Payable Amount</Text>
-            <Text style={styles.rowLabel}>{`₹ ${data2?.amount}`}</Text>
+            <Text style={styles.rowLabel}>
+              {`₹ ${orderDetailItem?.totalPrice?.amount}`}
+            </Text>
           </View>
         </View>
 
@@ -535,25 +564,41 @@ const OrderDetail = () => {
             {/* Collapsible View */}
             <Collapsible collapsed={isCollapsed}>
               <Text style={styles.customerName}>
-                {data2?.shipping_address?.name}
+                {orderDetailItem?.shippingAddress?.firstName &&
+                  orderDetailItem?.shippingAddress?.firstName + ' '}
+
+                {orderDetailItem?.shippingAddress?.lastName &&
+                  orderDetailItem?.shippingAddress?.lastName}
               </Text>
-              {data2?.shipping_address?.address && (
+
+              {orderDetailItem?.shippingAddress?.address2 && (
                 <Text style={[styles.addressText, {marginVertical: 0}]}>
-                  {`${data2.shipping_address.address} `}
-                  {data2?.shipping_address?.city &&
-                    `${data2.shipping_address.city} `}
-                  {data2?.shipping_address?.zip_code &&
-                    `- (${data2.shipping_address.zip_code})`}
+                  {`${orderDetailItem?.shippingAddress?.address2} `},
                 </Text>
               )}
+              {orderDetailItem?.shippingAddress?.address1 && (
+                <Text style={[styles.addressText, {marginVertical: 0}]}>
+                  {`${orderDetailItem?.shippingAddress?.address1} `},
+                  {orderDetailItem?.shippingAddress?.city &&
+                    ` ${orderDetailItem?.shippingAddress?.city} `}
+                  {orderDetailItem?.shippingAddress?.zip &&
+                    `- (${orderDetailItem?.shippingAddress?.zip})`}
+                </Text>
+              )}
+
               <Text style={styles.addressText}>
-                {data2?.shipping_address?.state}{' '}
-                {data2?.shipping_address?.country}
+                {orderDetailItem?.shippingAddress?.province &&
+                  ` ${orderDetailItem?.shippingAddress?.province} `}
+                ,{' '}
+                {orderDetailItem?.shippingAddress?.country &&
+                  ` ${orderDetailItem?.shippingAddress?.country} `}
               </Text>
-              <Text style={styles.addressText}>
-                {' '}
-                +91 {data2?.shipping_address?.phone}
-              </Text>
+              {orderDetailItem?.shippingAddress?.phone && (
+                <Text style={styles.addressText}>
+                  {' '}
+                  +91 {orderDetailItem?.shippingAddress?.phone}
+                </Text>
+              )}
             </Collapsible>
           </View>
 
@@ -582,28 +627,42 @@ const OrderDetail = () => {
             </TouchableOpacity>
             <Collapsible collapsed={isCollapsed1}>
               <Text style={styles.customerName}>
-                {' '}
-                {data2?.billing_address?.name}
+                {orderDetailItem?.billingAddress?.firstName &&
+                  orderDetailItem?.billingAddress?.firstName + ' '}
+
+                {orderDetailItem?.billingAddress?.lastName &&
+                  orderDetailItem?.billingAddress?.lastName}
               </Text>
 
-              {data2?.billing_address?.address && (
+              {orderDetailItem?.billingAddress?.address2 && (
                 <Text style={[styles.addressText, {marginVertical: 0}]}>
-                  {data2?.billing_address?.address &&
-                    `${data2.billing_address.address} `}
-                  {data2?.billing_address?.city &&
-                    `${data2.billing_address.city} `}
-                  {data2?.billing_address?.zip_code &&
-                    `- (${data2.billing_address.zip_code})`}
+                  {`${orderDetailItem?.billingAddress?.address2} `},
                 </Text>
               )}
+
+              {orderDetailItem?.billingAddress?.address1 && (
+                <Text style={[styles.addressText, {marginVertical: 0}]}>
+                  {`${orderDetailItem?.billingAddress?.address1} `},
+                  {orderDetailItem?.billingAddress?.city &&
+                    ` ${orderDetailItem?.billingAddress?.city} `}
+                  {orderDetailItem?.billingAddress?.zip &&
+                    `- (${orderDetailItem?.billingAddress?.zip})`}
+                </Text>
+              )}
+
               <Text style={styles.addressText}>
-                {data2?.billing_address?.state}{' '}
-                {data2?.billing_address?.country}
+                {orderDetailItem?.billingAddress?.province &&
+                  ` ${orderDetailItem?.billingAddress?.province} `}
+                ,{' '}
+                {orderDetailItem?.billingAddress?.country &&
+                  ` ${orderDetailItem?.billingAddress?.country} `}
               </Text>
-              <Text style={styles.addressText}>
-                {' '}
-                +91 {data2?.billing_address?.phone}
-              </Text>
+              {orderDetailItem?.billingAddress?.phone && (
+                <Text style={styles.addressText}>
+                  {' '}
+                  +91 {orderDetailItem?.billingAddress?.phone}
+                </Text>
+              )}
             </Collapsible>
           </View>
         </View>
