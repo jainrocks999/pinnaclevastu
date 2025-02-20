@@ -11,7 +11,7 @@ import {
   Share as SocialShare,
   Pressable,
   BackHandler,
-  LogBox
+  LogBox,
 } from 'react-native';
 import styles from './styles';
 import {colors} from '../../../Component/colors';
@@ -38,12 +38,16 @@ import axios from 'axios';
 import {productDetail1} from '../../../Redux/Slice/HomeSlice';
 import {useNavigation} from '@react-navigation/native';
 import AnimatedLine from '../../../Component/progressbar';
-import { convertVariantId } from '../../../common/shopifyConverter';
+import {convertVariantId} from '../../../common/shopifyConverter';
 
 LogBox.ignoreAllLogs();
 const RemediesProductDetail = ({route}) => {
-  const item = route?.params?.data1?.metafields;
-console.log('jgjhkgfhkkhgkh',item);
+  const metafieldsData = route?.params?.data1?.metafields;
+  // console.log('jgjhkgfhkkhgkh', metafieldsData);
+  // console.log(
+  //   'params ka data',
+  //   route?.params?.topBestSellerData?.productRecommendations,
+  // );
 
   const navigation = useNavigation();
   const {width} = Dimensions.get('window');
@@ -133,8 +137,8 @@ console.log('jgjhkgfhkkhgkh',item);
     };
     const checkIfInCart = () => {
       // console.log(userType, 'sandeep dsfksdfmsdfmsdlf');
-      const cartItem =localCartDataList.find(item => item.id === Detail?.id)
-          
+      const cartItem = localCartDataList.find(item => item.id === Detail?.id);
+
       setCurrentItemInCart(cartItem);
     };
 
@@ -182,6 +186,35 @@ console.log('jgjhkgfhkkhgkh',item);
     setCurrentIndex(index);
   };
 
+  const groupedMetafields = metafieldsData
+    ?.filter(item => item?.key?.includes('question'))
+    ?.map(question => {
+      const keyPrefix = question?.key?.match(/\d+/)?.[0];
+      const answer = metafieldsData
+        ?.filter(item => item?.key?.includes('answer'))
+        ?.find(ans => ans?.key?.includes(`${keyPrefix}_answer`));
+
+      return {
+        question,
+        answer,
+      };
+    });
+
+  // console.log(
+  //   metafieldsData
+  //     ?.filter(item => item.key?.includes('question'))
+  //     ?.map(question => {
+  //       const keyPrefix = question.key.match(/\d+/)?.[0];
+  //       const answer = metafieldsData
+  //         ?.filter(item => item.key?.includes('answer'))
+  //         ?.find(ans => ans.key?.includes(`${keyPrefix}_answer`));
+
+  //       return {
+  //         question,
+  //         answer,
+  //       };
+  //     }),"spiderman 222"
+  // );
   const increment = () => {
     if (quantity < 100) {
       // if (currentItemInCart) {
@@ -251,9 +284,39 @@ console.log('jgjhkgfhkkhgkh',item);
     }
   };
 
-  const Addtocart = async (item, {qty}) => {
-   
+const Addtocard1 = async item => {
+    // console.log('jfdnkjsdfksjskjfs',item.variants?.edges?.[0].id);
+    
+    try {
+      if (item?.variants?.length != 0) {
+        const image = item.variants?.edges?.[0]?.node?.image?.src;
+        let product = {...item};
+        product.selectedVarient = item.variants?.edges?.[0];
+        let productTemp = {
+          ...product,
+          image,
+          qty: 1,
+          productId: product?.id,
+          compareAtPrice: item?.variants?.edges?.[0].node?.compareAtPrice,
+          price: item?.variants?.edges?.[0].node?.price.amount,
+          id: isNaN(product?.selectedVarient?.node?.id)
+            ? await product?.selectedVarient?.node?.id
+            : product?.selectedVarient?.node?.id,
 
+          properties: {},
+        };
+
+        if (productTemp?.availableForSale) {
+          dispatch(addToCart(productTemp));
+        }
+      }
+    } catch (error) {
+      console.error('Error adding item to cart:', error);
+    }
+  };
+
+  const Addtocart = async (item, {qty}) => {
+  
     if (item?.variants?.length != 0) {
       const image = item?.images[0]?.src;
       let product = {...item};
@@ -266,18 +329,13 @@ console.log('jgjhkgfhkkhgkh',item);
         productId: product?.id,
         compareAtPrice: product?.variants?.[0]?.compare_at_price,
         price: product?.variants?.[0]?.price,
-       id: isNaN(product?.selectedVarient.id)
-                ?  convertVariantId(product?.selectedVarient.id)
-                :convertVariantId( product?.selectedVarient.id),
-      
+        id: isNaN(product?.selectedVarient.id)
+          ? convertVariantId(product?.selectedVarient.id)
+          : convertVariantId(product?.selectedVarient.id),
+
         properties: {},
       };
-    
-   
-      
-
-        dispatch(addToCart(productTemp));
-      
+      dispatch(addToCart(productTemp));
     }
 
     // try {
@@ -526,8 +584,8 @@ console.log('jgjhkgfhkkhgkh',item);
       <TouchableOpacity onPress={() => productDetaill(item)}>
         <Image
           source={
-            item?.image
-              ? {uri: `${Imagepath.Path}${item?.image}`}
+            item?.variants?.edges[0]?.node?.image?.src
+              ? {uri: `${item?.variants?.edges[0]?.node?.image?.src}`}
               : require('../../../assets/image/Remedies/Image-not.png')
           }
           style={styles.image}
@@ -536,16 +594,30 @@ console.log('jgjhkgfhkkhgkh',item);
         <View style={styles.textContainer}>
           <Text style={[styles.thirdCard, styles.titleText]}>
             {' '}
-            {item.name
-              ? item.name.length > 20
-                ? `${item.name.substring(0, 20)}...`
-                : item.name
+            {item?.title
+              ? item?.title?.length > 20
+                ? `${item?.title?.substring(0, 20)}...`
+                : item?.title
               : ' '}
           </Text>
-          <Text style={[styles.thirdCard, {marginTop: 10}]}>
-            ₹ {item.price}
-          </Text>
-
+          <View
+            style={{
+              flexDirection: 'row',
+              gap: 10,
+            }}>
+            <Text style={[styles.thirdCard, {marginTop: 10}]}>
+              ₹ {item?.variants?.edges[0]?.node?.price?.amount}
+            </Text>
+            {item?.variants?.edges[0]?.node?.compareAtPrice && (
+              <Text
+                style={[
+                  styles.thirdCard,
+                  {marginTop: 10, textDecorationLine: 'line-through'},
+                ]}>
+                ₹ {item?.variants?.edges[0]?.node?.compareAtPrice?.amount}
+              </Text>
+            )}
+          </View>
           <View style={styles.direction}>
             {item.reviews != null ? (
               <Rating
@@ -562,7 +634,7 @@ console.log('jgjhkgfhkkhgkh',item);
           </View>
           <TouchableOpacity
             style={styles.buttonstylefirst}
-            onPress={() => Addtocart(item, {qty: 1})}>
+            onPress={() => Addtocard1(item, {qty: 1})}>
             <Text style={styles.buttonstyle}>Add to Cart</Text>
           </TouchableOpacity>
         </View>
@@ -577,69 +649,60 @@ console.log('jgjhkgfhkkhgkh',item);
     </View>
   );
 
-  const renderItems = ({item}) => (
+  const renderItems = ({item, index}) => (
     <View style={styles.paddings}>
-      {console.log('slksflk', item?.key)}
       <TouchableOpacity
-        onPress={() => toggleSection(item.id)}
+        onPress={() => toggleSection(index)}
         style={[
           styles.courseToggle1,
-          expandedSection === item.id && styles.activeCourseToggle,
+          expandedSection === index && styles.activeCourseToggle,
         ]}>
         <View style={styles.direction1}>
-          {/* <Text
-            style={[
-              styles.coursetext1,
-              expandedSection === item.id && styles.activeTitleColor1,
-            ]}>
-            {item.title0}
-          </Text> */}
           <Text
             style={[
               styles.coursetext2,
-              expandedSection === item.id && styles.activeTitleColor,
+              expandedSection === index && styles.activeTitleColor,
             ]}>
-            {item.key=='faqs_1_question_'?item?.value:null}
+            {/* {item.key == 'faqs_1_question_' ? item?.value : null} */}
+            {item?.question?.value}
           </Text>
         </View>
         <Image
           source={
-            expandedSection === item.id
+            expandedSection === index
               ? require('../../../assets/otherApp/updown.png')
               : require('../../../assets/image/arrow_icon.png')
           }
           style={[
             styles.toggleIcon2,
-            expandedSection !== item.id
-              ? {resizeMode: 'contain'}
-              : null,
+            expandedSection !== index ? {resizeMode: 'contain'} : null,
           ]}
         />
       </TouchableOpacity>
-      {item.key=='faqs_1_question_'?
-      <Collapsible collapsed={expandedSection !== item.id}>
+      {/* {item.key == 'faqs_1_question_' ? ( */}
+      <Collapsible collapsed={expandedSection !== index}>
         <View style={styles.subItemContainer}>
-        
-          <RenderHTML
+          {/* <RenderHTML
             contentWidth={width}
             source={{
-              html: item?.value,
+              html: item?.answer?.value,
             }}
-          />
+          /> */}
+          <Text style={styles.subItemSubtitle}>{item?.answer?.value}</Text>
         </View>
         {/* <View style={styles.subItemContainer}>
           <FlatList
             data={item.subItems}
             keyExtractor={(subItem, index) => index.toString()}
-            renderItem={renderSubItems}
+            renderItem={ }
           />
         </View> */}
-      </Collapsible>:null}
+      </Collapsible>
+      {/*  ) : null} */}
     </View>
   );
- 
+
   if (isLoading) {
-    console
     return (
       <View>
         <View style={styles.headerdouble}>
@@ -695,7 +758,6 @@ console.log('jgjhkgfhkkhgkh',item);
         <ScrollView contentContainerStyle={styles.servicesContainer}>
           {imagearray?.length != 0 ? (
             <View style={styles.welcomeCard}>
-              
               <BannerSlider
                 onPress={item => {}}
                 data={imagearray}
@@ -802,7 +864,11 @@ console.log('jgjhkgfhkkhgkh',item);
           </View>
 
           <View>
-            <Text style={styles.cont}>{Detail1?.description}</Text>
+            <Text style={styles.cont}>
+              {Detail1?.description ||
+                metafieldsData.find(item => item.key?.includes('description'))
+                  ?.value}
+            </Text>
 
             <View
               style={{
@@ -865,15 +931,15 @@ console.log('jgjhkgfhkkhgkh',item);
               <TouchableOpacity
                 onPress={() => {
                   if (isInCart) {
-                    handleGoToCartAnimation(); 
+                    handleGoToCartAnimation();
                   } else {
-                    if(Detail1?.availableForSale==true){
+                    if (Detail1?.availableForSale == true) {
                       handleAddToCart(Detail1);
-                    }else{
-                      Toast.show('This product  is currently not available for sale');
+                    } else {
+                      Toast.show(
+                        'This product  is currently not available for sale',
+                      );
                     }
-                  
-                 
                   }
                 }}
                 style={{
@@ -906,13 +972,8 @@ console.log('jgjhkgfhkkhgkh',item);
 
           <View style={{marginTop: 10, marginHorizontal: 15}}>
             <FlatList
-            data={item.filter(
-              item => item.key == 'faqs_1_question_',
-            )}
-              // data={Detail?.desc_data?.filter(
-              //   item => item.description !== null && item.label !== null,
-              // )}
-              keyExtractor={item => item.id.toString()}
+              data={groupedMetafields || []}
+              // keyExtractor={item => item.id.toString()}
               scrollEnabled={false}
               renderItem={renderItems}
             />
@@ -967,13 +1028,17 @@ console.log('jgjhkgfhkkhgkh',item);
             </View>
           ) : null} */}
 
-          {/* {Detail?.top_best_seller?.length != 0 ? (
+          {route?.params?.topBestSellerData?.productRecommendations?.length !=
+          0 ? (
             <View style={styles.suggestItemContainer}>
               <Text style={styles.header1}>Top Best Sellers</Text>
               <FlatList
-                data={Detail?.top_best_seller}
-                keyExtractor={item => item.id.toString()}
+                data={route?.params?.topBestSellerData?.productRecommendations}
+                // keyExtractor={item => item.id.toString()}
                 renderItem={renderItem2}
+                pagingEnabled
+                snapToAlignment="center"
+                decelerationRate="fast"
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 onMomentumScrollEnd={e => {
@@ -983,21 +1048,23 @@ console.log('jgjhkgfhkkhgkh',item);
                   setCurrentIndex(currentIndex); // Update state with the calculated index
                 }}
               />
-              
+
               <View style={styles.dotContainer}>
-                {Detail?.top_best_seller.map((_, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={[
-                      styles.dot,
-                      currentIndex === index && styles.activeDot,
-                    ]}
-                    // onPress={() => handleImageChange(index)}
-                  />
-                ))}
+                {route?.params?.topBestSellerData?.productRecommendations?.map(
+                  (_, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      style={[
+                        styles.dot,
+                        currentIndex === index && styles.activeDot,
+                      ]}
+                      // onPress={() => handleImageChange(index)}
+                    />
+                  ),
+                )}
               </View>
             </View>
-          ) : null} */}
+          ) : null}
 
           <View style={{backgroundColor: '#F1F1F1'}}>
             {/* {Detail?.reviews?.length === 0 ? null : (
@@ -1057,156 +1124,5 @@ const data5 = [
     image: require('../../../assets/otherApp/services3.png'),
     name: 'Over 3000 Products',
     title: "India's largest healing crystal store",
-  },
-];
-const dummyDatas = [
-  {
-    id: '1',
-
-    title: 'Description',
-    subItems: [{title: '●', subtitle: '1 inch wide and 8 Feet Long.'}],
-  },
-  {
-    id: '2',
-
-    title: 'Aluminium strip for Vastu',
-    subItems: [
-      {title: '●', subtitle: '1 inch wide and 8 Feet Long.'},
-      {
-        title: '●',
-        subtitle:
-          'Metal Strip Tehnique is used to remove faults in a building and correct the elemental disbalance in a space.',
-      },
-    ],
-  },
-  {
-    id: '3',
-
-    title: 'Aluminium strip for Home',
-    subItems: [
-      {title: '●', subtitle: '1 inch wide and 8 Feet Long.'},
-      {
-        title: '●',
-        subtitle:
-          'Metal Strip Tehnique is used to remove faults in a building and correct the elemental disbalance in a space.',
-      },
-
-      {
-        title: '●',
-        subtitle:
-          'metal strip is drilled in floor to block anti-activity (normally toilets or incorrect entrance).',
-      },
-      {
-        title: '●',
-        subtitle:
-          'Aluminium Metal Strip is used to balance East, East North East, East South East.',
-      },
-    ],
-  },
-  {
-    id: '4',
-
-    title: 'Aluminium strip for Toilet',
-    subItems: [
-      {title: '●', subtitle: '1 inch wide and 8 Feet Long.'},
-      {
-        title: '●',
-        subtitle:
-          'Metal Strip Tehnique is used to remove faults in a building and correct the elemental disbalance in a space.',
-      },
-
-      {
-        title: '●',
-        subtitle:
-          'metal strip is drilled in floor to block anti-activity (normally toilets or incorrect entrance).',
-      },
-      {
-        title: '●',
-        subtitle:
-          'Aluminium Metal Strip is used to balance East, East North East, East South East.',
-      },
-    ],
-  },
-];
-const data2 = [
-  {
-    id: '1',
-    source1: require('../../../assets/image/Remedies/ab.png'),
-    title: 'Aluminium Metal Strip Vastu',
-    price: '₹725.00',
-    rating: 3,
-    reviewCount: 2,
-  },
-  {
-    id: '2',
-    source1: require('../../../assets/image/Remedies/vk.png'),
-    title: 'Copper Metal Strip',
-    price: '₹725.00',
-    rating: 3,
-    reviewCount: 2,
-  },
-  {
-    id: '3',
-    source1: require('../../../assets/image/Remedies/dk.png'),
-    title: 'Iron Metal Strip',
-    price: '₹725.00',
-    rating: 3,
-    reviewCount: 2,
-  },
-  {
-    id: '4',
-    source1: require('../../../assets/image/Remedies/dk.png'),
-    title: 'Brass Metal Strip',
-    price: '₹725.00',
-    rating: 3,
-    reviewCount: 2,
-  },
-];
-
-const data7 = [
-  {id: '1', image: require('../../../assets/image/Remedies/ab.png')},
-  {id: '2', image: require('../../../assets/image/Remedies/dk.png')},
-  {id: '3', image: require('../../../assets/image/Remedies/vk.png')},
-];
-
-const data1 = [
-  {
-    id: '1',
-    image: require('../../../assets/image/Ellipse1.png'),
-    name: 'Vikash',
-    msg: 'Thanku so much madam ji',
-  },
-  {
-    id: '3',
-    image: require('../../../assets/image/Ellipse2.png'),
-    name: 'Sudhir',
-    msg: 'Thanku so much madam ',
-  },
-  {
-    id: '5',
-    image: require('../../../assets/image/Ellipse3.png'),
-    name: 'Hemant',
-    msg: 'VeryNice',
-  },
-];
-
-const products = [
-  {
-    id: 1,
-    name: 'Aluminium Metal Strip Vastu',
-    price: 725,
-    image: require('../../../assets/image/Remedies/ab.png'), // Replace with your image path
-  },
-  {
-    id: 2,
-    name: 'Lapis Lazulli',
-    price: 905,
-    image: require('../../../assets/image/Remedies/vk.png'),
-  },
-  {
-    id: 3,
-    name: 'Lazulli',
-    price: 905,
-    image: require('../../../assets/image/Remedies/dk.png'),
   },
 ];

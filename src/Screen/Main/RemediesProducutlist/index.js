@@ -39,6 +39,7 @@ import axios from 'axios';
 import constants from '../../../Redux/constant/constants';
 import {fetchProduct, InitProduct} from '../../../Redux/Slice/productSlice';
 import {getProductMetafieldsApiCall} from '../../../Redux/Api';
+import { getProductRecomendation } from '../../../models/products';
 
 const RemediesProductList = ({route}) => {
   const name1 = route?.params;
@@ -152,8 +153,9 @@ const [countdata,setCountdata]=useState(0);
     }
     // getProductMetafieldsApiCall(productId)
     const data = await getProductMetafieldsApiCall(id);
+    const topBestSellerData= await getProductRecomendation(id) 
     console.log('datata get by meta feild', id,data);
-    navigation.navigate('ProductDetail', {data: item,data1:data});
+    navigation.navigate('ProductDetail', {data: item,data1:data,topBestSellerData});
   };
 
   const Addtocard = async item => {
