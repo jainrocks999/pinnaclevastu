@@ -1,5 +1,5 @@
 import axios from "axios";
-import { GraphQlAdminConfig, ProductMetafieldsQuery } from "../../common/queries";
+import { GraphQlAdminConfig, ProductMetafieldsQuery, similarproduct } from "../../common/queries";
 import { convertProductId } from "../../common/shopifyConverter";
 
 export const getProductMetafieldsApiCall = (product_id) => {
@@ -56,5 +56,61 @@ export const getProductMetafieldsApiCall = (product_id) => {
       console.log("errror in product metafileds");
       console.log(err);
       throw err;
+    }
+  };
+
+  export  const fetchProductData = async (id) => {
+    try {
+      console.log('sghkjsfhgjkfsghjkfghkjsg',id);
+      const data = JSON.stringify({
+        query: similarproduct,
+        variables: {
+          id:
+            typeof id == "string" && id.includes("gid://shopify/Product")
+              ? id
+              : convertProductId(id), // Replace with the actual product ID
+        },
+      });
+
+
+
+
+
+      const response = await axios.request(GraphQlAdminConfig(data));
+
+
+
+  
+      // const jsonResponse = await response.json();
+     
+  
+      const product = response?.data?.data?.product;
+    
+      console.log('Combined Data:1221', product?.id);
+      if (product) {
+        const mediaUrl = product.media.edges.map(edge => edge.node.preview.image.url)?.[0];
+       
+        const variants = product.variants.edges.map(edge => ({
+         
+          id: edge.node.id,
+          title: product.title,
+          image:mediaUrl,
+          productId:product?.id,
+          height: edge.node.image?.height || null,
+          width: edge.node.image?.width || null,
+          price: edge.node.price,
+          compareAtPrice: edge.node.compareAtPrice,
+        }));
+  
+        // Combine media & variants into one array
+        const combinedData = 
+         { ...variants[0]}
+        ;
+  
+         console.log('Combined Data:1221', combinedData);
+        return combinedData ;
+      }
+    } catch (error) {
+      console.error('Error fetching product data:', error);
     }
   };

@@ -11,7 +11,7 @@ import {
   Share as SocialShare,
   Pressable,
   BackHandler,
-  LogBox
+  LogBox,
 } from 'react-native';
 import styles from './styles';
 import {colors} from '../../../Component/colors';
@@ -38,12 +38,35 @@ import axios from 'axios';
 import {productDetail1} from '../../../Redux/Slice/HomeSlice';
 import {useNavigation} from '@react-navigation/native';
 import AnimatedLine from '../../../Component/progressbar';
-import { convertVariantId } from '../../../common/shopifyConverter';
+import {convertVariantId} from '../../../common/shopifyConverter';
+import {fetchProductData} from '../../../Redux/Api';
+
 
 LogBox.ignoreAllLogs();
 const RemediesProductDetail = ({route}) => {
-  const item = route?.params?.data1?.metafields;
-console.log('jgjhkgfhkkhgkh',item);
+  const metafieldsData = route?.params?.data1?.metafields;
+
+  const product = route?.params?.data?.node;
+  console.log('jgjhkgfhkkhgkh', metafieldsData, product);
+  const dataArray = [];
+  const similarProduct = metafieldsData.find(
+    itm => itm.key === 'similar_product_',
+  );
+
+  if (similarProduct) {
+    dataArray.push({
+      id: similarProduct.value,
+      name: similarProduct.type,
+      key:similarProduct?.key
+    });
+  }
+
+  // Dusra object push karna
+  dataArray.push({
+    id: product.id,
+    name: product.title,
+    key:product.title
+  });
 
   const navigation = useNavigation();
   const {width} = Dimensions.get('window');
@@ -62,6 +85,7 @@ console.log('jgjhkgfhkkhgkh',item);
   const [quantity, setQuantity] = useState(1);
   const [userType, setUserType] = useState(null);
   const [isInCart, setIsInCart] = useState(false);
+  const [similardata, setSimilarData] = useState([]);
   const [currentItemInCart, setCurrentItemInCart] = useState();
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
 
@@ -73,6 +97,32 @@ console.log('jgjhkgfhkkhgkh',item);
     outputRange: ['0deg', '90deg'],
   });
 
+  useEffect(() => {
+    const similarProduct = metafieldsData.find(
+      itm => itm.key === 'similar_product_',
+    );
+    if(similarProduct){
+      console.log('similarerdfddsf');
+      
+      getSimilarrdata();
+    }
+   
+  }, []);
+  const getSimilarrdata = async () => {
+
+    try {
+      const datawitharr = await Promise.all(
+        dataArray.map(async item => {
+          const similar = await fetchProductData(item?.id);
+          return similar;
+        }),
+      );
+      setSimilarData(datawitharr);
+     
+    } catch (error) {
+      console.error('Error fetching similar data:', error);
+    }
+  };
   useEffect(() => {
     const backAction = () => {
       navigation.goBack();
@@ -120,8 +170,8 @@ console.log('jgjhkgfhkkhgkh',item);
   const [totalPrice, setTotalPrice] = useState(0);
 
   useEffect(() => {
-    if (Detail?.cross_sales) {
-      const initialCheckedState = Detail.cross_sales.reduce((acc, item) => {
+    if (similardata) {
+      const initialCheckedState = similardata?.reduce((acc, item) => {
         acc[item.id] = true;
         return acc;
       }, {});
@@ -133,14 +183,16 @@ console.log('jgjhkgfhkkhgkh',item);
     };
     const checkIfInCart = () => {
       // console.log(userType, 'sandeep dsfksdfmsdfmsdlf');
-      const cartItem =localCartDataList.find(item => item.id === Detail?.id)
-          
+      const cartItem = localCartDataList.find(
+        item => item.id === similardata?.id,
+      );
+
       setCurrentItemInCart(cartItem);
     };
 
     checkIfInCart();
     init();
-  }, [Detail?.cross_sales]);
+  }, [similardata]);
 
   const getUserType = async () => {
     try {
@@ -168,11 +220,23 @@ console.log('jgjhkgfhkkhgkh',item);
   };
 
   const calculateTotalPrice = checkedState => {
-    // Calculate total price based on selected items
-    const total = Detail?.cross_sales?.reduce((sum, product) => {
-      return checkedState[product.id] ? sum + (product?.price || 0) : sum;
+    if (!similardata || similardata.length === 0) {
+      console.log('No similar data available.');
+      setTotalPrice(0);
+      return;
+    }
+
+    const total = similardata.reduce((sum, product) => {
+      if (checkedState[product.id]) {
+        const price = parseFloat(product?.price) || 0;
+        console.log('Product Price:', price);
+        return sum + price;
+      }
+      return sum;
     }, 0);
-    setTotalPrice(total); // Update the total price state
+
+    console.log('Total Price:', total.toFixed(2)); // Proper decimal format
+    setTotalPrice(total.toFixed(2)); // Ensuring two decimal places
   };
 
   const dispatch = useDispatch();
@@ -252,8 +316,6 @@ console.log('jgjhkgfhkkhgkh',item);
   };
 
   const Addtocart = async (item, {qty}) => {
-   
-
     if (item?.variants?.length != 0) {
       const image = item?.images[0]?.src;
       let product = {...item};
@@ -266,18 +328,14 @@ console.log('jgjhkgfhkkhgkh',item);
         productId: product?.id,
         compareAtPrice: product?.variants?.[0]?.compare_at_price,
         price: product?.variants?.[0]?.price,
-       id: isNaN(product?.selectedVarient.id)
-                ?  convertVariantId(product?.selectedVarient.id)
-                :convertVariantId( product?.selectedVarient.id),
-      
+        id: isNaN(product?.selectedVarient.id)
+          ? convertVariantId(product?.selectedVarient.id)
+          : convertVariantId(product?.selectedVarient.id),
+
         properties: {},
       };
-    
-   
-      
 
-        dispatch(addToCart(productTemp));
-      
+      dispatch(addToCart(productTemp));
     }
 
     // try {
@@ -330,7 +388,7 @@ console.log('jgjhkgfhkkhgkh',item);
         .map(([key, value]) => key);
 
       if (selectedItems.length === 0) {
-        console.log('No items selected');
+        console.log('No items selected', selectedItems);
         return;
       }
 
@@ -338,81 +396,17 @@ console.log('jgjhkgfhkkhgkh',item);
         const userStatus = await AsyncStorage.getItem('user_data');
         const userData = JSON.parse(userStatus);
 
-        const matchedItems = Detail?.cross_sales?.filter(item =>
+        const matchedItems = similardata?.filter(item =>
           selectedItems.includes(item.id.toString()),
         );
-        if (userStatus) {
-          for (const item of matchedItems) {
-            const existingCartItem = cartDataList.find(
-              cartItem => cartItem.product_id === item.id,
-            );
 
-            const quantity = existingCartItem ? existingCartItem?.qty + 1 : 1;
+        for (const item of matchedItems) {
+       
+            console.log('not excicifggghjg', item);
+            dispatch(addToCart(item));
+          }
+        
 
-            if (existingCartItem) {
-              // If item exists in the cart, update it
-              let qty = quantity;
-              await dispatch(
-                updateCartApi({
-                  user_id: userData.user_id,
-                  rowid: existingCartItem.rowid,
-                  qty: qty,
-                  token: userData.token,
-                  currentQty: 1,
-                  fromCartScreen: false,
-                }),
-              );
-              // handleUpdateCartData(
-              //   userData.user_id,
-              //   existingCartItem.rowid,
-              //   qty,
-              //   userData.token,
-              // );
-              await dispatch(
-                getCartDataApi({
-                  token: userData?.token,
-                  url: `cart?user_id=${userData?.user_id}`,
-                }),
-              );
-              Toast.show('Item quantity updated successfully!');
-            } else {
-              // If item doesn't exist, add it to the cart
-              await dispatch(
-                addToCartApi({
-                  user_id: userData.user_id,
-                  itemId: item.id,
-                  qty: 1, // Initial quantity
-                  user_type: userData.user_type,
-                  token: userData?.token,
-                  url: 'add-to-cart',
-                }),
-              );
-              await dispatch(
-                getCartDataApi({
-                  token: userData?.token,
-                  url: `cart?user_id=${userData?.user_id}`,
-                }),
-              );
-              Toast.show('Item added to cart successfully!');
-            }
-          }
-        } else {
-          for (const item of matchedItems) {
-            const existingCartItem = localCartDataList.find(
-              cartItem => cartItem.id === item.id,
-            );
-            console.log(existingCartItem);
-            if (existingCartItem) {
-              let updatedItem = {
-                id: item.id,
-                operation: 'increase',
-              };
-              dispatch(updateCartQuantity(updatedItem));
-            } else {
-              dispatch(addToCart(item));
-            }
-          }
-        }
       } catch (error) {
         console.log('Error adding items to cart:', error);
       }
@@ -495,12 +489,12 @@ console.log('jgjhkgfhkkhgkh',item);
         <Image
           source={
             item?.image
-              ? {uri: `${Imagepath.Path}${item.image}`}
+              ? {uri: `${item?.image}`}
               : require('../../../assets/image/Remedies/Image-not.png')
           }
           style={styles.productImage}
         />
-        <Text style={[styles.productName]}>{item.name}</Text>
+        <Text style={[styles.productName]}>{item.title}</Text>
         <Text style={[styles.productName]}>₹ {item.price}</Text>
         <View
           style={[
@@ -515,7 +509,7 @@ console.log('jgjhkgfhkkhgkh',item);
           />
         </View>
       </Pressable>
-      {index !== Detail?.cross_sales?.length - 1 ? (
+      {index !== similardata?.length - 1 ? (
         <Text style={styles.plusBtn}>+</Text>
       ) : null}
     </View>
@@ -599,7 +593,7 @@ console.log('jgjhkgfhkkhgkh',item);
               styles.coursetext2,
               expandedSection === item.id && styles.activeTitleColor,
             ]}>
-            {item.key=='faqs_1_question_'?item?.value:null}
+            {item.key == 'faqs_1_question_' ? item?.value : null}
           </Text>
         </View>
         <Image
@@ -610,36 +604,34 @@ console.log('jgjhkgfhkkhgkh',item);
           }
           style={[
             styles.toggleIcon2,
-            expandedSection !== item.id
-              ? {resizeMode: 'contain'}
-              : null,
+            expandedSection !== item.id ? {resizeMode: 'contain'} : null,
           ]}
         />
       </TouchableOpacity>
-      {item.key=='faqs_1_question_'?
-      <Collapsible collapsed={expandedSection !== item.id}>
-        <View style={styles.subItemContainer}>
-        
-          <RenderHTML
-            contentWidth={width}
-            source={{
-              html: item?.value,
-            }}
-          />
-        </View>
-        {/* <View style={styles.subItemContainer}>
+      {item.key == 'faqs_1_question_' ? (
+        <Collapsible collapsed={expandedSection !== item.id}>
+          <View style={styles.subItemContainer}>
+            <RenderHTML
+              contentWidth={width}
+              source={{
+                html: item?.value,
+              }}
+            />
+          </View>
+          {/* <View style={styles.subItemContainer}>
           <FlatList
             data={item.subItems}
             keyExtractor={(subItem, index) => index.toString()}
             renderItem={renderSubItems}
           />
         </View> */}
-      </Collapsible>:null}
+        </Collapsible>
+      ) : null}
     </View>
   );
- 
+
   if (isLoading) {
-    console
+    console;
     return (
       <View>
         <View style={styles.headerdouble}>
@@ -695,7 +687,6 @@ console.log('jgjhkgfhkkhgkh',item);
         <ScrollView contentContainerStyle={styles.servicesContainer}>
           {imagearray?.length != 0 ? (
             <View style={styles.welcomeCard}>
-              
               <BannerSlider
                 onPress={item => {}}
                 data={imagearray}
@@ -865,15 +856,15 @@ console.log('jgjhkgfhkkhgkh',item);
               <TouchableOpacity
                 onPress={() => {
                   if (isInCart) {
-                    handleGoToCartAnimation(); 
+                    handleGoToCartAnimation();
                   } else {
-                    if(Detail1?.availableForSale==true){
+                    if (Detail1?.availableForSale == true) {
                       handleAddToCart(Detail1);
-                    }else{
-                      Toast.show('This product  is currently not available for sale');
+                    } else {
+                      Toast.show(
+                        'This product  is currently not available for sale',
+                      );
                     }
-                  
-                 
                   }
                 }}
                 style={{
@@ -906,9 +897,9 @@ console.log('jgjhkgfhkkhgkh',item);
 
           <View style={{marginTop: 10, marginHorizontal: 15}}>
             <FlatList
-            data={item.filter(
-              item => item.key == 'faqs_1_question_',
-            )}
+              data={metafieldsData.filter(
+                item => item.key == 'faqs_1_question_',
+              )}
               // data={Detail?.desc_data?.filter(
               //   item => item.description !== null && item.label !== null,
               // )}
@@ -917,13 +908,13 @@ console.log('jgjhkgfhkkhgkh',item);
               renderItem={renderItems}
             />
           </View>
-          {/* {Detail?.cross_sales?.length != 0 ? (
+          {similardata?.length != 0 ? (
             <View style={[styles.productsContainer, {gap: 0}]}>
               <Text style={[styles.header1, {marginLeft: 20}]}>
                 Frequently Bought Together
               </Text>
               <FlatList
-                data={Detail?.cross_sales}
+                data={similardata}
                 renderItem={renderItem}
                 keyExtractor={item => item.id.toString()}
                 horizontal={true}
@@ -941,7 +932,7 @@ console.log('jgjhkgfhkkhgkh',item);
                 <Animated.View
                   style={[
                     {
-                      transform: [{scale: buttonAnimatedValue}], // स्केल का इफ़ेक्ट
+                      transform: [{scale: buttonAnimatedValue}],
                     },
                     // styles.book,
                     {marginTop: 15},
@@ -955,17 +946,9 @@ console.log('jgjhkgfhkkhgkh',item);
                     </Text>
                   </TouchableOpacity>
                 </Animated.View>
-              ) : // <TouchableOpacity
-              //   onPress={() => AddExtraItemInCart(checkedItems)}
-              //   style={styles.book}>
-              //   <Text style={styles.btext1}>
-              //     ADD {Object.values(checkedItems)?.filter(Boolean)?.length}{' '}
-              //     ITEMS TO CART
-              //   </Text>
-              // </TouchableOpacity>
-              null}
+              ) : null}
             </View>
-          ) : null} */}
+          ) : null}
 
           {/* {Detail?.top_best_seller?.length != 0 ? (
             <View style={styles.suggestItemContainer}>

@@ -57,6 +57,42 @@ export const ProductMetafieldsQuery = `
 }
 `;
 
+export const similarproduct=   `
+query($id: ID!) {
+  product(id: $id) {
+    id
+    title
+    media(first: 200) {
+      edges {
+        node {
+          preview {
+            image {
+              url
+            }
+          }
+        }
+      }
+    }
+    variants(first: 200) {
+      edges {
+        node {
+          id
+          title
+          image {
+            url
+            height
+            width
+          }
+          price
+          compareAtPrice
+        }
+      }
+    }
+  }
+}
+`;
+
+
 export const GetExtraData = `
 query {
   collectionByHandle(handle: "live-course") {
