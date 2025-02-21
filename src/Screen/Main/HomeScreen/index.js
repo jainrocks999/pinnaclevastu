@@ -108,12 +108,12 @@ const HomeScreen = () => {
     if (name === '') {
       Toast.show('Username is required!');
       return;
-      } else if (email === '') {
-        Toast.show("Useremail is required!");
-        return;
-      } else if (!emailRegex.test(email)) {
-        Toast.show("valid email is required!");
-        return;
+    } else if (email === '') {
+      Toast.show('Useremail is required!');
+      return;
+    } else if (!emailRegex.test(email)) {
+      Toast.show('valid email is required!');
+      return;
     } else if (phone === '') {
       Toast.show('phone is required!');
       return;
@@ -174,15 +174,6 @@ const HomeScreen = () => {
 
     imagesilder11.push(updatedItem);
   });
-
-  const Detail1 = async (item, id) => {
-    dispatch(clearRemeiesDetail1());
-    if (Object.keys(item).length == 0) {
-    } else {
-      dispatch(InitProduct());
-      dispatch(fetchProduct(id));
-    }
-  };
   const focus = useIsFocused();
 
   useEffect(() => {
@@ -203,6 +194,15 @@ const HomeScreen = () => {
       });
     }
   }, [submitedEnqury]);
+
+  const Detail1 = async (item, id) => {
+    dispatch(clearRemeiesDetail1());
+    if (Object.keys(item).length == 0) {
+    } else {
+      dispatch(InitProduct());
+      dispatch(fetchProduct(id));
+    }
+  };
 
   const apicall = async () => {
     await dispatch(Banner({url: 'home-slider'}));
@@ -557,8 +557,7 @@ const HomeScreen = () => {
       <TouchableOpacity
         style={[styles.card, styles.prodCard]}
         onPress={() => {
-          Detail1(item, item?.id),
-            navigation.navigate('ProductDetail', {data: item});
+          navigation.navigate('ProductDetail', {itemId: item?.id});
         }}>
         <View style={styles.imgContainer}>
           <Image
@@ -855,7 +854,7 @@ const HomeScreen = () => {
                   },
                 ]}>
                 <View style={[styles.cardContaine, {paddingRight: 10}]}>
-                  <View style={{marginLeft: -6}}>
+                  <View style={{marginLeft: -4}}>
                     {item?.cardIcon2?.endsWith('.svg') ? (
                       <SvgUri
                         width={wp(20)}

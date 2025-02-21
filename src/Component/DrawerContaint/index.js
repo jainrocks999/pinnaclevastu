@@ -23,6 +23,7 @@ import styles from './styles';
 import {useDispatch, useSelector} from 'react-redux';
 import {DrawerApi} from '../../Redux/Slice/HomeSlice';
 import Imagepath from '../Imagepath';
+import { SvgUri } from 'react-native-svg';
 
 const Drawer = props => {
   const navigation = useNavigation();
@@ -30,7 +31,7 @@ const Drawer = props => {
   const [visible, setVisibles] = useState(false);
   const [name, setName] = useState('');
   const dispatch = useDispatch();
-  const data = useSelector(state => state.home?.Drawerdata?.services);
+  const data = useSelector(state => state?.HomeBanner?.our_services);
   useEffect(() => {
     apicall();
   }, []);
@@ -91,26 +92,35 @@ const Drawer = props => {
   const renderItem = ({item}) => (
     <TouchableOpacity
     style={styles.listRow}
-    // style={true ? styles.specialListRow : styles.listRow}
-    // onPress={item.onPress ? item.onPress : null}
-    onPress={() => {
-      navigation.navigate('Home', {
-        screen: 'Home1',
-          params: {
-            screen: 'Consultancy',
-            params: {
-              itemId: item?.id,
-              servicesName: item?.services_name,
-            },
-          },
-        });
-      }}>
+    // onPress={() => {
+    //   navigation.navigate('Home', {
+    //     screen: 'Home1',
+    //       params: {
+    //         screen: 'Consultancy',
+    //         params: {
+    //           itemId: item?.id,
+    //           servicesName: item?.services_name,
+    //         },
+    //       },
+    //     });
+    //   }}
+      >
       {/* <View style={styles.rowContent}> */}
-      <Image
-        style={styles.icon}
-        source={{uri: `${Imagepath.Path}${item?.logo}`}}
-      />
-      <Text style={styles.listText}>{item.services_name}</Text>
+      
+      {item?.CardImage?.toLowerCase()?.endsWith('.svg') ? (
+  <View style={styles.icon}>
+    <SvgUri width="100%" height="100%" uri={item?.CardImage} />
+  </View>
+) : (
+  <Image
+    style={styles.icon}
+    source={{ uri: `${item?.CardImage}` }}
+    resizeMode="contain"
+  />
+)}
+     
+
+      <Text style={styles.listText}>{item.text     }</Text>
       {/* </View> */}
       {/* {item.isSpecial && (
         <Image source={require('../../assets/drawer/right.png')} />
