@@ -73,6 +73,7 @@ const RemediesProductDetail = ({route}) => {
   const [similardata, setSimilarData] = useState([]);
   const [currentItemInCart, setCurrentItemInCart] = useState();
   const [metafieldsData, setMetafieldsData] = useState([]);
+  const [metaDescription, setMetaDescription] = useState('');
   const [topBestSellerData, setTopBestSellerData] = useState([]);
   const [isMetaDataLoading, setIsMetaDataLoading] = useState(false);
   const [isDataLoading, setIsDataLoading] = useState(true);
@@ -119,8 +120,12 @@ const RemediesProductDetail = ({route}) => {
     );
 
     if (similarProduct) {
+      // console.log("if chalgaya")
       getSimilarrdata();
+      // setIsMetaDataLoading(false);
     } else {
+      // console.log("else chalgaya")
+      setIsMetaDataLoading(false);
       setSimilarData([]);
     }
   }, [metafieldsData]);
@@ -128,7 +133,7 @@ const RemediesProductDetail = ({route}) => {
   const getSimilarrdata = async () => {
     try {
       console.log(isLoading, 'spiderman');
-      setIsDataLoading(true);
+      // setIsDataLoading(true);
       const datawitharr = await Promise.all(
         dataArray.map(async item => {
           const similar = await fetchProductData(item?.id);
@@ -137,7 +142,7 @@ const RemediesProductDetail = ({route}) => {
         }),
       );
       setSimilarData(datawitharr);
-      setIsDataLoading(false);
+      setIsMetaDataLoading(false);
     } catch (error) {
       console.error('Error fetching similar data:', error);
     }
@@ -155,8 +160,8 @@ const RemediesProductDetail = ({route}) => {
   }, [navigation]);
 
   const handleApi = async id => {
+    // console.log(isLoading, 'spiderman');
     setIsMetaDataLoading(true);
-    console.log(isLoading, 'spiderman');
     dispatch(InitProduct());
     dispatch(fetchProduct(id));
 
@@ -164,8 +169,11 @@ const RemediesProductDetail = ({route}) => {
     const topBestSellerData = await getProductRecomendation(id);
 
     setMetafieldsData(data?.metafields);
+    setMetaDescription(
+      data?.metafields.find(item => item.key?.includes('description'))?.value,
+    );
     setTopBestSellerData(topBestSellerData?.productRecommendations);
-    setIsMetaDataLoading(false);
+    // setIsMetaDataLoading(false);
   };
 
   const newArray = [];
@@ -708,10 +716,10 @@ const RemediesProductDetail = ({route}) => {
     </View>
   );
 
-  if (isLoading && isMetaDataLoading && isDataLoading) {
+  if (isLoading || isMetaDataLoading) {
     console.log(isLoading, 'spiderman 11');
     console.log(isMetaDataLoading, 'spiderman 22');
-    console.log(isDataLoading, 'spiderman 33');
+    // console.log(isDataLoading, 'spiderman 33');
     return (
       <View>
         <View style={styles.headerdouble}>
@@ -871,9 +879,7 @@ const RemediesProductDetail = ({route}) => {
 
           <View>
             <Text style={styles.cont}>
-              {Detail1?.description ||
-                metafieldsData.find(item => item.key?.includes('description'))
-                  ?.value}
+              {Detail1?.description || metaDescription}
             </Text>
 
             <View
