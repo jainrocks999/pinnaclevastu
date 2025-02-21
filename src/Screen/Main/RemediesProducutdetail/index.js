@@ -35,38 +35,23 @@ import {
 import Imagepath from '../../../Component/Imagepath';
 import constants from '../../../Redux/constant/constants';
 import axios from 'axios';
-import {productDetail1} from '../../../Redux/Slice/HomeSlice';
+import {
+  clearRemeiesDetail1,
+  productDetail1,
+} from '../../../Redux/Slice/HomeSlice';
 import {useNavigation} from '@react-navigation/native';
 import AnimatedLine from '../../../Component/progressbar';
 import {convertVariantId} from '../../../common/shopifyConverter';
-import {fetchProductData} from '../../../Redux/Api';
+import {
+  fetchProductData,
+  getProductMetafieldsApiCall,
+} from '../../../Redux/Api';
+import {getProductRecomendation} from '../../../models/products';
+import {fetchProduct, InitProduct} from '../../../Redux/Slice/productSlice';
 
-
-LogBox.ignoreAllLogs();
 const RemediesProductDetail = ({route}) => {
-  const metafieldsData = route?.params?.data1?.metafields;
-
-  const product = route?.params?.data?.node;
-  console.log('jgjhkgfhkkhgkh', metafieldsData, product);
-  const dataArray = [];
-  const similarProduct = metafieldsData.find(
-    itm => itm.key === 'similar_product_',
-  );
-
-  if (similarProduct) {
-    dataArray.push({
-      id: similarProduct.value,
-      name: similarProduct.type,
-      key:similarProduct?.key
-    });
-  }
-
-  // Dusra object push karna
-  dataArray.push({
-    id: product.id,
-    name: product.title,
-    key:product.title
-  });
+  const product = route?.params?.itemId;
+  console.log('sasasa', product, route?.params?.itemId);
 
   const navigation = useNavigation();
   const {width} = Dimensions.get('window');
@@ -87,6 +72,11 @@ const RemediesProductDetail = ({route}) => {
   const [isInCart, setIsInCart] = useState(false);
   const [similardata, setSimilarData] = useState([]);
   const [currentItemInCart, setCurrentItemInCart] = useState();
+  const [metafieldsData, setMetafieldsData] = useState([]);
+  const [topBestSellerData, setTopBestSellerData] = useState([]);
+  const [isMetaDataLoading, setIsMetaDataLoading] = useState(false);
+  const [isDataLoading, setIsDataLoading] = useState(true);
+
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
 
   const animation = useRef(new Animated.Value(0)).current;
@@ -97,28 +87,57 @@ const RemediesProductDetail = ({route}) => {
     outputRange: ['0deg', '90deg'],
   });
 
+  const dataArray = [];
+  const similarProduct = metafieldsData.find(
+    itm => itm.key === 'similar_product_',
+  );
+  if (similarProduct) {
+    dataArray.push({
+      id: similarProduct.value,
+
+      key: similarProduct?.key,
+    });
+  }
+
+  // Dusra object push karna
+  dataArray.push({
+    id: product,
+
+    key: 'product_title',
+  });
+
   useEffect(() => {
+    handleApi(route?.params?.itemId);
+    setSimilarData([]);
+  }, [route?.params?.itemId]);
+
+  useEffect(() => {
+    if (!metafieldsData) return;
+
     const similarProduct = metafieldsData.find(
       itm => itm.key === 'similar_product_',
     );
-    if(similarProduct){
-      console.log('similarerdfddsf');
-      
-      getSimilarrdata();
-    }
-   
-  }, []);
-  const getSimilarrdata = async () => {
 
+    if (similarProduct) {
+      getSimilarrdata();
+    } else {
+      setSimilarData([]);
+    }
+  }, [metafieldsData]);
+
+  const getSimilarrdata = async () => {
     try {
+      console.log(isLoading, 'spiderman');
+      setIsDataLoading(true);
       const datawitharr = await Promise.all(
         dataArray.map(async item => {
           const similar = await fetchProductData(item?.id);
+
           return similar;
         }),
       );
       setSimilarData(datawitharr);
-     
+      setIsDataLoading(false);
     } catch (error) {
       console.error('Error fetching similar data:', error);
     }
@@ -134,14 +153,19 @@ const RemediesProductDetail = ({route}) => {
     );
     return () => backHandler.remove();
   }, [navigation]);
-  const productDetaill = async item => {
-    // await dispatch(
-    //   productDetail1({
-    //     url: 'fetch-single-product',
-    //     product_id: item.id,
-    //     navigation,
-    //   }),
-    // );
+
+  const handleApi = async id => {
+    setIsMetaDataLoading(true);
+    console.log(isLoading, 'spiderman');
+    dispatch(InitProduct());
+    dispatch(fetchProduct(id));
+
+    const data = await getProductMetafieldsApiCall(id);
+    const topBestSellerData = await getProductRecomendation(id);
+
+    setMetafieldsData(data?.metafields);
+    setTopBestSellerData(topBestSellerData?.productRecommendations);
+    setIsMetaDataLoading(false);
   };
 
   const newArray = [];
@@ -182,7 +206,6 @@ const RemediesProductDetail = ({route}) => {
       await getUserType();
     };
     const checkIfInCart = () => {
-      // console.log(userType, 'sandeep dsfksdfmsdfmsdlf');
       const cartItem = localCartDataList.find(
         item => item.id === similardata?.id,
       );
@@ -194,19 +217,19 @@ const RemediesProductDetail = ({route}) => {
     init();
   }, [similardata]);
 
-  const getUserType = async () => {
-    try {
-      const userStatus = await AsyncStorage.getItem('user_data');
-      const userData = JSON.parse(userStatus);
-      setUserType(userData?.user_type);
+  // const getUserType = async () => {
+  //   try {
+  //     const userStatus = await AsyncStorage.getItem('user_data');
+  //     const userData = JSON.parse(userStatus);
+  //     setUserType(userData?.user_type);
 
-      const existingCart = await AsyncStorage.getItem('cartItems');
-      const cartItems = existingCart ? JSON.parse(existingCart) : [];
-      // setLocalCartData(cartItems);
-    } catch (error) {
-      console.error('Error fetching user data or cart items:', error);
-    }
-  };
+  //     const existingCart = await AsyncStorage.getItem('cartItems');
+  //     const cartItems = existingCart ? JSON.parse(existingCart) : [];
+  //     // setLocalCartData(cartItems);
+  //   } catch (error) {
+  //     console.error('Error fetching user data or cart items:', error);
+  //   }
+  // };
 
   const toggleCheckbox = itemId => {
     setCheckedItems(prevState => {
@@ -260,7 +283,6 @@ const RemediesProductDetail = ({route}) => {
       };
     });
 
- 
   const increment = () => {
     if (quantity < 100) {
       // if (currentItemInCart) {
@@ -330,9 +352,9 @@ const RemediesProductDetail = ({route}) => {
     }
   };
 
-const Addtocard1 = async item => {
+  const Addtocard1 = async item => {
     // console.log('jfdnkjsdfksjskjfs',item.variants?.edges?.[0].id);
-    
+
     try {
       if (item?.variants?.length != 0) {
         const image = item.variants?.edges?.[0]?.node?.image?.src;
@@ -362,7 +384,6 @@ const Addtocard1 = async item => {
   };
 
   const Addtocart = async (item, {qty}) => {
-  
     if (item?.variants?.length != 0) {
       const image = item?.images[0]?.src;
       let product = {...item};
@@ -447,12 +468,9 @@ const Addtocard1 = async item => {
         );
 
         for (const item of matchedItems) {
-       
-            console.log('not excicifggghjg', item);
-            dispatch(addToCart(item));
-          }
-        
-
+          console.log('not excicifggghjg', item);
+          dispatch(addToCart(item));
+        }
       } catch (error) {
         console.log('Error adding items to cart:', error);
       }
@@ -529,8 +547,11 @@ const Addtocard1 = async item => {
 
   const renderItem = ({item, index}) => (
     <View>
+      {/* {console.log(item,"batmen")} */}
       <Pressable
-        onPress={() => productDetaill(item)}
+        onPress={() =>
+          navigation.navigate('ProductDetail', {itemId: item?.productId})
+        }
         style={styles.productCard}>
         <Image
           source={
@@ -563,7 +584,10 @@ const Addtocard1 = async item => {
 
   const renderItem2 = ({item}) => (
     <View style={styles.slide}>
-      <TouchableOpacity onPress={() => productDetaill(item)}>
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate('ProductDetail', {itemId: item?.id})
+        }>
         <Image
           source={
             item?.variants?.edges[0]?.node?.image?.src
@@ -684,7 +708,10 @@ const Addtocard1 = async item => {
     </View>
   );
 
-  if (isLoading) {
+  if (isLoading && isMetaDataLoading && isDataLoading) {
+    console.log(isLoading, 'spiderman 11');
+    console.log(isMetaDataLoading, 'spiderman 22');
+    console.log(isDataLoading, 'spiderman 33');
     return (
       <View>
         <View style={styles.headerdouble}>
@@ -699,7 +726,7 @@ const Addtocard1 = async item => {
 
           <Image source={require('../../../assets/image/small_bag.png')} />
         </View>
-        {isLoading ? <AnimatedLine /> : null}
+        <AnimatedLine />
       </View>
     );
   }
@@ -761,10 +788,7 @@ const Addtocard1 = async item => {
           )}
           <View style={styles.contain}>
             {/* Aluminium Metal Strip Vastu */}
-            <Text style={styles.service}>
-              {Detail1?.title}
-              {/* {Array.isArray(Detail) && Detail[0]?.name ? Detail[0]?.name : ''} */}
-            </Text>
+            <Text style={styles.service}>{Detail1?.title}</Text>
           </View>
           <View style={styles.main}>
             {Detail?.reviews?.length > 0 && (
@@ -862,11 +886,16 @@ const Addtocard1 = async item => {
               <Text style={[styles.third1]}>
                 {`₹ ${Detail1?.variants?.[0]?.price}`}
               </Text>
-
-              <Text
-                style={[styles.third1, {textDecorationLine: 'line-through'}]}>
-                ₹ {Detail1?.variants?.[0]?.price}
-              </Text>
+              {Detail1?.variants?.[0]?.compare_at_price &&
+                parseInt(Detail1?.variants?.[0]?.compare_at_price) > 0 && (
+                  <Text
+                    style={[
+                      styles.third1,
+                      {textDecorationLine: 'line-through'},
+                    ]}>
+                    ₹ {Detail1?.variants?.[0]?.compare_at_price}
+                  </Text>
+                )}
             </View>
             <View
               style={[
@@ -968,7 +997,7 @@ const Addtocard1 = async item => {
               <FlatList
                 data={similardata}
                 renderItem={renderItem}
-                keyExtractor={item => item.id.toString()}
+                keyExtractor={item => item?.id?.toString()}
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={[
@@ -1002,12 +1031,11 @@ const Addtocard1 = async item => {
             </View>
           ) : null}
 
-          {route?.params?.topBestSellerData?.productRecommendations?.length !=
-          0 ? (
+          {topBestSellerData?.length != 0 ? (
             <View style={styles.suggestItemContainer}>
               <Text style={styles.header1}>Top Best Sellers</Text>
               <FlatList
-                data={route?.params?.topBestSellerData?.productRecommendations}
+                data={topBestSellerData}
                 // keyExtractor={item => item.id.toString()}
                 renderItem={renderItem2}
                 pagingEnabled
@@ -1017,25 +1045,23 @@ const Addtocard1 = async item => {
                 showsHorizontalScrollIndicator={false}
                 onMomentumScrollEnd={e => {
                   const contentOffsetX = e.nativeEvent.contentOffset.x;
-                  const slideWidth = styles.slide.width; // Assuming styles.slide.width defines the width of each slide
-                  const currentIndex = Math.round(contentOffsetX / slideWidth); // Use Math.round for more accurate calculation
-                  setCurrentIndex(currentIndex); // Update state with the calculated index
+                  const slideWidth = styles.slide.width;
+                  const currentIndex = Math.round(contentOffsetX / slideWidth);
+                  setCurrentIndex(currentIndex);
                 }}
               />
 
               <View style={styles.dotContainer}>
-                {route?.params?.topBestSellerData?.productRecommendations?.map(
-                  (_, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      style={[
-                        styles.dot,
-                        currentIndex === index && styles.activeDot,
-                      ]}
-                      // onPress={() => handleImageChange(index)}
-                    />
-                  ),
-                )}
+                {topBestSellerData?.map((_, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={[
+                      styles.dot,
+                      currentIndex === index && styles.activeDot,
+                    ]}
+                    // onPress={() => handleImageChange(index)}
+                  />
+                ))}
               </View>
             </View>
           ) : null}

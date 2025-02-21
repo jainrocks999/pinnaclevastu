@@ -58,10 +58,6 @@ const HomeScreen = () => {
   const [isPhoto, setIsPhoto] = useState(true);
   const [course, setCourse] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
-  // const [currentIndex1, setCurrentIndex1] = useState(0);
-  // const [currentIndex2, setCurrentIndex2] = useState(0);
-  // const [currentIndex3, setCurrentIndex3] = useState(0);
-  // const [currentIndex4, setCurrentIndex4] = useState(0);
   const [currentIndex1, setCurrentIndex1] = useState({
     imgBannerIndex2: 0,
     bestProdIndex: 0,
@@ -108,12 +104,12 @@ const HomeScreen = () => {
     if (name === '') {
       Toast.show('Username is required!');
       return;
-      } else if (email === '') {
-        Toast.show("Useremail is required!");
-        return;
-      } else if (!emailRegex.test(email)) {
-        Toast.show("valid email is required!");
-        return;
+    } else if (email === '') {
+      Toast.show('Useremail is required!');
+      return;
+    } else if (!emailRegex.test(email)) {
+      Toast.show('valid email is required!');
+      return;
     } else if (phone === '') {
       Toast.show('phone is required!');
       return;
@@ -552,7 +548,7 @@ const HomeScreen = () => {
     );
   };
 
-  const renderItem5 = ({item, index}) => {
+  const renderItem5 = ({item}) => {
     return (
       <TouchableOpacity
         style={[styles.card, styles.prodCard]}
@@ -612,7 +608,24 @@ const HomeScreen = () => {
             />
           </TouchableOpacity>
         </View>
-        <Text style={styles.discountTag}>20% OFF</Text>
+        {item?.variants?.edges?.[0].node?.compareAtPrice?.amount &&
+          parseInt(item?.variants?.edges?.[0].node?.compareAtPrice.amount) >
+            0 && (
+            <Text style={styles.discountTag}>
+              {' '}
+              {(
+                ((parseFloat(
+                  item?.variants?.edges?.[0].node?.compareAtPrice?.amount,
+                ) -
+                  parseFloat(item?.variants?.edges?.[0].node?.price.amount)) /
+                  parseFloat(
+                    item?.variants?.edges?.[0].node?.compareAtPrice?.amount,
+                  )) *
+                100
+              ).toFixed(0)}
+              % OFF
+            </Text>
+          )}
       </TouchableOpacity>
     );
   };
