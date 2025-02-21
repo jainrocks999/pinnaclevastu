@@ -61,7 +61,6 @@ export const getProductMetafieldsApiCall = (product_id) => {
 
   export  const fetchProductData = async (id) => {
     try {
-      console.log('sghkjsfhgjkfsghjkfghkjsg',id);
       const data = JSON.stringify({
         query: similarproduct,
         variables: {

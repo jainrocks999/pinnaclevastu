@@ -51,8 +51,6 @@ import {fetchProduct, InitProduct} from '../../../Redux/Slice/productSlice';
 
 const RemediesProductDetail = ({route}) => {
   const product = route?.params?.itemId;
-  console.log('sasasa', product, route?.params?.itemId);
-
   const navigation = useNavigation();
   const {width} = Dimensions.get('window');
   const Detail1 = useSelector(state => state?.Product?.productDetails);
@@ -127,7 +125,6 @@ const RemediesProductDetail = ({route}) => {
 
   const getSimilarrdata = async () => {
     try {
-      console.log(isLoading, 'spiderman');
       setIsDataLoading(true);
       const datawitharr = await Promise.all(
         dataArray.map(async item => {
@@ -156,7 +153,7 @@ const RemediesProductDetail = ({route}) => {
 
   const handleApi = async id => {
     setIsMetaDataLoading(true);
-    console.log(isLoading, 'spiderman');
+   
     dispatch(InitProduct());
     dispatch(fetchProduct(id));
 
@@ -244,7 +241,6 @@ const RemediesProductDetail = ({route}) => {
 
   const calculateTotalPrice = checkedState => {
     if (!similardata || similardata.length === 0) {
-      console.log('No similar data available.');
       setTotalPrice(0);
       return;
     }
@@ -252,7 +248,6 @@ const RemediesProductDetail = ({route}) => {
     const total = similardata.reduce((sum, product) => {
       if (checkedState[product.id]) {
         const price = parseFloat(product?.price) || 0;
-        console.log('Product Price:', price);
         return sum + price;
       }
       return sum;
@@ -352,9 +347,7 @@ const RemediesProductDetail = ({route}) => {
     }
   };
 
-  const Addtocard1 = async item => {
-    // console.log('jfdnkjsdfksjskjfs',item.variants?.edges?.[0].id);
-
+  const Addtocard1 = async item => {     
     try {
       if (item?.variants?.length != 0) {
         const image = item.variants?.edges?.[0]?.node?.image?.src;
@@ -404,27 +397,9 @@ const RemediesProductDetail = ({route}) => {
       };
       dispatch(addToCart(productTemp));
     }
-
-    // try {
-
-    //     const itemWithQty = {
-    //       ...item,
-    //       qty: quantity,
-    //     };
-
-    //     console.log('producut  detail addd to cart ',itemWithQty);
-
-    //     dispatch(addToCart(itemWithQty));
-    //     setIsInCart(true);
-
-    // } catch (error) {
-    //   console.error('Error adding item to cart:', error);
-    // }
   };
 
   const share = async () => {
-    console.log('dtagghfjdfgdh', Detail1?.handle);
-
     const productUrl = `https://pinnaclevastu-in/products/${Detail1.handle}`; // Product URL to share
     const productDescription = `Check out this amazing product!`;
     try {
@@ -454,11 +429,6 @@ const RemediesProductDetail = ({route}) => {
         .filter(([key, isChecked]) => isChecked)
         .map(([key, value]) => key);
 
-      if (selectedItems.length === 0) {
-        console.log('No items selected', selectedItems);
-        return;
-      }
-
       try {
         const userStatus = await AsyncStorage.getItem('user_data');
         const userData = JSON.parse(userStatus);
@@ -468,7 +438,6 @@ const RemediesProductDetail = ({route}) => {
         );
 
         for (const item of matchedItems) {
-          console.log('not excicifggghjg', item);
           dispatch(addToCart(item));
         }
       } catch (error) {
@@ -547,7 +516,6 @@ const RemediesProductDetail = ({route}) => {
 
   const renderItem = ({item, index}) => (
     <View>
-      {/* {console.log(item,"batmen")} */}
       <Pressable
         onPress={() =>
           navigation.navigate('ProductDetail', {itemId: item?.productId})
@@ -709,9 +677,6 @@ const RemediesProductDetail = ({route}) => {
   );
 
   if (isLoading && isMetaDataLoading && isDataLoading) {
-    console.log(isLoading, 'spiderman 11');
-    console.log(isMetaDataLoading, 'spiderman 22');
-    console.log(isDataLoading, 'spiderman 33');
     return (
       <View>
         <View style={styles.headerdouble}>
