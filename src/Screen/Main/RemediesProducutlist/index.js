@@ -144,18 +144,18 @@ const [countdata,setCountdata]=useState(0);
     await dispatch(fetchCollection(name1?.item.id,countdata));
   };
   const PRoductDeta = async (item, id) => {
-    dispatch(clearRemeiesDetail1());
+    // dispatch(clearRemeiesDetail1());
 
-    if (Object.keys(item).length == 0) {
-    } else {
-      dispatch(InitProduct());
-      dispatch(fetchProduct(id));
-    }
+    // if (Object.keys(item).length == 0) {
+    // } else {
+    //   dispatch(InitProduct());
+    //   dispatch(fetchProduct(id));
+    // }
     // getProductMetafieldsApiCall(productId)
-    const data = await getProductMetafieldsApiCall(id);
-    const topBestSellerData= await getProductRecomendation(id) 
-    console.log('datata get by meta feild', id,data);
-    navigation.navigate('ProductDetail', {data: item,data1:data,topBestSellerData});
+    // const data = await getProductMetafieldsApiCall(id);
+    // const topBestSellerData= await getProductRecomendation(id) 
+    // console.log('datata get by meta feild (outside)', item.node);
+    navigation.navigate('ProductDetail', {itemId:id});
   };
 
   const Addtocard = async item => {
