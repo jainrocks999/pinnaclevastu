@@ -17,7 +17,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import Collapsible from 'react-native-collapsible';
 import styles from './styles';
 import {colors} from '../../../Component/colors';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import Imagepath from '../../../Component/Imagepath';
 import {widthPrecent} from '../../../Component/ResponsiveScreen/responsive';
 import RenderHTML from 'react-native-render-html';
@@ -25,16 +25,21 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 import WebView from 'react-native-webview';
 import constants from '../../../Redux/constant/constants';
-import { checkout } from '../../../models/Checkout';
-import { convertVariantId } from '../../../common/shopifyConverter';
+import {checkout} from '../../../models/Checkout';
+import {convertVariantId} from '../../../common/shopifyConverter';
 import Toast from 'react-native-simple-toast';
+import {clearRemeiesDetail1} from '../../../Redux/Slice/HomeSlice';
+import {fetchProduct, InitProduct} from '../../../Redux/Slice/productSlice';
+import {getProductMetafieldsApiCall} from '../../../Redux/Api';
 const {width} = Dimensions.get('window');
 
 const CourseDetail = ({route}) => {
   const navigation = useNavigation();
-  const coursetype = route?.params?.coursetype; 
+  const dispatch = useDispatch();
+  const coursetype = route?.params?.coursetype;
   const Detail1 = useSelector(state => state?.Product?.productDetails);
-    const imagearray = useSelector(state => state?.Product?.productImages);
+  const [metaData, setMetaData] = useState([]);
+  const imagearray = useSelector(state => state?.Product?.productImages);
   const [userType, setUserType] = useState('');
   const CourceDetailA = useSelector(state => state?.home?.CourceDetailA);
   const isLoading = useSelector(state => state.home?.loading);
@@ -111,12 +116,38 @@ const CourseDetail = ({route}) => {
 
   useEffect(() => {
     getUserType();
+    handleApi(route?.params?.itemId);
     // setVideoPlay(false
     setVideoState(prevState => ({
       ...prevState,
       isPlaying: false,
     }));
   }, []);
+
+  const handleApi = async itemId => {
+    dispatch(clearRemeiesDetail1());
+
+    dispatch(InitProduct());
+    dispatch(fetchProduct(itemId));
+
+    const data = await getProductMetafieldsApiCall(itemId);
+    console.log('datata get by meta feild', data);
+    setMetaData(data?.metafields);
+  };
+  console.log(metaData, 'Venom');
+  const groupedMeta = metaData
+    ?.filter(item => item?.key?.includes('question'))
+    ?.map(question => {
+      const keyPrefix = question?.key?.match(/\d+/)?.[0];
+      const answer = metaData
+        ?.filter(item => item?.key?.includes('answer'))
+        ?.find(ans => ans?.key?.includes(`${keyPrefix}_answer`));
+
+      return {
+        question,
+        answer,
+      };
+    });
 
   const getUserType = async () => {
     const userStatus = await AsyncStorage.getItem('user_data');
@@ -141,6 +172,7 @@ const CourseDetail = ({route}) => {
   };
 
   const [expandedSection, setExpandedSection] = useState(null);
+
   const videoData = CourceDetailA?.demo_video
     ? JSON.parse(CourceDetailA.demo_video)
     : [];
@@ -215,10 +247,9 @@ const CourseDetail = ({route}) => {
   const handleLoadEnd = () => {
     setLoading(false);
   };
-  const toggleSection = sectionId => {
-    setExpandedSection(prevSection =>
-      prevSection === sectionId ? null : sectionId,
-    );
+  const toggleSection = id => {
+    // console.log(index,'hulk')
+    setExpandedSection(prevSection => (prevSection == id ? null : id));
   };
 
   const handleJoinCourse = () => {
@@ -235,40 +266,36 @@ const CourseDetail = ({route}) => {
       }),
     ]).start(() => {
       if (userType) {
-console.log(Detail1);
+        console.log(Detail1);
 
+        if (Detail1?.variants?.length != 0) {
+          const image = Detail1?.images[0]?.src;
+          let product = {...Detail1};
 
+          product.selectedVarient = product?.variants?.[0];
 
- if (Detail1?.variants?.length != 0) {
-      const image = Detail1?.images[0]?.src;
-      let product = {...Detail1};
+          let productTemp = {
+            ...product,
+            image,
+            qty: 1,
+            productId: product?.id,
+            compareAtPrice: product?.variants?.[0]?.compare_at_price,
+            price: product?.variants?.[0]?.price,
+            id: isNaN(product?.selectedVarient.id)
+              ? convertVariantId(product?.selectedVarient.id)
+              : convertVariantId(product?.selectedVarient.id),
 
-      product.selectedVarient = product?.variants?.[0];
-     
-      let productTemp = {
-        ...product,
-        image,
-        qty: 1,
-        productId: product?.id,
-        compareAtPrice: product?.variants?.[0]?.compare_at_price,
-        price: product?.variants?.[0]?.price,
-        id: isNaN(product?.selectedVarient.id)
-          ?  convertVariantId(product?.selectedVarient.id)
-          :convertVariantId( product?.selectedVarient.id),
+            properties: {},
+          };
+          console.log(productTemp, 'fjfjff');
 
-        properties: {},
-      };
-  console.log(productTemp,'fjfjff');
-  
-    if(productTemp?.availableForSale){
-      checkout([productTemp], navigation);
-    }else{
-      Toast.show('This course is currently not available for sale');
-    }
-       
-      }
-    
-         
+          if (productTemp?.availableForSale) {
+            checkout([productTemp], navigation);
+          } else {
+            Toast.show('This course is currently not available for sale');
+          }
+        }
+
         // navigation.navigate('PaymentCourse', {data1: CourceDetailA});
       } else {
         navigation.navigate('Login', {from: 'CourseDetails'});
@@ -324,6 +351,49 @@ console.log(Detail1);
       </Collapsible>
     </View>
   );
+
+  const renderCollapsibleItem = item => {
+    return (
+      <View style={styles.paddings}>
+        <TouchableOpacity
+          onPress={() => toggleSection(item?.question?.id)}
+          style={[
+            styles.courseToggle1,
+            expandedSection == item?.question?.id && styles.activeCourseToggle,
+          ]}>
+          <View style={styles.direction1}>
+            <Text
+              style={[
+                styles.coursetext2,
+                expandedSection == item?.question?.id &&
+                  styles.activeTitleColor,
+              ]}>
+              {item?.question?.value}
+            </Text>
+          </View>
+          <Image
+            source={
+              expandedSection == item?.question?.id
+                ? require('../../../assets/otherApp/updown1.png')
+                : require('../../../assets/image/arrow_icon.png')
+            }
+            style={[
+              styles.toggleIcon2,
+              // expandedSection !== item.desc_data_id
+              //   ? {resizeMode: 'contain'}
+              //   : null,
+            ]}
+          />
+        </TouchableOpacity>
+
+        <Collapsible collapsed={expandedSection != item?.question?.id}>
+          <View style={styles.subItemContainer}>
+            <Text style={styles.subItemTitle}>{item?.answer?.value}</Text>
+          </View>
+        </Collapsible>
+      </View>
+    );
+  };
 
   const phoneNumber = '+919153300111';
 
@@ -421,37 +491,38 @@ console.log(Detail1);
                   ? {uri: Detail1?.images?.[0]?.src}
                   : require('../../../assets/image/Remedies/Image-not.png')
               }
-              resizeMode='cover'
+              resizeMode="cover"
               style={styles.img1}
             />
           )}
         </TouchableOpacity>
         <View style={styles.advanceview}>
           <Text style={styles.advancetext}>{Detail1?.title} </Text>
-        {console.log('Detail1>.................',Detail1)
-        }
+          {console.log('Detail1>.................', Detail1)}
 
           <Text style={styles.learntext}>
-            {Detail1?.description!= null
-              ? Detail1?.description
-              : ''}
+            {/* {Detail1?.description != null ? Detail1?.description : ''} */}
+            {metaData.find(item => item.key?.includes('description'))?.value ||
+              ''}
           </Text>
           <View style={styles.direction}>
             {/* <Text style={styles.ruppestext}>{`₹ ${CourceDetailA?.price}`}</Text> */}
             <View style={{flexDirection: 'row', gap: 10}}>
               <Text style={[styles.ruppestext]}>
-              {`₹ ${Detail1?.variants?.[0]?.price}`}
+                {`₹ ${Detail1?.variants?.[0]?.price}`}
               </Text>
-             
-             
-                <Text
-                  style={[
-                    styles.ruppestext,
-                    {textDecorationLine: 'line-through', color: 'gray'},
-                  ]}>
-                  {`₹ ${Detail1?.variants?.[0]?.price}`}
-                </Text>
-             
+
+              {Detail1?.variants?.[0]?.compare_at_price >
+                Detail1?.variants?.[0]?.price &&
+                Detail1?.variants?.[0]?.compare_at_price >= 0 && (
+                  <Text
+                    style={[
+                      styles.ruppestext,
+                      {textDecorationLine: 'line-through', color: 'gray'},
+                    ]}>
+                    {`₹ ${Detail1?.variants?.[0]?.compare_at_price}`}
+                  </Text>
+                )}
             </View>
             <TouchableOpacity onPress={() => handleShare()}>
               <Image
@@ -464,17 +535,20 @@ console.log(Detail1);
         <View style={styles.horizontalLine} />
         {/* Card Component */}
         <View style={styles.card}>
-          <View style={styles.cardItem}>
-            <Image
-              source={require('../../../assets/otherApp/cardimg1.png')}
-              style={styles.cardimg1}
-            />
-            <Text style={styles.languagetext}>Languages</Text>
-            {/* Hindi, English */}
-            <Text style={styles.languagetext1}>{CourceDetailA?.language}</Text>
-          </View>
+          {metaData?.find(item => item?.key?.includes('language')) && (
+            <View style={styles.cardItem}>
+              <Image
+                source={require('../../../assets/otherApp/cardimg1.png')}
+                style={styles.cardimg1}
+              />
+              <Text style={styles.languagetext}>Languages</Text>
+              <Text style={styles.languagetext1}>
+                {metaData?.find(item => item?.key?.includes('language'))?.value}
+              </Text>
+            </View>
+          )}
           <View style={styles.verticalLine} />
-          {coursetype ? (
+          {metaData?.find(item => item?.key?.includes('date')) && (
             <View style={styles.cardItem}>
               <Image
                 source={require('../../../assets/otherApp/cardimg1.png')}
@@ -482,84 +556,43 @@ console.log(Detail1);
               />
               <Text style={styles.languagetext}>Date</Text>
               <Text style={styles.languagetext1}>
-                {CourceDetailA?.start_date}
+                {metaData?.find(item => item?.key?.includes('date'))?.value}
               </Text>
             </View>
-          ) : null}
+          )}
           <View style={styles.verticalLine} />
-          {coursetype ? (
+          {metaData?.find(item => item?.key?.includes('time')) && (
             <View style={styles.cardItem}>
               <Image
                 source={require('../../../assets/otherApp/cardimg1.png')}
                 style={styles.cardimg1}
               />
               <Text style={styles.languagetext}>Time</Text>
-              <Text style={styles.languagetext1}>6:40 to 8:30</Text>
+              <Text style={styles.languagetext1}>
+                {metaData?.find(item => item?.key?.includes('time'))?.value}
+              </Text>
             </View>
-          ) : null}
+          )}
           <View style={styles.verticalLine} />
-          <View style={styles.cardItem}>
-            <Image
-              source={require('../../../assets/otherApp/cardimg1.png')}
-              style={styles.cardimg1}
-            />
-            <Text style={styles.languagetext}>Trained</Text>
-            <Text style={styles.languagetext1}>2000+ Students</Text>
-          </View>
+          {metaData?.find(item => item?.key?.includes('trained')) && (
+            <View style={styles.cardItem}>
+              <Image
+                source={require('../../../assets/otherApp/cardimg1.png')}
+                style={styles.cardimg1}
+              />
+              <Text style={styles.languagetext}>Trained</Text>
+              <Text style={styles.languagetext1}>
+                {metaData?.find(item => item?.key?.includes('trained'))?.value}
+              </Text>
+            </View>
+          )}
         </View>
 
         <FlatList
           scrollEnabled={false}
-          data={CourceDetailA?.desc_data?.filter(
-            item => item.description !== null && item.label !== null,
-          )}
-          keyExtractor={item => item.desc_data_id.toString()}
-          renderItem={({item, index}) => (
-            <View style={styles.paddings}>
-              <TouchableOpacity
-                onPress={() => toggleSection(item.desc_data_id)}
-                style={[
-                  styles.courseToggle1,
-                  expandedSection === item.desc_data_id &&
-                    styles.activeCourseToggle,
-                ]}>
-                <View style={styles.direction1}>
-                  <Text
-                    style={[
-                      styles.coursetext2,
-                      expandedSection === item.desc_data_id &&
-                        styles.activeTitleColor,
-                    ]}>
-                    {item.label}
-                  </Text>
-                </View>
-                <Image
-                  source={
-                    expandedSection === item.desc_data_id
-                      ? require('../../../assets/otherApp/updown1.png')
-                      : require('../../../assets/image/arrow_icon.png')
-                  }
-                  style={[
-                    styles.toggleIcon2,
-                    // expandedSection !== item.desc_data_id
-                    //   ? {resizeMode: 'contain'}
-                    //   : null,
-                  ]}
-                />
-              </TouchableOpacity>
-
-              <Collapsible collapsed={expandedSection !== item.desc_data_id}>
-                <View style={styles.subItemContainer}>
-                  <RenderHTML
-                    contentWidth={width}
-                    source={{
-                      html: item.description,
-                    }}
-                  />
-                </View>
-              </Collapsible>
-            </View>
-          )}
+          data={groupedMeta?.slice(0, 3) || []}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({item}) => renderCollapsibleItem(item)}
         />
 
         <View style={styles.needview}>
@@ -622,56 +655,9 @@ console.log(Detail1);
         </View>
         <FlatList
           scrollEnabled={false}
-          data={CourceDetailA?.desc_demo_data?.filter(
-            item => item.description !== null && item.label !== null,
-          )}
-          keyExtractor={item => item?.desc_data_id.toString()}
-          renderItem={({item, index}) => (
-            <View style={styles.paddings}>
-              <TouchableOpacity
-                onPress={() => toggleSection(item.desc_data_id)}
-                style={[
-                  styles.courseToggle1,
-                  expandedSection === item.desc_data_id &&
-                    styles.activeCourseToggle,
-                ]}>
-                <View style={styles.direction1}>
-                  <Text
-                    style={[
-                      styles.coursetext2,
-                      expandedSection === item.desc_data_id &&
-                        styles.activeTitleColor,
-                    ]}>
-                    {item.label}
-                  </Text>
-                </View>
-                <Image
-                  source={
-                    expandedSection === item.desc_data_id
-                      ? require('../../../assets/otherApp/updown1.png')
-                      : require('../../../assets/image/arrow_icon.png')
-                  }
-                  style={[
-                    styles.toggleIcon2,
-                    // expandedSection !== item.desc_data_id
-                    //   ? {resizeMode: 'contain'}
-                    //   : null,
-                  ]}
-                />
-              </TouchableOpacity>
-
-              <Collapsible collapsed={expandedSection !== item.desc_data_id}>
-                <View style={styles.subItemContainer}>
-                  <RenderHTML
-                    contentWidth={width}
-                    source={{
-                      html: item.description,
-                    }}
-                  />
-                </View>
-              </Collapsible>
-            </View>
-          )}
+          data={groupedMeta?.slice(3, 6) || []}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({item}) => renderCollapsibleItem(item)}
         />
 
         <View style={styles.trainerview}>
@@ -775,7 +761,7 @@ console.log(Detail1);
         <View style={styles.listItem}>
           <Text style={styles.listItemText}>{Detail1?.title}</Text>
           <Text style={[styles.listitem1]}>
-          {`₹ ${Detail1?.variants?.[0]?.price}`}
+            {`₹ ${Detail1?.variants?.[0]?.price}`}
           </Text>
         </View>
         <Animated.View

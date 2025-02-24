@@ -442,7 +442,8 @@ export default StyleSheet.create({
     borderBottomRightRadius: 8,
     borderColor: '#EAEAEA',
     marginBottom: 10,
-    paddingVertical:10
+    paddingVertical:10,
+    paddingHorizontal:20
   },
   singleSubItem: {
     flexDirection: 'row',
