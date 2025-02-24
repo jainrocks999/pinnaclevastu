@@ -41,16 +41,16 @@ const OtherCourses = ({navigation}) => {
   const focus = useIsFocused();
   const dispatch = useDispatch();
   const CouseDetail1 = async (item, id) => {
-    dispatch(clearRemeiesDetail1());
+    // dispatch(clearRemeiesDetail1());
 
-    if (Object.keys(item).length == 0) {
-    } else {
-      dispatch(InitProduct());
-      dispatch(fetchProduct(id));
-    }
-    const data = await getProductMetafieldsApiCall(id);
-    console.log('datata get by meta feild', id);
-    navigation.navigate('CourseDetail', {coursetype: isLiveCourse});
+    // if (Object.keys(item).length == 0) {
+    // } else {
+    //   dispatch(InitProduct());
+    //   dispatch(fetchProduct(id));
+    // }
+    // const data = await getProductMetafieldsApiCall(id);
+    // console.log('datata get by meta feild', data);
+    navigation.navigate('CourseDetail', {coursetype: isLiveCourse,itemId:id});
     //  navigation.navigate('ProductDetail', {data: item});
     // await dispatch(
     //   CourceDetailApi({

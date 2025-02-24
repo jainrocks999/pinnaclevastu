@@ -165,7 +165,7 @@ export const setProductDetails = (products, productImages) => {
     let ImagesArr = [];
     try {
       dispatch(LOADING(true));
-      console.log('productParam.images.length', JSON.stringify(products));
+      // console.log('productParam.images.length', JSON.stringify(products));
       for (let i = 0; i < productImages.length; i++) {
         imagesObj = {
           id: productImages[i].id,
@@ -177,7 +177,7 @@ export const setProductDetails = (products, productImages) => {
       console.log('error in set product', error);
       dispatch(FAILED({error: 'GET_PRODUCT_FAILED'}));
     } finally {
-      console.log('ImagesArrImagesArr,,,,',ImagesArr);
+      // console.log('ImagesArrImagesArr,,,,',ImagesArr);
       
       let isEmpty = ImagesArr.length == 0;
       if (isEmpty) {
@@ -202,14 +202,14 @@ export const setProductDetails = (products, productImages) => {
           id: null,
         };
         for (let i = 0; i < productParam.variants.length; i++) {
-          console.log(
-            'productParam.variants[i]1',
-            JSON.stringify(productParam.variants[i]),
-          );
+          // console.log(
+          //   'productParam.variants[i]1',
+          //   JSON.stringify(productParam.variants[i]),
+          // );
           // console.log("productParam.variants[i]2", JSON.stringify(productParam));
 
           let isAvailable = productParam.variants[i].available;
-          console.log('productParam.variants[1]', isAvailable);
+          // console.log('productParam.variants[1]', isAvailable);
 
           variantsObj = {
             name: productParam?.variants[i]?.title
@@ -232,7 +232,7 @@ export const setProductDetails = (products, productImages) => {
             isSelected: false,
            
           };
-          console.log('variantsObj', variantsObj);
+          // console.log('variantsObj', variantsObj);
 
           // if (isAvailable) {
           //   isDefaultVariantSelected = true;
@@ -246,12 +246,12 @@ export const setProductDetails = (products, productImages) => {
         // dispatch(fetchSizeChart(productParam));
 
         // dispatch(fetchColorVariant(productId, productObj, products));
-        console.log(
-          'productParam1',
-          productParam,
-          '------------------',
-          Variants,
-        );
+        // console.log(
+        //   'productParam1',
+        //   productParam,
+        //   '------------------',
+        //   Variants,
+        // );
         // dispatch(fetchSizeChart(productParam));
         dispatch(
           SUCCESS({
@@ -506,7 +506,7 @@ export const fetchColorVariant = (ID, productObj, product) => {
   };
 };
 export const fetchMetafields = ID => {
-  console.log('this is fetch metafield  in workign', ID);
+  // console.log('this is fetch metafield  in workign', ID);
   return async dispatch => {
     let colors = [];
     let patterns = [];
@@ -523,7 +523,7 @@ export const fetchMetafields = ID => {
     await axios
       .request(config)
       .then(async response => {
-        console.log('metafields', JSON.stringify(response.data.metafields));
+        // console.log('metafields', JSON.stringify(response.data.metafields));
         const metafields = response?.data?.metafields;
         dispatch(GET_METAFIELDS_SUCCESS(metafields));
         // for (let i = 0; i < metafields.length; i++) {
@@ -631,7 +631,7 @@ export const fetchMetafields = ID => {
     dispatch(GET_COLOR_SUCCESS({colorArray: colors}));
     dispatch(GET_PATTERNS_SUCCESS(patterns));
     dispatch(GET_SIZE_SUCCESS(size));
-    console.log('colors', JSON.stringify(colors));
+    // console.log('colors', JSON.stringify(colors));
   };
 };
 
@@ -644,9 +644,9 @@ export const fetchProduct = productId => {
       SHOPIFY_CLIENT.product
         .fetch(productId)
         .then(async product => {
-          console.log('this is product ata', product);
+          // console.log('this is product data', product);
           if (product) {
-            console.log('productTemp', JSON.stringify(product));
+            // console.log('productTemp', JSON.stringify(product));
             dispatch(setProductDetails(product, product.images));
             // dispatch(
             //   fetchMetafields(product.id.replace('gid://shopify/Product/', '')),
@@ -654,7 +654,7 @@ export const fetchProduct = productId => {
           } else {
             dispatch(FAILED({error: 'GET_PRODUCT_FAILED'}));
           }
-        })
+        })  
         .catch(error => {
           console.log('error789', error, productId);
           dispatch(FAILED({error: 'GET_PRODUCT_FAILED'}));
@@ -747,15 +747,15 @@ export const fetchSizeChart = productData => {
       await axios
         .request(config)
         .then(response => {
-          console.log(
-            'response.data.product',
-            JSON.stringify(response?.data?.product),
-          );
+          // console.log(
+          //   'response.data.product',
+          //   JSON.stringify(response?.data?.product),
+          // );
           product = response?.data?.product;
-          console.log('product', product);
+          // console.log('product', product);
 
           const productTags = product.tags ? product.tags : []; // SELECTED PRODUCT TAGS
-          console.log('productTags', productTags);
+          // console.log('productTags', productTags);
           if (productTags.includes('boys')) {
             sizeChartObj = `boys-${product.product_type}-${product.vendor}`;
           } else if (productTags.includes('girls')) {
@@ -765,7 +765,7 @@ export const fetchSizeChart = productData => {
           }
           const formattedName = sizeChartObj.toLowerCase().replace(/\s+/g, '-');
 
-          console.log('tagArray', formattedName);
+          // console.log('tagArray', formattedName);
 
           if (formattedName) {
             const url =
@@ -782,7 +782,7 @@ export const fetchSizeChart = productData => {
               .then(response => {
                 temp.html = response.data.page.body_html;
                 temp.title = response.data.page.title;
-                console.log('response', temp);
+                // console.log('response', temp);
 
                 dispatch(SIZE_CHART_SUCCESS(temp));
               })
