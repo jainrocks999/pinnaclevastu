@@ -21,6 +21,7 @@ import {
   getProductsCount,
 } from '../../common/queries';
 import Toast from 'react-native-simple-toast';
+import { getSimilarProductMetafieldValue } from '../Api';
 
 const initialState = {
   products: [],
@@ -230,7 +231,36 @@ export const fetchCollection = (
       });
       return axios
         .request(GraphQlConfig(data))
-        .then(response => {
+        .then(async response => {
+          const productlist = await Promise.all(
+            response?.data?.data?.collection?.products?.edges.map(async(product) =>{
+              const review = await getSimilarProductMetafieldValue(product.node.id);
+              let parsedReview = null;
+              
+              if (review && review.value && review.value.trim() !== "") {
+                try {
+                  parsedReview = JSON.parse(review.value);
+                } catch (error) {
+                  console.error('JSON Parse error:', error.message, 'with value:', review.value);
+                  // Optionally, assign the raw string or leave it as null:
+                  // parsedReview = review.value;
+                }
+              } else {
+                console.log('No valid JSON string to parse.');
+              }
+              
+              const updatedProduct = {
+                ...product,
+                node: {
+                  ...product.node,
+                  review: parsedReview,
+                },
+              };
+              
+              return updatedProduct;
+             
+            }))
+          
           const isCourseIncluded =
             response?.data?.data?.collection?.title
               ?.toLowerCase()
@@ -238,7 +268,7 @@ export const fetchCollection = (
           if (isCourseIncluded) {
             dispatch(
               GET_COURSEDATA_SUCCESS({
-                products: response?.data?.data?.collection?.products?.edges,
+                products: productlist,
                 filters: response?.data?.data?.collection?.products?.filters,
                 endCursor: response?.data?.data?.collection?.products?.pageInfo,
                 collectionId: collectionId,
@@ -247,7 +277,7 @@ export const fetchCollection = (
           } else {
             dispatch(
               SUCCESS({
-                products: response?.data?.data?.collection?.products?.edges,
+                products: productlist,
                 filters: response?.data?.data?.collection?.products?.filters,
                 endCursor: response?.data?.data?.collection?.products?.pageInfo,
                 collectionId: collectionId,

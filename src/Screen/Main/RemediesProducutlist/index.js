@@ -194,6 +194,7 @@ const [countdata,setCountdata]=useState(0);
   const renderItem = ({item}) => (
   
     <View style={styles.slide}>
+
  
       
       <TouchableOpacity onPress={() => PRoductDeta(item, item?.node?.id)}>
@@ -229,15 +230,14 @@ const [countdata,setCountdata]=useState(0);
               </Text>
             ) : null}
           </View>
-
           <View style={styles.direction}>
-            {item?.rating ? (
+            {item?.node?.review!=null? (  
               <Rating
                 type="custom"
                 tintColor={colors.ordercolor}
-                ratingCount={5}
-                imageSize={item?.rating ? 16 : 20}
-                startingValue={item?.rating}
+                ratingCount={item?.node?.review?.scale_max}
+                imageSize={item?.node?.review?.value? 16 : 16}
+                startingValue={item?.node?.review?.value}
                 ratingColor="#52B1E9"
                 readonly
                 ratingBackgroundColor={colors.lightGrey}

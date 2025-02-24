@@ -45,6 +45,8 @@ import {convertVariantId} from '../../../common/shopifyConverter';
 import {
   fetchProductData,
   getProductMetafieldsApiCall,
+  getSimilarProductMetafieldValue,
+  getSimilarProductMetafiledValue,
 } from '../../../Redux/Api';
 import {getProductRecomendation} from '../../../models/products';
 import {fetchProduct, InitProduct} from '../../../Redux/Slice/productSlice';
@@ -74,6 +76,7 @@ const RemediesProductDetail = ({route}) => {
   const [metaDescription, setMetaDescription] = useState('');
   const [topBestSellerData, setTopBestSellerData] = useState([]);
   const [isMetaDataLoading, setIsMetaDataLoading] = useState(false);
+  const [review ,setReview]=useState('')
   const [isDataLoading, setIsDataLoading] = useState(true);
 
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
@@ -118,11 +121,9 @@ const RemediesProductDetail = ({route}) => {
     );
 
     if (similarProduct) {
-      // console.log("if chalgaya")
       getSimilarrdata();
       // setIsMetaDataLoading(false);
     } else {
-      // console.log("else chalgaya")
       setIsMetaDataLoading(false);
       setSimilarData([]);
     }
@@ -157,11 +158,28 @@ const RemediesProductDetail = ({route}) => {
   }, [navigation]);
 
   const handleApi = async id => {
-    // console.log(isLoading, 'spiderman');
     setIsMetaDataLoading(true);
     dispatch(InitProduct());
     dispatch(fetchProduct(id));
+    const review = await getSimilarProductMetafieldValue(id);
+    console.log('virendra mishra ......v.v.v.v.v',review);
+    
+if (review && review.value && review.value.trim() !== '') {
+  try {
+    // Parse the JSON string stored in review.value
+    const parsedReview = JSON.parse(review.value);
+    console.log('Parsed review:', parsedReview);
 
+    setReview(parsedReview)
+   
+
+  } catch (error) {
+    console.error('JSON Parse error:', error.message, 'with value:', review.value);
+  }
+} else {
+  setReview(null)
+  console.log('No valid JSON string to parse.');
+}
     const data = await getProductMetafieldsApiCall(id);
     const topBestSellerData = await getProductRecomendation(id);
 
@@ -260,8 +278,6 @@ const RemediesProductDetail = ({route}) => {
       }
       return sum;
     }, 0);
-
-    console.log('Total Price:', total.toFixed(2)); // Proper decimal format
     setTotalPrice(total.toFixed(2)); // Ensuring two decimal places
   };
 
@@ -455,8 +471,6 @@ const RemediesProductDetail = ({route}) => {
   };
 
   const [showAllReviews, setShowAllReviews] = useState(false);
-
-  // Determine the data to show based on `showAllReviews`
   const reviewsToShow = showAllReviews
     ? Detail?.reviews
     : Detail?.reviews?.slice(0, 3);
@@ -577,8 +591,8 @@ const RemediesProductDetail = ({route}) => {
           <Text style={[styles.thirdCard, styles.titleText]}>
             {' '}
             {item?.title
-              ? item?.title?.length > 20
-                ? `${item?.title?.substring(0, 20)}...`
+              ? item?.title?.length > 25
+                ? `${item?.title?.substring(0, 25)}...`
                 : item?.title
               : ' '}
           </Text>
@@ -601,16 +615,17 @@ const RemediesProductDetail = ({route}) => {
             )}
           </View>
           <View style={styles.direction}>
-            {item.reviews != null ? (
+
+ {item?.review!=null? (  
               <Rating
                 type="custom"
                 tintColor={colors.ordercolor}
-                ratingCount={5}
-                imageSize={16}
-                startingValue={item?.reviews}
+                ratingCount={item?.review?.scale_max}
+                imageSize={item?.review?.value? 16 : 16}
+                startingValue={item?.review?.value}
                 ratingColor="#52B1E9"
                 readonly
-                ratingBackgroundColor={colors.lightGrey} // Unfilled star color
+                ratingBackgroundColor={colors.lightGrey}
               />
             ) : null}
           </View>
@@ -685,8 +700,6 @@ const RemediesProductDetail = ({route}) => {
   );
 
   if (isLoading || isMetaDataLoading) {
-    
-    // console.log(isDataLoading, 'spiderman 33');
     return (
       <View>
         <View style={styles.headerdouble}>
@@ -766,16 +779,19 @@ const RemediesProductDetail = ({route}) => {
             <Text style={styles.service}>{Detail1?.title}</Text>
           </View>
           <View style={styles.main}>
-            {Detail?.reviews?.length > 0 && (
+          {console.log('reviewreviewreview,,,,',review)}
+            {review!=null && (
               <>
+             
+              
                 <View style={styles.headerview}>
                   <View style={{marginTop: -5}}>
                     <Rating
                       type="custom"
                       tintColor={colors.white}
-                      ratingCount={5}
+                      ratingCount={review?.scale_max}
                       imageSize={16}
-                      startingValue={averageRating}
+                      startingValue={review?.value}
                       ratingColor="#52B1E9"
                       readonly
                       ratingBackgroundColor={colors.lightGrey}
@@ -798,7 +814,7 @@ const RemediesProductDetail = ({route}) => {
                       styles.third1,
                       {fontSize: fontSize.Twelve, color: '#27C571'},
                     ]}>
-                    {Detail.reviews.length}
+                    {review?.value}
                   </Text>
                   <Text
                     style={[

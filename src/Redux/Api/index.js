@@ -113,3 +113,85 @@ export const getProductMetafieldsApiCall = (product_id) => {
       console.error('Error fetching product data:', error);
     }
   };
+
+  export const getSimilarProductMetafieldValue = async (id) => {
+    console.log("virendra id:", id);
+  
+    try {
+      if (!id) {
+        throw new Error("Product ID is required");
+      }
+  
+      const variables = {
+        id: typeof id === "string" && id.includes("gid://shopify/Product")
+          ? id
+          : convertProductId(id),
+      };
+  
+      const data = JSON.stringify({
+        query: `query ($id: ID!) {
+          product(id: $id) {
+           review: metafield(namespace: "reviews", key: "rating") {
+         
+              value
+              type
+            }
+               title
+          }
+        }`,
+        variables,
+      });
+  
+      
+  
+      const response = await axios.request(GraphQlAdminConfig(data));
+      console.log("GraphQL Request Data:", response.data);
+      if (response?.data?.errors) {
+        console.error("GraphQL Errors:", response.data.errors);
+        return null;
+      }
+      return response?.data?.data?.product?.review || null;
+    } catch (err) {
+      console.error("Error fetching similar product metafield:", err);
+      throw err;
+    }
+  };
+
+
+
+  //   review: metafield(namespace: "reviews", key: "rating_count") {
+  // export const getSimilarProductMetafiledValue = async (id) => {
+  //   console.log('virendrai ddd',id);
+    
+  //   try {
+  //     if (!id) {
+  //       throw new Error("Product ID is required");
+  //     }
+  
+  //     const data = JSON.stringify({
+  //       query: `query {
+  //         product(id: "${convertProductId(id)}") {
+  //           similarProduct: metafield(namespace: "Custom", key: "rating") {
+  //             value
+  //             type
+  //           }
+  //         }
+  //       }`,
+  //     });
+  // console.log('dataffff',data);
+  
+  //     const response = await axios.request(GraphQlAdminConfig(data));
+  
+  //     if (response?.data?.errors) {
+  //       return null;
+  //     }
+  
+  //     if (response?.data?.data?.product?.similarProduct) {
+  //       return response?.data?.data?.product?.similarProduct;
+  //     } else {
+  //       return null;
+  //     }
+  //   } catch (err) {
+  //     throw err;
+  //   }
+  // };

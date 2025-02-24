@@ -14,7 +14,7 @@ export default StyleSheet.create({
   },
 
   titleText: {
-    // minHeight: wp(10),
+     minHeight: wp(10),
   },
   header: {
     flexDirection: 'row',
@@ -444,7 +444,7 @@ export default StyleSheet.create({
   },
 
   direction: {
-    minHeight:wp(6),
+     minHeight:wp(6),
     marginBlock: 5,
     alignSelf: 'flex-start',
     // marginLeft: 0,
