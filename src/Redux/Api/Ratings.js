@@ -1,7 +1,7 @@
 import { ToastAndroid } from "react-native";
 import { API_PSW } from "../../common/constants";
 import axios from "axios";
-const judgeme_api_token= "Pzty7rLSiyqzNlrVEaixdfDCaHY"
+const judgeme_api_token= "VZW6n1uKwqk8sBEACxfjMlMd7X4"
 const shop_domain='pinnaclevastu-in.myshopify.com'
 const judgeme_base_url='https://judge.me/api/v1/'
 export const handleRating = async (
@@ -57,7 +57,7 @@ export const handleRating = async (
 
 
 export const getReviewList = async (id) => {
-  
+  console.log('datata are coming......1',id);
   let reviewId = null;
   let reviewsList = [];
   let count = 0;
@@ -70,6 +70,7 @@ export const getReviewList = async (id) => {
       url: `${judgeme_base_url}products/-1?api_token=${judgeme_api_token}&external_id=${id}&shop_domain=${shop_domain}`,
       headers: {},
     };
+    console.log('datata are coming......1',config);
 
     const productResponse = await axios.request(config);
     if (productResponse.data.product) {
@@ -84,6 +85,9 @@ export const getReviewList = async (id) => {
       };
 
       const reviewsResponse = await axios.request(config1);
+
+      console.log('datata are coming......1',reviewsResponse);
+      
       if (reviewsResponse.data.reviews.length > 0) {
         reviewsList = reviewsResponse.data.reviews;
       }
@@ -97,6 +101,7 @@ export const getReviewList = async (id) => {
       };
 
       const countResponse = await axios.request(config2);
+      console.log('datata are coming......3',countResponse);
       count = countResponse?.data?.count || 0;
     }
   } catch (err) {

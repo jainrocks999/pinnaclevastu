@@ -115,8 +115,6 @@ export const getProductMetafieldsApiCall = (product_id) => {
   };
 
   export const getSimilarProductMetafieldValue = async (id) => {
-    console.log("virendra id:", id);
-  
     try {
       if (!id) {
         throw new Error("Product ID is required");

@@ -50,6 +50,7 @@ import {
 } from '../../../Redux/Api';
 import {getProductRecomendation} from '../../../models/products';
 import {fetchProduct, InitProduct} from '../../../Redux/Slice/productSlice';
+import { getReviewList } from '../../../Redux/Api/Ratings';
 
 const RemediesProductDetail = ({route}) => {
   const product = route?.params?.itemId;
@@ -78,7 +79,7 @@ const RemediesProductDetail = ({route}) => {
   const [isMetaDataLoading, setIsMetaDataLoading] = useState(false);
   const [review ,setReview]=useState('')
   const [isDataLoading, setIsDataLoading] = useState(true);
-
+const [reviewlist,setReviewList]=useState('');
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
 
   const animation = useRef(new Animated.Value(0)).current;
@@ -111,6 +112,7 @@ const RemediesProductDetail = ({route}) => {
   useEffect(() => {
     handleApi(route?.params?.itemId);
     setSimilarData([]);
+    setReviewList('');
   }, [route?.params?.itemId]);
 
   useEffect(() => {
@@ -161,12 +163,16 @@ const RemediesProductDetail = ({route}) => {
     setIsMetaDataLoading(true);
     dispatch(InitProduct());
     dispatch(fetchProduct(id));
+    const originalString = id;
+const prefix = 'gid://shopify/Product/';
+let Id1 = originalString.replace(prefix, '');
+    const getreview =await getReviewList(Id1);
+    setReviewList(getreview);
     const review = await getSimilarProductMetafieldValue(id);
-    console.log('virendra mishra ......v.v.v.v.v',review);
     
 if (review && review.value && review.value.trim() !== '') {
   try {
-    // Parse the JSON string stored in review.value
+   
     const parsedReview = JSON.parse(review.value);
     console.log('Parsed review:', parsedReview);
 
@@ -492,7 +498,7 @@ if (review && review.value && review.value.trim() !== '') {
   const renderItem3 = ({item}) => {
     return (
       <TouchableOpacity
-        // onPress={() => navigation.navigate('profile')}
+       
         style={[styles.cardContainer1]}>
         <View style={styles.reviewCard}>
           <View style={{paddingLeft: 5}}>
@@ -517,10 +523,10 @@ if (review && review.value && review.value.trim() !== '') {
             />
           </View>
           <View style={[styles.card, {paddingLeft: 10}]}>
-            <Text style={styles.reviewText}>{item.customer_name}</Text>
+            <Text style={styles.reviewText}>{item?.reviewer?.name}</Text>
 
             <Text style={[styles.third2, {marginTop: -8}]}>
-              {item?.comment}
+              {item?.body}
             </Text>
           </View>
         </View>
@@ -814,7 +820,7 @@ if (review && review.value && review.value.trim() !== '') {
                       styles.third1,
                       {fontSize: fontSize.Twelve, color: '#27C571'},
                     ]}>
-                    {review?.value}
+                    {reviewlist?.count}
                   </Text>
                   <Text
                     style={[
@@ -1056,14 +1062,17 @@ if (review && review.value && review.value.trim() !== '') {
           ) : null}
 
           <View style={{backgroundColor: '#F1F1F1'}}>
-            {/* {Detail?.reviews?.length === 0 ? null : (
+
+            {console.log('jkhjkhkjhdfkjdhgdfkjg',reviewlist?.reviewsList)}
+            
+            {reviewlist?.count === 0 ? null : (
               <>
                 <View style={styles.shareview}>
                   <View style={{marginBottom: -20}}>
                     <Text
                       style={
                         styles.service
-                      }>{`User Reviews (${Detail?.reviews?.length})`}</Text>
+                      }>{`User Reviews (${reviewlist?.count})`}</Text>
                   </View>
 
                   <TouchableOpacity style={styles.button1}>
@@ -1072,7 +1081,7 @@ if (review && review.value && review.value.trim() !== '') {
                 </View>
 
                 <FlatList
-                  data={reviewsToShow}
+                  data={reviewlist?.reviewsList}
                   renderItem={renderItem3}
                   scrollEnabled={false}
                   keyExtractor={index => index.toString()}
@@ -1081,11 +1090,11 @@ if (review && review.value && review.value.trim() !== '') {
                
                   <TouchableOpacity onPress={() => setShowAllReviews(true)}>
       
-                    <Text style={styles.seeall}>{reviewsToShow?.reviews?.length > 3 &&'See all Reviews'}</Text>
+                    <Text style={styles.seeall}>{reviewlist?.count > 3 &&'See all Reviews'}</Text>
                   </TouchableOpacity>
                
               </>
-            )} */}
+            )}
           </View>
         </ScrollView>
       ) : null}

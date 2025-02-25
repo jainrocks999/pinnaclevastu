@@ -11,12 +11,7 @@ export const getProductRecomendation = async productId => {
       },
     });
     const response = await axios.request(GraphQlConfig(data));
-    console.log('Data call (virendra):', response.data.data);
-    
-    // Extract product recommendations safely
     const productRecommendations = response?.data?.data?.productRecommendations || [];
-    
-    // Process each product recommendation
     const updatedProducts = await Promise.all(
       productRecommendations.map(async (product) => {
         const review = await getSimilarProductMetafieldValue(product?.id);

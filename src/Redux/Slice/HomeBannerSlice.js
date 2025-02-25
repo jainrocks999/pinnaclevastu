@@ -1397,7 +1397,7 @@ export const getCollectionId = async url => {
 //   };
 // };
 
-export const fetchExtraCollectonHome = (collectionHandle) => {
+export const fetchExtraCollectonHome =(collectionHandle) => {
   return async dispatch => {
     try {
       dispatch(GET_EXTRADATA_LOADING());
@@ -1468,18 +1468,47 @@ export const fetchExtraCollectonHome = (collectionHandle) => {
       });
 
       const result = await response.json();
-      // console.log(
-      //   'Products virendra jhbdjhsdjhsdfs:',
-      //   result?.data?.collectionByHandle?.products?.edges
-      // );
       const products = result?.data?.collectionByHandle?.products?.edges;
       const includesCourse = result?.data?.collectionByHandle?.title?.toLowerCase().includes("course") 
-
-      // const transformedProducts = products?.map(item => item?.node);
       const transformedProducts = (products || []).map(item => item.node);
       if (includesCourse) {
         dispatch(GET_COURSES_SUCCESS(transformedProducts));
       } else {
+ 
+//  let updatedProducts = await Promise.all(
+//   transformedProducts.map(async (product) => {
+  
+//     const review = await getSimilarProductMetafieldValue(product?.id);
+//     let parsedReview = null;
+
+    
+//     if (review && review.value && review.value.trim() !== '') {
+//       try {
+       
+//         parsedReview = JSON.parse(review.value);
+//       } catch (error) {
+//         console.error(
+//           'JSON Parse error:',
+//           error.message,
+//           'with value:',
+//           review.value
+//         );
+//       }
+//     } else {
+//       console.log('No valid JSON string to parse for product id', product?.id);
+//     }
+
+//     // Return the updated product with review attached directly
+//     return {
+//       ...product,
+//       review: parsedReview,
+//     };
+//   })
+// );
+
+// console.log('updatedProducts with review data:', updatedProducts);
+
+
         dispatch(
           GET_BEST_PROD_SUCCESS({
             collectionId:
@@ -1497,4 +1526,45 @@ export const fetchExtraCollectonHome = (collectionHandle) => {
       );
     }
   };
+};
+
+export const getSimilarProductMetafieldValue = async (id) => {
+  try {
+    if (!id) {
+      throw new Error("Product ID is required");
+    }
+
+    const variables = {
+      id: typeof id === "string" && id.includes("gid://shopify/Product")
+        ? id
+        : convertProductId(id),
+    };
+
+    const data = JSON.stringify({
+      query: `query ($id: ID!) {
+        product(id: $id) {
+         review: metafield(namespace: "reviews", key: "rating") {
+       
+            value
+            type
+          }
+             title
+        }
+      }`,
+      variables,
+    });
+
+    
+
+    const response = await axios.request(GraphQlAdminConfig(data));
+    console.log("GraphQL Request Data:", response.data);
+    if (response?.data?.errors) {
+      console.error("GraphQL Errors:", response.data.errors);
+      return null;
+    }
+    return response?.data?.data?.product?.review || null;
+  } catch (err) {
+    console.error("Error fetching similar product metafield:", err);
+    throw err;
+  }
 };
