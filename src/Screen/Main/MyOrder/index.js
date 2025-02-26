@@ -12,7 +12,6 @@ import {
   BackHandler,
 } from 'react-native';
 import {colors} from '../../../Component/colors';
-import {fontSize} from '../../../Component/fontsize';
 
 import styles from './styles';
 import {heightPercent} from '../../../Component/ResponsiveScreen/responsive';
@@ -26,9 +25,6 @@ import {
   orderlistcource,
 } from '../../../Redux/Slice/orderSclice';
 import Imagepath from '../../../Component/Imagepath';
-import Loader from '../../../Component/Loader';
-
-const {width} = Dimensions.get('window');
 
 const MyOrder = ({route}) => {
   const navigation = useNavigation();
@@ -93,9 +89,6 @@ const MyOrder = ({route}) => {
       const userid = await AsyncStorage.getItem('user_id');
       const userData = await AsyncStorage.getItem('user_data');
 
-      // console.log(JSON.parse(userData).shopify_access_token);
-      // console.log((userData.shopify_access_token),"shopify_access_token")
-      // const access_token = JSON.parse(userData.shopify_access_token);
       if (!token || !userid) {
         console.error('Token or User ID is missing.');
         return;
@@ -116,20 +109,6 @@ const MyOrder = ({route}) => {
     }
   };
 
-  const OrderDetails = async item => {
-    const token = await AsyncStorage.getItem('Token');
-    const userid = await AsyncStorage.getItem('user_id');
-    await dispatch(
-      orderDetail({
-        id: userid,
-        token: token,
-        url: 'fetch-order-details',
-        orderid: item.id,
-        code: item?.code,
-        navigation,
-      }),
-    );
-  };
   const OrderDetails1 = async item => {
     const token = await AsyncStorage.getItem('Token');
     const userid = await AsyncStorage.getItem('user_id');
@@ -144,40 +123,8 @@ const MyOrder = ({route}) => {
     );
   };
 
-  const orders = [
-    {
-      id: '1',
-      orderNo: 'IN324576',
-      productImage: require('../../../assets/otherApp/order1.png'), // Replace with your actual image path
-      productName: 'Aluminium Metal Strip Vastu',
-      quantity: 2,
-      price: 'Total: ₹ 1450.00',
-    },
-    {
-      id: '2',
-      orderNo: 'IN324576',
-      productImage: require('../../../assets/otherApp/order2.png'), // Replace with your actual image path
-      productName: '6 Mukhi Rudraksha',
-      quantity: 1,
-      price: 'Total: ₹ 1130.00',
-    },
-    {
-      id: '3',
-      orderNo: 'IN102354',
-      productImage: require('../../../assets/otherApp/order3.png'), // Replace with your actual image path
-      productName: 'Vastu 7 Chakras Bracelet',
-      quantity: 1,
-      price: 'Total: ₹ 905.00',
-    },
-  ];
-
   const renderOrderItem = ({item}) => (
     <View style={styles.orderCard}>
-      {/* {console.log(
-        item?.node?.lineItems?.edges[0].node?.variant?.product?.featuredImage
-          ?.url,
-        'item data',
-      )} */}
       <Text style={styles.orderNo}>Order No: {item?.node?.orderNumber}</Text>
 
       <View style={styles.horizontalSeparator} />
@@ -206,7 +153,7 @@ const MyOrder = ({route}) => {
             )}
           </Text>
           <Text style={styles.productName}>
-            Total: ₹ { item?.node?.originalTotalPrice.amount}
+            Total: ₹ {item?.node?.originalTotalPrice.amount}
           </Text>
         </View>
       </View>
@@ -229,13 +176,9 @@ const MyOrder = ({route}) => {
         </Text>
       ) : null}
       <TouchableOpacity
-        onPress={
-          () => {
-            // console.log(item);
-            navigation.navigate('OrderDetail', {data: item});
-          }
-          // OrderDetails(item)
-        }
+        onPress={() => {
+          navigation.navigate('OrderDetail', {data: item});
+        }}
         style={styles.detailsButton}>
         <Text style={styles.detailsButtonText}>Details</Text>
       </TouchableOpacity>
@@ -310,7 +253,6 @@ const MyOrder = ({route}) => {
               routes: [{name: 'UserProfile'}],
             })
           }
-          //  navigation.goBack()}
         >
           <Image
             style={styles.backBtn}

@@ -2,34 +2,20 @@ import {
   View,
   Text,
   TouchableOpacity,
-  ScrollView,
   FlatList,
   Image,
   TextInput,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import styles from './styles';
-
 import {colors} from '../../../Component/colors';
-import {
-  clearRemeiesDetail1,
-  CourceDetailApi,
-  CourceLis,
-} from '../../../Redux/Slice/HomeSlice';
 import {useDispatch, useSelector} from 'react-redux';
-import Loader from '../../../Component/Loader';
-import {useIsFocused} from '@react-navigation/native';
-import Imagepath from '../../../Component/Imagepath';
 import {widthPrecent} from '../../../Component/ResponsiveScreen/responsive';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import style from '../HomeScreen/style';
 import {fetchCollection} from '../../../Redux/Slice/collectionSlice';
-import {fetchProduct, InitProduct} from '../../../Redux/Slice/productSlice';
-import {getProductMetafieldsApiCall} from '../../../Redux/Api';
 
 const OtherCourses = ({navigation}) => {
   const [isLiveCourse, setIsLiveCourse] = useState(true);
-  const scrollViewRef = useRef(null);
   const [userType, setUserType] = useState('');
   const RemediesCategor1 = useSelector(state => state.collection?.courseData);
   const placeholderText = 'Search';
@@ -38,28 +24,9 @@ const OtherCourses = ({navigation}) => {
   const cartTotalQuantity = useSelector(
     state => state?.cart?.cartTotalQuantity,
   );
-  const focus = useIsFocused();
   const dispatch = useDispatch();
   const CouseDetail1 = async (item, id) => {
-    // dispatch(clearRemeiesDetail1());
-
-    // if (Object.keys(item).length == 0) {
-    // } else {
-    //   dispatch(InitProduct());
-    //   dispatch(fetchProduct(id));
-    // }
-    // const data = await getProductMetafieldsApiCall(id);
-    // console.log('datata get by meta feild', data);
     navigation.navigate('CourseDetail', {coursetype: isLiveCourse,itemId:id});
-    //  navigation.navigate('ProductDetail', {data: item});
-    // await dispatch(
-    //   CourceDetailApi({
-    //     url: 'fetch-courses-details',
-    //     course_id: item?.id,
-    //     navigation,
-    //     isLiveCourse,
-    //   }),
-    // );
   };
 
   useEffect(() => {
@@ -97,13 +64,6 @@ const OtherCourses = ({navigation}) => {
   };
 
   const handleScroll = async event => {
-    // const {layoutMeasurement, contentOffset, contentSize} = event.nativeEvent;
-    // if (layoutMeasurement.height + contentOffset.y >= contentSize.height - 20) {
-      // {isLiveCourse?
-      //   setCountdata(countdata+10);
-      //   await dispatch(fetchCollection( 'gid://shopify/Collection/488102920499',countdata)):
-
-      // }
       if (isLiveCourse) {
         setCountdata(countdata + 10);
         await dispatch(
@@ -115,32 +75,16 @@ const OtherCourses = ({navigation}) => {
           fetchCollection('gid://shopify/Collection/488102953267', countdata),
         );
       }
-    // }
   };
 
   const apicall = async () => {
     await dispatch(
       fetchCollection('gid://shopify/Collection/488102920499', countdata),
     );
-
-    // await dispatch(CourceLis({url: 'fetch-courses', slug: 'live'}));
   };
-  const LiveCourseData = [
-    {id: 1, image: require('../../../assets/otherApp/courseCard1.png')},
-    {id: 2, image: require('../../../assets/otherApp/courseCard1.png')},
-    {id: 3, image: require('../../../assets/otherApp/courseCard1.png')},
-    {id: 4, image: require('../../../assets/otherApp/courseCard1.png')},
-  ];
-  const RecordedCourseData = [
-    {id: 1, image: require('../../../assets/otherApp/courseCard2.png')},
-    {id: 2, image: require('../../../assets/otherApp/courseCard2.png')},
-    {id: 3, image: require('../../../assets/otherApp/courseCard2.png')},
-    {id: 4, image: require('../../../assets/otherApp/courseCard2.png')},
-  ];
 
-  const [imageHeights, setImageHeights] = useState({}); // Store dynamic heights
+  const [imageHeights, setImageHeights] = useState({}); 
 
-  // const IMAGE_WIDTH = width * 0.9;
 
   const handleImageLoad = (event, id) => {
     const {width: imgWidth, height: imgHeight} = event.nativeEvent.source;
@@ -149,10 +93,9 @@ const OtherCourses = ({navigation}) => {
   };
 
   const extractFirstItem = htmlString => {
-    // 1. Sabhi HTML tags remove karne ke liye regex
+    
     const plainText = htmlString.replace(/<[^>]+>/g, ' ');
 
-    // 2. Pehli line ya pehli list item extract karna
     const firstItem = plainText
       ?.split('\n')
       .filter(line => line?.trim() !== '')[0];
@@ -254,13 +197,9 @@ const OtherCourses = ({navigation}) => {
           <Image source={require('../../../assets/image/small_bag.png')} />
         </TouchableOpacity>
       </View>
-      {/*  {isLoading ? <Loader /> : null} */}
+
         <View style={[styles.scroll]}>
-      {/* <ScrollView
-        ref={scrollViewRef}
-        onScroll={handleScroll}
-        scrollEventThrottle={400}
-        contentContainerStyle={[styles.scroll, {flexGrow: 1}]}> */}
+     
         <View style={styles.searchContainer}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <TouchableOpacity
@@ -293,7 +232,6 @@ const OtherCourses = ({navigation}) => {
                   countdata,
                 ),
               );
-              // await dispatch(CourceLis({url: 'fetch-courses', slug: 'live'}));
             }}>
             <Text
               style={[
@@ -315,9 +253,6 @@ const OtherCourses = ({navigation}) => {
                   countdata,
                 ),
               );
-              // await dispatch(
-              //   CourceLis({url: 'fetch-courses', slug: 'recorded'}),
-              // );
             }}>
             <Text
               style={[
@@ -338,10 +273,7 @@ const OtherCourses = ({navigation}) => {
           nestedScrollEnabled={true}
           onEndReachedThreshold={0.5}
           onEndReached={() => handleScroll()}
-          //  style={{ flex: 1 }} 
-          // numColumns={2}
         />
-      {/* </ScrollView> */}
       </View>
     </View>
   );

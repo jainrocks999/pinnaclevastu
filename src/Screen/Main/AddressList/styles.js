@@ -9,11 +9,10 @@ import {
 export default StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: '#FFFFFF',
+
     backgroundColor: '#F9F9F9',
-    // paddingTop: 50,
+
     elevation: 4,
-    // opacity:0.9
   },
   header: {
     flexDirection: 'row',
@@ -52,17 +51,15 @@ export default StyleSheet.create({
 
   scrollview: {
     paddingBottom: 20,
-    // paddingHorizontal: 15,
+
     paddingVertical: 5,
     marginTop: hp(2),
-    // borderWidth:1
   },
   scrollview1: {
     paddingBottom: 20,
     paddingHorizontal: 15,
     paddingVertical: 5,
     marginTop: hp(2),
-    // borderWidth:1
   },
   card: {
     backgroundColor: colors.white,
@@ -71,7 +68,7 @@ export default StyleSheet.create({
     padding: 15,
     marginBottom: 10,
     elevation: 10,
-    marginHorizontal:15
+    marginHorizontal: 15,
   },
   cardContentWrapper: {
     flexDirection: 'row',
@@ -106,7 +103,6 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 15,
-    // borderWidth:1
   },
   editDeleteText1: {
     color: '#F4996C',
@@ -114,14 +110,11 @@ export default StyleSheet.create({
     fontFamily: 'Poppins-Regular',
     color: colors.orange,
     marginBottom: -3,
-    // paddingVertical: 5,
   },
   editDeleteText: {
     color: '#FF0000',
     fontSize: fontSize.Twelve,
     fontFamily: 'Poppins-Meduim',
-    // marginLeft: wp(3.5),
-    // paddingVertical: 5,
   },
   direction: {
     flexDirection: 'row',
@@ -151,16 +144,16 @@ export default StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 5,
-    position:'absolute',
-    // marginTop: hp(25),
+    position: 'absolute',
+
     alignSelf: 'flex-end',
-    zIndex:1,
-    bottom:hp(16),
-    right:wp(4)
+    zIndex: 1,
+    bottom: hp(16),
+    right: wp(4),
   },
   fabText: {
     color: colors.orange,
-    fontSize:fontSize.Sixteen,
+    fontSize: fontSize.Sixteen,
   },
 
   placeOrderButton: {
@@ -185,10 +178,10 @@ export default StyleSheet.create({
     height: wp(13),
     borderRadius: 10,
     marginTop: hp(2),
-    shadowColor: "#ad3803",
+    shadowColor: '#ad3803',
     shadowOffset: {width: 0, height: 6},
-    shadowOpacity: 0.8, 
-    shadowRadius: 10, 
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
 
     elevation: 8,
   },
@@ -199,8 +192,7 @@ export default StyleSheet.create({
   },
   customIcon: {
     fontSize: fontSize.Fifteen,
-    color: colors.paymenttext, // Custom icon color
-    // marginRight: 10,
+    color: colors.paymenttext,
   },
 
   backBtn: {

@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   Image,
   FlatList,
-  Dimensions,
   ScrollView,
   Modal,
 } from 'react-native';
@@ -15,83 +14,10 @@ import Collapsible from 'react-native-collapsible';
 
 import styles from './styles';
 import {colors} from '../../../Component/colors';
-import {
-  heightPercent,
-  widthPrecent,
-} from '../../../Component/ResponsiveScreen/responsive';
+import {widthPrecent} from '../../../Component/ResponsiveScreen/responsive';
 import WebView from 'react-native-webview';
 import axios from 'axios';
 import Loader from '../../../Component/Loader';
-
-// const dummyDatas = [
-//   {
-//     id: '1',
-//     title0: '01',
-//     title: 'Astro Vastu Classes',
-//     subItems: [
-//       {
-//         title: 'Class 01',
-//         subtitle: 'video',
-//         video:
-//           'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-//       },
-//       {
-//         title: 'Class 02',
-//         subtitle: 'video',
-//         video:
-//           'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-//       },
-//       {
-//         title: 'Class 03',
-//         subtitle: 'video',
-//         video:
-//           'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-//       },
-//       {
-//         title: 'Class 04',
-//         subtitle: 'video',
-//         video:
-//           'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
-//       },
-//       {
-//         title: 'Class 05',
-//         subtitle: 'video',
-//         video:
-//           'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-//       },
-//     ],
-//   },
-//   {
-//     id: '2',
-//     title0: '02',
-//     title: 'Astro - Vastu Course Material',
-//     subItems: [
-//       {title: 'Class 01', subtitle: 'video'},
-//       {title: 'Class 02', subtitle: 'video'},
-//       {title: 'Class 03', subtitle: 'video'},
-//       {title: 'Class 04', subtitle: 'video'},
-//       {title: 'Class 05', subtitle: 'video'},
-//       {title: 'Class 06', subtitle: 'video'},
-//       {title: 'Class 07', subtitle: 'video'},
-//       {title: 'Class 08', subtitle: 'video'},
-//     ],
-//   },
-//   {
-//     id: '3',
-//     title0: '03',
-//     title: 'Doubt Class',
-//     subItems: [
-//       {title: 'Class 01', subtitle: 'video'},
-//       {title: 'Class 02', subtitle: 'video'},
-//       {title: 'Class 03', subtitle: 'video'},
-//       {title: 'Class 04', subtitle: 'video'},
-//       {title: 'Class 05', subtitle: 'video'},
-//       {title: 'Class 06', subtitle: 'video'},
-//       {title: 'Class 07', subtitle: 'video'},
-//       {title: 'Class 08', subtitle: 'video'},
-//     ],
-//   },
-// ];
 
 const CourceListDownload = ({navigation}) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -116,7 +42,7 @@ const CourceListDownload = ({navigation}) => {
     const startAnimation = () => {
       const intervalId = setInterval(() => {
         if (currentIndex < placeholderText.length) {
-          setDisplayedText(prev => placeholderText.slice(0, currentIndex + 1)); 
+          setDisplayedText(prev => placeholderText.slice(0, currentIndex + 1));
 
           currentIndex++;
         } else {
@@ -153,31 +79,25 @@ const CourceListDownload = ({navigation}) => {
 
       if (response.status == 200) {
         setTutorialData(response?.data?.course_curriculum);
-        console.log('response data cource ', tutorialData.resources);
-        // return response?.data;
       } else {
-        // Toast.show(response.data.msg);
         console.log('Unexpected response status:', response);
       }
-      setIsLoading(false)
+      setIsLoading(false);
     } catch (error) {
-      setIsLoading(false)
+      setIsLoading(false);
       console.error('Error in API call:', error);
     }
   };
-  // console.log(tutorialData, 'asdmlkasdmlasd');
 
   const openVideoModel = item => {
     if (item.video && item.video !== '') {
       setVideoUri(item?.video);
       setIsModalVisible(true);
     }
-    console.log(videoUri, 'sdjsdkdkal');
   };
 
   const renderSubItems = ({item, index}) => (
     <View style={styles.singleSubItem}>
-      {/* {console.log(item,"sandeep,.....")} */}
       <View style={[styles.direction]}>
         <TouchableOpacity onPress={() => openVideoModel(item)}>
           <Image
@@ -188,7 +108,6 @@ const CourceListDownload = ({navigation}) => {
                 ? require('../../../assets/otherApp/fileIcon.png')
                 : null
             }
-       
             style={styles.subItemIcon}
           />
         </TouchableOpacity>
@@ -206,7 +125,7 @@ const CourceListDownload = ({navigation}) => {
 
       <TouchableOpacity style={styles.downloadIconContainer}>
         <Image
-          source={require('../../../assets/otherApp/download.png')} // Replace with your icon
+          source={require('../../../assets/otherApp/download.png')}
           style={styles.subItemDownloadIcon}
         />
       </TouchableOpacity>
@@ -215,7 +134,6 @@ const CourceListDownload = ({navigation}) => {
 
   const renderItems = ({item, index}) => (
     <View>
-      {/* {console.log(item, 'assasdkmlsa')} */}
       <TouchableOpacity
         onPress={() => toggleSection(index)}
         style={[
@@ -290,7 +208,7 @@ const CourceListDownload = ({navigation}) => {
           </Text>
         </View>
       </View>
-      {isLoading?<Loader/>:null}
+      {isLoading ? <Loader /> : null}
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
@@ -300,7 +218,6 @@ const CourceListDownload = ({navigation}) => {
         <View style={styles.searchContainer}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <TouchableOpacity
-              onPress={() => console.log('khlkljh')}
               hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
               <Image source={require('../../../assets/image/SearchIcon.png')} />
             </TouchableOpacity>
@@ -334,7 +251,6 @@ const CourceListDownload = ({navigation}) => {
 
         <FlatList
           data={tutorialData?.resources}
-          // keyExtractor={index => index.toString()}
           keyExtractor={(item, index) =>
             item.section_id?.toString() || index.toString()
           }
@@ -349,9 +265,7 @@ const CourceListDownload = ({navigation}) => {
         animationType="fade"
         visible={isModalVisible}
         onRequestClose={() => setIsModalVisible(false)}
-        onCancel={() => setIsModalVisible(false)}
-        // onConfirm={() => removerItem(itemToRemove)}
-      >
+        onCancel={() => setIsModalVisible(false)}>
         <View style={styles.modalOverlay} pointerEvents="box-none">
           <TouchableOpacity
             style={styles.modelBackBtn}

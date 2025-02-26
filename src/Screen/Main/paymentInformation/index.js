@@ -5,19 +5,16 @@ import {
   TextInput,
   Image,
   TouchableOpacity,
-  StyleSheet,
   ScrollView,
   FlatList,
-  ImageBackground,
   Animated,
 } from 'react-native';
 import styles from './styles';
 import {colors} from '../../../Component/colors';
 import UserAddress from '../../../Component/userAddress/userAddress';
-import CourseInfoCard from '../../../Component/CourseInfoCard/CourseInfoCard';
 import Toast from 'react-native-simple-toast';
 import {RadioButton} from 'react-native-paper';
-import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import constants from '../../../Redux/constant/constants';
 import axios from 'axios';
@@ -30,11 +27,8 @@ const ResidentalScreen = ({route}) => {
   const nav = route.params;
   const navigation = useNavigation();
   const userDetail = useSelector(state => state?.Auth?.userData);
-  const cartDataList = useSelector(state => state?.cart?.CartData);
-  const isLoading = useSelector(state => state?.order?.loading);
   const ship = useSelector(state => state?.order?.shipm?.shipping_method);
   const dispatch = useDispatch();
-  const [trakIdSectionIS, setTranjuctionId] = useState('');
   const [radioActive, setRadioActive] = useState('');
   const [loading1, setLoading] = useState(false);
   const [userType, setUserType] = useState('');
@@ -70,20 +64,11 @@ const ResidentalScreen = ({route}) => {
     let totalPriceOnly = 0;
 
     productList.forEach(product => {
-      
-      const {
-        price,
-        qty,
-       
-      } = product;
-   
-    
+      const {price, qty} = product;
 
-      const selectedPrice =price;
+      const selectedPrice = price;
 
       const itemPrice = selectedPrice * qty;
-      // const taxAmount = parseFloat(tax_amount);
-      // const totalProductAmount = itemPrice + taxAmount;
 
       totalTaxAmount += 0;
       // totalAmount += totalProductAmount;
@@ -104,7 +89,7 @@ const ResidentalScreen = ({route}) => {
     const usercheck = async () => {
       const userStatus = await AsyncStorage.getItem('user_data');
       const userData = JSON.parse(userStatus);
-      setUserType(userData?.user_type || ''); // Handle null/undefined user type
+      setUserType(userData?.user_type || '');
     };
 
     usercheck();
@@ -120,7 +105,7 @@ const ResidentalScreen = ({route}) => {
   }, [nav?.data?.item, userType]);
 
   const Createorder1 = async () => {
-    let total = 100 * parseInt(totals?.totalAmount); // Total in paise
+    let total = 100 * parseInt(totals?.totalAmount);
     var options = {
       description: 'Credits towards consultation',
       image: require('../../../assets/image/header.png'),
@@ -150,9 +135,8 @@ const ResidentalScreen = ({route}) => {
 
       createbyord(transactionDetails);
     } catch (error) {
-      
-     console.log('shgkjshgkg',error);
-     
+      console.log('error', error);
+
       const transactionDetails = {
         radioActive,
         paymentId: '',
@@ -161,19 +145,15 @@ const ResidentalScreen = ({route}) => {
         reason: error?.error?.reason || 'Transaction failed',
         code: error.code,
       };
-  
-   
+
       // createbyord(transactionDetails);
     }
   };
 
   const createbyord = async item12 => {
-    console.log('dhsbgjsbsfg', item12);
-
     const data = {
       shipping_option: ship?.shipping_method_id ?? '1',
       shipping_method: 'default',
-      // shipping_method: ship?.name  ?? 'defalut',
       shipping_amount: ship?.price ?? '',
       shipping_type: '',
       is_available_shipping: '1',
@@ -212,7 +192,6 @@ const ResidentalScreen = ({route}) => {
       rowid: nav?.data?.item?.[0]?.rowid,
       billing_status: nav?.adress?.billing_status ?? '',
       billingAddress: {
-        // address_id:  nav?.adress?.id ?? '',
         name: nav?.adress?.billing_address?.name ?? '',
         email: nav?.adress?.billing_address?.email ?? '',
         phone: nav?.adress?.billing_address?.phone ?? '',
@@ -223,14 +202,11 @@ const ResidentalScreen = ({route}) => {
       },
     };
 
-    console.log('create order request ', data);
-
     try {
       setLoading(true);
-      // Convert the dynamic object to a JSO stringN
+
       const jsonData = JSON.stringify(data);
       const token = await AsyncStorage.getItem('Token');
-      console.log('create order request ', jsonData);
 
       let config = {
         method: 'post',
@@ -244,7 +220,6 @@ const ResidentalScreen = ({route}) => {
       };
 
       const response = await axios.request(config);
-      console.log('create order to response ', response.data);
 
       if (response.data.status == 200) {
         setLoading(false);
@@ -261,8 +236,8 @@ const ResidentalScreen = ({route}) => {
     } catch (error) {
       setLoading(false);
       if (error.response) {
-        console.log('Response data ererrer:', error.response.data);
-        console.log('Response status sfgsfg:', error.response.status);
+        console.log('Response data error:', error.response.data);
+        console.log('Response status:', error.response.status);
         console.log('Response headers:', error.response.headers);
       } else if (error.request) {
         console.log('Request made but no response received:', error.request);
@@ -273,7 +248,6 @@ const ResidentalScreen = ({route}) => {
   };
 
   const renderItem = ({item, index}) => {
-    const isLastItem = index === nav?.data?.item.length - 1;
     const isGSTRow = item.id === '2';
 
     return (
@@ -287,24 +261,14 @@ const ResidentalScreen = ({route}) => {
           },
         ]}>
         <Text style={[item.isBold ? styles.third3 : styles.third1]}>
-        {item?.title
-              ? item?.title.length > 25
-                ? `${item?.title.substring(0, 25)}...`
-                : item?.title
-              : ' '}
+          {item?.title
+            ? item?.title.length > 25
+              ? `${item?.title.substring(0, 25)}...`
+              : item?.title
+            : ' '}
         </Text>
         <Text style={[styles.third2, item.isBold && {fontWeight: 'bold'}]}>
-          ₹{' '}
-          {/* {
-            userType === 'customers' && item?.sale_price
-              ? item?.sale_price
-              : userType === 'student' && item?.student_price
-              ? item?.student_price
-              : userType === 'franchise' && item?.franchise_price
-              ? item?.franchise_price
-              : item?.price
-          } */}
-          {item.price}
+          ₹ {item.price}
         </Text>
       </View>
     );
@@ -312,7 +276,6 @@ const ResidentalScreen = ({route}) => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
@@ -329,28 +292,18 @@ const ResidentalScreen = ({route}) => {
       </View>
       {loading1 ? <Loader /> : null}
       <ScrollView contentContainerStyle={styles.servicesContainer}>
-        {/* {nav?.data1 === 'Remedies' && ( */}
-          <View>
-            <UserAddress data={nav?.adress} />
-          </View>
-        {/* )} */}
+        <View>
+          <UserAddress data={nav?.adress} />
+        </View>
 
         <View style={styles.cardContainer2}>
           <FlatList
             data={nav?.data?.item}
-            keyExtractor={item => item.id?.toString()} // Ensure id is a string
+            keyExtractor={item => item.id?.toString()}
             renderItem={renderItem}
             scrollEnabled={false}
           />
-          {/* <View
-            style={[
-              styles.card45,
-              styles.borderBottom,
-              {paddingTop: 0, paddingBottom: 5},
-            ]}>
-            <Text style={styles.third2}>{'Shipping Charges'}</Text>
-            <Text style={[styles.third2]}>₹ {ship?.price}</Text>
-          </View> */} 
+
           <View
             style={[
               styles.card45,
@@ -367,32 +320,6 @@ const ResidentalScreen = ({route}) => {
           </View>
         </View>
 
-        {/* <View style={[styles.cardContainer2]}>
-          <View
-            style={[
-              styles.card45,
-              styles.borderBottom,
-              {paddingTop: 0, paddingBottom: 0},
-            ]}>
-            <Text style={styles.third1}>{'Shreni Rajbhandary '}</Text>
-            <Text style={styles.third2}>{'₹ 25000'}</Text>
-          </View>
-          <View
-            style={[
-              styles.card45,
-              styles.borderBottom,
-              {paddingTop: 0, paddingBottom: 5},
-            ]}>
-            <Text style={styles.third2}>{'GST (3.0%) '}</Text>
-            <Text style={[styles.third2]}>{' ₹ 50'}</Text>
-          </View>
-
-          <View style={styles.card45}>
-            <Text style={styles.third3}>{'Total Payable Amount'}</Text>
-            <Text style={[styles.third2]}>{'₹ 5550'}</Text>
-          </View>
-        </View> */}
-
         <View style={styles.inputmain}>
           <View style={[styles.input]}>
             <TextInput
@@ -406,59 +333,14 @@ const ResidentalScreen = ({route}) => {
           </View>
         </View>
 
-        {/* <View style={[styles.cardContainer2]}>
-          <Text style={styles.payment}>
-            Pay Directly with your favourite UPI apps
-          </Text>
-          <View style={[styles.card]}>
-            <View style={styles.appItem}>
-              <Image
-                style={styles.appIcon}
-                source={require('../../../assets/otherApp/gpay.png')}
-              />
-              <Text style={[styles.third21]}>{'GPay'}</Text>
-            </View>
-            <View style={styles.appItem}>
-              <Image
-                style={styles.appIcon}
-                source={require('../../../assets/otherApp/phonePe.png')}
-              />
-              <Text style={[styles.third21]}>{'PhonePe'}</Text>
-            </View>
-            <View style={styles.appItem}>
-              <Image
-                style={styles.appIcon}
-                source={require('../../../assets/otherApp/paytm.png')}
-              />
-              <Text style={[styles.third21]}>{'Paytm'}</Text>
-            </View>
-            <View style={styles.appItem}>
-              <Image
-                style={styles.appIcon}
-                source={require('../../../assets/otherApp/credUpi.png')}
-              />
-              <Text style={[styles.third21]}>{'CRED UPI'}</Text>
-            </View>
-          </View>
-
-          <View style={[styles.appBottomSection]}>
-            <Image
-              style={styles.payIcon}
-              source={require('../../../assets/otherApp/bharatpayLogo.png')}
-            />
-            <Text style={[styles.service]}>Pay with other UPI apps</Text>
-          </View>
-        </View> */}
-
         <View style={styles.cardContainer2}>
           <Text style={[styles.payment, {}]}>Payment Methods</Text>
 
           <View style={[styles.appBottomSection, styles.borderBottom]}>
-       
-              <Image
-                style={styles.otherIcons}
-                source={require('../../../assets/image/cash-on-delivery.png')}
-              />
+            <Image
+              style={styles.otherIcons}
+              source={require('../../../assets/image/cash-on-delivery.png')}
+            />
             <Text style={styles.otherIconText}>Cash on Delivery</Text>
 
             <View style={styles.radioBtnContainer}>
@@ -473,11 +355,11 @@ const ResidentalScreen = ({route}) => {
             </View>
           </View>
 
-          <View style={[styles.appBottomSection,{paddingBottom:15}]}>
-          <Image
-                style={styles.otherIcons}
-                source={require('../../../assets/image/razorpay-icon.png')}
-              />
+          <View style={[styles.appBottomSection, {paddingBottom: 15}]}>
+            <Image
+              style={styles.otherIcons}
+              source={require('../../../assets/image/razorpay-icon.png')}
+            />
             <Text style={styles.otherIconText}>Razorpay Payment</Text>
 
             <View style={styles.radioBtnContainer}>
@@ -493,62 +375,6 @@ const ResidentalScreen = ({route}) => {
               />
             </View>
           </View>
-          {/* <View style={[styles.appBottomSection, styles.borderBottom]}>
-            <Image
-              style={styles.otherIcons}
-              source={require('../../../assets/otherApp/paytm2.png')}
-            />
-            <Text style={styles.otherIconText}>UPI</Text>
-
-            <View style={styles.radioBtnContainer}>
-              <RadioButton
-                value="upi"
-                status={radioActive === 'upi' ? 'checked' : 'unchecked'}
-                onPress={() => setRadioActive('upi')}
-                color="#009FDF"
-                uncheckedColor="#B7B7B7"
-                style={styles.radio}
-              />
-            </View>
-          </View> */}
-
-          {/* <View style={[styles.appBottomSection, styles.borderBottom]}>
-            <Image
-              style={styles.otherIcons}
-              source={require('../../../assets/otherApp/card.png')}
-            />
-            <Text style={styles.otherIconText}>Credit/Debit Card</Text>
-
-            <View style={styles.radioBtnContainer}>
-              <RadioButton
-                value="card"
-                status={radioActive === 'card' ? 'checked' : 'unchecked'}
-                onPress={() => setRadioActive('card')}
-                color="#009FDF"
-                uncheckedColor="#B7B7B7"
-                style={styles.radio}
-              />
-            </View>
-          </View> */}
-
-          {/* <View style={[styles.appBottomSection]}>
-            <Image
-              style={styles.otherIcons}
-              source={require('../../../assets/otherApp/netbanking.png')}
-            />
-            <Text style={styles.otherIconText}>Net Banking</Text>
-
-            <View style={styles.radioBtnContainer}>
-              <RadioButton
-                value="net banking"
-                status={radioActive === 'net banking' ? 'checked' : 'unchecked'}
-                onPress={() => setRadioActive('net banking')}
-                color="#009FDF"
-                uncheckedColor="#B7B7B7"
-                style={styles.radio}
-              />
-            </View>
-          </View> */}
         </View>
       </ScrollView>
       <View style={styles.servicesContainer}>
@@ -567,7 +393,6 @@ const ResidentalScreen = ({route}) => {
           <TouchableOpacity
             onPress={() => {
               if (radioActive) {
-                // Start the animation before calling the createbyord function
                 Animated.sequence([
                   Animated.timing(buttonAnimatedValue, {
                     toValue: 0.94,
@@ -596,7 +421,7 @@ const ResidentalScreen = ({route}) => {
                 });
               }
             }}
-            disabled={!radioActive && nav?.data?.item?.length != 0} // Disable the button if COD is not active
+            disabled={!radioActive && nav?.data?.item?.length != 0}
             style={[
               styles.book,
               {
@@ -606,14 +431,14 @@ const ResidentalScreen = ({route}) => {
                     : colors.lightGrey
                   : nav?.data1 === 'Remedies'
                   ? colors.lightGrey
-                  : colors.orange, // Opposite color logic
+                  : colors.orange,
                 shadowColor: radioActive
                   ? nav?.data1 === 'Remedies'
                     ? '#ad3803'
                     : 'black'
                   : nav?.data1 === 'Remedies'
                   ? 'black'
-                  : '#ad3803', // Opposite shadow color
+                  : '#ad3803',
               },
             ]}>
             <Text style={[styles.btext1]}>PROCEED TO PAY</Text>

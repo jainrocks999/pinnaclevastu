@@ -3,7 +3,6 @@ import {
   Image,
   ImageBackground,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -13,50 +12,41 @@ import styles from './styles';
 import LinearGradient from 'react-native-linear-gradient';
 import {useDispatch, useSelector} from 'react-redux';
 import Imagepath from '../../../Component/Imagepath';
-import {clearRemedis, Remedie} from '../../../Redux/Slice/HomeSlice';
-import Loader from '../../../Component/Loader';
 import {useIsFocused} from '@react-navigation/native';
-import BannerSlider from '../../../Component/Banner';
 import {widthPrecent} from '../../../Component/ResponsiveScreen/responsive';
-import { fetchCategory } from '../../../Redux/Slice/collectionSlice';
+import {fetchCategory} from '../../../Redux/Slice/collectionSlice';
 
 const Remedies = ({navigation}) => {
   const Remediesproduct = useSelector(state => state.home?.Remedi?.data);
-   const category = useSelector(state =>
+  const category = useSelector(state =>
     state.collection?.CategoryList?.filter(
-      item => item.title !== "Recorded Courses" && item.title !== "Live Course"
-    )
+      item => item.title !== 'Recorded Courses' && item.title !== 'Live Course',
+    ),
   );
   const cartTotalQuantity = useSelector(
     state => state?.cart?.cartTotalQuantity,
   );
 
-  const newArray = [];
-  (
-    Remediesproduct?.remedies_categories_banner?.[0]?.slider_items || []
-  ).forEach(item => {
-    const updatedItem = {
-      ...item,
-      image: `${Imagepath.Path}${item.image}`,
-    };
+  // const newArray = [];
+  // (
+  //   Remediesproduct?.remedies_categories_banner?.[0]?.slider_items || []
+  // ).forEach(item => {
+  //   const updatedItem = {
+  //     ...item,
+  //     image: `${Imagepath.Path}${item.image}`,
+  //   };
 
-    newArray.push(updatedItem);
-  });
-  const isLoading = useSelector(state => state.home?.loading);
+  //   newArray.push(updatedItem);
+  // });
   const dispatch = useDispatch();
 
-  const RemediesProductcategory = async item => {    
-    // dispatch(clearRemedis())
-    // navigation.navigate('Home1', {
-    //   screen: 'Remedie12',
-    //   params: {screen: 'ProductList',params: {item:item,Id:false}},
-    // });
+  const RemediesProductcategory = async item => {
     navigation.navigate('Home1', {
       screen: 'Remedie12',
       params: {
         screen: 'ProductList',
         params: {
-          item: item, 
+          item: item,
           Id: false,
         },
       },
@@ -72,9 +62,7 @@ const Remedies = ({navigation}) => {
   }, [focus]);
 
   const apicall = async () => {
-
     await dispatch(fetchCategory());
-    // await dispatch(Remedie({url: 'remedies'}));
   };
 
   const renderItem2 = ({item}) => {
@@ -82,14 +70,12 @@ const Remedies = ({navigation}) => {
       <TouchableOpacity
         onPress={() => RemediesProductcategory(item)}
         style={[styles.cardContainer1]}>
-         
-          
         <ImageBackground
-          // resizeMode="contain"
+          
           source={
-           item?.image? 
-            {uri:item?.image?.url}:
-           require('../../../assets/image/Remedies/Image-not.png')
+            item?.image
+              ? {uri: item?.image?.url}
+              : require('../../../assets/image/Remedies/Image-not.png')
           }
           style={{height: '100%', width: '100%'}}>
           <LinearGradient
@@ -109,7 +95,9 @@ const Remedies = ({navigation}) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerview}>
-          <TouchableOpacity onPress={() => navigation.goBack()}  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
             <Image
               style={styles.backBtn}
               source={require('../../../assets/drawer/Back1.png')}
@@ -117,7 +105,8 @@ const Remedies = ({navigation}) => {
           </TouchableOpacity>
           <Text style={styles.logoText}>Remedies</Text>
         </View>
-        <TouchableOpacity  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        <TouchableOpacity
+          hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
           onPress={() => navigation.navigate('Home', {screen: 'MyCart'})}>
           {cartTotalQuantity > 0 && (
             <View style={styles.itemCount}>
@@ -130,7 +119,7 @@ const Remedies = ({navigation}) => {
           />
         </TouchableOpacity>
       </View>
-      {/* {isLoading ? <Loader /> : null} */}
+      
       <ScrollView contentContainerStyle={styles.searchContainer}>
         <View style={styles.contain1}>
           <Image
@@ -138,23 +127,10 @@ const Remedies = ({navigation}) => {
             source={require('../../../assets/image/Group1x.png')}
           />
         </View>
-        {/* <View style={styles.welcomeCard}>
-          {newArray?.length != 0 ? (
-            <BannerSlider
-              onPress={item => {}}
-              height1={widthPrecent(40)}
-              data={newArray ? newArray : []}
-              local={false}
-            />
-          ) : null}
-        </View> */}
+        
         <View>
           <FlatList
-            data={
-              category
-                ? category
-                : []
-            }
+            data={category ? category : []}
             renderItem={renderItem2}
             numColumns={2}
             keyExtractor={item => item.id}
@@ -173,44 +149,5 @@ const Remedies = ({navigation}) => {
 };
 
 export default Remedies;
-
-const data3 = [
-  {
-    id: '1',
-    image: require('../../../assets/image/Remid.png'),
-    name: 'Bracelets',
-  },
-  {
-    id: '2',
-    image: require('../../../assets/image/Remid.png'),
-    name: '3d-Remedies',
-  },
-  {
-    id: '3',
-    image: require('../../../assets/image/Remid.png'),
-    name: '3d-Remedies',
-  },
-  {
-    id: '1',
-    image: require('../../../assets/image/Remid.png'),
-    name: 'Bracelets',
-  },
-  {
-    id: '2',
-    image: require('../../../assets/image/Remid.png'),
-    name: '3d-Remedies',
-  },
-  {
-    id: '3',
-    image: require('../../../assets/image/Remid.png'),
-    name: '3d-Remedies',
-  },
-  {
-    id: '3',
-    image: require('../../../assets/image/Remid.png'),
-    name: '3d-Remedies',
-  },
-];
-
 
 

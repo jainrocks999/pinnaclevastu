@@ -1,11 +1,9 @@
 import {
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
   TextInput,
   ScrollView,
-  Pressable,
   Image,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
@@ -18,14 +16,13 @@ import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 import {
   addShopifyuserAddress,
-  createAddress,
   INITIAL_ADDRESS,
   updateShopifyUserAddress,
 } from '../../../Redux/Slice/Addresslice';
 import Loader from '../../../Component/Loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getCountryStateList} from '../../../Redux/Slice/countryStateSlice';
-import { fontSize } from '../../../Component/fontsize';
+import {fontSize} from '../../../Component/fontsize';
 
 const Address = ({route}) => {
   const item = route.params;
@@ -65,7 +62,7 @@ const Address = ({route}) => {
         state: item?.item?.province,
       }));
     }
-  }, [item?.item,item.data]);
+  }, [item?.item, item.data]);
 
   useEffect(() => {
     dispatch(getCountryStateList());
@@ -86,10 +83,7 @@ const Address = ({route}) => {
     let updatedValue = value;
     if (name === 'phoneNumber' || name === 'pincode') {
       const numericValue = value.replace(/[^0-9]/g, '');
-      const regex =
-        name === 'phoneNumber'
-          ? /^[0-9]{0,10}$/ // Maximum 10 digits
-          : /^[0-9]{0,6}$/; // Maximum 6 digits
+      const regex = name === 'phoneNumber' ? /^[0-9]{0,10}$/ : /^[0-9]{0,6}$/;
 
       if (!regex.test(numericValue)) {
         Toast.show(
@@ -101,14 +95,6 @@ const Address = ({route}) => {
       }
       updatedValue = numericValue;
     }
-
-    // Update the correct state based on isBilling
-    // if (isBilling) {
-    //   setBillingData((prevState) => ({
-    //     ...prevState,
-    //     [name]: updatedValue,
-    //   }));
-    // } else {
     setFormData(prevState => ({
       ...prevState,
       [name]: updatedValue,
@@ -122,8 +108,6 @@ const Address = ({route}) => {
     if (data.name === '') return 'Please enter full name';
     if (data.phoneNumber === '' || data.phoneNumber.length < 10)
       return 'Please enter a valid mobile number';
-    // if (data.email === '' || !emailRegex.test(data.email))
-    //   return 'Please enter a valid email';
     if (data.address === '') return 'Please enter address';
     if (data.city === '') return 'Please enter city name';
     if (data.pincode === '' || data.pincode.length < 6)
@@ -137,9 +121,8 @@ const Address = ({route}) => {
       return;
     }
     const userStatus = await AsyncStorage.getItem('user_data');
-    const userData = JSON.parse(userStatus)
-  
-    
+    const userData = JSON.parse(userStatus);
+
     const nameParts = formData.name.split(' ');
 
     const firstName = nameParts[0];
@@ -171,24 +154,15 @@ const Address = ({route}) => {
       );
     } else {
       dispatch(
-        addShopifyuserAddress(userData?.shopify_access_token, inputs, navigation, saveInfo),
+        addShopifyuserAddress(
+          userData?.shopify_access_token,
+          inputs,
+          navigation,
+          saveInfo,
+        ),
       );
     }
-
-    // await dispatch(createAddress(apiPayload));
   };
-
-  const countryOptions = [
-    {label: 'India', value: 'India'},
-    {label: 'USA', value: 'USA'},
-    {label: 'UK', value: 'UK'},
-  ];
-
-  const stateOptions = [
-    {label: 'Maharashtra', value: 'Maharashtra'},
-    {label: 'Gujarat', value: 'Gujarat'},
-    {label: 'Madhyapradesh', value: 'Madhyapredesh'},
-  ];
 
   return (
     <View style={styles.container}>
@@ -213,7 +187,6 @@ const Address = ({route}) => {
         <View>
           <Text style={styles.addresstext}>Delivery Address</Text>
 
-          {/* Full Name Input */}
           <View style={styles.inputWrapper}>
             <TextInput
               style={styles.input}
@@ -224,7 +197,6 @@ const Address = ({route}) => {
             />
           </View>
 
-          {/* Phone Number Input */}
           <View style={styles.inputWrapper}>
             <TextInput
               style={styles.input}
@@ -237,7 +209,6 @@ const Address = ({route}) => {
             />
           </View>
 
-          {/* Email Input */}
           <View style={styles.inputWrapper}>
             <TextInput
               style={styles.input}
@@ -249,7 +220,6 @@ const Address = ({route}) => {
             />
           </View>
 
-          {/* Address Input */}
           <View style={styles.inputWrapper}>
             <TextInput
               style={styles.input}
@@ -260,7 +230,6 @@ const Address = ({route}) => {
             />
           </View>
 
-          {/* Apartment Input */}
           <View style={styles.inputWrapper}>
             <TextInput
               style={styles.input}
@@ -271,7 +240,6 @@ const Address = ({route}) => {
             />
           </View>
 
-          {/* City Input */}
           <View style={styles.inputWrapper}>
             <TextInput
               style={styles.input}
@@ -282,7 +250,6 @@ const Address = ({route}) => {
             />
           </View>
 
-          {/* Country Dropdown */}
           <View style={styles.inputWrapper}>
             <Dropdown
               style={styles.input}
@@ -313,9 +280,7 @@ const Address = ({route}) => {
             />
           </View>
 
-          {/* State and Pincode Row */}
           <View style={styles.row}>
-            {/* State Dropdown */}
             <View style={styles.halfWidth}>
               <Dropdown
                 style={styles.input}
@@ -342,7 +307,6 @@ const Address = ({route}) => {
               />
             </View>
 
-            {/* Pincode Input */}
             <View style={styles.halfWidth}>
               <TextInput
                 style={styles.input}

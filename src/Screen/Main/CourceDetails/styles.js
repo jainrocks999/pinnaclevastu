@@ -10,14 +10,9 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-    //    backgroundColor: '#F9F9F9',
-    // paddingTop: 50,
-    // elevation:4,
-    // opacity:0.9
   },
   header: {
     flexDirection: 'row',
-    // justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 18,
     paddingVertical: 10,
@@ -36,7 +31,7 @@ export default StyleSheet.create({
   },
 
   scrollview: {
-    paddingBottom:hp(3),
+    paddingBottom: hp(3),
     paddingHorizontal: 15,
   },
 
@@ -46,9 +41,8 @@ export default StyleSheet.create({
     marginBottom: 20,
   },
   img1: {
-     width: '100%',
+    width: '100%',
     height: wp(50),
-    // borderRadius: 15,
   },
   advanceview: {
     marginTop: 10,
@@ -75,9 +69,7 @@ export default StyleSheet.create({
     fontFamily: 'Poppins-Medium',
   },
   shareimage: {
-    // width: '10%',
-    // height: '100%',
-    marginRight:5,
+    marginRight: 5,
     width: wp(7),
     height: wp(7),
     borderRadius: wp(3),
@@ -91,7 +83,7 @@ export default StyleSheet.create({
   card: {
     marginTop: 20,
     width: '100%',
-    height: hp(17),
+    // height: hp(17),
     backgroundColor: colors.cardm,
     borderRadius: 10,
     flexDirection: 'row',
@@ -106,7 +98,9 @@ export default StyleSheet.create({
   },
   verticalLine: {
     width: 1,
-    height: '75%',
+    // height: '75%',
+     height: hp(10),
+     marginVertical:20,
     backgroundColor: '#DFE7EF',
     alignSelf: 'center',
   },
@@ -188,11 +182,11 @@ export default StyleSheet.create({
     fontSize: fontSize.Fourteen,
     color: colors.light_gr,
     marginBottom: 10,
-    paddingHorizontal:20
+    paddingHorizontal: 20,
   },
   needview: {
     marginTop: 30,
-    marginHorizontal:5
+    marginHorizontal: 5,
   },
   needtext: {
     fontSize: fontSize.Twenty,
@@ -208,7 +202,7 @@ export default StyleSheet.create({
     marginTop: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom:5
+    marginBottom: 5,
   },
   whatsapp: {
     width: '48%',
@@ -256,11 +250,11 @@ export default StyleSheet.create({
     fontSize: fontSize.Fourteen,
     color: colors.heading,
     fontFamily: 'Poppins-SemiBold',
-    marginLeft: 15,
+    width:"50%",
   },
   acharya1: {
     lineHeight: wp(6),
-    width: '15%',
+    width:"50%",
     fontSize: fontSize.Fourteen,
     color: colors.heading,
     fontFamily: 'Poppins-Medium',
@@ -288,15 +282,15 @@ export default StyleSheet.create({
   book: {
     backgroundColor: colors.orange,
     alignItems: 'center',
-    justifyContent:"center",
+    justifyContent: 'center',
     width: '100%',
     height: wp(13),
     borderRadius: 10,
     marginTop: hp(1),
-    shadowColor: "#ad3803",
+    shadowColor: '#ad3803',
     shadowOffset: {width: 0, height: 6},
-    shadowOpacity: 0.8, 
-    shadowRadius: 10, 
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
     elevation: 8,
   },
 
@@ -317,19 +311,18 @@ export default StyleSheet.create({
   },
 
   courseview: {
-    // alignItems: 'center',
-    marginVertical:10
+    marginVertical: 10,
   },
 
   imageContainer: {
     margin: 5,
-     // Set the width of the images
+
     height: wp(42),
   },
   reviewImage: {
-    width: '100%', // Set the width of the images
-    height: '100%', // Set the height of the images
-   resizeMode:'contain'
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
   },
   dotContainer: {
     flexDirection: 'row',
@@ -345,14 +338,14 @@ export default StyleSheet.create({
     margin: 5,
   },
   activeDot: {
-    backgroundColor: colors.Headertext, // Active dot color
+    backgroundColor: colors.Headertext,
     width: '8%',
   },
 
   itemContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    // flexDirection: 'row',
+
     flex: 1,
     marginBottom: 20,
     marginHorizontal: 8,
@@ -370,11 +363,9 @@ export default StyleSheet.create({
   icon: {
     width: wp(10),
     height: wp(10),
-    // marginRight: 15,
   },
   textContainer: {
     flex: 1,
-    // paddingHorizontal:15
   },
   title: {
     fontSize: fontSize.Twelve,
@@ -394,15 +385,15 @@ export default StyleSheet.create({
   toggleIcon2: {
     width: wp(3.5),
     height: wp(3.5),
-    marginRight:10,
-    resizeMode:"contain"
+    marginRight: 10,
+    resizeMode: 'contain',
   },
   backBtn: {
-    marginTop:-5,
+    marginTop: -5,
     height: wp(4),
     width: wp(2.3),
-    // resizeMode: 'stretch',
-    marginRight:20
+
+    marginRight: 20,
   },
 
   courseToggle1: {
@@ -442,8 +433,8 @@ export default StyleSheet.create({
     borderBottomRightRadius: 8,
     borderColor: '#EAEAEA',
     marginBottom: 10,
-    paddingVertical:10,
-    paddingHorizontal:20
+    paddingVertical: 10,
+    paddingHorizontal: 20,
   },
   singleSubItem: {
     flexDirection: 'row',
@@ -461,14 +452,12 @@ export default StyleSheet.create({
     color: colors.light_gr,
     marginLeft: wp(3),
     marginBottom: 15,
-    // marginLeft: 16,
-    // marginBottom: 15,
   },
 
   direction1: {
     flexDirection: 'row',
     borderWidth: 0.1,
-    padding:5,
+    padding: 5,
   },
 
   coursetext2: {
@@ -476,7 +465,7 @@ export default StyleSheet.create({
     color: colors.heading,
     fontFamily: 'Poppins-SemiBold',
   },
-   loader: {
+  loader: {
     position: 'absolute',
     top: 0,
     bottom: 0,
@@ -486,5 +475,4 @@ export default StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
-
 });

@@ -23,7 +23,7 @@ import styles from './styles';
 import {useDispatch, useSelector} from 'react-redux';
 import {DrawerApi} from '../../Redux/Slice/HomeSlice';
 import Imagepath from '../Imagepath';
-import { SvgUri } from 'react-native-svg';
+import {SvgUri} from 'react-native-svg';
 
 const Drawer = props => {
   const navigation = useNavigation();
@@ -91,36 +91,35 @@ const Drawer = props => {
 
   const renderItem = ({item}) => (
     <TouchableOpacity
-    style={styles.listRow}
-    // onPress={() => {
-    //   navigation.navigate('Home', {
-    //     screen: 'Home1',
-    //       params: {
-    //         screen: 'Consultancy',
-    //         params: {
-    //           itemId: item?.id,
-    //           servicesName: item?.services_name,
-    //         },
-    //       },
-    //     });
-    //   }}
-      >
+      style={styles.listRow}
+      // onPress={() => {
+      //   navigation.navigate('Home', {
+      //     screen: 'Home1',
+      //       params: {
+      //         screen: 'Consultancy',
+      //         params: {
+      //           itemId: item?.id,
+      //           servicesName: item?.services_name,
+      //         },
+      //       },
+      //     });
+      //   }}
+    >
       {/* <View style={styles.rowContent}> */}
-      
-      {item?.CardImage?.toLowerCase()?.endsWith('.svg') ? (
-  <View style={styles.icon}>
-    <SvgUri width="100%" height="100%" uri={item?.CardImage} />
-  </View>
-) : (
-  <Image
-    style={styles.icon}
-    source={{ uri: `${item?.CardImage}` }}
-    resizeMode="contain"
-  />
-)}
-     
 
-      <Text style={styles.listText}>{item.text     }</Text>
+      {item?.CardImage?.toLowerCase()?.endsWith('.svg') ? (
+        <View style={styles.icon}>
+          <SvgUri width="100%" height="100%" uri={item?.CardImage} />
+        </View>
+      ) : (
+        <Image
+          style={styles.icon}
+          source={{uri: `${item?.CardImage}`}}
+          resizeMode="contain"
+        />
+      )}
+
+      <Text style={styles.listText}>{item.text}</Text>
       {/* </View> */}
       {/* {item.isSpecial && (
         <Image source={require('../../assets/drawer/right.png')} />
@@ -217,7 +216,7 @@ const Drawer = props => {
             data={data ? data : []}
             renderItem={renderItem}
             scrollEnabled={false}
-            keyExtractor={item => item.id}
+            keyExtractor={(item, index) => index.toString()}
             showsVerticalScrollIndicator={false}
           />
           <TouchableOpacity style={styles.specialListRow}>

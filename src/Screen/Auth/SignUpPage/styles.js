@@ -12,8 +12,6 @@ export default StyleSheet.create({
     backgroundColor: colors.white,
   },
   main1: {
-    //  paddingHorizontal: 15,
-    // paddingVertical: 10,
     paddingBottom: 10,
   },
   title: {
@@ -29,7 +27,6 @@ export default StyleSheet.create({
     borderBottomRightRadius: 20,
   },
   inputmain: {
-    // marginTop: hp(2.5),
     paddingHorizontal: 15,
     paddingVertical: 10,
   },
@@ -65,11 +62,7 @@ export default StyleSheet.create({
     fontFamily: 'Poppins-Regular',
     color: colors.heading,
   },
-
-
-
   input1: {
-    // height: '100%',
     width: '60%',
     marginLeft: wp(-1),
     fontSize: fontSize.Sixteen,
@@ -99,21 +92,17 @@ export default StyleSheet.create({
     paddingHorizontal: 15,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#D87C51', // Shadow color
-    shadowOffset: {width: 0, height: 3}, // Shadow direction
-    shadowOpacity: 0.12, // Shadow intensity
-    shadowRadius: 10, // Shadow blur radius
-    // Elevation for Android
+    shadowColor: '#D87C51',
+    shadowOffset: {width: 0, height: 3},
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
     elevation: 8,
   },
   buttoncontainer: {
     marginHorizontal: 15,
     height: wp(13),
-    // width: '90%',
     backgroundColor: colors.orange,
     borderRadius: 10,
-    // opacity: 1,
-    // borderWidth:1,
     marginTop: hp(2),
     marginBottom: 10,
     paddingHorizontal: 15,
@@ -123,7 +112,6 @@ export default StyleSheet.create({
     shadowOffset: {width: 0, height: 6},
     shadowOpacity: 0.8,
     shadowRadius: 10,
-
     elevation: 8,
   },
   btext: {
@@ -170,7 +158,7 @@ export default StyleSheet.create({
     position: 'absolute',
     top: 10,
     fontSize: fontSize.Sixteen,
-    color:colors.heading,
+    color: colors.heading,
     fontFamily: 'Poppins-Regular',
   },
   closeBtn: {

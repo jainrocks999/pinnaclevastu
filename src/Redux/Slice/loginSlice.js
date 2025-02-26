@@ -206,9 +206,6 @@ export const ShopifyUserLogin = (input, navigation) => {
               ),
             );
             Toast.show('Login successful!');
-            // navigation.navigate('ProfileStack', {
-            //   screen: 'MyAccountScreen',
-            // });
           } else {
             if (
               data?.customerUserErrors[0].message == 'Unidentified customer'

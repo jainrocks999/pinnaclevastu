@@ -1,7 +1,6 @@
 import {
   Dimensions,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
@@ -16,23 +15,16 @@ import {useNavigation} from '@react-navigation/native';
 import Toast from 'react-native-simple-toast';
 import Loader from '../../../Component/Loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-  clearloginUserData,
-  getUserDetailApi,
-  loginUser,
-} from '../../../Redux/Slice/Authslice';
+import {getUserDetailApi, loginUser} from '../../../Redux/Slice/Authslice';
 import {useDispatch, useSelector} from 'react-redux';
-const {width} = Dimensions.get('window');
 
 const OTPPAGE = ({route}) => {
   const loginUserData = useSelector(state => state?.Auth?.loginUserData);
 
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
-  // console.log(loginUserData, 'smfldflsdf');
 
-  // console.log('fsdss', route?.params.data.OTP);
   const dispatch = useDispatch();
-  // console.log(route?.params.from);
+
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
   const [code, setCode] = useState(['', '', '', '', '', '']);
@@ -40,7 +32,6 @@ const OTPPAGE = ({route}) => {
 
   const [timer, setTimer] = useState(60);
   const [isDisabled, setIsDisabled] = useState(true);
-  // const [OTP, setOTP] = useState('');
 
   useEffect(() => {
     if (timer > 0) {
@@ -75,7 +66,6 @@ const OTPPAGE = ({route}) => {
   const handleVerify = async () => {
     const enteredCode = code.join('');
     setIsLoading(true);
-    console.log('dnkdsnfd', enteredCode, route?.params?.data);
 
     if (enteredCode.length < 6) {
       Toast.show('Please enter a complete 6-digit code.');
@@ -84,7 +74,6 @@ const OTPPAGE = ({route}) => {
     }
 
     if (enteredCode != loginUserData.OTP) {
-      console.log(loginUserData, 'sdjfskflsdfmsdlkdm');
       Toast.show('The entered OTP is incorrect.');
       setIsLoading(false);
       return;
@@ -105,7 +94,7 @@ const OTPPAGE = ({route}) => {
         navigation.replace('Home', {screen: 'MyCart', params: {from: 'OTP'}});
       } else if (route?.params?.from == 'CourseDetails') {
         setIsLoading(false);
-        // navigation.replace('Home');
+
         await dispatch(
           getUserDetailApi({
             token: loginUserData?.token,
@@ -122,7 +111,7 @@ const OTPPAGE = ({route}) => {
             url: `profile-list?user_id=${loginUserData?.user_id}`,
           }),
         );
-        // navigation.replace('Appoiment');
+
         navigation.pop();
         navigation.replace('profile');
       } else {
@@ -133,7 +122,6 @@ const OTPPAGE = ({route}) => {
       console.error('Error storing user data:', error);
     }
   };
-  // console.log('this is user data', loginUserData);
 
   const resendOtp = async () => {
     Keyboard.dismiss();
@@ -157,7 +145,6 @@ const OTPPAGE = ({route}) => {
           <Text
             style={
               styles.title1
-              // }>{`verification code sent to your ${route?.params?.data?.OTP}`}</Text>
             }>{`verification code sent to your ${loginUserData.OTP}`}</Text>
         </View>
         {isDisabled && (
@@ -225,7 +212,6 @@ const OTPPAGE = ({route}) => {
             <Text
               style={{
                 color: isDisabled ? colors.placeholder : colors.heading,
-                // color: colors.heading,
                 fontFamily: 'Poppins-Medium',
                 textDecorationLine: 'underline',
               }}>

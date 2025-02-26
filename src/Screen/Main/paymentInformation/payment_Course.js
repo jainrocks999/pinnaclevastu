@@ -5,10 +5,7 @@ import {
   TextInput,
   Image,
   TouchableOpacity,
-  StyleSheet,
   ScrollView,
-  FlatList,
-  ImageBackground,
   Animated,
 } from 'react-native';
 import styles from './styles';
@@ -16,13 +13,13 @@ import {colors} from '../../../Component/colors';
 import CourseInfoCard from '../../../Component/CourseInfoCard/CourseInfoCard';
 import Toast from 'react-native-simple-toast';
 import {RadioButton} from 'react-native-paper';
-import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import constants from '../../../Redux/constant/constants';
 import axios from 'axios';
 import Loader from '../../../Component/Loader';
 import RazorpayCheckout from 'react-native-razorpay';
-import {useDispatch, useSelector} from 'react-redux';
+import {useSelector} from 'react-redux';
 import {fontSize} from '../../../Component/fontsize';
 
 const PaymentCourse = ({route}) => {
@@ -30,7 +27,7 @@ const PaymentCourse = ({route}) => {
   const navigation = useNavigation();
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
   const userDetail = useSelector(state => state?.Auth?.userData);
-  const dispatch = useDispatch();
+
   const [radioActive, setRadioActive] = useState('');
   const [loading1, setLoading] = useState(false);
   const [userType, setUserType] = useState('');
@@ -50,7 +47,6 @@ const PaymentCourse = ({route}) => {
       tax_type = 'percentage',
     } = product;
 
-    // Determine the selected price based on user type.
     const selectedPrice =
       userType === 'customers' && sale_price
         ? parseFloat(sale_price)
@@ -61,22 +57,19 @@ const PaymentCourse = ({route}) => {
         : parseFloat(price);
 
     const itemPrice = selectedPrice;
-    // const taxAmount =
-    // tax_type === "percentage"
-    //   ? (itemPrice * parseFloat(tax_amount)) / 100
-    //   : parseFloat(tax_amount);
+
     const taxAmount =
       tax_type === 'percentage'
-        ? (selectedPrice * tax_amount) / 100 // Calculate percentage-based tax
+        ? (selectedPrice * tax_amount) / 100
         : tax_type === 'amount'
-        ? tax_amount // Fixed tax amount
+        ? tax_amount
         : 0;
     const totalProductAmount = itemPrice + taxAmount;
 
     return {
-      totalTaxAmount: taxAmount.toFixed(2), // Total tax amount.
-      totalAmount: totalProductAmount.toFixed(2), // Grand total amount.
-      totalPriceOnly: itemPrice.toFixed(2), // Total price before tax.
+      totalTaxAmount: taxAmount.toFixed(2),
+      totalAmount: totalProductAmount.toFixed(2),
+      totalPriceOnly: itemPrice.toFixed(2),
     };
   };
 
@@ -86,7 +79,7 @@ const PaymentCourse = ({route}) => {
     const usercheck = async () => {
       const userStatus = await AsyncStorage.getItem('user_data');
       const userData = JSON.parse(userStatus);
-      setUserType(userData?.user_type || ''); // Handle null/undefined user type
+      setUserType(userData?.user_type || '');
     };
 
     usercheck();
@@ -119,7 +112,6 @@ const PaymentCourse = ({route}) => {
 
       const jsonData = JSON.stringify(data);
       const token = await AsyncStorage.getItem('Token');
-      console.log('create order request ', jsonData);
 
       let config = {
         method: 'post',
@@ -133,7 +125,6 @@ const PaymentCourse = ({route}) => {
       };
 
       const response = await axios.request(config);
-      console.log('create order to response ', response.data);
 
       if (response?.data?.status == 200) {
         setLoading(false);
@@ -141,7 +132,6 @@ const PaymentCourse = ({route}) => {
         navigation.navigate('Thankyou', {
           order: response?.data,
           data: 'Courses',
-      
         });
       } else {
         setLoading(false);
@@ -150,8 +140,8 @@ const PaymentCourse = ({route}) => {
     } catch (error) {
       setLoading(false);
       if (error.response) {
-        console.log('Response data ererrer:', error.response.data);
-        console.log('Response status sfgsfg:', error.response.status);
+        console.log('Response data error:', error.response.data);
+        console.log('Response status:', error.response.status);
         console.log('Response headers:', error.response.headers);
       } else if (error.request) {
         console.log('Request made but no response received:', error.request);
@@ -193,7 +183,7 @@ const PaymentCourse = ({route}) => {
   };
 
   const Createorder1 = async () => {
-    let total = 100 * parseInt(totals?.totalAmount); // Total in paise
+    let total = 100 * parseInt(totals?.totalAmount);
     var options = {
       description: 'Credits towards consultation',
       image: require('../../../assets/image/header.png'),
@@ -223,7 +213,7 @@ const PaymentCourse = ({route}) => {
 
       createbyord(transactionDetails);
     } catch (error) {
-      console.log('shgkjshgkg', error);
+      console.log('error', error);
 
       const transactionDetails = {
         radioActive,
@@ -233,8 +223,7 @@ const PaymentCourse = ({route}) => {
         reason: error?.error?.reason || 'Transaction failed',
         code: error.code,
       };
-  
-   
+
       // createbyord(transactionDetails);
     }
   };
@@ -301,71 +290,8 @@ const PaymentCourse = ({route}) => {
           </View>
         </View>
 
-        {/* <View style={[styles.cardContainer2]}>
-          <Text style={styles.payment}>
-            Pay Directly with your favourite UPI apps
-          </Text>
-          <View style={[styles.card]}>
-            <View style={styles.appItem}>
-              <Image
-                style={styles.appIcon}
-                source={require('../../../assets/otherApp/gpay.png')}
-              />
-              <Text style={[styles.third21]}>{'GPay'}</Text>
-            </View>
-            <View style={styles.appItem}>
-              <Image
-                style={styles.appIcon}
-                source={require('../../../assets/otherApp/phonePe.png')}
-              />
-              <Text style={[styles.third21]}>{'PhonePe'}</Text>
-            </View>
-            <View style={styles.appItem}>
-              <Image
-                style={styles.appIcon}
-                source={require('../../../assets/otherApp/paytm.png')}
-              />
-              <Text style={[styles.third21]}>{'Paytm'}</Text>
-            </View>
-            <View style={styles.appItem}>
-              <Image
-                style={styles.appIcon}
-                source={require('../../../assets/otherApp/credUpi.png')}
-              />
-              <Text style={[styles.third21]}>{'CRED UPI'}</Text>
-            </View>
-          </View>
-
-          <View style={[styles.appBottomSection]}>
-            <Image
-              style={styles.payIcon}
-              source={require('../../../assets/otherApp/bharatpayLogo.png')}
-            />
-            <Text style={[styles.service]}>Pay with other UPI apps</Text>
-          </View>
-        </View> */}
-
         <View style={styles.cardContainer2}>
           <Text style={[styles.payment, {}]}>Payment Method</Text>
-
-          {/* <View style={[styles.appBottomSection, styles.borderBottom]}>
-            <Image
-              style={styles.otherIcons}
-              source={require('../../../assets/image/cash-on-delivery.png')}
-            />
-            <Text style={styles.otherIconText}>Cash on Delivery</Text>
-
-            <View style={styles.radioBtnContainer}>
-              <RadioButton
-                value="cod"
-                status={radioActive === 'cod' ? 'checked' : 'unchecked'}
-                onPress={() => setRadioActive('cod')}
-                color="#009FDF"
-                uncheckedColor="#B7B7B7"
-                style={styles.radio}
-              />
-            </View>
-          </View> */}
 
           <View style={[styles.appBottomSection, {paddingBottom: 15}]}>
             <Image
@@ -387,62 +313,6 @@ const PaymentCourse = ({route}) => {
               />
             </View>
           </View>
-          {/* <View style={[styles.appBottomSection, styles.borderBottom]}>
-            <Image
-              style={styles.otherIcons}
-              source={require('../../../assets/otherApp/paytm2.png')}
-            />
-            <Text style={styles.otherIconText}>UPI</Text>
-
-            <View style={styles.radioBtnContainer}>
-              <RadioButton
-                value="upi"
-                status={radioActive === 'upi' ? 'checked' : 'unchecked'}
-                onPress={() => setRadioActive('upi')}
-                color="#009FDF"
-                uncheckedColor="#B7B7B7"
-                style={styles.radio}
-              />
-            </View>
-          </View> */}
-
-          {/* <View style={[styles.appBottomSection, styles.borderBottom]}>
-            <Image
-              style={styles.otherIcons}
-              source={require('../../../assets/otherApp/card.png')}
-            />
-            <Text style={styles.otherIconText}>Credit/Debit Card</Text>
-
-            <View style={styles.radioBtnContainer}>
-              <RadioButton
-                value="card"
-                status={radioActive === 'card' ? 'checked' : 'unchecked'}
-                onPress={() => setRadioActive('card')}
-                color="#009FDF"
-                uncheckedColor="#B7B7B7"
-                style={styles.radio}
-              />
-            </View>
-          </View> */}
-
-          {/* <View style={[styles.appBottomSection]}>
-            <Image
-              style={styles.otherIcons}
-              source={require('../../../assets/otherApp/netbanking.png')}
-            />
-            <Text style={styles.otherIconText}>Net Banking</Text>
-
-            <View style={styles.radioBtnContainer}>
-              <RadioButton
-                value="net banking"
-                status={radioActive === 'net banking' ? 'checked' : 'unchecked'}
-                onPress={() => setRadioActive('net banking')}
-                color="#009FDF"
-                uncheckedColor="#B7B7B7"
-                style={styles.radio}
-              />
-            </View>
-          </View> */}
         </View>
       </ScrollView>
       <View style={styles.servicesContainer}>

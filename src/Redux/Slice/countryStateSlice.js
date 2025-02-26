@@ -45,7 +45,6 @@ export const getCountryStateList = () => {
       axios
         .request(config)
         .then((response) => {
-          console.log("this is user response", response.data);
           if (response) {
             dispatch(GET_COUNTRY_SUCCESS(response.data));
           } else {
@@ -55,11 +54,11 @@ export const getCountryStateList = () => {
         })
         .catch((error) => {
           console.log(error);
-          console.log("something went wrong12");
+          console.log("something went wrong");
           dispatch(GET_COUNTRY_FAILED());
         });
     } catch (error) {
-      console.log("something went wrong13");
+      console.log("something went wrong");
       dispatch(GET_COUNTRY_FAILED());
     }
   };

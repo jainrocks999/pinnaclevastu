@@ -10,7 +10,6 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-    // paddingTop: 50,
   },
   header: {
     flexDirection: 'row',
@@ -21,25 +20,17 @@ export default StyleSheet.create({
     elevation: 5,
     gap: 5,
   },
-  headerview: {},
   logoText: {
     fontSize: fontSize.Eighteen,
     color: colors.heading,
     fontFamily: 'Poppins-Regular',
   },
-
   backBtn: {
     marginTop: -5,
     height: wp(4),
     width: wp(2.3),
     resizeMode: 'stretch',
     marginRight: 20,
-  },
-
-  title: {
-    fontSize: fontSize.Fourteen,
-    fontFamily: 'Poppins-Regular',
-    color: colors.cardcolor,
   },
   servicesContainer: {
     paddingHorizontal: 20,
@@ -49,26 +40,19 @@ export default StyleSheet.create({
   },
 
   cardContainer2: {
-    // marginVertical: 20,
     width: '100%',
     paddingVertical: 10,
-    // marginTop: 10,
     backgroundColor: '#fff',
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#DFE7EF',
-    shadowColor: '#D8E3E9', // Light pink color for the shadow
-    shadowOffset: {width: 0, height: 6}, // Offset 0px horizontally, 6px vertically
-    shadowOpacity: 0.5, // Opacity of the shadow (transparent but visible)
-    shadowRadius: 10, // Blur radius of 10px
-
-    // Android Elevation
-    elevation: 5, // For Android shadow effect
+    shadowColor: '#D8E3E9',
+    shadowOffset: {width: 0, height: 6},
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 5,
     paddingHorizontal: 15,
-    // margin:5,
-
     justifyContent: 'center',
-    // marginVertical: 10,
   },
 
   service: {
@@ -88,15 +72,6 @@ export default StyleSheet.create({
     width: wp(35),
     textAlign: 'center',
   },
-  cont: {
-    fontSize: fontSize.Fourteen,
-    color: colors.cardcolor,
-    fontFamily: 'Poppins-Regular',
-    opacity: 1,
-    marginTop: hp(2),
-    // textAlign:'center'
-  },
-
   inputmain: {
     marginTop: hp(1.5),
   },
@@ -116,18 +91,17 @@ export default StyleSheet.create({
     borderColor: '#E9E9E9',
     paddingHorizontal: 15,
     fontSize: fontSize.Fifteen,
-    // marginTop: 2,
     fontFamily: 'Poppins-Regular',
     backgroundColor: colors.white,
     color: colors.heading,
-    elevation:10,
+    elevation: 10,
     shadowColor: '#bdc3c7',
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.2,
     shadowRadius: 15,
   },
+
   input1: {
-    //  height: wp(13),
     width: '60%',
     marginLeft: wp(-1),
     fontFamily: 'Poppins-Regular',
@@ -146,6 +120,7 @@ export default StyleSheet.create({
     borderColor: '#009FDF',
     backgroundColor: '#fff',
   },
+
   checkedBackground: {
     backgroundColor: '#009FDF',
   },
@@ -158,13 +133,14 @@ export default StyleSheet.create({
     borderRadius: 10,
     height: wp(13),
     marginVertical: hp(1.3),
-    shadowColor: '#ad3803', // Shadow color
-    shadowOffset: {width: 0, height: 6}, // Shadow direction
-    shadowOpacity: 0.8, // Shadow intensity
-    shadowRadius: 10, // Shadow blur radius
-    // Elevation for Android
+    shadowColor: '#ad3803',
+    shadowOffset: {width: 0, height: 6},
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
+
     elevation: 8,
   },
+
   btext1: {
     fontFamily: 'Poppins-Medium',
     fontSize: fontSize.Eighteen,
@@ -180,11 +156,10 @@ export default StyleSheet.create({
     borderColor: '#E9E9E9',
     paddingHorizontal: 15,
     fontSize: fontSize.Fifteen,
-    // marginTop: 2,
     fontFamily: 'Poppins-Regular',
     backgroundColor: colors.white,
     color: colors.heading,
-    elevation:10,
+    elevation: 10,
     shadowColor: '#bdc3c7',
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.2,
@@ -215,10 +190,8 @@ export default StyleSheet.create({
     fontSize: fontSize.Fifteen,
     color: colors.cardcolor,
     textAlign: 'center',
-    // marginLeft:20
-    // marginTop:5
   },
-  boldText:{
+  boldText: {
     fontFamily: 'Poppins-Bold',
     fontSize: fontSize.Twelve,
     color: colors.cardcolor,
@@ -228,15 +201,13 @@ export default StyleSheet.create({
     fontSize: fontSize.Twelve,
     color: colors.cardcolor,
   },
-  editBtn:{
+  editBtn: {
     position: 'absolute',
     top: 10,
     right: 20,
     padding: 5,
-
   },
   editText: {
-    // borderWidth:1,
     fontFamily: 'Poppins-Regular',
     fontSize: fontSize.Eleven,
     color: 'red',

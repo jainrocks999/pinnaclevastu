@@ -14,7 +14,6 @@ export const loginUser = createAsyncThunk(
       maxBodyLength: Infinity,
       url: `${constants.mainUrl}${url}`,
       headers: {
-        //  'Content-Type': 'multipart/form-data',
         'Content-Type': 'application/json',
       },
       data: JSON.stringify(data),
@@ -22,17 +21,9 @@ export const loginUser = createAsyncThunk(
 
     try {
       const response = await axios.request(config);
-      console.log('response data', response.data);
-
+  
       if (response.data.status == 200) {
-        // const responseDataString = JSON.stringify(response.data);
-
-        // AsyncStorage.setItem('user_data', responseDataString);
-
-        // AsyncStorage.setItem('user_type', response.data.user_type);
-        // AsyncStorage.setItem('user_id', JSON.stringify(response.data.user_id));
-        // AsyncStorage.setItem('Token', response.data.token);
-
+  
         Toast.show(response.data.msg);
 
         if (navigation) {
@@ -61,15 +52,12 @@ export const loginUser = createAsyncThunk(
             navigation.replace('OTP', {data: response.data, item: mobile});
           }
         }
-        console.log(response.data, 'asdkoasjkdsadjo');
         return response.data;
       } else {
         Toast.show(response.data.msg);
         console.log('errrorroro', response.data);
         return rejectWithValue(error.response?.data || error.message);
       }
-
-      return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }
@@ -95,21 +83,16 @@ export const signupUser = createAsyncThunk(
         
         data: formUserData,
       };
-      console.log('signupAsFranchiseApi', formUserData);
-      console.log('shkshfskdfhsdf', config);
-
       const response = await axios.request(config);
-      // console.log('sfkjlsglksgsgs', response);
 
       if (response.data.status == 200) {
         const responseDataString = JSON.stringify(response.data);
 
         AsyncStorage.setItem('user_data', responseDataString);
-
         AsyncStorage.setItem('user_type', response.data.user_type);
         AsyncStorage.setItem('user_id', JSON.stringify(response.data.user_id));
         AsyncStorage.setItem('Token', response.data.token);
-        console.log(route?.params?.from,"**************")
+
         if (route?.params?.from == 'profile') {
           await dispatch(
             getUserDetailApi({
@@ -117,7 +100,6 @@ export const signupUser = createAsyncThunk(
               url: `profile-list?user_id=${response.data.user_id}`,
             }),
           );
-          // navigation.replace('Appoiment',);
           navigation.pop();
           navigation.pop();
           navigation.replace('profile');
@@ -129,15 +111,13 @@ export const signupUser = createAsyncThunk(
               url: `profile-list?user_id=${response.data.user_id}`,
             }),
           );
-          // navigation.replace('Appoiment',);
           navigation.pop();
           navigation.pop();
           navigation.replace('CourseDetail');
         } else {
           navigation.navigate('Home');
         }
-        // console.log(route,"$$$$$$$")
-
+  
         return response.data;
       } else {
         Toast.show(response.data.msg);
@@ -163,14 +143,8 @@ export const getUserDetailApi = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       };
-      console.log('shkshfskdfhsdf', config);
-
       const response = await axios.request(config);
-      console.log('get profile update data ', response.data);
-
       if (response.data.status == 200) {
-        // const responseDataString = JSON.stringify(response.data)
-        // console.log(response.data.data, 'userData..........');
         return response.data.data;
       } else {
         Toast.show(response.data.msg);
@@ -189,7 +163,6 @@ export const updateApi = createAsyncThunk(
     {formUserData, url, navigation, token, userid},
     {rejectWithValue, dispatch},
   ) => {
-    console.log('auth/updateApi', formUserData, url, token);
 
     try {
       let config = {
@@ -257,8 +230,6 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        // console.log('thissisisisi', action.payload);
-
         state.loginUserData = action.payload;
       })
       .addCase(loginUser.rejected, (state, action) => {

@@ -19,14 +19,6 @@ import Imagepath from '../../../Component/Imagepath';
 
 const CoureList = ({navigation}) => {
   const cource = useSelector(state => state?.order?.orderCource?.data);
-  // console.log(cource, 'sandeep.....');
-
-  const myCourseData = [
-    {id: 1, image: require('../../../assets/otherApp/courseCard1.png')},
-    {id: 2, image: require('../../../assets/otherApp/courseCard2.png')},
-    {id: 3, image: require('../../../assets/otherApp/courseCard1.png')},
-    {id: 4, image: require('../../../assets/otherApp/courseCard2.png')},
-  ];
 
   const dispatch = useDispatch();
 
@@ -40,8 +32,7 @@ const CoureList = ({navigation}) => {
     const startAnimation = () => {
       const intervalId = setInterval(() => {
         if (currentIndex < placeholderText.length) {
-          // setDisplayedText(placeholderText.slice(0, currentIndex + 1));
-          setDisplayedText(prev => placeholderText.slice(0, currentIndex + 1)); 
+          setDisplayedText(prev => placeholderText.slice(0, currentIndex + 1));
 
           currentIndex++;
         } else {
@@ -61,7 +52,6 @@ const CoureList = ({navigation}) => {
 
   const apicall = async () => {
     try {
-      // Retrieve token and user_id from AsyncStorage
       const token = await AsyncStorage.getItem('Token');
       const userid = await AsyncStorage.getItem('user_id');
 
@@ -77,8 +67,7 @@ const CoureList = ({navigation}) => {
     }
   };
 
-  const formatDate = (itemDate) => {
-
+  const formatDate = itemDate => {
     const date = new Date(itemDate);
 
     const day = date.getDate().toString().padStart(2, '0');
@@ -92,12 +81,10 @@ const CoureList = ({navigation}) => {
     const newScaleAnims = {...scaleAnims};
 
     if (!newScaleAnims[item.id]) {
-      newScaleAnims[item.id] = new Animated.Value(1); 
+      newScaleAnims[item.id] = new Animated.Value(1);
     }
+    setScaleAnims(newScaleAnims);
 
-    setScaleAnims(newScaleAnims); 
-
-    // Perform the scale animation for the clicked item
     Animated.sequence([
       Animated.timing(newScaleAnims[item.id], {
         toValue: 0.97,
@@ -110,7 +97,7 @@ const CoureList = ({navigation}) => {
         useNativeDriver: true,
       }),
     ]).start(() => {
-      navigation.navigate('CourceListDownload'); 
+      navigation.navigate('CourceListDownload');
     });
   };
 
@@ -118,11 +105,6 @@ const CoureList = ({navigation}) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity
-          //  onPress={() =>
-          //     navigation.reset({
-          //       index: 0,
-          //       routes: [{name: 'UserProfile'}],
-          //     })}
           onPress={() => navigation.goBack()}
           hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
           <Image
@@ -156,33 +138,30 @@ const CoureList = ({navigation}) => {
         </Text>
 
         <FlatList
-         scrollEnabled={false}
+          scrollEnabled={false}
           contentContainerStyle={{
             gap: 10,
           }}
           data={cource}
           renderItem={({item}) => {
-            // Retrieve the animation value for each item based on its unique id
+      
             const itemScaleAnim = scaleAnims[item.id] || new Animated.Value(1);
 
             return (
               <Animated.View
                 style={{
-                  transform: [{scale: itemScaleAnim}], // Apply the scale animation
+                  transform: [{scale: itemScaleAnim}],
                 }}>
                 <TouchableOpacity
-                  onPress={() => handlePress(item)} // Pass item id to trigger animation
+                  onPress={() => handlePress(item)} 
                   style={styles.card}>
                   <View style={styles.cardInfo}>
                     <Text style={styles.headingText}>
-                      
-                    {item.course.title
-                ? item.course.title.length > 20
-                  ? `${item.course.title.substring(0, 20)}...`
-                  : item.course.title
-                : ''}
-                      
-                      
+                      {item.course.title
+                        ? item.course.title.length > 20
+                          ? `${item.course.title.substring(0, 20)}...`
+                          : item.course.title
+                        : ''}
                     </Text>
                     <Text style={styles.dateText}>
                       Date:{' '}

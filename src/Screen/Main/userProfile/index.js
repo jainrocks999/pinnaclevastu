@@ -1,37 +1,32 @@
 import React, {useEffect, useState} from 'react';
 import {
-  StyleSheet,
   Text,
   View,
   Image,
   TouchableOpacity,
   FlatList,
-  Dimensions,
   ScrollView,
   Modal,
 } from 'react-native';
-
-import {fontSize} from '../../../Component/fontsize';
-import {colors} from '../../../Component/colors';
-import {widthPrecent} from '../../../Component/ResponsiveScreen/responsive';
 import styles from './styles';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {clearcartdata, clearLocalCartData} from '../../../Redux/Slice/CartSlice';
+import {
+  clearcartdata,
+  clearLocalCartData,
+} from '../../../Redux/Slice/CartSlice';
 import {useDispatch, useSelector} from 'react-redux';
 import Loader from '../../../Component/Loader';
 import Imagepath from '../../../Component/Imagepath';
-import {clearUserData, getUserDetailApi} from '../../../Redux/Slice/Authslice';
+import {clearUserData} from '../../../Redux/Slice/Authslice';
 import constants from '../../../Redux/constant/constants';
 import axios from 'axios';
 
-const {width} = Dimensions.get('window');
 const MyProfile = () => {
   const navigation = useNavigation();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
   const dispatch = useDispatch();
   const userDetail = useSelector(state => state?.Auth?.userData);
   const isUserLoading = useSelector(state => state?.Auth?.loading);
@@ -46,10 +41,7 @@ const MyProfile = () => {
         const userData = JSON.parse(userStatus);
 
         if (userStatus) {
-          setIsLoggedIn(true);
           apiCall(userData);
-        } else {
-          setIsLoggedIn(false);
         }
       } catch (error) {
         console.log('Error checking login status:', error);
@@ -69,14 +61,12 @@ const MyProfile = () => {
           Authorization: `Bearer ${userData?.token}`,
         },
       };
-      //  console.log('config ',config);
       const response = await axios.request(config);
       setIsLoading(false);
-      // console.log('counting dmgkd ', response.data);
+
       if (response?.data?.status == 200) {
         setCount(response?.data?.data);
       } else {
-        // Toast.show(response?.data?.msg);
         console.log(response?.data);
       }
     } catch (error) {
@@ -88,9 +78,8 @@ const MyProfile = () => {
     setIsLoading(true);
     try {
       dispatch(clearcartdata());
-      dispatch(clearLocalCartData())
+      dispatch(clearLocalCartData());
       await AsyncStorage.clear();
-      // navigation.navigate('Home');
       setIsLoading(false);
       setIsModalVisible(false);
       navigation.replace('Home');
@@ -140,7 +129,6 @@ const MyProfile = () => {
           : null
       }>
       <View style={styles.actionContent}>
-        {/* {console.log(item?.title.includes("Franchise"))} */}
         <Image source={item.image} style={styles.actionIcon} />
         <Text style={styles.actionText}>{item.title}</Text>
       </View>
@@ -184,7 +172,6 @@ const MyProfile = () => {
 
       <View style={styles.profileSection}>
         <Image
-          // source={require('../../../assets/otherApp/profile.png')} // Replace with actual profile picture URL
           source={
             userDetail?.avatar
               ? {uri: `${Imagepath.Path}${userDetail?.avatar}`}
@@ -218,7 +205,6 @@ const MyProfile = () => {
       </View>
 
       <ScrollView style={styles.scrollContent}>
-        {/* {console.log(count,"sdmkflsmfl")} */}
         <View style={styles.statsSection}>
           <TouchableOpacity
             onPress={() =>
@@ -290,10 +276,7 @@ const MyProfile = () => {
         transparent={true}
         animationType="fade"
         visible={isModalVisible}
-        onRequestClose={() => setIsModalVisible(false)}
-        // onCancel={() => setIsModalVisible(false)}
-        // onConfirm={() => removerItem(itemToRemove)}
-      >
+        onRequestClose={() => setIsModalVisible(false)}>
         <View style={styles.modalOverlay} pointerEvents="box-none">
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Log out</Text>

@@ -1,7 +1,10 @@
 import {StyleSheet} from 'react-native';
 import {fontSize} from '../../../Component/fontsize';
 import {colors} from '../../../Component/colors';
-import {heightPercent, widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
+import {
+  heightPercent,
+  widthPrecent as wp,
+} from '../../../Component/ResponsiveScreen/responsive';
 export default styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -9,7 +12,6 @@ export default styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    // justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 18,
     paddingVertical: 10,
@@ -32,7 +34,7 @@ export default styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: colors.ordercolor,
     borderRadius: 20,
-    // elevation: 3,
+
     marginHorizontal: 15,
     paddingHorizontal: 15,
     marginBottom: 5,
@@ -75,12 +77,10 @@ export default styles = StyleSheet.create({
     paddingVertical: wp(2.5),
     backgroundColor: colors.orange,
     borderRadius: 8,
-    shadowColor: colors.orange, // Light pink color for the shadow
-    shadowOffset: {width: 0, height: 6}, // Offset 0px horizontally, 6px vertically
-    shadowOpacity: 0.5, // Opacity of the shadow (transparent but visible)
-    shadowRadius: 10, // Blur radius of 10px
-
-    // Android Elevation
+    shadowColor: colors.orange,
+    shadowOffset: {width: 0, height: 6},
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
     elevation: 5,
   },
   tabButtonText: {
@@ -107,17 +107,15 @@ export default styles = StyleSheet.create({
     paddingVertical: wp(3),
     backgroundColor: '#F6F6F6',
     borderRadius: 10,
-    // marginBottom: wp(2),
+
     paddingHorizontal: wp(5),
     marginHorizontal: 18,
   },
   activeCourseToggle: {
-    // marginBottom: -15,
-    // width: '93%',
     alignSelf: 'center',
     backgroundColor: colors.ordercolor,
     borderColor: '#EAEAEA',
-    //  borderBottomWidth: 1,
+
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
     borderBottomLeftRadius: 0,
@@ -150,7 +148,6 @@ export default styles = StyleSheet.create({
     height: wp(5),
   },
   subItemContainer: {
-    // marginTop: 15,
     width: '93%',
     alignSelf: 'center',
     backgroundColor: colors.ordercolor,
@@ -161,7 +158,6 @@ export default styles = StyleSheet.create({
     borderColor: '#EAEAEA',
     marginBottom: 10,
     paddingHorizontal: wp(5),
-    // marginHorizontal:18
   },
   singleSubItem: {
     flexDirection: 'row',
@@ -173,19 +169,18 @@ export default styles = StyleSheet.create({
     marginBottom: 20,
   },
   subItemIcon: {
-    backgroundColor:"#f3dacd",
+    backgroundColor: '#f3dacd',
     width: wp(10),
     height: wp(10),
     marginRight: 10,
     borderRadius: 10,
     resizeMode: 'contain',
-    // borderWidth:1,
   },
   subItemTitle: {
     fontSize: fontSize.Fourteen,
     color: colors.heading,
     fontFamily: 'Poppins-Medium',
-    width:"80%"
+    width: '80%',
   },
   subItemSubtitle: {
     fontSize: fontSize.Eleven,
@@ -199,8 +194,6 @@ export default styles = StyleSheet.create({
   downloadIconContainer: {
     position: 'absolute',
     right: 0,
-    // alignItems: 'center',
-    // marginLeft: 5,
   },
   direction: {
     flexDirection: 'row',
@@ -217,14 +210,13 @@ export default styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'black'
+    backgroundColor: 'black',
   },
   modalContent: {
     backgroundColor: 'white',
     borderRadius: 10,
     alignItems: 'center',
     width: wp(100),
-    // transform: [{ rotate: '90deg' }],
   },
   modelBackBtn: {
     position: 'absolute',

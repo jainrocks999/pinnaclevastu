@@ -29,12 +29,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import constants from '../../../Redux/constant/constants';
 import axios from 'axios';
 
-const SignUpFranchise = ({route}) => {
-  //   console.log(route, '######');
+const SignUpFranchise = () => {
   const userDetail = useSelector(state => state?.Auth?.userData);
   const services = useSelector(state => state.home?.HomeBanner?.data?.services);
   const navigation = useNavigation();
-  // console.log(userDetail,"sd,l;f");
   const dispatch = useDispatch();
   const [countryOptions, setCountryOptions] = useState([]);
   const [stateOptions, setStateOptions] = useState([]);
@@ -49,7 +47,6 @@ const SignUpFranchise = ({route}) => {
 
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
 
-  // const [visible, setVisible] = useState(false);
   const [isuserselectimage, setIsuserselectimage] = useState(false);
   const isLoading = useSelector(state => state.Auth?.loading);
 
@@ -105,7 +102,7 @@ const SignUpFranchise = ({route}) => {
     getCountryOptionsData();
     getStateOptionsData(formData.country || 0);
     getCityOptionsData(formData.stateName || 0);
-  }, [formData.country,formData.stateName]);
+  }, [formData.country, formData.stateName]);
 
   const formatDate = date => {
     if (!date) return 'Date of Birth';
@@ -154,11 +151,7 @@ const SignUpFranchise = ({route}) => {
           buttonPositive: 'OK',
         },
       );
-      console.log(
-        granted === PermissionsAndroid.RESULTS.GRANTED
-          ? 'Camera permission granted'
-          : 'Camera permission denied',
-      );
+      console.log(granted);
     } catch (err) {
       console.warn(err);
     }
@@ -457,10 +450,7 @@ const SignUpFranchise = ({route}) => {
       const response = await axios.request(config);
 
       if (response?.data?.status == 200) {
-        // console.log(response.data.data, 'dropdown data');
         setCountryOptions(response?.data?.data);
-      } else {
-        console.log(response?.data.data);
       }
     } catch (error) {
       console.log('dropdown error ', error);
@@ -478,16 +468,13 @@ const SignUpFranchise = ({route}) => {
       const response = await axios.request(config);
 
       if (response?.data?.status == 200) {
-        // console.log(response.data.data, 'dropdown data');
         setStateOptions(response?.data?.data);
-      } else {
-        console.log(response?.data.data);
       }
     } catch (error) {
       console.log('dropdown error ', error);
     }
   };
-  const getCityOptionsData=async (state_id)=>{
+  const getCityOptionsData = async state_id => {
     try {
       const config = {
         method: 'get',
@@ -499,15 +486,12 @@ const SignUpFranchise = ({route}) => {
       const response = await axios.request(config);
 
       if (response?.data?.status == 200) {
-        // console.log(response.data.data, 'dropdown data');
         setCityOptions(response?.data?.data);
-      } else {
-        console.log(response?.data.data);
       }
     } catch (error) {
       console.log('dropdown error ', error);
     }
-  }
+  };
 
   const data = [
     {label: 'Male', value: 'male'},
@@ -515,15 +499,11 @@ const SignUpFranchise = ({route}) => {
     {label: 'Transgender', value: 'transgender'},
   ];
 
-
-
   const languageOptions = [
     {label: 'Hindi', value: 'Hindi'},
     {label: 'English', value: 'English'},
     {label: 'Gujarati', value: 'Gujarati'},
   ];
-
-
 
   const getFilteredServices = currentServiceId => {
     const selectedServiceIds = servicesFields
@@ -941,8 +921,8 @@ const SignUpFranchise = ({route}) => {
           </View>
 
           <View style={{flexDirection: 'row'}}>
-               <View style={[styles.inputmain, {flex: 1}]}>
-               <Text style={styles.title2}>City*</Text>
+            <View style={[styles.inputmain, {flex: 1}]}>
+              <Text style={styles.title2}>City*</Text>
               <Animated.View
                 style={[{transform: [{translateX: shakeAnimation.stateName}]}]}>
                 <Dropdown
@@ -950,7 +930,7 @@ const SignUpFranchise = ({route}) => {
                   data={cityOptions}
                   labelField="name"
                   valueField="id"
-                   placeholder="City"
+                  placeholder="City"
                   placeholderStyle={[
                     styles.inputText,
                     {color: colors.placeholder},

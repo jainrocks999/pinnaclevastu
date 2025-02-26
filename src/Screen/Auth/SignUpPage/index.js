@@ -10,10 +10,9 @@ import {
   Animated,
   Vibration,
 } from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useRef, useState} from 'react';
 import styles from './styles';
 import {colors} from '../../../Component/colors';
-import SelectModal from '../../../Component/dropdown';
 import {useNavigation} from '@react-navigation/native';
 import {fontSize} from '../../../Component/fontsize';
 import DatePicker from 'react-native-date-picker';
@@ -25,30 +24,17 @@ import {Dropdown} from 'react-native-element-dropdown';
 import Loader from '../../../Component/Loader';
 
 const SignUpPage = ({route}) => {
-  console.log(route,"######")
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
 
   const dispatch = useDispatch();
   const [visible, setVisible] = useState(false);
-  const [selectedItem, setSelectedItem] = useState({
-    label: '',
-    value: '',
-  });
+
   const isLoading = useSelector(state => state.Auth?.loading);
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [selectedname, setSelectedname] = useState(null);
-  const [selectedname1, setSelectedname1] = useState(null);
-  const [selectedImagetype, setSelectedImagetype] = useState(null);
 
   const navigation = useNavigation();
   const [gender, setGender] = useState('');
-  const [search, setSearch] = useState('');
-  const onSelect = item => {
-    setSelectedItem(item);
-    setGender(item.label);
-    setVisible(false);
-  };
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
@@ -84,8 +70,8 @@ const SignUpPage = ({route}) => {
     return `${day}-${month}-${year}`;
   };
 
-  const [time, setTime] = useState(''); // State to store selected time
-  const [open1, setOpen1] = useState(false); // State to control date picker visibility
+  const [time, setTime] = useState('');
+  const [open1, setOpen1] = useState(false);
 
   const formatTime = time => {
     if (!time) return 'Time Of Birth';
@@ -135,16 +121,14 @@ const SignUpPage = ({route}) => {
       } else if (response.error) {
         console.log('Image picker error: ', response.error);
       } else if (response.assets && response.assets.length > 0) {
-      
-
         const pickedImage = response.assets[0];
         setSelectedImage(pickedImage);
       }
     });
   };
   const openCamera = async () => {
-    setModalVisible(false); // Close modal immediately
-    await requestCameraPermission(); // Handle async logic
+    setModalVisible(false);
+    await requestCameraPermission();
     const options = {
       mediaType: 'photo',
       maxHeight: 2000,
@@ -157,14 +141,12 @@ const SignUpPage = ({route}) => {
         console.log('User cancelled camera');
       } else if (response.error) {
         console.log('Camera error: ', response.error);
-      }else if (response.assets && response.assets.length > 0) {
+      } else if (response.assets && response.assets.length > 0) {
         const pickedImage = response.assets[0];
         setSelectedImage(pickedImage);
       }
     });
   };
-
-
 
   const scrollViewRef = useRef(null);
 
@@ -187,12 +169,12 @@ const SignUpPage = ({route}) => {
         : Toast.show('Invalid city pincode.');
     }
   };
-  // Shake animation function
+
   const shake = field => {
-    Vibration.vibrate(100); // Vibration for 100 milliseconds
+    Vibration.vibrate(100);
     Animated.sequence([
       Animated.timing(shakeAnimation[field], {
-        toValue: 5, // how far the input will shake
+        toValue: 5,
         duration: 100,
         useNativeDriver: true,
       }),
@@ -217,7 +199,7 @@ const SignUpPage = ({route}) => {
         useNativeDriver: true,
       }),
     ]).start(() => {
-      scrollToField(field); // Scroll to the field after shake animation completes
+      scrollToField(field);
     });
   };
   const scrollToField = fieldName => {
@@ -282,10 +264,10 @@ const SignUpPage = ({route}) => {
       shake('cityPincode');
       scrollToField('cityPincode');
       return;
-      } else if (date === '') {
-        shake('date');
-        scrollToField('date');
-        return;
+    } else if (date === '') {
+      shake('date');
+      scrollToField('date');
+      return;
     } else if (formData.cityPincode.length < 6) {
       shake('cityPincode');
       scrollToField('cityPincode');
@@ -297,10 +279,10 @@ const SignUpPage = ({route}) => {
       formUserData.append('phone', formData.mobile);
       formUserData.append('gender', gender);
       formUserData.append('dob', formatDate(date));
-      formUserData.append('city_pincode',formData.cityPincode)
+      formUserData.append('city_pincode', formData.cityPincode);
       formUserData.append('time_of_birth', formatTime(time));
       formUserData.append('place_of_birth', formData.birthPlace);
-      formUserData.append('avatar',{
+      formUserData.append('avatar', {
         uri: selectedImage.uri,
         name: selectedImage.fileName,
         type: selectedImage.type,
@@ -310,7 +292,7 @@ const SignUpPage = ({route}) => {
           formUserData,
           url: 'sign-up',
           navigation,
-          route
+          route,
         }),
       );
     }
@@ -406,7 +388,6 @@ const SignUpPage = ({route}) => {
                 placeholderStyle={{
                   color: gender ? colors.heading : colors.placeholder,
                   fontSize: fontSize.Sixteen,
-                  // marginTop: 2,
                   fontFamily: 'Poppins-Regular',
                 }}
                 selectedTextStyle={styles.selectedText}
@@ -425,38 +406,6 @@ const SignUpPage = ({route}) => {
               />
             </Animated.View>
           </View>
-
-          {/* <View style={styles.inputmain}>
-            <Text style={styles.title2}>Gender*</Text>
-            <TouchableOpacity
-              onPress={() => setVisible(true)}
-              style={[
-                styles.input,
-                styles.inputShadow,
-                {
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                },
-              ]}>
-              <Text
-                style={{
-                  color: gender ? '#000' : colors.placeholder,
-                  fontSize: fontSize.Sixteen,
-                  // marginTop: 2,
-                  fontFamily: 'Poppins-Regular',
-                }}>
-                {gender ? gender : 'Gender'}
-              </Text>
-              <Image
-                style={{
-                  height: 8,
-                  width: 15,
-                }}
-                source={require('../../../assets/image/arrow_icon.png')}
-              />
-            </TouchableOpacity>
-          </View> */}
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Current City Pincode*</Text>
             <View style={[styles.input, styles.inputShadow]}>
@@ -525,8 +474,6 @@ const SignUpPage = ({route}) => {
 
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Time of Birth</Text>
-
-            {/* Input area with DatePicker */}
             <TouchableOpacity
               onPress={() => setOpen1(true)}
               style={[

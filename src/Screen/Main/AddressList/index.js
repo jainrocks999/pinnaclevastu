@@ -1,23 +1,21 @@
 import {
-  StyleSheet,
+
   Text,
   View,
   FlatList,
   TouchableOpacity,
-  Alert,
+
   ScrollView,
   Image,
   Animated,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import styles from './styles';
-import {RadioButton} from 'react-native-paper';
 import {colors} from '../../../Component/colors';
 import {useDispatch, useSelector} from 'react-redux';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
-  RemoveAddress,
   removeShopifyUserAddress,
 } from '../../../Redux/Slice/Addresslice';
 import Loader from '../../../Component/Loader';
@@ -28,39 +26,34 @@ const DeliveryAddress = ({route}) => {
   const navigation = useNavigation();
 
   const {userDetails, isLoading} = useSelector(state => state.Login);
- 
-  const addresstoget = useSelector(state => state.address?.getaData);
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
   const [selectedId, setSelectedId] = useState('');
-  const [addresstoget1, setAddresstoget] = useState(addresstoget); // Address list
-  const [defaultAddress1, setDefaultAddress1] = useState('');
+
   const [sortedAddresses, setSortedAddresses] = useState([]);
   const dispatch = useDispatch();
-  const focus = useIsFocused();
+ 
 
   useEffect(() => {
     const defaultItem = userDetails?.defaultAddress;
 
     if (defaultItem) {
-      setDefaultAddress1(defaultItem);
       setSelectedId(defaultItem.id);
     }
 
-    // const sortedData = [...userDetails?.addresses?.edges]?.sort((a, b) => b.id - a.id);
     const sortAddresses = (addresses, defaultItem) => {
-      if (!addresses || !defaultItem) return []; // If data is not available, return empty array
+      if (!addresses || !defaultItem) return [];
 
       return [
-        ...addresses.filter(item => item?.node?.id === defaultItem.id), // Default address at the top
-        ...addresses.filter(item => item?.node?.id !== defaultItem.id), // Remaining addresses
+        ...addresses.filter(item => item?.node?.id === defaultItem.id), 
+        ...addresses.filter(item => item?.node?.id !== defaultItem.id),
       ];
     };
 
-    // Usage
+
     const sortedData = sortAddresses(
       userDetails?.addresses?.edges || [],
       defaultItem,
-    ); // Pass array and default item
+    ); 
     setSortedAddresses(sortedData);
   }, [userDetails?.defaultAddress]);
 
@@ -82,44 +75,24 @@ const DeliveryAddress = ({route}) => {
         useNativeDriver: true,
       }),
     ]).start(() => {
-      console.log('slknnfklfdlkgn',item.item);
-      // if(item.item.availableForSale!=false){
+     
+    
         
         
         checkout(item?.item, navigation);
-      // }
-     
-
-      // navigation.navigate('Payment', {
-      //   data1: 'Remedies',
-      //   data: item,
-      //   adress: defaultAddress1,
-      // });
+    ;
     });
   };
 
   const cartRemove = async item => {
-    // const access_Token = '615c78ef801b0e22521f80174b4dae2d';
     const userStatus = await AsyncStorage.getItem('user_data');
     const userData = JSON.parse(userStatus)
     dispatch(removeShopifyUserAddress(userData?.shopify_access_token, item?.node?.id));
 
-    // const token = await AsyncStorage.getItem('Token');
-    // const userid = await AsyncStorage.getItem('user_id');
-
-    // await dispatch(
-    //   RemoveAddress({
-    //     user_id: userid,
-    //     customer_address_id:item,
-    //     token: token,
-    //     url: 'delete-customer-address',
-    //     navigation,
-    //   }),
-    // );
+    
   };
 
   const renderItem = ({item}) => (
-    // { borderColor:selectedId == item?.id?colors?.orange: '#DFE7EF',  }
     <TouchableOpacity
       onPress={() => toggleDefaultAddress(item.node)}
       style={[
@@ -156,28 +129,12 @@ const DeliveryAddress = ({route}) => {
             {(item.node.address1 ? item.node.address1 : '') +
               (item.node.address2 ? ' ' + item.node.address2 : '')}{' '}
             {item?.node?.city ?? ''} {item?.node?.zip ?? ''}
-            {/* {item?.address} {item.apartment}  {item?.city} ({item?.zip_code}) */}
           </Text>
           <Text style={styles.cardPhone}>{`Mobile :${
             item?.node?.phone ?? ''
           }`}</Text>
         </View>
       </View>
-
-      {/* <View style={styles.direction1}>
-        <View style={styles.radioButtonWrapper}>
-          <RadioButton
-            value={item.id}
-            status={selectedId==item?.is_default ? 'checked' : 'unchecked'}
-            onPress={() => toggleDefaultAddress(item)}
-            color={colors.Headertext}
-            uncheckedColor={colors.light_gr}
-          />
-        </View>
-        <View style={styles.makeview}>
-          <Text style={styles.maketext}>{'Make this my default address'}</Text>
-        </View>
-      </View> */}
     </TouchableOpacity>
   );
 
@@ -234,14 +191,6 @@ const DeliveryAddress = ({route}) => {
           </View>
         )}
       </ScrollView>
-      {/* <TouchableOpacity
-          style={styles.fab}
-          onPress={() =>
-            navigation.navigate('Address', {data: true, item: {}})}
-          // navigation.navigate('Address')}
-          >
-          <Text style={styles.fabText}>+</Text>
-        </TouchableOpacity> */}
       <View style={styles.scrollview1}>
         <Animated.View
           style={[

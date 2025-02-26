@@ -1,19 +1,7 @@
 import {createSlice} from '@reduxjs/toolkit';
-import axios, {Axios} from 'axios';
-// import {
-//     API_PSW,
-//     FILTER_URL,
-//     MAIN_URL,
-//     SEARCH_URL,
-//     WIZZY_API,
-//     WIZZY_API_KEY,
-//     WIZZY_STORE_ID,
-//     WIZZY_X_STORE_SECRET,
-// } from "../../common/constants";
-//import {getImageByGid} from '../../models/getMediaImagenbyGid';
-import {ACCESSTOKEN, SHOPIFY_CLIENT} from '../../common/shopifyClient';
-import {ACCESS_TOKEN, API_PSW, MAIN_URL} from '../../common/constants';
-import {convertCollectionId} from './../../common/shopifyConverter';
+import axios from 'axios';
+import {ACCESSTOKEN} from '../../common/shopifyClient';
+import {API_PSW, MAIN_URL} from '../../common/constants';
 import {
   GraphQlConfig,
   categoryList,
@@ -35,27 +23,6 @@ const initialState = {
   endCursor: {},
   collectionBanner: [],
   countData: {},
-  // graphModelProducts: [],
-  // hasNextPage: false,
-  // isRefresh: false,
-  // isPaginationLoading: false,
-  // error: "",
-  // pageNo: "",
-  // total_product: "",
-  // sortTypeName: "1",
-  // topBannerCollectionData: [],
-  // starterImage: null,
-  // topBannercategoryName: "",
-  // isSubLoading: false,
-  // filterData: [],
-  // filterApplied: "",
-  // isEnd: false,
-  // filterAppliedList: "",
-  // isFilterNull: "",
-  // isSearchOption: false,
-  // sortSelectedType: "",
-  // isGridLoading: false,
-  // collectionName: ''
 };
 export const CollectionSlice = createSlice({
   name: 'collection',
@@ -97,7 +64,6 @@ export const CollectionSlice = createSlice({
     },
     GET_FILTER_SUCCESS: (state, action) => {
       state.filterData = action.payload.filterData;
-      console.log('this is called and updaatee the data', action.payload);
     },
     GET_COLLECTION_LOADING: (state, action) => {
       state.isLoading = action.payload.isLoading;
@@ -115,7 +81,6 @@ export const CollectionSlice = createSlice({
   },
 });
 
-// Action creators are generated for each case reducer function
 export const {
   LOADING,
   SUCCESS,
@@ -137,7 +102,6 @@ export const initCollection = () => {
   };
 };
 export const GetSortOrder = async (collectionHandle, collectionsort) => {
-  console.log('GetSortOrder', collectionHandle, collectionsort);
   var sortOrderField = 'product_' + collectionHandle + '_sortOrder:float';
   var sortOrder = 'asc';
   if (collectionsort === 'best-selling') {
@@ -169,10 +133,6 @@ export const GetSortOrder = async (collectionHandle, collectionsort) => {
     sortOrder = 'desc';
   }
   return [
-    // {
-    //   field: "relevance",
-    //   order: "asc",
-    // },
     {
       field: sortOrderField,
       order: sortOrder,
@@ -217,9 +177,6 @@ export const fetchCollection = (
   return async dispatch => {
     try {
       dispatch(LOADING());
-      console.log('colletion resposneeneenen' , collectionId,
-        first);
-     
       let data = JSON.stringify({
         query: getProducts,
         variables: {
@@ -242,8 +199,6 @@ export const fetchCollection = (
                   parsedReview = JSON.parse(review.value);
                 } catch (error) {
                   console.error('JSON Parse error:', error.message, 'with value:', review.value);
-                  // Optionally, assign the raw string or leave it as null:
-                  // parsedReview = review.value;
                 }
               } else {
                 console.log('No valid JSON string to parse.');
@@ -310,7 +265,7 @@ export const fetchCollectionUrl = collectionUrl => {
       };
       await axios(config)
         .then(function (response) {
-          console.log('fetchCollection', response.data);
+    
           let collectionId = response?.data?.collection?.id;
           let collectionTitle = response.data.collection.title;
           let collectionSize = response.data.collection.products_count;
@@ -346,11 +301,6 @@ export const fetchCollectionById = collectionId => {
       axios
         .request(Sortconfig)
         .then(async response => {
-          console.log(
-            'response data from now  titll',
-            JSON.stringify(response.data),
-          );
-
           let collectionId = response?.data?.collection?.id;
           let collectionTitle = response.data.collection.title;
           let collectionSize = response.data.collection.products_count;
@@ -382,7 +332,6 @@ export const fetchCollectionSortBy = (
       return axios
         .request(GraphQlConfig(data))
         .then(response => {
-          console.log('this is response', JSON.stringify(response));
           dispatch(
             SUCCESS({
               products: response?.data?.data?.collection?.products?.edges,
@@ -419,10 +368,6 @@ export const fetchCollectionApplyFilter = (
       return axios
         .request(GraphQlConfig(data))
         .then(async response => {
-          // console.log(
-          //   'this is appiled fileter++++++++++++++',
-          //   JSON.stringify(response),
-          // );
           const endCursor =
             response?.data?.data?.collection?.products?.pageInfo?.endCursor;
           const countData = await fetchCountAfterFiltFilter(
@@ -454,7 +399,6 @@ export const fetchCollectionApplyFilter = (
 };
 
 export const fetchCountAfterFiltFilter = async (variables, cursor) => {
-  console.log(JSON.stringify(variables), cursor);
   try {
     const data = JSON.stringify({
       query: getProductsCount,

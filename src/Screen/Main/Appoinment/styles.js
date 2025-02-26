@@ -11,7 +11,6 @@ export default styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    //  justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 15,
     paddingVertical: 10,
@@ -37,7 +36,7 @@ export default styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 10,
     backgroundColor: colors.ordercolor,
-    marginHorizontal:20
+    marginHorizontal: 20,
   },
   tab: {
     alignSelf: 'center',
@@ -79,14 +78,13 @@ export default styles = StyleSheet.create({
     borderColor: colors.lightGrey,
     backgroundColor: colors.white,
     borderRadius: 10,
-    // marginBottom: 15,
-    marginTop:15,
+    marginTop: 15,
     shadowColor: '#1A1A1A',
     shadowOffset: {width: 0, height: 6},
     shadowOpacity: 0.5,
     shadowRadius: 10,
     elevation: 10,
-    marginHorizontal:20,
+    marginHorizontal: 20,
   },
 
   appointmentImage: {
@@ -122,12 +120,10 @@ export default styles = StyleSheet.create({
     color: colors.Headertext,
   },
   appointmentTime: {
-    // marginLeft: 4,
     fontSize: fontSize.Twelve,
     fontFamily: 'Poppins-SemiBold',
     color: colors.Headertext,
     paddingTop: 5,
-    // color: '#52B1E9',
   },
   redText: {
     fontSize: fontSize.Twelve,
@@ -196,7 +192,6 @@ export default styles = StyleSheet.create({
     margin: 'auto',
     width: '60%',
     padding: 10,
-    // borderWidth:1,
   },
   emptyMessage: {
     fontSize: fontSize.Fourteen,

@@ -8,11 +8,11 @@ import {
   Animated,
   BackHandler,
   Vibration,
+  FlatList,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import styles from './styles';
 import {Rating} from 'react-native-ratings';
-
 import {widthPrecent} from '../../../Component/ResponsiveScreen/responsive';
 import {useNavigation} from '@react-navigation/native';
 import Imagepath from '../../../Component/Imagepath';
@@ -20,7 +20,6 @@ import axios from 'axios';
 import constants from '../../../Redux/constant/constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-simple-toast';
-import {FlatList} from 'react-native-gesture-handler';
 import {colors} from '../../../Component/colors';
 
 const AppointmentDetails = ({route}) => {
@@ -33,12 +32,9 @@ const AppointmentDetails = ({route}) => {
   });
 
   const [ratingStar, setRatingStar] = useState(0);
-  // console.log(data, 'sdlskdl');
-
   const handleInputChange = (name, value) => {
     setReviewData({...reviewData, [name]: value});
   };
-  console.log(data, 'sdfm,ldf');
   useEffect(() => {
     const backAction = () => {
       navigation.goBack();
@@ -116,12 +112,7 @@ const AppointmentDetails = ({route}) => {
         },
         data: JSON.stringify(bodyData),
       };
-
-      console.log('config ', config);
-      // return;
       const response = await axios.request(config);
-
-      // console.log('counting dmgkd ', response.data);
       if (response?.data?.status == 200) {
         Toast.show(response?.data?.msg);
         navigation.navigate('Home1', {
@@ -129,12 +120,7 @@ const AppointmentDetails = ({route}) => {
           params: {screen: 'Appointment'},
         });
       } else {
-        // console.log(response?.data.msg);
         Toast.show(response?.data?.msg);
-        // navigation.navigate('Home1', {
-        //   screen: 'MyProfile',
-        //   params: {screen: 'Appointment'},
-        // })
       }
     } catch (error) {
       console.log('Error checking login status:', error);
@@ -176,7 +162,6 @@ const AppointmentDetails = ({route}) => {
       } else {
         addReview();
       }
-      // navigation.navigate('Appoiment');
     });
   };
 
@@ -213,9 +198,7 @@ const AppointmentDetails = ({route}) => {
 
   const renderItem3 = ({item}) => {
     return (
-      <TouchableOpacity
-        // onPress={() => navigation.navigate('profile')}
-        style={[styles.cardContainer1]}>
+      <TouchableOpacity style={[styles.cardContainer1]}>
         <View style={styles.reviewCard}>
           <View style={{paddingLeft: 5}}>
             <Image
@@ -234,7 +217,7 @@ const AppointmentDetails = ({route}) => {
               startingValue={item.star}
               ratingColor="#52B1E9"
               readonly
-              ratingBackgroundColor={colors.lightGrey} // Unfilled star color
+              ratingBackgroundColor={colors.lightGrey}
             />
           </View>
           <View style={[styles.card, {paddingLeft: 10}]}>
@@ -323,7 +306,6 @@ const AppointmentDetails = ({route}) => {
                 <Rating
                   type="custom"
                   ratingColor="#52B1E9"
-                  // readonly={true}
                   startingValue={data?.franchise_details?.reviews_star || ''}
                   tintColor="#F5FAFF"
                   readonly
@@ -344,7 +326,7 @@ const AppointmentDetails = ({route}) => {
             About {data?.franchise_details?.services[0]?.services_name}
           </Text>
           <Text style={styles.smallText}>
-            {data?.franchise_details?.services[0]?.services_desc} 
+            {data?.franchise_details?.services[0]?.services_desc}
           </Text>
         </View>
         {data?.status == 'completed' &&
@@ -367,7 +349,7 @@ const AppointmentDetails = ({route}) => {
               //   numColumns={3}
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{
-                paddingBottom:15
+                paddingBottom: 15,
               }}
             />
             {filterReviewByCustomerId()?.length >= 5 && (
@@ -411,7 +393,6 @@ const AppointmentDetails = ({route}) => {
                     ratingBackgroundColor={'#D8E3E980'}
                     startingValue={ratingStar}
                     onFinishRating={handleRatingChange}
-                    // readonly
                     style={styles.starContainer}
                   />
                 </View>

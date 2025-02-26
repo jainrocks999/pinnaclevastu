@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   StyleSheet,
@@ -7,41 +7,40 @@ import {
   Linking,
   Platform,
   BackHandler,
-} from "react-native";
-import { WebView } from "react-native-webview";
-// import {fetchAllOrders} from '../../redux/actions/orderAction';
-import { useDispatch, useSelector } from "react-redux";
-import Loader from "../../../Component/Loader";
-import { clearcartdata, clearLocalCartData } from "../../../Redux/Slice/CartSlice";
+} from 'react-native';
+import {WebView} from 'react-native-webview';
+import {useDispatch} from 'react-redux';
+import Loader from '../../../Component/Loader';
+import {
+  clearcartdata,
+  clearLocalCartData,
+} from '../../../Redux/Slice/CartSlice';
 
-
-const CartWeb = (props) => {
-  var isFromCart = props.route.params.isFromCart;
-  // console.log("isFromCart--->", isFromCart);
+const CartWeb = props => {
   const navigation = props.navigation;
   const dispatch = useDispatch();
-  const [URI, setURI] = useState(props.route.params.Url);
-  console.log("URI", props.route.params.Url);
 
- 
   useEffect(() => {
     const goBack = () => {
       navigation.goBack();
-      return true; 
+      return true;
     };
 
-    const backHandler = BackHandler.addEventListener("hardwareBackPress", goBack);
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      goBack,
+    );
 
     return () => {
-      backHandler.remove(); 
+      backHandler.remove();
     };
   }, []);
 
   let isConnected = true;
   const webViewRef = useRef(null);
   function shouldOverrideUrlLoading(event) {
-    const { url } = event;
-    if (url.includes("upi://pay?")) {
+    const {url} = event;
+    if (url.includes('upi://pay?')) {
       Linking.openURL(url);
       return false;
     }
@@ -54,34 +53,30 @@ const CartWeb = (props) => {
 `;
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <ScrollView contentContainerStyle={{flexGrow: 1}}>
         {isConnected ? (
-          Platform.OS == "ios" ? (
+          Platform.OS == 'ios' ? (
             <WebView
               ref={webViewRef}
-              style={{ height: "100%", width: "100%" }}
+              style={{height: '100%', width: '100%'}}
               source={{
                 uri: props.route.params.Url,
               }}
               ignoreSslError={true}
-              onNavigationStateChange={async (event) => {
-                console.log(
-                  "event......=----------????",
-                  event.url
-                );
-                if (event.url == "https://pinnaclevastu-in.myshopify.com/") {
-                  navigation.replace("MainStack");
+              onNavigationStateChange={async event => {
+                if (event.url == 'https://pinnaclevastu-in.myshopify.com/') {
+                  navigation.replace('MainStack');
                 }
               }}
-              onReceivedError={(error) => {
-                console.log("error", error);
+              onReceivedError={error => {
+                console.log('error', error);
               }}
               onShouldStartLoadWithRequest={shouldOverrideUrlLoading}
               scalesPageToFit={true}
               javaScriptEnabledAndroid={true}
               javaScriptEnabled={true}
               domStorageEnabled={true}
-              onError={(error) => console.log("error--", error)}
+              onError={error => console.log('error--', error)}
               startInLoadingState={true}
               renderLoading={() => <Loader />}
               injectedJavaScript={runFirst}
@@ -89,45 +84,34 @@ const CartWeb = (props) => {
           ) : (
             <WebView
               ref={webViewRef}
-              style={{ height: "100%", width: "100%" }}
+              style={{height: '100%', width: '100%'}}
               source={{
                 uri: props.route.params.Url,
               }}
-              originWhitelist={["*"]}
+              originWhitelist={['*']}
               ignoreSslError={true}
-              onNavigationStateChange={async (event) => {
-                console.log(
-                  "event......",
-                  event
-                );
-
-                if (event.title === "Checkout - pinnaclevastu-in") {
-                 
+              onNavigationStateChange={async event => {
+                if (event.title === 'Checkout - pinnaclevastu-in') {
                   await dispatch(clearLocalCartData());
                   await dispatch(clearcartdata());
-                  // navigation.reset({
-                  //   index: 0,
-                  //   routes: [{ name: "Home" }],
-                  // });
                 }
 
-                if (event.url === "https://pinnaclevastu-in.myshopify.com/") {
+                if (event.url === 'https://pinnaclevastu-in.myshopify.com/') {
                   navigation.reset({
                     index: 0,
-                    routes: [{ name: "Home" }],
+                    routes: [{name: 'Home'}],
                   });
-                  // navigation.replace("Home");
                 }
               }}
-              onReceivedError={(error) => {
-                console.log("error", error);
+              onReceivedError={error => {
+                console.log('error', error);
               }}
               onShouldStartLoadWithRequest={shouldOverrideUrlLoading}
               scalesPageToFit={true}
               javaScriptEnabledAndroid={true}
               javaScriptEnabled={true}
               domStorageEnabled={true}
-              onError={(error) => console.log("error--", error)}
+              onError={error => console.log('error--', error)}
               startInLoadingState={true}
               renderLoading={() => <Loader loading={true} />}
               injectedJavaScript={runFirst}
@@ -148,7 +132,7 @@ const CartWeb = (props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
 });
 

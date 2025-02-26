@@ -12,8 +12,6 @@ export default StyleSheet.create({
     backgroundColor: colors.white,
   },
   main1: {
-    //  paddingHorizontal: 15,
-    // paddingVertical: 10,
     paddingBottom: 10,
   },
   title: {
@@ -29,7 +27,6 @@ export default StyleSheet.create({
     borderBottomRightRadius: 20,
   },
   inputmain: {
-    // marginTop: hp(2.5),
     paddingHorizontal: 15,
     paddingVertical: 10,
   },
@@ -67,7 +64,6 @@ export default StyleSheet.create({
   },
 
   input1: {
-    // height: '100%',
     width: '60%',
     marginLeft: wp(-1),
     fontSize: fontSize.Sixteen,
@@ -97,21 +93,17 @@ export default StyleSheet.create({
     paddingHorizontal: 15,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#D87C51', // Shadow color
-    shadowOffset: {width: 0, height: 3}, // Shadow direction
-    shadowOpacity: 0.12, // Shadow intensity
-    shadowRadius: 10, // Shadow blur radius
-    // Elevation for Android
+    shadowColor: '#D87C51',
+    shadowOffset: {width: 0, height: 3},
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
     elevation: 8,
   },
   buttoncontainer: {
     marginHorizontal: 15,
     height: wp(13),
-    // width: '90%',
     backgroundColor: colors.orange,
     borderRadius: 10,
-    // opacity: 1,
-    // borderWidth:1,
     marginTop: hp(2),
     marginBottom: 10,
     paddingHorizontal: 15,
@@ -121,7 +113,6 @@ export default StyleSheet.create({
     shadowOffset: {width: 0, height: 6},
     shadowOpacity: 0.8,
     shadowRadius: 10,
-
     elevation: 8,
   },
   btext: {
@@ -129,16 +120,7 @@ export default StyleSheet.create({
     color: colors.white,
     fontFamily: 'Poppins-Regular',
   },
-  endview: {
-    marginTop: hp(2),
-    justifyContent: 'center',
-  },
-  endtext: {
-    fontSize: fontSize.Sixteen,
-    fontFamily: 'Poppins-Regular',
-    color: colors.white,
-    textAlign: 'center',
-  },
+  
   inputShadow: {
     shadowColor: '#c2c0c0',
     shadowOffset: {width: 0, height: 2},
@@ -195,11 +177,6 @@ export default StyleSheet.create({
     width: '100%',
     resizeMode: 'contain',
   },
-  addIconBtn: {
-    // position: 'absolute',
-    // right: 20,
-    // width: 28,
-  },
   addIcon: {
     backgroundColor: colors.placeholder,
     color: colors.white,
@@ -229,24 +206,7 @@ export default StyleSheet.create({
     gap: 15,
     paddingVertical: 7,
   },
-  icon: {
-    marginRight: 5,
-  },
-  item: {
-    paddingVertical: 17,
-    paddingHorizontal: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  textItem: {
-    flex: 1,
-    fontSize: 16,
-    color: colors.heading,
-    fontFamily: 'Poppins-Regular',
-  },
   inputSearchStyle: {
-    // height: wp(10),
     borderRadius: 10,
     fontSize: 16,
     color: colors.heading,

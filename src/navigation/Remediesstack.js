@@ -1,5 +1,4 @@
 import React from 'react';
-
 import Remedies from '../Screen/Main/Remedies';
 import RemediesProduct from '../Screen/Main/RemediesProducutlist'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';

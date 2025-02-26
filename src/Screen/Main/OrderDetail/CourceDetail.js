@@ -53,24 +53,23 @@ const customStyles = {
 const CourceDetail = () => {
   const navigation = useNavigation();
   const data2 = useSelector(state => state?.order?.orderDetal);
-  const loading1 = useSelector(state => state?.order?.loading);
+
   const [visibleItemId, setVisibleItemId] = useState(null);
   const [reason, setReason] = useState('');
   const dispatch = useDispatch();
-  const [value, setValue] = useState(null);
-  const [isFocus, setIsFocus] = useState(false);
- 
-   useEffect(() => {
-       const backAction = () => {
-         navigation.goBack()
-         return true; 
-       };
-       
-       const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-   
-       return () => backHandler.remove(); 
-     
-   }, [navigation]);
+
+  useEffect(() => {
+    const backAction = () => {
+      navigation.goBack();
+      return true;
+    };
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, [navigation]);
 
   const cancelorder = async () => {
     if (!reason.trim()) {
@@ -118,19 +117,6 @@ const CourceDetail = () => {
     );
   };
 
-  const getdata = qty => {
-    let value = {label: '1', value: '1'};
-    let array1 = [value];
-    if (qty == 1) {
-      return array1;
-    }
-    let array = [];
-    for (let i = 1; i <= qty; i++) {
-      array.push({label: i.toString(), value: i.toString()});
-    }
-    return array;
-  };
-
   const formatDate = () => {
     const date = new Date(data2?.created_at);
 
@@ -143,7 +129,6 @@ const CourceDetail = () => {
 
   const renderItem = ({item}) => (
     <View style={styles.card}>
-      {console.log(item)}
       <Image
         style={styles.cardImg}
         source={
@@ -220,19 +205,8 @@ const CourceDetail = () => {
         }}>
         <View style={styles.section}>
           <View style={styles.card}>
-            {console.log(' data2?.course?.image', `${Imagepath.Path}${data2?.course?.image}`)
-            }
-            {/* <AutoHeightImage
-            style={{width:widthPrecent(34)}}
-              // style={[styles.cardImg,{width:widthPrecent(34)}]}
-              source={
-                data2?.course?.image
-                  ? {uri: `${Imagepath.Path}${data2?.course?.image}`}
-                  : require('../../../assets/image/Remedies/Image-not.png')
-              }
-            /> */}
             <Image
-            style={{width:widthPrecent(34),resizeMode:"contain"}}
+              style={{width: widthPrecent(34), resizeMode: 'contain'}}
               source={
                 data2?.course?.image
                   ? {uri: `${Imagepath.Path}${data2?.course?.image}`}
@@ -274,65 +248,6 @@ const CourceDetail = () => {
           </View>
         </View>
 
-        {/* <View style={styles.OrderTrackcontainer}>
-            <Text style={styles.titleText}>Track your order</Text>
-  
-            <StepIndicator
-              customStyles={customStyles}
-              currentPosition={getCurrentPosition()}
-              direction="vertical"
-              labels={labels}
-              renderStepIndicator={({position}) => (
-                <View
-                  style={[
-                    styles.stepCircle,
-                    position < getCurrentPosition() && styles.activeStepCircle,
-                    position === getCurrentPosition() && styles.activeStepCircle,
-                  ]}>
-                 
-                  {position === getCurrentPosition() && position === 4 && (
-                    <Image
-                      source={require('../../../assets/otherApp/checkedIcon.png')}
-                      style={styles.checkedIcon}
-                    />
-                  )}
-                </View>
-              )}
-              renderLabel={({position, label}) => (
-                <Text
-                  style={[
-                    styles.lebleText,
-                    {
-                      fontSize: customStyles.labelSize,
-                   
-                      color:
-                        position < getCurrentPosition()
-                          ? customStyles.finishedStepLabelColor
-                          : position == getCurrentPosition()
-                          ? customStyles.currentStepLabelColor
-                          : customStyles.unfinishedStepLabelColor,
-                    },
-                  ]}>
-                  {label}
-                </Text>
-              )}
-            />
-          </View> */}
-        {/* {getCurrentPosition() == 4 ? (
-            <View style={[styles.section, styles.trakIdSection]}>
-              <View style={styles.trakIdSection}>
-                <Text style={styles.tarkIdText}>AWB No:</Text>
-                <Text style={styles.btnText}>1234678942124576</Text>
-              </View>
-              <TouchableOpacity style={[styles.trakIdSection, styles.copyBtn]}>
-                <Image
-                  style={styles.copyIcon}
-                  source={require('../../../assets/drawer/copy.png')}
-                />
-                <Text style={styles.btnText}>Copy</Text>
-              </TouchableOpacity>
-            </View>
-          ) : null} */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Order Summary</Text>
 
@@ -344,20 +259,9 @@ const CourceDetail = () => {
             <Text style={styles.rowLabel}>Subtotal</Text>
             <Text style={styles.rowLabel}>{`₹ ${data2?.sub_total}`}</Text>
           </View>
-          {/* <View
-              style={[
-                styles.listRow,
-                {borderBottomWidth: 1, borderColor: '#DFE7EF'},
-              ]}>
-              <Text style={styles.rowLabel}>Shipping charges</Text>
-              <Text style={styles.rowLabel}>{`₹ ${data2?.shipping_amount}`}</Text>
-            </View> */}
 
           <View style={[styles.listRow]}>
-            <Text style={styles.TaxText}>
-              Tax
-              {/* <Text style={{fontSize: fontSize.Thirteen}}>(3.0%)</Text> */}
-            </Text>
+            <Text style={styles.TaxText}>Tax</Text>
             <Text style={styles.rowLabel}>{`₹ ${data2?.tax_amount}`}</Text>
           </View>
           <View

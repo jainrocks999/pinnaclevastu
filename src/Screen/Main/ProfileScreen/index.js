@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, {useState, useRef} from 'react';
 import {
   View,
   Text,
@@ -15,54 +15,21 @@ import styles from './styles';
 import {colors} from '../../../Component/colors';
 import {Rating} from 'react-native-ratings';
 import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
-import {useNavigation} from '@react-navigation/native';
-import {consultationDetail1} from '../../../Redux/Slice/HomeSlice';
 import {useSelector} from 'react-redux';
 import Imagepath from '../../../Component/Imagepath';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Toast from 'react-native-simple-toast';
 import Collapsible from 'react-native-collapsible';
 import RenderHTML from 'react-native-render-html';
-import {fontSize} from '../../../Component/fontsize';
+
 const ResidentalScreen = ({navigation}) => {
   const userDetail = useSelector(state => state?.Auth?.userData);
-  // const data = useSelector(state => state?.home?.ConsultationDetail?.data);
-  const data = useSelector(state => state.consultation.ConsultationDetail);
 
-  // console.log(fromScreen," se aaya hai....")
-  // console.log(data,"scmlsmkcl")
+  const data = useSelector(state => state.consultation.ConsultationDetail);
 
   const [scaleAnims, setScaleAnims] = useState({});
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
   const [expandedSection, setExpandedSection] = useState(null);
-
-  const data2 = [
-    {
-      id: '1',
-      image: require('../../../assets/image/house.png'),
-      name: 'Residential Vastu',
-    },
-    {
-      id: '2',
-      image: require('../../../assets/image/house.png'),
-      name: 'Residential Vastu',
-    },
-    {
-      id: '4',
-      image: require('../../../assets/image/house.png'),
-      name: 'Residential Vastu',
-    },
-    {
-      id: '3',
-      image: require('../../../assets/image/industry.png'),
-      name: 'Industrial Vastu',
-    },
-    {
-      id: '5',
-      image: require('../../../assets/image/Layer_x.png'),
-      name: 'Gemstone',
-    },
-  ];
 
   const toggleSection = sectionId => {
     setExpandedSection(prevSection =>
@@ -86,7 +53,7 @@ const ResidentalScreen = ({navigation}) => {
         }
       }
     } catch (error) {
-      // Alert.alert('Error', `An error occurred: ${error.message}`);
+      console.log('error :', error);
     }
   };
   const share = async () => {
@@ -99,7 +66,7 @@ const ResidentalScreen = ({navigation}) => {
     }
   };
   const copyToClipboard = async () => {
-    const textToCopy = 'This is the text you want to copy'; // Replace with your desired text or URL
+    const textToCopy = 'This is the text you want to copy';
     try {
       await Clipboard.setString(textToCopy);
       Toast.show({
@@ -138,35 +105,32 @@ const ResidentalScreen = ({navigation}) => {
   const handleItemClick = index => {
     const newScaleAnims = {...scaleAnims};
 
-    // Create the animated value for the clicked item if not already present
     if (!newScaleAnims[index]) {
       newScaleAnims[index] = new Animated.Value(1);
     }
 
     setScaleAnims(newScaleAnims);
-    // Trigger the animation sequence for the clicked item
+
     Animated.sequence([
       Animated.timing(newScaleAnims[index], {
-        toValue: 0.96, // Shrink to 30% of the original size
+        toValue: 0.96,
         duration: 400,
         useNativeDriver: true,
       }),
       Animated.timing(newScaleAnims[index], {
-        toValue: 1, // Return to original size
+        toValue: 1,
         duration: 400,
         useNativeDriver: true,
       }),
     ]).start();
   };
   const renderItem = ({item, index}) => {
-    // console.log(item.service_name, 'sdmflkdf');
     const itemScaleAnim = scaleAnims[index] || new Animated.Value(1);
     return (
       <Animated.View
         style={[
-          // styles.cardContainer,
           {
-            transform: [{scale: itemScaleAnim}], // Apply scale animation to the view
+            transform: [{scale: itemScaleAnim}],
           },
         ]}>
         <TouchableOpacity
@@ -191,8 +155,7 @@ const ResidentalScreen = ({navigation}) => {
       </Animated.View>
     );
   };
-  const [showAll, setShowAll] = useState(false);
-  const filteredReviews = showAll ? data?.reviews : data?.reviews?.slice(0, 3);
+
   const renderItem3 = ({item}) => {
     return (
       <TouchableOpacity style={[styles.cardContainer1]}>
@@ -214,7 +177,7 @@ const ResidentalScreen = ({navigation}) => {
               startingValue={item.star}
               ratingColor="#52B1E9"
               readonly
-              ratingBackgroundColor={colors.lightGrey} // Unfilled star color
+              ratingBackgroundColor={colors.lightGrey}
             />
           </View>
           <View style={[styles.card, {paddingLeft: 10}]}>
@@ -241,7 +204,7 @@ const ResidentalScreen = ({navigation}) => {
   };
 
   const averageRating = calculateAverageRating(data?.reviews);
-  // console.log(averageRating, 'averageRating');
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -267,10 +230,6 @@ const ResidentalScreen = ({navigation}) => {
               alignItems: 'flex-start',
             }}>
             <View style={styles.imgContainer}>
-              {/* <Image
-                style={styles.cardImage}
-                source={require('../../../assets/image/Rectangle.png')}
-              /> */}
               <Image
                 source={
                   data?.logo
@@ -290,7 +249,7 @@ const ResidentalScreen = ({navigation}) => {
                     startingValue={averageRating}
                     ratingColor="#52B1E9"
                     readonly
-                    ratingBackgroundColor={colors.lightGrey} // Unfilled star color
+                    ratingBackgroundColor={colors.lightGrey}
                   />
                 ) : null}
               </View>
@@ -301,7 +260,7 @@ const ResidentalScreen = ({navigation}) => {
               <Text style={[styles.third2, {marginBottom: 3}]}>
                 Services:{' '}
                 {data?.franchise_services
-                  ?.map(service => service.service_name) // Extract all services_name
+                  ?.map(service => service.service_name)
                   .join(', ')}
               </Text>
 
@@ -312,17 +271,8 @@ const ResidentalScreen = ({navigation}) => {
               <Text style={styles.third2}>
                 Exp: {data?.experience_of_year} year
               </Text>
-              {/* <Text style={styles.priceText}>
-                Price: {data?.franchise_services?.services_price}
-              </Text> */}
-              <Text style={styles.priceText}>
-                Price: ₹{' '}
-                {/* {data?.franchise_services?.reduce(
-                  (total, service) => total + service.services_price,
-                  0,
-                )} */}
-                {data?.charges}
-              </Text>
+
+              <Text style={styles.priceText}>Price: ₹ {data?.charges}</Text>
             </View>
           </View>
         </View>
@@ -332,7 +282,6 @@ const ResidentalScreen = ({navigation}) => {
         </View>
 
         <FlatList
-          // data={data2}
           data={data?.franchise_services}
           renderItem={renderItem}
           scrollEnabled={false}
@@ -344,16 +293,8 @@ const ResidentalScreen = ({navigation}) => {
             gap: 15,
             flexDirection: 'row',
             flexWrap: 'wrap',
-            // justifyContent: 'center',
-            // alignSelf: 'center',
-            // borderWidth: 1,
             paddingVertical: 10,
           }}
-          // contentContainerStyle={{
-          //   flexDirection: 'row',
-          //   justifyContent: 'center',
-          //   width: '100%',
-          // }}
         />
         {data?.short_description && (
           <View style={{paddingHorizontal: 15}}>
@@ -371,7 +312,7 @@ const ResidentalScreen = ({navigation}) => {
           <View>
             <View style={{paddingVertical: 10, marginHorizontal: 15}}>
               <Text style={styles.service}>{data?.label1}</Text>
-              {console.log(data?.description1, 'sdf,mdsf')}
+
               <RenderHTML
                 source={{
                   html: data?.description1,
@@ -499,10 +440,9 @@ const ResidentalScreen = ({navigation}) => {
               scrollEnabled={false}
               renderItem={renderItem3}
               keyExtractor={item => item.id}
-              //   numColumns={3}
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{
-                paddingBottom:15
+                paddingBottom: 15,
               }}
             />
             {data?.reviews?.length >= 5 ? (
@@ -528,55 +468,3 @@ const ResidentalScreen = ({navigation}) => {
 };
 
 export default ResidentalScreen;
-
-const data1 = [
-  {
-    id: '1',
-    image: require('../../../assets/image/Ellipse1.png'),
-    name: 'Vikash',
-    msg: 'Thanku so much madam ji ',
-  },
-  {
-    id: '3',
-    image: require('../../../assets/image/Ellipse2.png'),
-    name: 'Sudhir',
-    msg: 'Thanku so much madam ',
-  },
-  {
-    id: '5',
-    image: require('../../../assets/image/Ellipse3.png'),
-    name: 'Hemant',
-    msg: 'VeryNice',
-  },
-];
-
-const FAQdata1 = [
-  {
-    id: '1',
-    icon: require('../../../assets/otherApp/trusted.png'), // Replace with actual icon
-    title: 'Trusted Content',
-    description:
-      'Content specially created to understand Vastu Techniques in easy way.',
-  },
-  {
-    id: '2',
-    icon: require('../../../assets/otherApp/trusted1.png'), // Replace with actual icon
-    title: 'Experienced Teachers',
-    description:
-      'Content specially created to understand Vastu Techniques in easy way.',
-  },
-  {
-    id: '3',
-    icon: require('../../../assets/otherApp/trusted2.png'), // Replace with actual icon
-    title: 'Lifetime Access',
-    description:
-      'Content specially created to understand Vastu Techniques in easy way.',
-  },
-  {
-    id: '4',
-    icon: require('../../../assets/otherApp/trusted3.png'), // Replace with actual icon
-    title: 'Certification',
-    description:
-      'Content specially created to understand Vastu Techniques in easy way.',
-  },
-];

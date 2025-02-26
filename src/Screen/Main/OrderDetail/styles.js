@@ -17,14 +17,9 @@ export default StyleSheet.create({
     paddingHorizontal: 18,
     paddingVertical: 10,
     backgroundColor: '#fff',
-
     elevation: 5,
   },
-  backIcon: {
-    width: 14,
-    height: 14,
-    color: '#324356',
-  },
+
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -33,13 +28,6 @@ export default StyleSheet.create({
     fontSize: fontSize.Eighteen,
     color: colors.heading,
     fontFamily: 'Poppins-Regular',
-  },
-  orderId: {
-    position: 'absolute',
-    right: 10,
-    fontSize: 14,
-    color: '#4A4A4A',
-    fontWeight: '500',
   },
 
   section: {
@@ -61,25 +49,16 @@ export default StyleSheet.create({
     gap: 13,
     marginTop: 6,
     borderRadius: 10,
-    // borderWidth:1,
-    // borderColor: '#D8E3E980',
-    // shadowColor: '#bdc3c7',
-    // shadowOffset: {width: 0, height: 1},
-    // shadowOpacity: 0.5,
-    // shadowRadius: 12,
-    //  elevation: 0.3,
-    // paddingHorizontal: 15,
-    paddingVertical:5
+    paddingVertical: 5,
   },
-  ImageBtn:{
+  ImageBtn: {
     width: wp(34),
-    height:wp(20),
-    borderWidth:1,
+    height: wp(20),
+    borderWidth: 1,
     borderColor: '#D8E3E980',
     borderRadius: 5,
   },
   cardImg: {
-    // width: wp(34),
     resizeMode: 'contain',
     height: '100%',
   },
@@ -91,7 +70,7 @@ export default StyleSheet.create({
     color: colors.heading,
     fontFamily: 'Poppins-Medium',
   },
-  itemNameText:{
+  itemNameText: {
     fontSize: fontSize.Fifteen,
     color: colors.heading,
     fontFamily: 'Poppins-Medium',
@@ -110,10 +89,10 @@ export default StyleSheet.create({
     backgroundColor: colors.white,
     padding: wp(3),
     borderRadius: 6,
-    borderWidth:1,
-    borderColor:colors.placeholder,
+    borderWidth: 1,
+    borderColor: colors.placeholder,
   },
-  cancleBtnText:{
+  cancleBtnText: {
     textAlign: 'center',
     color: colors.grey,
     fontSize: fontSize.Twelve,
@@ -158,9 +137,6 @@ export default StyleSheet.create({
   activeStepCircle: {
     backgroundColor: '#02A883',
   },
-  finieshedStepCircle: {
-    backgroundColor: '#02A883',
-  },
 
   sectionTitle: {
     fontSize: fontSize.Fourteen,
@@ -203,16 +179,6 @@ export default StyleSheet.create({
     fontFamily: 'Poppins-Medium',
   },
 
-  dropdown: {
-    height: wp(6),
-    width: wp(14),
-    borderColor: '#D8E3E980',
-    borderWidth: 1,
-    borderRadius: 3,
-    paddingHorizontal: 6,
-    marginTop: -3,
-  },
-
   OrderstatusMsgContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -248,7 +214,6 @@ export default StyleSheet.create({
   copyBtn: {
     borderWidth: 1,
     gap: 10,
-    // width: 90,
     padding: 8,
     borderRadius: 8,
     borderColor: '#DFE7EF',
@@ -280,14 +245,12 @@ export default StyleSheet.create({
   input: {
     borderWidth: 1,
     height: 'auto',
-    // width:'95%',
-    // minHeight: 50,
-    borderRadius:5,
+    borderRadius: 5,
     borderColor: colors.placeholder,
-    padding:15,
+    padding: 15,
     fontSize: fontSize.Twelve,
     color: colors.heading,
     fontFamily: 'Poppins-Medium',
-    marginBottom:20
+    marginBottom: 20,
   },
 });
