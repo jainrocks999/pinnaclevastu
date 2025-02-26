@@ -12,7 +12,7 @@ import {colors} from '../Component/colors';
 import {moderateScale} from '../Component/Meterscale';
 import TabBarButton from '../Component/TabBarbutton/TabBarButton';
 
-// Import SVG icons
+
 import Home from '../assets/svg/home.svg';
 import Chat from '../assets/svg/chat.svg';
 import Chat1 from '../assets/svg/chat1.svg';
@@ -25,23 +25,21 @@ import Icons from '../assets/svg/Icon.svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { widthPrecent } from '../Component/ResponsiveScreen/responsive';
 
-const {width} = Dimensions.get('window');
 
-// Move shouldHideTabBar function ABOVE the TabBar component
 function shouldHideTabBar(route) {
   const focusedRouteName = getFocusedRouteNameFromRoute(route);
 
-  // Logic to hide tab bar for specific screens
+
   if (route.name === 'MyProfile') {
     if (!focusedRouteName) {
-      return true; // Hide for "MyProfile" main route
+      return true; 
     }
     if (
       focusedRouteName === 'UserProfile' ||
       focusedRouteName === 'EditProfile' ||
       focusedRouteName === 'signupFranchise'
     ) {
-      return true; // Hide for "UserProfile" and "EditProfile"
+      return true; 
     }
   }
 
@@ -54,9 +52,7 @@ const TabBar = ({state, descriptors, navigation}) => {
   const checkLoginStatus = async () => {
     try {
       const userStatus = await AsyncStorage.getItem('user_data');
-      const userData = JSON.parse(userStatus);
-
-      // console.log('virendra', userData);
+    
 
       if (userStatus) {
         setIsLoggedIn(true);
@@ -99,7 +95,6 @@ const TabBar = ({state, descriptors, navigation}) => {
 
   const buttonWidth = dimensions.width / state.routes.length;
   const profile = buttonWidth * state.index;
-  //  console.log('kabhi khusi kabhi gam',profile)
 
   const tabPositionX = useSharedValue(0);
 
@@ -122,7 +117,6 @@ const TabBar = ({state, descriptors, navigation}) => {
     });
   };
 
-  // Determine whether to hide the tab bar
   const shouldHide = shouldHideTabBar(state.routes[state.index]);
 
   if (shouldHide) {
@@ -136,21 +130,10 @@ const TabBar = ({state, descriptors, navigation}) => {
           style={[
             animateStyle,
             {
-              // position: "absolute",
-              // height: 55,
-              // top: -0.20,
-              // bottom: 0,
-              // padding: 35,
-              // borderTopWidth: 3,
-              // borderColor: '#FFFFFF',
-
-              // backgroundColor: "rgba(173, 216, 230, 0.15)",
               borderTopWidth: widthPrecent(0.6),
               borderColor: '#FFFFFF',
               position: 'absolute',
               height: "100%",
-              // bottom: 0,
-              // top:-5,
               width: buttonWidth,
               backgroundColor: 'rgba(173, 216, 230, 0.15)',
             },

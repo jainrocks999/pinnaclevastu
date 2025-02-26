@@ -3,7 +3,6 @@ import {fontSize} from '../../../Component/fontsize';
 import {colors} from '../../../Component/colors';
 import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
 
-const screenWidth = Dimensions.get('screen').width;
 export default StyleSheet.create({
   container: {
     flex: 1,
@@ -12,7 +11,6 @@ export default StyleSheet.create({
   header: {
     flexDirection: 'row',
     height: wp(28),
-    // height:  screenWidth >= 750 ? wp(38) : wp(28),
     width: '100%',
     backgroundColor: '#FBF5F2',
     borderBottomLeftRadius: 30,
@@ -22,21 +20,13 @@ export default StyleSheet.create({
   },
 
   headerview: {
-    //    marginLeft:wp(3)
     marginTop: 5,
   },
 
   logoText: {
     fontSize: fontSize.Eighteen,
-
     color: colors.heading,
     fontFamily: 'Poppins-Regular',
-  },
-
-  backButton: {
-    padding: 8,
-    color: '#324356',
-    marginBottom: 10,
   },
 
   backBtn: {
@@ -49,12 +39,11 @@ export default StyleSheet.create({
     marginRight: 15,
     marginTop: 10,
   },
-  backIcon: {height: '100%', width: '100%'},
-  headerTitle: {
-    left: 10,
-    fontSize: 16,
-    color: '#324356',
+  backIcon: {
+    height: '100%',
+    width: '100%',
   },
+
   settingsButton: {
     position: 'absolute',
     right: 16,
@@ -71,7 +60,6 @@ export default StyleSheet.create({
     paddingBottom: '15%',
   },
   profileSection: {
-    // marginTop: 60,
     marginTop: wp(17),
     gap: wp(0.5),
     alignItems: 'center',
@@ -81,24 +69,20 @@ export default StyleSheet.create({
     width: wp(26),
     height: wp(26),
     borderRadius: wp(15),
-    // top: screenWidth >= 750 ? -wp(22) : -wp(28),
-    top:  -wp(30),
+    top: -wp(30),
     shadowOffset: {width: 0, height: 6},
     shadowOpacity: 0.8,
     shadowRadius: 10,
-    // elevation: 8,
     elevation: 50,
-    // shadowColor: "#1A1A1A",
-    shadowColor: "#000",
-    borderWidth:2,
-    borderColor:"#F9F9F9"
+    shadowColor: '#000',
+    borderWidth: 2,
+    borderColor: '#F9F9F9',
   },
   profileName: {
     fontSize: fontSize.Seventeen,
     color: colors.orange,
     fontFamily: 'Poppins-Medium',
     marginBottom: 2,
-    // marginTop: 5,
   },
   profileID: {
     fontSize: fontSize.Fifteen,
@@ -111,21 +95,16 @@ export default StyleSheet.create({
     color: colors.heading,
     fontFamily: 'Poppins-Medium',
   },
-  profilePhone: {
-    fontSize: 12,
-    color: '#324356',
-    marginBottom: 12,
-  },
+ 
   editProfileButton: {
     backgroundColor: colors.orange,
     borderRadius: 20,
     paddingHorizontal: 20,
     paddingVertical: 8,
-    shadowColor: colors.orange, // Shadow color
-    shadowOffset: {width: 0, height: 4}, // Shadow direction
-    shadowOpacity: 0.1, // Shadow intensity
-    shadowRadius: 6, // Shadow blur radius
-    // Elevation for Android
+    shadowColor: colors.orange,
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
     elevation: 5,
   },
   editProfileText: {
@@ -198,15 +177,12 @@ export default StyleSheet.create({
     width: wp(4),
     height: wp(4),
   },
-  arrowl: {
-    marginTop: 8,
-  },
   modalOverlay: {
-    zIndex:3,
+    zIndex: 3,
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Dimmed background
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
     backgroundColor: 'white',
@@ -214,7 +190,6 @@ export default StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     width: '80%',
-    // height: wp(40),
   },
   modalTitle: {
     fontSize: 18,
@@ -231,7 +206,7 @@ export default StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
-    gap:20
+    gap: 20,
   },
   cancelButton: {
     flex: 1,
@@ -250,7 +225,7 @@ export default StyleSheet.create({
   },
   buttonText: {
     color: 'white',
-    fontSize:fontSize.Fourteen,
+    fontSize: fontSize.Fourteen,
     fontFamily: 'Poppins-Regular',
   },
 });

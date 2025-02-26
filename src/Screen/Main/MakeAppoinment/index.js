@@ -17,36 +17,18 @@ import {
 import styles from './styles';
 import {colors} from '../../../Component/colors';
 import {fontSize} from '../../../Component/fontsize';
-import SelectModal from '../../../Component/dropdown';
 import {Checkbox} from 'react-native-paper';
 import DatePicker from 'react-native-date-picker';
 import Toast from 'react-native-simple-toast';
 import {Dropdown} from 'react-native-element-dropdown';
-import {useDispatch, useSelector} from 'react-redux';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {getUserDetailApi} from '../../../Redux/Slice/Authslice';
+import {useSelector} from 'react-redux';
 
 const ResidentalScreen = ({navigation}) => {
-  const dispatch = useDispatch();
   const userDetail = useSelector(state => state?.Auth?.userData);
   const data = useSelector(state => state?.consultation?.ConsultationDetail);
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
   const [services, setServices] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
-
-  // const [visible, setVisible] = useState(false);
-  // const [selectedItem, setSelectedItem] = useState({
-  //   label: '',
-  //   value: '',
-  // });
-
-  // const [gender, setGender] = useState('');
-  // const [search, setSearch] = useState('');
-  // const onSelect = item => {
-  //   setSelectedItem(item);
-  //   setGender(item.label);
-  //   setVisible(false);
-  // };
 
   const genderOptions = [
     {label: 'Male', value: 'male'},
@@ -117,8 +99,6 @@ const ResidentalScreen = ({navigation}) => {
     const strTime = `${hours}:${minutes} ${ampm}`;
     return strTime;
   };
-  // console.log(userDetail, '****************');
-  // console.log(data?.franchise_services,'****************');
 
   const [formData, setFormData] = useState({
     name: userDetail?.name || '',
@@ -137,7 +117,7 @@ const ResidentalScreen = ({navigation}) => {
     cityPincode: new Animated.Value(0),
     gender: new Animated.Value(0),
     date: new Animated.Value(0),
-    birthPlace: new Animated.Value(0), // New animated value for Place of Birth
+    birthPlace: new Animated.Value(0),
     additionalInfo: new Animated.Value(0),
     time: new Animated.Value(0),
     services: new Animated.Value(0),
@@ -164,13 +144,12 @@ const ResidentalScreen = ({navigation}) => {
     }
   };
 
-  // Shake animation function
   const shake = field => {
     setIsEdit(true);
-    Vibration.vibrate(100); // Vibration for 100 milliseconds
+    Vibration.vibrate(100);
     Animated.sequence([
       Animated.timing(shakeAnimation[field], {
-        toValue: 5, // how far the input will shake
+        toValue: 5,
         duration: 100,
         useNativeDriver: true,
       }),
@@ -230,13 +209,12 @@ const ResidentalScreen = ({navigation}) => {
     ]).start();
 
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-    
+
     if (services.length === 0) {
       shake('services');
       scrollToField('services');
       return;
     }
-    // Sequential Validation
     const fieldsToValidate = [
       'name',
       'email',
@@ -262,27 +240,21 @@ const ResidentalScreen = ({navigation}) => {
       }
     }
 
-    // All fields validated
-    // if (userDetail.length !== 0) {
     navigation.navigate('PaymentAppointment', {
       data1: 'Residental',
       services: services,
       formData: {...formData, bod: formatDate(date), bot: formatTime(time)},
     });
-    // } else {
-    // navigation.navigate('Login');
-    // }
   };
 
   const handleCheckboxPress = service => {
     const isSelected = services.some(item => item.id === service.id);
-    
+
     if (isSelected) {
       setServices(services.filter(item => item.id !== service.id));
     } else {
       setServices([...services, service]);
     }
-
   };
 
   return (
@@ -321,10 +293,9 @@ const ResidentalScreen = ({navigation}) => {
               <FlatList
                 data={data?.franchise_services || []}
                 scrollEnabled={false}
-                keyExtractor={(item,index) => index?.toString()}
+                keyExtractor={(item, index) => index?.toString()}
                 renderItem={item => (
                   <View style={styles.serviceSection}>
-                   {/* { console.log(item)} */}
                     <View
                       style={[
                         styles.checkboxWrapper,
@@ -361,66 +332,6 @@ const ResidentalScreen = ({navigation}) => {
                   </View>
                 )}
               />
-              {/* <View style={styles.serviceSection}>
-                <View
-                  style={[
-                    styles.checkboxWrapper,
-                    isResident && styles.checkedBackground,
-                  ]}
-                >
-                  <Checkbox
-                    status={isResident ? 'checked' : 'unchecked'}
-                    onPress={() => setIsresident(!isResident)}
-                    color="#FFF"
-                    uncheckedColor="#DFE7EF"
-                  />
-                </View>
-                <Text style={styles.labelText}>Residential Vastu</Text>
-                <Text style={styles.priceText}>₹ 5000</Text>
-              </View>
-              <View
-                style={[
-                  styles.serviceSection,
-                  {
-                    borderColor: colors.lightGrey,
-                    borderTopWidth: 0.5,
-                    borderBottomWidth: 0.5,
-                  },
-                ]}
-              >
-                <View
-                  style={[
-                    styles.checkboxWrapper,
-                    isIndustrial && styles.checkedBackground,
-                  ]}
-                >
-                  <Checkbox
-                    status={isIndustrial ? 'checked' : 'unchecked'}
-                    onPress={() => setIsindustrial(!isIndustrial)}
-                    color="#FFF"
-                    uncheckedColor="#DFE7EF"
-                  />
-                </View>
-                <Text style={styles.labelText}>Industrial Vastu</Text>
-                <Text style={styles.priceText}>₹ 25000</Text>
-              </View>
-              <View style={styles.serviceSection}>
-                <View
-                  style={[
-                    styles.checkboxWrapper,
-                    isGemstone ? styles.checkedBackground : null,
-                  ]}
-                >
-                  <Checkbox
-                    status={isGemstone ? 'checked' : 'unchecked'}
-                    onPress={() => setIsGemstone(!isGemstone)}
-                    color="#FFF"
-                    uncheckedColor="#DFE7EF"
-                  />
-                </View>
-                <Text style={styles.labelText}>Gemstone</Text>
-                <Text style={styles.priceText}>₹ 500</Text>
-              </View> */}
             </View>
           </View>
         </Animated.View>
@@ -514,7 +425,7 @@ const ResidentalScreen = ({navigation}) => {
                   renderItem={item => (
                     <Text
                       style={{
-                        color: colors.heading, 
+                        color: colors.heading,
                         fontSize: fontSize.Fifteen,
                         fontFamily: 'Poppins-Regular',
                         padding: 10,
@@ -546,7 +457,6 @@ const ResidentalScreen = ({navigation}) => {
 
             <View style={styles.inputmain}>
               <Text style={styles.title2}>Date of Birth*</Text>
-              {/* <Animated.View style={{ transform: [{ translateX: shakeAnimation.date }] }}> */}
               <TouchableOpacity
                 onPress={() => setOpen(true)}
                 style={[
@@ -574,7 +484,6 @@ const ResidentalScreen = ({navigation}) => {
                   source={require('../../../assets/image/cale.png')}
                 />
               </TouchableOpacity>
-              {/* </Animated.View> */}
               <DatePicker
                 modal
                 open={open}
@@ -591,8 +500,6 @@ const ResidentalScreen = ({navigation}) => {
 
             <View style={styles.inputmain}>
               <Text style={styles.title2}>Time of Birth</Text>
-
-              {/* <Animated.View style={[{ transform: [{ translateX: shakeAnimation.time }] }]}> */}
               <TouchableOpacity
                 onPress={() => setOpen1(true)}
                 style={[
@@ -620,7 +527,7 @@ const ResidentalScreen = ({navigation}) => {
                   source={require('../../../assets/image/Layer.png')}
                 />
               </TouchableOpacity>
-              {/* </Animated.View> */}
+
               <DatePicker
                 modal
                 open={open1}
@@ -651,7 +558,7 @@ const ResidentalScreen = ({navigation}) => {
             </View>
             <View style={styles.inputmain}>
               <Text style={styles.title2}>Additional Information Message</Text>
-              {/* <Animated.View style={[{ transform: [{ translateX: shakeAnimation.additionalInfo }] }]}> */}
+
               <TextInput
                 style={styles.messageInput}
                 placeholder="Type here..."
@@ -659,7 +566,6 @@ const ResidentalScreen = ({navigation}) => {
                 value={formData.additionalInfo}
                 onChangeText={text => handleInputChange('additionalInfo', text)}
               />
-              {/* </Animated.View> */}
             </View>
           </View>
         ) : (
@@ -673,7 +579,7 @@ const ResidentalScreen = ({navigation}) => {
               Personal Detail
             </Text>
             <TouchableOpacity
-             hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
+              hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
               style={styles.editBtn}
               onPress={() => setIsEdit(true)}>
               <Text style={styles.editText}>Edit</Text>
@@ -681,12 +587,11 @@ const ResidentalScreen = ({navigation}) => {
 
             <View
               style={{
-                marginTop:8,
+                marginTop: 8,
                 flexDirection: 'row',
                 justifyContent: 'flex-start',
                 paddingVertical: 5,
               }}>
-          
               <Text style={styles.profileText}>{formData.name}</Text>
             </View>
             {formData.email && (
@@ -695,9 +600,9 @@ const ResidentalScreen = ({navigation}) => {
                   flexDirection: 'row',
                   justifyContent: 'flex-start',
                   paddingVertical: 5,
-                  gap:10
+                  gap: 10,
                 }}>
-                <Text style={styles.boldText}> Email  :</Text>
+                <Text style={styles.boldText}> Email :</Text>
                 <Text style={styles.smallText}>{formData.email}</Text>
               </View>
             )}
@@ -708,30 +613,27 @@ const ResidentalScreen = ({navigation}) => {
                   flexDirection: 'row',
                   justifyContent: 'flex-start',
                   paddingVertical: 5,
-                  gap:10
+                  gap: 10,
                 }}>
-                <Text style={styles.boldText}>  Phone no  :</Text>
+                <Text style={styles.boldText}> Phone no :</Text>
                 <Text style={styles.smallText}>{formData.mobile}</Text>
               </View>
             )}
-         
+
             {formatDate(date) && (
               <View
                 style={{
                   flexDirection: 'row',
                   justifyContent: 'flex-start',
                   paddingVertical: 5,
-                  gap:10
+                  gap: 10,
                 }}>
-                <Text style={styles.boldText}>  Birthdate  :</Text>
+                <Text style={styles.boldText}> Birthdate :</Text>
                 <Text style={styles.smallText}>{formatDate(date)}</Text>
               </View>
             )}
-          
-        
           </View>
         )}
-      
       </ScrollView>
 
       <TouchableOpacity onPress={handleSubmit} activeOpacity={1}>

@@ -10,7 +10,7 @@ import {
   Animated,
   Vibration,
 } from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useRef, useState} from 'react';
 import styles from './styles';
 import {colors} from '../../../Component/colors';
 
@@ -28,22 +28,18 @@ import Loader from '../../../Component/Loader';
 const EditProfile = () => {
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
   const userDetail = useSelector(state => state?.Auth?.userData);
-  const isLoading =useSelector(state=>state?.Auth?.loading);
-  const [visible, setVisible] = useState(false);
-  const [isuserselectimage,setIsuserselectimage] =useState(false)
-  const [selectedItem, setSelectedItem] = useState({
-    label: '',
-    value: '',
-  });
+  const isLoading = useSelector(state => state?.Auth?.loading);
+
+  const [isuserselectimage, setIsuserselectimage] = useState(false);
+
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [gender, setGender] = useState(userDetail?.gender ?? '');
 
-  const [search, setSearch] = useState('');
   const [selectedImage, setSelectedImage] = useState({
-    uri: userDetail?.avatar ?? '', 
+    uri: userDetail?.avatar ?? '',
     name: '',
-    type: '', 
+    type: '',
   });
 
   const [isModalVisible, setModalVisible] = useState(false);
@@ -62,14 +58,9 @@ const EditProfile = () => {
     mobile: new Animated.Value(0),
     cityPincode: new Animated.Value(0),
     gender: new Animated.Value(0),
-    // date: new Animated.Value(0),
     birthPlace: new Animated.Value(0),
-    // additionalInfo: new Animated.Value(0),
-    // time: new Animated.Value(0),
-    // services: new Animated.Value(0),
   });
   const scrollViewRef = useRef(null);
-  console.log('gfaadssa', userDetail);
 
   const [date, setDate] = useState(
     userDetail?.dob ? new Date(userDetail.dob) : null,
@@ -77,8 +68,6 @@ const EditProfile = () => {
   const [open, setOpen] = useState(false);
 
   const formatDate = date => {
-    console.log('fjffkjgdfk', date);
-
     if (!date) return 'Date of Birth';
     const day = date?.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -87,30 +76,30 @@ const EditProfile = () => {
   };
 
   const parseTimeString = timeString => {
-    const [time, modifier] = timeString.split(' '); // Split time and AM/PM
-    const [hours, minutes] = time.split(':'); // Split hours and minutes
+    const [time, modifier] = timeString.split(' ');
+    const [hours, minutes] = time.split(':');
 
     let hour = parseInt(hours, 10);
     if (modifier === 'PM' && hour !== 12) {
-      hour += 12; // Convert PM hours to 24-hour format
+      hour += 12;
     }
     if (modifier === 'AM' && hour === 12) {
-      hour = 0; // Convert 12 AM to 0 hours (midnight)
+      hour = 0;
     }
 
     const date = new Date();
     date.setHours(hour);
     date.setMinutes(parseInt(minutes, 10));
-    date.setSeconds(0); // Set seconds to 0 for consistency
+    date.setSeconds(0);
 
     return date;
   };
 
   const [time, setTime] = useState(() => {
     if (userDetail?.time_of_birth) {
-      return parseTimeString(userDetail.time_of_birth); // Parse the time string to Date
+      return parseTimeString(userDetail.time_of_birth);
     }
-    return null; // If no time, set to null
+    return null;
   });
 
   const [open1, setOpen1] = useState(false);
@@ -142,11 +131,7 @@ const EditProfile = () => {
           buttonPositive: 'OK',
         },
       );
-      console.log(
-        granted === PermissionsAndroid.RESULTS.GRANTED
-          ? 'Camera permission granted'
-          : 'Camera permission denied',
-      );
+      console.log(granted);
     } catch (err) {
       console.warn(err);
     }
@@ -154,7 +139,6 @@ const EditProfile = () => {
 
   const openCamera = async () => {
     await requestCameraPermission();
-    console.log('handleCamera');
     const options = {
       mediaType: 'photo',
       maxHeight: 2000,
@@ -170,9 +154,9 @@ const EditProfile = () => {
         const pickedImage = response.assets[0];
         setIsuserselectimage(true);
         setSelectedImage({
-          uri: pickedImage.uri, // Initial URI is the avatar URL from userDetail
-          name: pickedImage.fileName, // Default name is empty
-          type: pickedImage.type, // Default type is empty
+          uri: pickedImage.uri,
+          name: pickedImage.fileName,
+          type: pickedImage.type,
         });
       }
       toggleModal();
@@ -196,9 +180,9 @@ const EditProfile = () => {
         const pickedImage = response.assets[0];
         setIsuserselectimage(true);
         setSelectedImage({
-          uri: pickedImage.uri, // Initial URI is the avatar URL from userDetail
-          name: pickedImage.fileName, // Default name is empty
-          type: pickedImage.type, // Default type is empty
+          uri: pickedImage.uri,
+          name: pickedImage.fileName,
+          type: pickedImage.type,
         });
       }
       toggleModal();
@@ -231,12 +215,11 @@ const EditProfile = () => {
     }
   };
 
-  // Shake animation function
   const shake = field => {
-    Vibration.vibrate(100); // Vibration for 100 milliseconds
+    Vibration.vibrate(100);
     Animated.sequence([
       Animated.timing(shakeAnimation[field], {
-        toValue: 5, // how far the input will shake
+        toValue: 5,
         duration: 100,
         useNativeDriver: true,
       }),
@@ -332,43 +315,30 @@ const EditProfile = () => {
     } else {
       const userid = await AsyncStorage.getItem('user_id');
       const token = await AsyncStorage.getItem('Token');
-      // const formUserData = new FormData();
 
-      // formUserData.append('user_id',userid);
-      // formUserData.append('name', formData.name);
-      // formUserData.append('email', formData.email);
-      // formUserData.append('phone', formData.mobile);
-      // formUserData.append('gender', gender);
-      // formUserData.append('dob', formatDate(date));
-      // formUserData.append('city_pincode', formData.cityPincode);
-      // formUserData.append('time_of_birth', formatTime(time));
-      // formUserData.append('place_of_birth', formData.birthPlace);
-      // formUserData.append('avatar', {
-      //   uri: selectedImage.uri,
-      //   name: selectedImage.name,
-      //   type: selectedImage.type,
-      // });
       let data = new FormData();
-      data.append('name',  formData.name);
-      data.append('email',  formData.email);
-      data.append('phone',  formData.mobile);
+      data.append('name', formData.name);
+      data.append('email', formData.email);
+      data.append('phone', formData.mobile);
       data.append('dob', formatDate(date));
-      data.append('time_of_birth',formatTime(time));
+      data.append('time_of_birth', formatTime(time));
       data.append('place_of_birth', formData.birthPlace);
       data.append('gender', gender);
       data.append('city_pincode', formData.cityPincode);
       data.append('user_id', userid);
-      {isuserselectimage?
-        data.append('avatar', {
-          uri: selectedImage.uri,
-          name: selectedImage.name,
-          type: selectedImage.type,
-        }):null
+      {
+        isuserselectimage
+          ? data.append('avatar', {
+              uri: selectedImage.uri,
+              name: selectedImage.name,
+              type: selectedImage.type,
+            })
+          : null;
       }
-     
+
       await dispatch(
         updateApi({
-          formUserData:data,
+          formUserData: data,
           url: 'profile-update',
           token,
           userid,
@@ -392,12 +362,11 @@ const EditProfile = () => {
 
         <Text style={styles.logoText}>Edit My Profile</Text>
       </View>
-       {isLoading?<Loader/>:null}
+      {isLoading ? <Loader /> : null}
       <ScrollView
         ref={scrollViewRef}
-        contentContainerStyle={styles.main1} // Added to fix scrolling
-        keyboardShouldPersistTaps="handled" // Dismisses keyboard on tap outside
-      >
+        contentContainerStyle={styles.main1}
+        keyboardShouldPersistTaps="handled">
         <View style={styles.inputmain}>
           <Text style={styles.title2}>Full Name*</Text>\
           <Animated.View
@@ -462,7 +431,6 @@ const EditProfile = () => {
               placeholderStyle={{
                 color: gender ? colors.heading : colors.placeholder,
                 fontSize: fontSize.Sixteen,
-                // marginTop: 2,
                 fontFamily: 'Poppins-Regular',
               }}
               selectedTextStyle={styles.selectedText}
@@ -486,8 +454,6 @@ const EditProfile = () => {
           <Text style={styles.title2}>Current City Pincode*</Text>
           <Animated.View
             style={[{transform: [{translateX: shakeAnimation.cityPincode}]}]}>
-            {console.log('formData.cityPincode', formData.cityPincode)}
-
             <TextInput
               style={styles.input}
               placeholder="Current City Pincode"

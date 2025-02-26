@@ -21,13 +21,10 @@ import {
   heightPercent as hp,
   widthPrecent as wp,
 } from '../../../Component/ResponsiveScreen/responsive';
-import ImageSlider from '../../../Component/myBanner';
 import {useDispatch, useSelector} from 'react-redux';
 import {
   Banner,
-  clearRemedis,
   clearRemeiesDetail1,
-  CourceDetailApi,
   CourceLis,
   submitEnquryApi,
 } from '../../../Redux/Slice/HomeSlice';
@@ -41,10 +38,8 @@ import {consultationDetail1} from '../../../Redux/Slice/ConsultancySlice';
 import {Dropdown} from 'react-native-element-dropdown';
 import WebView from 'react-native-webview';
 import {SvgUri} from 'react-native-svg';
-import {fetchCollection} from '../../../Redux/Slice/collectionSlice';
 import {fetchExtraCollectonHome} from '../../../Redux/Slice/HomeBannerSlice';
 import {fetchProduct, InitProduct} from '../../../Redux/Slice/productSlice';
-import {getProductMetafieldsApiCall} from '../../../Redux/Api';
 import {addToCart} from '../../../Redux/Slice/CartSlice';
 
 let backPress = 0;
@@ -135,7 +130,7 @@ const HomeScreen = () => {
   };
 
   const getYouTubeEmbedUrl1 = url => {
-    const videoId = url.split('v=')[1]?.split('&')[0]; // Extract video ID
+    const videoId = url.split('v=')[1]?.split('&')[0];
     return `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=1&showinfo=0&rel=0&modestbranding=1&fs=1`;
   };
 
@@ -152,12 +147,7 @@ const HomeScreen = () => {
   };
   const [imageHeights, setImageHeights] = useState({});
   const newArray = [];
-  // (Homebanner?.home_slider?.[0]?.slider_items || []).forEach(item => {
   (homeData?.image_banner || []).forEach(item => {
-    // const updatedItem = {
-    //   ...item,
-    //   image: `${Imagepath.Path}${item.image}`,
-    // };
     newArray.push(...item.slider);
   });
 
@@ -214,8 +204,6 @@ const HomeScreen = () => {
   };
 
   const Addtocard = async item => {
-    console.log('jfdnkjsdfksjskjfs hhhh', item.variants?.edges?.[0]);
-
     try {
       if (item?.variants?.length != 0) {
         const image = item.variants?.edges?.[0]?.node?.image?.src;
@@ -241,7 +229,6 @@ const HomeScreen = () => {
           dispatch(addToCart(productTemp));
         }
       }
-      // dispatch(addToCart({...item,selectedVarient: item?.variants?.edges[0]?.node}));
     } catch (error) {
       console.error('Error adding item to cart:', error);
     }
@@ -346,14 +333,13 @@ const HomeScreen = () => {
   };
 
   const renderItem = ({item, index}) => {
-    // console.log(homeData?.our_services,"asad")
     const itemScaleAnim = scaleAnims[index] || new Animated.Value(1);
     return (
       <Animated.View
         style={[
           styles.cardContainer,
           {
-            transform: [{scale: itemScaleAnim}], // Apply scale animation to the view
+            transform: [{scale: itemScaleAnim}],
           },
         ]}>
         <TouchableOpacity
@@ -363,11 +349,6 @@ const HomeScreen = () => {
           ]}
           // onPress={() => handleItemClick(index, item.id, item.services_name)}
         >
-          {/* <Image
-            source={{uri:'' }}
-            style={styles.itemImg}
-          /> */}
-
           <SvgUri width="30%" height="30%" uri={item?.CardImage} />
           <Text style={styles.text}>{item.text}</Text>
         </TouchableOpacity>
@@ -382,7 +363,7 @@ const HomeScreen = () => {
         style={[
           styles.smallCardContainer,
           {
-            transform: [{scale: itemScaleAnim}], // Apply scale animation to the view
+            transform: [{scale: itemScaleAnim}],
           },
         ]}>
         <TouchableOpacity
@@ -404,28 +385,20 @@ const HomeScreen = () => {
   const renderItem2 = ({item}) => {
     return (
       <TouchableOpacity
-        onPress={
-          () => {
-            dispatch(clearRemedis());
-            navigation.navigate('Home1', {
-              screen: 'Remedie12',
+        onPress={() => {
+          navigation.navigate('Home1', {
+            screen: 'Remedie12',
+            params: {
+              screen: 'ProductList',
               params: {
-                screen: 'ProductList',
-                params: {
-                  item: item,
-                  Id: true,
-                },
+                item: item,
+                Id: true,
               },
-            });
-          }
-          // navigation.navigate('Home1', {
-          //   screen: 'Remedie12',
-          //   params: {screen: 'ProductList', params: {item: item, Id: true}},
-          // })
-        }
+            },
+          });
+        }}
         style={[{height: wp(40), width: wp(46)}, styles.cardContainer3]}>
         <ImageBackground
-          // resizeMode="contain"
           source={{uri: `${item.CardImage}`}}
           style={{height: '100%', width: '100%', backgroundColor: '#fff'}}>
           <LinearGradient
@@ -477,9 +450,8 @@ const HomeScreen = () => {
     return (
       <Animated.View
         style={[
-          // styles.cardContainer2,
           {
-            transform: [{scale: itemScaleAnim}], // Apply scale animation to the view
+            transform: [{scale: itemScaleAnim}],
           },
         ]}>
         <TouchableOpacity
@@ -505,7 +477,6 @@ const HomeScreen = () => {
                   .slice(0, 30)}
                 ...
               </Text>
-              {/* <Text style={styles.third2}>{"item?.franchise_services"}</Text> */}
               <View style={styles.starContainer}>
                 <Rating
                   type="custom"
@@ -515,7 +486,7 @@ const HomeScreen = () => {
                   startingValue={calculateAverageRating(item?.reviews)}
                   ratingColor="#52B1E9"
                   readonly
-                  ratingBackgroundColor={colors.lightGrey} // Unfilled star color
+                  ratingBackgroundColor={colors.lightGrey}
                 />
                 <Text style={[styles.third2]}>
                   {item?.reviews.length} reviews
@@ -588,7 +559,7 @@ const HomeScreen = () => {
               startingValue={2}
               ratingColor="#F4C76C"
               readonly
-              ratingBackgroundColor={colors.lightGrey} // Unfilled star color
+              ratingBackgroundColor={colors.lightGrey}
             />
             <Text style={[styles.third3]}>{32} reviews</Text>
           </View>
@@ -634,7 +605,6 @@ const HomeScreen = () => {
       <TouchableOpacity
         style={[{height: wp(70), width: wp(55)}, styles.cardContainer3]}>
         <ImageBackground
-          // resizeMode="contain"
           source={{uri: item?.mob_card_background}}
           style={{height: '100%', width: '100%'}}>
           <LinearGradient
@@ -648,7 +618,6 @@ const HomeScreen = () => {
           <Text style={styles.serialNoText}>{index + 1}</Text>
           <Text style={[styles.text2]}>{item?.card_text}</Text>
         </ImageBackground>
-        {/* </LinearGradient> */}
       </TouchableOpacity>
     );
   };
@@ -669,7 +638,6 @@ const HomeScreen = () => {
           }
           width={wp(65)}
           style={[
-            // styles.cardImg,
             {
               height: imageHeights[item.id] || wp(isLiveCourse ? 65 : 38),
             },
@@ -712,9 +680,7 @@ const HomeScreen = () => {
             ) : null}
           </View>
 
-          {/* <TouchableOpacity onPress={() => CouseDetail1(item, item?.node?.id)}> */}
           <Text style={styles.cardBtn}>View Details</Text>
-          {/* </TouchableOpacity> */}
         </View>
       </TouchableOpacity>
     );
@@ -817,26 +783,16 @@ const HomeScreen = () => {
           data={homeData?.our_services ? homeData?.our_services : []}
           renderItem={renderItem}
           scrollEnabled={false}
-          keyExtractor={(item, index) => index}
+          keyExtractor={(item, index) => index.toString()}
           numColumns={3}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContainer}
         />
-        {/* {imagesilder11.length != 0 ? (
-          <ImageSlider
-            data={imagesilder11}
-            onPress={
-              (item, index) => console.log('hh', index, item)
-
-              
-            }
-          />
-        ) : null} */}
 
         <View style={[styles.containe, {marginVertical: 10}]}>
           <FlatList
             data={homeData?.image_banner2 || []}
-            keyExtractor={(item, index) => index}
+            keyExtractor={(item, index) => index.toString()}
             pagingEnabled
             snapToAlignment="center"
             decelerationRate="fast"
@@ -855,7 +811,6 @@ const HomeScreen = () => {
             }}
             renderItem={({item, index}) => (
               <TouchableOpacity
-                // onPress={() => onPress(item, index)}
                 style={[
                   styles.imageContaine,
                   {
@@ -930,7 +885,7 @@ const HomeScreen = () => {
         <FlatList
           data={homeData?.premium_services ? homeData?.premium_services : []}
           renderItem={renderItem1}
-          keyExtractor={(item, index) => index}
+          keyExtractor={(item, index) => index.toString()}
           numColumns={3}
           scrollEnabled={false}
           showsVerticalScrollIndicator={false}
@@ -959,14 +914,14 @@ const HomeScreen = () => {
               <Text style={styles.service1}>VIEW ALL</Text>
             </TouchableOpacity>
           </View>
-          {/* {console.log(homeData?.best_Products)} */}
+
           <FlatList
             data={homeData?.best_Products?.products || []}
             renderItem={renderItem5}
             pagingEnabled
             snapToAlignment="center"
             decelerationRate="fast"
-            keyExtractor={(item, index) => index}
+            keyExtractor={(item, index) => index.toString()}
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={[
@@ -1054,7 +1009,7 @@ const HomeScreen = () => {
             decelerationRate="fast"
             data={homeData?.course ? homeData?.course : []}
             renderItem={renderCard}
-            keyExtractor={item => item.id}
+            keyExtractor={(item, index) => index.toString()}
             horizontal
             showsHorizontalScrollIndicator={false}
             scrollEventThrottle={16}
@@ -1098,12 +1053,11 @@ const HomeScreen = () => {
             </Text>
             <Text style={[styles.subHeadText, {marginBottom: 20}]}>
               {homeData?.how_it_works?.content?.description}
-              {/* Become a professional consultant in 3 simple steps */}
             </Text>
             <FlatList
               data={homeData?.how_it_works?.cards?.slice(0, 3)}
               renderItem={renderItem6}
-              keyExtractor={(item, index) => index}
+              keyExtractor={(item, index) => index?.toString()}
               horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{
@@ -1112,69 +1066,6 @@ const HomeScreen = () => {
               }}
             />
           </View>
-
-          {/* <LinearGradient
-            colors={['#52B0E8', '#FF9770']}
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 1}}
-            style={styles.formContainer}>
-            <Text style={[styles.service1, styles.smallHeadText]}>Enquire</Text>
-            <Text style={[styles.extraBoldText, {marginBottom: 20}]}>
-              About Course
-            </Text>
-            <View style={styles.textInputContainer}>
-              <TextInput
-                placeholder="Your Name"
-                placeholderTextColor={'#7B93AF'}
-                style={styles.textInput}
-                value={''}
-              />
-            </View>
-            <View style={styles.textInputContainer}>
-              <TextInput
-                placeholder="Email"
-                placeholderTextColor={'#7B93AF'}
-                style={styles.textInput}
-                value={''}
-              />
-            </View>
-            <View style={styles.textInputContainer}>
-              <TextInput
-                placeholder="Phone Number"
-                placeholderTextColor={'#7B93AF'}
-                style={styles.textInput}
-                value={''}
-              />
-            </View>
-            <View style={styles.textInputContainer}>
-              <Dropdown
-                style={[styles.input]}
-                data={coursesOptions}
-                labelField="label"
-                valueField="value"
-                placeholder={'Courses'}
-                placeholderStyle={[styles.inputText, {color: '#7B93AF'}]}
-                selectedTextStyle={styles.selectedText}
-                itemTextStyle={styles.inputText}
-                value={course}
-                onChange={text => setCourse(text.value)}
-                renderRightIcon={() => (
-                  <Image
-                    style={{
-                      height: 8,
-                      width: 15,
-                    }}
-                    source={require('../../../assets/image/arrow_icon.png')}
-                  />
-                )}
-              />
-            </View>
-            <TouchableOpacity>
-              <Text style={[styles.cardBtn, styles.submitBtn]}>
-                Submit Details
-              </Text>
-            </TouchableOpacity>
-          </LinearGradient> */}
 
           <LinearGradient
             colors={['#52B0E8', '#FF9770']}
@@ -1238,7 +1129,6 @@ const HomeScreen = () => {
               />
             </View>
 
-            {/* Submit Button */}
             <TouchableOpacity onPress={() => handleSubmit()}>
               <Text style={[styles.cardBtn, styles.submitBtn]}>
                 Submit Details
@@ -1249,7 +1139,6 @@ const HomeScreen = () => {
 
         <View style={{backgroundColor: '#faf6ed', marginTop: 25}}>
           <ImageBackground
-            // resizeMode="contain"
             source={{
               uri: `${homeData?.remedies?.content?.mob_background_image}`,
             }}
@@ -1271,7 +1160,7 @@ const HomeScreen = () => {
             <FlatList
               data={homeData?.remedies?.cards?.slice(0, 5)}
               renderItem={renderItem2}
-              keyExtractor={(item, index) => index}
+              keyExtractor={(item, index) => index?.toString()}
               horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{
@@ -1292,19 +1181,17 @@ const HomeScreen = () => {
                   screen: 'Consultancy',
                 })
               }
-              hitSlop={{top: 10, bottom: 10, left: 10, right: 10}} // Touch area increase
-            >
+              hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
               <Text style={styles.service1}>VIEW ALL</Text>
             </TouchableOpacity>
           </View>
           <FlatList
             data={Homebanner?.franchises}
-            // data={data4}
             pagingEnabled
             snapToAlignment="center"
             decelerationRate="fast"
             renderItem={renderItem3}
-            keyExtractor={item => item.id.toString()}
+            keyExtractor={(item, index) => index.toString()}
             horizontal
             showsHorizontalScrollIndicator={false}
             ref={flatListRef}
@@ -1375,32 +1262,19 @@ const HomeScreen = () => {
               borderRadius: 15,
               overflow: 'hidden',
               marginBottom: 10,
-              // borderWidth:1
             }}>
             <Image
               style={styles.bannerImg2}
-              // source={require('../../../assets/image/Sc.png')}
-              // source={require('../../../assets/otherApp/coreValuesBanner.png')}
-              source={{uri: homeData?.core_values?.content?.mob_image}}
+              source={
+                homeData?.core_values?.content?.mob_image
+                  ? {uri: homeData?.core_values?.content?.mob_image}
+                  : require('../../../assets/otherApp/coreValuesBanner.png')
+              }
             />
-            {/* <LinearGradient
-              colors={['rgba(0,0,0,0)', '#003251']}
-              style={{
-                position: 'absolute',
-                left: 0,
-                right: 0,
-                bottom: 0,
-                top: 0,
-              }}
-            /> */}
-            {/* <Text style={[styles.costCalBannerText, {bottom: 20}]}>
-              We’re passionate & believe in motivating leadership.
-            </Text> */}
           </View>
         </View>
 
         <ImageBackground
-          // resizeMode="contain"
           source={{
             uri: `${homeData?.custom_testimonial?.content?.mob_background_image}`,
           }}
@@ -1418,7 +1292,7 @@ const HomeScreen = () => {
                     ? homeData?.custom_testimonial?.custom_review
                     : []
                 }
-                keyExtractor={(item, index) => index}
+                keyExtractor={(item, index) => index?.toString()}
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 pagingEnabled
@@ -1460,12 +1334,14 @@ const HomeScreen = () => {
 
                     <View style={styles.CardProfileImage}>
                       <Image
-                        source={{uri: item?.mob_review_image}}
-                        // source={require('../../../assets/image/Remedies/Image-not.png')}
+                        source={
+                          item?.mob_review_image
+                            ? {uri: item?.mob_review_image}
+                            : require('../../../assets/image/Remedies/Image-not.png')
+                        }
                         style={{
                           width: '100%',
                           height: '100%',
-                          // resizeMode: 'cover',
                         }}
                       />
                     </View>
@@ -1477,7 +1353,7 @@ const HomeScreen = () => {
                 {homeData?.custom_testimonial?.custom_review?.map(
                   (item, index) => (
                     <TouchableOpacity
-                      key={index}
+                      key={index.toString()}
                       style={[
                         styles.dot,
                         currentIndex1.reviewIndex == index && styles.activeDot,
@@ -1488,8 +1364,6 @@ const HomeScreen = () => {
                 )}
               </View>
             </View>
-
-            {/* {console.log('hdfhfdhjjkjkdsjdsjsdjkksj',homeData?.custom_testimonial)} */}
           </View>
         </ImageBackground>
         <ImageBackground
@@ -1618,8 +1492,11 @@ const HomeScreen = () => {
             return isPhoto ? (
               <Image
                 style={styles.highlightImg}
-                source={{uri: item.mob_photo}}
-                // source={require('../../../assets/otherApp/highlightsImg.png')}
+                source={
+                  item.mob_photo
+                    ? {uri: item.mob_photo}
+                    : require('../../../assets/otherApp/highlightsImg.png')
+                }
               />
             ) : (
               <View
@@ -1641,7 +1518,7 @@ const HomeScreen = () => {
               </View>
             );
           }}
-          keyExtractor={(item, index) => index}
+          keyExtractor={(item, index) => index.toString()}
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{paddingHorizontal: 10}}
@@ -1707,21 +1584,14 @@ const HomeScreen = () => {
           </View>
 
           <View style={{marginTop: 25}}>
-            {/* <AutoHeightImage
-              width={wp(95)}
-              style={{borderRadius: 15}}
-              source={require('../../../assets/otherApp/demo3.png')}
-            /> */}
             <Image
-              // width={wp(95)}
               style={[styles.bannerImg2, {borderRadius: 15}]}
-              source={{uri: homeData?.about_pinnacle_vastu?.content?.mob_image}}
-              // source={require('../../../assets/otherApp/demo3.png')}
+              source={
+                homeData?.about_pinnacle_vastu?.content?.mob_image
+                  ? {uri: homeData.about_pinnacle_vastu.content.mob_image}
+                  : require('../../../assets/otherApp/demo3.png')
+              }
             />
-            {/* <Text style={[styles.costCalBannerText, {bottom: 20}]}>
-              We believe in doing the right things with integrity, honesty, and
-              reliability.
-            </Text> */}
           </View>
         </View>
 
@@ -1735,7 +1605,7 @@ const HomeScreen = () => {
           </View>
           <FlatList
             data={Homebanner?.remedies?.slice(0, 5)}
-            keyExtractor={item => item.id}
+            keyExtractor={(item, index) => index?.toString()}
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={[
@@ -1778,7 +1648,7 @@ const HomeScreen = () => {
           <FlatList
             data={data5}
             renderItem={renderItem4}
-            // keyExtractor={item => item.id}
+            keyExtractor={(item, index) => index.toString()}
             scrollEnabled={false}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.bottomCard}

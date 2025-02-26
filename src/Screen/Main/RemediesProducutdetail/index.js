@@ -11,7 +11,6 @@ import {
   Share as SocialShare,
   Pressable,
   BackHandler,
-  LogBox,
 } from 'react-native';
 import styles from './styles';
 import {colors} from '../../../Component/colors';
@@ -22,23 +21,10 @@ import {Rating} from 'react-native-ratings';
 import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
 import {Checkbox} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
-import RenderHTML from 'react-native-render-html';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-simple-toast';
-import {
-  addToCart,
-  addToCartApi,
-  getCartDataApi,
-  updateCartApi,
-  updateCartQuantity,
-} from '../../../Redux/Slice/CartSlice';
+import {addToCart} from '../../../Redux/Slice/CartSlice';
 import Imagepath from '../../../Component/Imagepath';
-import constants from '../../../Redux/constant/constants';
-import axios from 'axios';
-import {
-  clearRemeiesDetail1,
-  productDetail1,
-} from '../../../Redux/Slice/HomeSlice';
 import {useNavigation} from '@react-navigation/native';
 import AnimatedLine from '../../../Component/progressbar';
 import {convertVariantId} from '../../../common/shopifyConverter';
@@ -46,7 +32,6 @@ import {
   fetchProductData,
   getProductMetafieldsApiCall,
   getSimilarProductMetafieldValue,
-  getSimilarProductMetafiledValue,
 } from '../../../Redux/Api';
 import {getProductRecomendation} from '../../../models/products';
 import {fetchProduct, InitProduct} from '../../../Redux/Slice/productSlice';
@@ -55,11 +40,10 @@ import { getReviewList } from '../../../Redux/Api/Ratings';
 const RemediesProductDetail = ({route}) => {
   const product = route?.params?.itemId;
   const navigation = useNavigation();
-  const {width} = Dimensions.get('window');
   const Detail1 = useSelector(state => state?.Product?.productDetails);
   const imagearray = useSelector(state => state?.Product?.productImages);
   const Detail = useSelector(state => state.home?.RemeiesDetail?.data);
-  const cartDataList = useSelector(state => state?.cart?.CartData);
+
   const localCartDataList = useSelector(
     state => state?.cart?.localStorageCartData,
   );
@@ -69,10 +53,10 @@ const RemediesProductDetail = ({route}) => {
   const isLoading = useSelector(state => state.Product?.isLoading);
 
   const [quantity, setQuantity] = useState(1);
-  const [userType, setUserType] = useState(null);
+
   const [isInCart, setIsInCart] = useState(false);
   const [similardata, setSimilarData] = useState([]);
-  const [currentItemInCart, setCurrentItemInCart] = useState();
+
   const [metafieldsData, setMetafieldsData] = useState([]);
   const [metaDescription, setMetaDescription] = useState('');
   const [topBestSellerData, setTopBestSellerData] = useState([]);
@@ -101,8 +85,6 @@ const [reviewlist,setReviewList]=useState('');
       key: similarProduct?.key,
     });
   }
-
-  // Dusra object push karna
   dataArray.push({
     id: product,
 
@@ -124,7 +106,6 @@ const [reviewlist,setReviewList]=useState('');
 
     if (similarProduct) {
       getSimilarrdata();
-      // setIsMetaDataLoading(false);
     } else {
       setIsMetaDataLoading(false);
       setSimilarData([]);
@@ -133,7 +114,6 @@ const [reviewlist,setReviewList]=useState('');
 
   const getSimilarrdata = async () => {
     try {
-      setIsDataLoading(true);
       const datawitharr = await Promise.all(
         dataArray.map(async item => {
           const similar = await fetchProductData(item?.id);
@@ -169,23 +149,23 @@ let Id1 = originalString.replace(prefix, '');
     const getreview =await getReviewList(Id1);
     setReviewList(getreview);
     const review = await getSimilarProductMetafieldValue(id);
-    
-if (review && review.value && review.value.trim() !== '') {
-  try {
-   
-    const parsedReview = JSON.parse(review.value);
-    console.log('Parsed review:', parsedReview);
 
-    setReview(parsedReview)
-   
-
-  } catch (error) {
-    console.error('JSON Parse error:', error.message, 'with value:', review.value);
-  }
-} else {
-  setReview(null)
-  console.log('No valid JSON string to parse.');
-}
+    if (review && review.value && review.value.trim() !== '') {
+      try {
+        const parsedReview = JSON.parse(review.value);
+        setReview(parsedReview);
+      } catch (error) {
+        console.error(
+          'JSON Parse error:',
+          error.message,
+          'with value:',
+          review.value,
+        );
+      }
+    } else {
+      setReview(null);
+      console.log('No valid JSON string to parse.');
+    }
     const data = await getProductMetafieldsApiCall(id);
     const topBestSellerData = await getProductRecomendation(id);
 
@@ -194,7 +174,6 @@ if (review && review.value && review.value.trim() !== '') {
       data?.metafields.find(item => item.key?.includes('description'))?.value,
     );
     setTopBestSellerData(topBestSellerData?.productRecommendations);
-    // setIsMetaDataLoading(false);
   };
 
   const newArray = [];
@@ -238,35 +217,19 @@ if (review && review.value && review.value.trim() !== '') {
       const cartItem = localCartDataList.find(
         item => item.id === similardata?.id,
       );
-
-      setCurrentItemInCart(cartItem);
     };
 
     checkIfInCart();
     init();
   }, [similardata]);
 
-  // const getUserType = async () => {
-  //   try {
-  //     const userStatus = await AsyncStorage.getItem('user_data');
-  //     const userData = JSON.parse(userStatus);
-  //     setUserType(userData?.user_type);
-
-  //     const existingCart = await AsyncStorage.getItem('cartItems');
-  //     const cartItems = existingCart ? JSON.parse(existingCart) : [];
-  //     // setLocalCartData(cartItems);
-  //   } catch (error) {
-  //     console.error('Error fetching user data or cart items:', error);
-  //   }
-  // };
-
   const toggleCheckbox = itemId => {
     setCheckedItems(prevState => {
       const updatedState = {
         ...prevState,
-        [itemId]: !prevState[itemId], // Toggle the selected state
+        [itemId]: !prevState[itemId],
       };
-      calculateTotalPrice(updatedState); // Recalculate total price
+      calculateTotalPrice(updatedState);
       return updatedState;
     });
   };
@@ -284,15 +247,11 @@ if (review && review.value && review.value.trim() !== '') {
       }
       return sum;
     }, 0);
-    setTotalPrice(total.toFixed(2)); // Ensuring two decimal places
+    setTotalPrice(total.toFixed(2));
   };
 
   const dispatch = useDispatch();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isExpanded, setIsExpanded] = useState(false);
-  const handleImageChange = index => {
-    setCurrentIndex(index);
-  };
 
   const groupedMetafields = metafieldsData
     ?.filter(item => item?.key?.includes('question'))
@@ -310,13 +269,6 @@ if (review && review.value && review.value.trim() !== '') {
 
   const increment = () => {
     if (quantity < 100) {
-      // if (currentItemInCart) {
-      //   if (quantity > currentItemInCart?.qty) {
-      //     setIsInCart(false);
-      //   } else {
-      //     setIsInCart(true);
-      //   }
-      // }
       setIsInCart(false);
       setButtonText('ADD TO CART');
       setQuantity(quantity + 1);
@@ -325,13 +277,6 @@ if (review && review.value && review.value.trim() !== '') {
 
   const decrement = () => {
     if (quantity > 1) {
-      // if (currentItemInCart) {
-      //   if (quantity < currentItemInCart?.qty) {
-      //     setIsInCart(false);
-      //   } else {
-      //     setIsInCart(true);
-      //   }
-      // }
       setButtonText('ADD TO CART');
       setIsInCart(false);
       setQuantity(quantity - 1);
@@ -346,28 +291,24 @@ if (review && review.value && review.value.trim() !== '') {
 
   const handleAddToCart = async Detail => {
     try {
-      const prod = Detail || {}; // Fallback to empty object if no product details
+      const prod = Detail || {};
       if (!prod || Object.keys(prod).length === 0) {
         console.error('Error: Product details are missing!');
         return;
       }
 
-      // Change button text immediately to "GO TO CART"
       setButtonText('GO TO CART');
       setIsInCart(true);
 
-      // Start flip animation
       Animated.timing(animation, {
-        toValue: 90, // Rotate halfway
+        toValue: 90,
         duration: 300,
         useNativeDriver: true,
       }).start(() => {
-        // Add product to the cart in the background
         Addtocart(prod, {qty: quantity});
 
-        // Complete the flip animation back to 0 degrees
         Animated.timing(animation, {
-          toValue: 0, // Rotate back to 0
+          toValue: 0,
           duration: 300,
           useNativeDriver: true,
         }).start();
@@ -377,7 +318,7 @@ if (review && review.value && review.value.trim() !== '') {
     }
   };
 
-  const Addtocard1 = async item => {     
+  const Addtocard1 = async item => {
     try {
       if (item?.variants?.length != 0) {
         const image = item.variants?.edges?.[0]?.node?.image?.src;
@@ -519,7 +460,7 @@ if (review && review.value && review.value.trim() !== '') {
               startingValue={item.rating}
               ratingColor="#52B1E9"
               readonly
-              ratingBackgroundColor={colors.lightGrey} // Unfilled star color
+              ratingBackgroundColor={colors.lightGrey}
             />
           </View>
           <View style={[styles.card, {paddingLeft: 10}]}>
@@ -621,13 +562,12 @@ if (review && review.value && review.value.trim() !== '') {
             )}
           </View>
           <View style={styles.direction}>
-
- {item?.review!=null? (  
+            {item?.review != null ? (
               <Rating
                 type="custom"
                 tintColor={colors.ordercolor}
                 ratingCount={item?.review?.scale_max}
-                imageSize={item?.review?.value? 16 : 16}
+                imageSize={item?.review?.value ? 16 : 16}
                 startingValue={item?.review?.value}
                 ratingColor="#52B1E9"
                 readonly
@@ -645,13 +585,6 @@ if (review && review.value && review.value.trim() !== '') {
     </View>
   );
 
-  const renderSubItems = ({item}) => (
-    <View style={styles.singleSubItem}>
-      <Text style={styles.subItemTitle}>{item.title}</Text>
-      <Text style={styles.subItemSubtitle}>{item.subtitle}</Text>
-    </View>
-  );
-
   const renderItems = ({item, index}) => (
     <View style={styles.paddings}>
       <TouchableOpacity
@@ -666,7 +599,6 @@ if (review && review.value && review.value.trim() !== '') {
               styles.coursetext2,
               expandedSection === index && styles.activeTitleColor,
             ]}>
-            {/* {item.key == 'faqs_1_question_' ? item?.value : null} */}
             {item?.question?.value}
           </Text>
         </View>
@@ -682,26 +614,12 @@ if (review && review.value && review.value.trim() !== '') {
           ]}
         />
       </TouchableOpacity>
-      {/* {item.key == 'faqs_1_question_' ? ( */}
+
       <Collapsible collapsed={expandedSection !== index}>
         <View style={styles.subItemContainer}>
-          {/* <RenderHTML
-            contentWidth={width}
-            source={{
-              html: item?.answer?.value,
-            }}
-          /> */}
           <Text style={styles.subItemSubtitle}>{item?.answer?.value}</Text>
         </View>
-        {/* <View style={styles.subItemContainer}>
-          <FlatList
-            data={item.subItems}
-            keyExtractor={(subItem, index) => index.toString()}
-            renderItem={ }
-          />
-        </View> */}
       </Collapsible>
-      {/*  ) : null} */}
     </View>
   );
 
@@ -781,15 +699,11 @@ if (review && review.value && review.value.trim() !== '') {
             </View>
           )}
           <View style={styles.contain}>
-            {/* Aluminium Metal Strip Vastu */}
             <Text style={styles.service}>{Detail1?.title}</Text>
           </View>
           <View style={styles.main}>
-          {console.log('reviewreviewreview,,,,',review)}
-            {review!=null && (
+            {review != null && (
               <>
-             
-              
                 <View style={styles.headerview}>
                   <View style={{marginTop: -5}}>
                     <Rating
@@ -979,7 +893,7 @@ if (review && review.value && review.value.trim() !== '') {
           <View style={{marginTop: 10, marginHorizontal: 15}}>
             <FlatList
               data={groupedMetafields || []}
-              // keyExtractor={item => item.id.toString()}
+              keyExtractor={(item, index) => index.toString()}
               scrollEnabled={false}
               renderItem={renderItems}
             />
@@ -1031,7 +945,7 @@ if (review && review.value && review.value.trim() !== '') {
               <Text style={styles.header1}>Top Best Sellers</Text>
               <FlatList
                 data={topBestSellerData}
-                // keyExtractor={item => item.id.toString()}
+                keyExtractor={(item,index) => index.toString()}
                 renderItem={renderItem2}
                 pagingEnabled
                 snapToAlignment="center"
@@ -1054,7 +968,6 @@ if (review && review.value && review.value.trim() !== '') {
                       styles.dot,
                       currentIndex === index && styles.activeDot,
                     ]}
-                    // onPress={() => handleImageChange(index)}
                   />
                 ))}
               </View>

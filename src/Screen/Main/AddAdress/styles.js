@@ -9,15 +9,15 @@ import {
 export default StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: '#FFFFFF',
+   
     backgroundColor: '#F9F9F9',
-    // paddingTop: 50,
+  
     elevation: 4,
-    // opacity:0.9
+   
   },
   header: {
     flexDirection: 'row',
-    // justifyContent: 'space-between',
+  
     alignItems: 'center',
     paddingHorizontal: 18,
     paddingVertical: 10,
@@ -115,10 +115,10 @@ export default StyleSheet.create({
   checkboxRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    // marginTop: ,
+   
   },
   checkboxText: {
-    color: colors.heading, // Change the text color to red
+    color: colors.heading, 
     fontSize: fontSize.Fourteen,
     fontFamily: 'Poppins-Regular',
     marginLeft: 5,
@@ -148,8 +148,8 @@ export default StyleSheet.create({
   },
   customIcon: {
     fontSize: fontSize.Fifteen,
-    color: colors.paymenttext, // Custom icon color
-    // marginRight: 10,
+    color: colors.paymenttext, 
+   
   },
   backBtn: {
     height: wp(4),

@@ -42,15 +42,11 @@ export const handleRating = async (
         },
         data: data,
       };
-      const response = await axios.request(config); // Await the axios request
+      const response = await axios.request(config); 
       ToastAndroid.show(response?.data?.message, ToastAndroid.SHORT);
     } catch (error) {
       ToastAndroid.show(error.message, ToastAndroid.SHORT);
-    }
-
-    // setTimeout(() => {
-    //   setVisible(true);
-    // }, 500);
+    };
   }
 };
 
@@ -63,7 +59,7 @@ export const getReviewList = async (id) => {
   let count = 0;
 
   try {
-    // Fetch product details
+    
     const config = {
       method: 'get',
       maxBodyLength: Infinity,
@@ -76,7 +72,6 @@ export const getReviewList = async (id) => {
     if (productResponse.data.product) {
       reviewId = productResponse.data.product.id;
 
-      // Fetch reviews list
       const config1 = {
         method: 'get',
         maxBodyLength: Infinity,
@@ -91,8 +86,6 @@ export const getReviewList = async (id) => {
       if (reviewsResponse.data.reviews.length > 0) {
         reviewsList = reviewsResponse.data.reviews;
       }
-
-      // Fetch reviews count
       const config2 = {
         method: 'get',
         maxBodyLength: Infinity,

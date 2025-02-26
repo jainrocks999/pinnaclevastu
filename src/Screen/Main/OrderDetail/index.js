@@ -6,30 +6,20 @@ import {
   Image,
   FlatList,
   TextInput,
-  Alert,
   BackHandler,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import styles from './styles';
-import {Dropdown} from 'react-native-element-dropdown';
 import StepIndicator from 'react-native-step-indicator';
 import Toast from 'react-native-simple-toast';
-
 import {
   heightPercent,
   widthPrecent as wp,
 } from '../../../Component/ResponsiveScreen/responsive';
-import {fontSize} from '../../../Component/fontsize';
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
-import Imagepath from '../../../Component/Imagepath';
 import Collapsible from 'react-native-collapsible';
-import {cancelorders, orderDetail} from '../../../Redux/Slice/orderSclice';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {colors} from '../../../Component/colors';
-import Reviewform from '../../../Component/ReviewForm';
-import { fetchProduct, InitProduct } from '../../../Redux/Slice/productSlice';
-import { clearRemeiesDetail1 } from '../../../Redux/Slice/HomeSlice';
 
 const labels = [
   'Order Received',
@@ -61,7 +51,7 @@ const OrderDetail = ({route}) => {
   const navigation = useNavigation();
   const data2 = useSelector(state => state?.order?.orderD);
   const loading1 = useSelector(state => state?.order?.loading);
-  // const [visibleItemId, setVisibleItemId] = useState(null);
+
   const [isCancle, setIsCancle] = useState(false);
   const [reason, setReason] = useState('');
   const dispatch = useDispatch();
@@ -100,60 +90,32 @@ const OrderDetail = ({route}) => {
       return;
     } else {
       try {
-        const token = await AsyncStorage.getItem('Token');
-        const userid = await AsyncStorage.getItem('user_id');
-        let data = {
-          user_id: userid,
-          order_id: JSON.stringify(data2.id),
-          order_number: data2.code,
-          description: reason,
-        };
+        //   const token = await AsyncStorage.getItem('Token');
+        //   const userid = await AsyncStorage.getItem('user_id');
+        //   let data = {
+        //     user_id: userid,
+        //     order_id: JSON.stringify(data2.id),
+        //     order_number: data2.code,
+        //     description: reason,
+        //   };
 
         // setVisible(false);
 
-        await dispatch(
-          cancelorders({
-            token: token,
-            url: 'cancel-customer-order',
-            data1: data,
-            navigation,
-          }),
-        );
-        OrderDetails();
+        // await dispatch(
+        //   cancelorders({
+        //     token: token,
+        //     url: 'cancel-customer-order',
+        //     data1: data,
+        //     navigation,
+        //   }),
+        // );
+        // OrderDetails();
         // setVisibleItemId(null);
         setIsCancle(false);
       } catch (error) {
         console.error('Error in cancelorder function:', error);
       }
     }
-  };
-
-  const OrderDetails = async item => {
-    const token = await AsyncStorage.getItem('Token');
-    const userid = await AsyncStorage.getItem('user_id');
-    await dispatch(
-      orderDetail({
-        id: userid,
-        token: token,
-        url: 'fetch-order-details',
-        orderid: JSON.stringify(data2.id),
-        code: data2.code,
-        navigation,
-      }),
-    );
-  };
-
-  const getdata = qty => {
-    let value = {label: '1', value: '1'};
-    let array1 = [value];
-    if (qty == 1) {
-      return array1;
-    }
-    let array = [];
-    for (let i = 1; i <= qty; i++) {
-      array.push({label: i.toString(), value: i.toString()});
-    }
-    return array;
   };
 
   const formatDate = () => {
@@ -164,18 +126,6 @@ const OrderDetail = ({route}) => {
     const year = date.getFullYear();
 
     return `${day} ${month} ${year}`;
-  };
-
-  const PRoductDeta = async (item,id) => {
-    dispatch(clearRemeiesDetail1());
-
-    if (Object.keys(item).length == 0) {
-    } else {
-      dispatch(InitProduct());
-      dispatch(fetchProduct(id));
-    }
-    // getProductMetafieldsApiCall(productId)
-    navigation.navigate('ProductDetail');
   };
 
   const calculateSubTotal = items => {
@@ -193,11 +143,12 @@ const OrderDetail = ({route}) => {
 
   const renderItem = ({item}) => (
     <View style={styles.card}>
-
       <TouchableOpacity
         style={styles.ImageBtn}
-        onPress={
-          () => PRoductDeta(item,item?.node?.variant?.product?.id)
+        onPress={() =>
+          navigation.navigate('ProductDetail', {
+            itemId: item?.node?.variant?.product?.id,
+          })
         }>
         <Image
           style={styles.cardImg}
@@ -216,23 +167,6 @@ const OrderDetail = ({route}) => {
           <Text style={styles.productName}>Quantity:</Text>
 
           <Text style={styles.productQuantity}>{item?.node?.quantity}</Text>
-          {/* <Dropdown
-            style={[styles.dropdown, isFocus]}
-            selectedTextStyle={styles.productQuantity}
-            data={getdata(parseInt(item?.qty))}
-            maxHeight={200}
-            labelField="label"
-            valueField="value"
-            itemContainerStyle={{marginBottom: -20}}
-            placeholder={value ? value : item?.qty}
-            value={item?.qty}
-            onFocus={() => setIsFocus(true)}
-            onBlur={() => setIsFocus(false)}
-            onChange={item => {
-              setValue(item.value);
-              setIsFocus(false);
-            }}
-          /> */}
         </View>
         <Text style={styles.productName}>
           Total: ₹ {item?.node?.variant?.price?.amount}
@@ -349,47 +283,8 @@ const OrderDetail = ({route}) => {
             scrollEnabled={false}
             contentContainerStyle={styles.listContainer}
           />
-
-          {/* <View style={styles.card}>
-            <Image
-              style={styles.cardImg}
-              source={require('../../../assets/otherApp/itemImg.png')}
-            />
-            <View style={styles.cardInfo}>
-              <Text
-                style={[styles.productName, {marginBottom: 10}]}>
-                Aluminium Metal Strip Vastu
-              </Text>
-
-              <View style={styles.quantitySection}>
-                <Text style={styles.productName}>Quantity:</Text>
-
-                <Dropdown
-                  style={[styles.dropdown, isFocus]}
-                  selectedTextStyle={styles.productQuantity}
-                  data={data}
-                  maxHeight={200}
-                  labelField="label"
-                  valueField="value"
-                  itemContainerStyle={{marginBottom: -20}}
-                  placeholder={!isFocus ? '...' : value}
-                  value={value}
-                  onFocus={() => setIsFocus(true)}
-                  onBlur={() => setIsFocus(false)}
-                  onChange={item => {
-                    setValue(item.value);
-                    setIsFocus(false);
-                  }}
-                />
-              </View>
-
-              <Text style={styles.productName}>Total: ₹ 1450.00</Text>
-              <TouchableOpacity>
-                <Text style={styles.cancleBtn}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </View> */}
         </View>
+
         {data2?.status?.value !== 'canceled' &&
         data2?.status?.value !== 'completed' &&
         data2?.payment?.status?.value !== 'failed' &&
@@ -442,7 +337,6 @@ const OrderDetail = ({route}) => {
                   position < getCurrentPosition() && styles.activeStepCircle,
                   position === getCurrentPosition() && styles.activeStepCircle,
                 ]}>
-                {/* Checkmark Icon for finished steps */}
                 {position === getCurrentPosition() && position === 4 && (
                   <Image
                     source={require('../../../assets/otherApp/checkedIcon.png')}
@@ -553,15 +447,10 @@ const OrderDetail = ({route}) => {
                     ? require('../../../assets/otherApp/updown.png')
                     : require('../../../assets/image/arrow_icon.png')
                 }
-                style={[
-                  styles.toggleIcon2,
-                  {marginLeft: wp(-10)},
-                  // !isCollapsed ? {resizeMode: 'contain'} : null,
-                ]}
+                style={[styles.toggleIcon2, {marginLeft: wp(-10)}]}
               />
             </TouchableOpacity>
 
-            {/* Collapsible View */}
             <Collapsible collapsed={isCollapsed}>
               <Text style={styles.customerName}>
                 {orderDetailItem?.shippingAddress?.firstName &&
@@ -618,11 +507,7 @@ const OrderDetail = ({route}) => {
                     ? require('../../../assets/otherApp/updown.png')
                     : require('../../../assets/image/arrow_icon.png')
                 }
-                style={[
-                  styles.toggleIcon2,
-                  {marginLeft: wp(-10)},
-                  // !isCollapsed ? {resizeMode: 'contain'} : null,
-                ]}
+                style={[styles.toggleIcon2, {marginLeft: wp(-10)}]}
               />
             </TouchableOpacity>
             <Collapsible collapsed={isCollapsed1}>

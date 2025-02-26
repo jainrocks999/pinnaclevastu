@@ -6,8 +6,6 @@ import Toast from 'react-native-simple-toast';
 export const getCosultationListApi = createAsyncThunk(
   'consultation/getCosultationList',
   async ({url}, {rejectWithValue}) => {
-    // console.log('getCosultationList..', url);
-
     try {
       const config = {
         method: 'get',
@@ -17,8 +15,6 @@ export const getCosultationListApi = createAsyncThunk(
       };
 
       const response = await axios.request(config);
-
-      // console.log(response.data.data, 'sdmfsdkjfsldf');
 
       if (response?.data?.status == 200) {
         return response?.data?.data;
@@ -39,7 +35,6 @@ export const getCosultationListApi = createAsyncThunk(
 export const consultationDetail1 = createAsyncThunk(
   'consultation/consultationDetail1',
   async ({url, franchise_id, navigation}, {rejectWithValue}) => {
-    // console.log('consultation detail00', url, franchise_id);
     try {
       const config = {
         method: 'get',
@@ -49,7 +44,6 @@ export const consultationDetail1 = createAsyncThunk(
       };
       const response = await axios.request(config);
       if (response?.data?.status == 200) {
-        // console.log('response data consultation detail ', response.data.data);
         navigation.navigate('profile');
         return response?.data.data;
       } else {
@@ -67,7 +61,6 @@ export const consultationDetail1 = createAsyncThunk(
 export const getAppoinment = createAsyncThunk(
   'consultation/getAppoinment',
   async ({url, token}, {rejectWithValue}) => {
-    // console.log(url,token, 'Appoinment1 ,,,response ');
     try {
       const config = {
         method: 'get',
@@ -77,13 +70,10 @@ export const getAppoinment = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       };
-      // console.log('Appoinment1 ,,,response ',config);
 
       const response = await axios.request(config);
-      //  console.log(response.data, 'Appoinment1 ,,,response ');
 
       if (response?.data?.status == 200) {
-        // console.log(response.data, 'response.data Sandeep dfgmkdflgkdflg');
         return response?.data?.data;
       }
     } catch (error) {
@@ -97,9 +87,7 @@ export const getAppoinment = createAsyncThunk(
 );
 export const signupAsFranchiseApi = createAsyncThunk(
   'consultation/signupAsFranchiseApi',
-  async ({formUserData, url, token,navigation}, {rejectWithValue}) => {
-    console.log('consultation/signupAsFranchiseApi', formUserData, url, token);
-
+  async ({formUserData, url, token, navigation}, {rejectWithValue}) => {
     try {
       let config = {
         method: 'post',
@@ -112,9 +100,9 @@ export const signupAsFranchiseApi = createAsyncThunk(
 
         data: formUserData,
       };
-    // return 
+     
       const response = await axios.request(config);
-      console.log(response.data, 'signupAsFranchiseApi');
+
 
       if (response.data.status == 200) {
         Toast.show(response?.data?.msg);
@@ -190,7 +178,7 @@ const consultationSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(signupAsFranchiseApi.fulfilled, (state) => {
+      .addCase(signupAsFranchiseApi.fulfilled, state => {
         state.loading = false;
       })
       .addCase(signupAsFranchiseApi.rejected, (state, action) => {

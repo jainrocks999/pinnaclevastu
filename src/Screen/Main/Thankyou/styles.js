@@ -10,7 +10,6 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-    // paddingTop: 50,
   },
   main: {
     width: '100%',
@@ -20,7 +19,6 @@ export default StyleSheet.create({
   },
   logoText: {
     fontSize: fontSize.Twentysix,
-
     color: colors.paymenttext,
     fontFamily: 'Poppins-Medium',
   },
@@ -37,16 +35,14 @@ export default StyleSheet.create({
   },
   logoText12: {
     fontSize: fontSize.Sixteen,
-
     color: colors.paymenttext,
     fontFamily: 'Poppins-Regular',
   },
   book: {
-    flex:1,
+    flex: 1,
     backgroundColor: '#6CABF4',
     alignItems: 'center',
     justifyContent: 'center',
-    // width: '100%',
     height: wp(13),
     borderRadius: 28,
     marginTop: hp(2),
@@ -58,12 +54,11 @@ export default StyleSheet.create({
   },
   longMsgText: {
     fontSize: fontSize.Fifteen,
-    width: '75%', 
+    width: '75%',
     textAlign: 'center',
-    // borderWidth:1
   },
-  pressabelText:{
-    color:"#6CABF4",
-    textDecorationLine:"underline"
-  }
+  pressabelText: {
+    color: '#6CABF4',
+    textDecorationLine: 'underline',
+  },
 });

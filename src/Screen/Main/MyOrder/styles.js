@@ -30,13 +30,10 @@ export default StyleSheet.create({
     marginVertical: 15,
     backgroundColor: colors.ordercolor,
     borderRadius: 20,
-    // elevation: 10,
-    // shadowColor: '#bdc3c7',
     paddingHorizontal: 15,
   },
   searchInput: {
     width: '80%',
-    // flex: 1,
     fontFamily: 'Poppins-Regular',
     fontSize: fontSize.Fourteen,
     paddingHorizontal: 15,
@@ -54,12 +51,8 @@ export default StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 20,
   },
-  searchIcon: {
-    width: 35,
-    height: 25,
-  },
+
   tabContainer: {
-    // borderWidth:2,
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
@@ -81,10 +74,10 @@ export default StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: colors.orange,
     borderRadius: 8,
-    shadowColor: "#ad3803",
-    shadowOffset: { width: 0, height: 6 }, 
-    shadowOpacity: 0.8, 
-    shadowRadius: 5, 
+    shadowColor: '#ad3803',
+    shadowOffset: {width: 0, height: 6},
+    shadowOpacity: 0.8,
+    shadowRadius: 5,
     elevation: 8,
   },
   tabButtonText: {
@@ -99,7 +92,7 @@ export default StyleSheet.create({
     paddingHorizontal: 18,
   },
   orderCard: {
-    height:wp(40),
+    height: wp(40),
     backgroundColor: colors.white,
     borderWidth: 1,
     borderColor: '#EAEAEA',
@@ -108,12 +101,12 @@ export default StyleSheet.create({
     marginBottom: 12,
     width: '100%',
     shadowColor: '#bdc3c7',
-    shadowOffset: { width: 0, height: 63}, 
-    shadowOpacity: 0.5, 
-    shadowRadius: 10, 
-    
+    shadowOffset: {width: 0, height: 63},
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+
     elevation: 5,
-    overflow:"hidden",
+    overflow: 'hidden',
   },
   orderNo: {
     fontSize: fontSize.Fourteen,
@@ -129,8 +122,8 @@ export default StyleSheet.create({
   productContainer1: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical:8,
-    height:"75%"
+    marginVertical: 8,
+    height: '75%',
   },
   productImage: {
     width: '40%',
@@ -138,17 +131,16 @@ export default StyleSheet.create({
     borderRadius: 8,
     marginRight: '5%',
     resizeMode: 'contain',
-    borderWidth:0.5,
-    borderColor:colors.lightGrey
+    borderWidth: 0.5,
+    borderColor: colors.lightGrey,
   },
   productImage1: {
     width: '40%',
     height: '100%',
     borderRadius: 8,
     marginRight: '5%',
-    // resizeMode: 'contain',
-    borderWidth:0.5,
-    borderColor:colors.lightGrey
+    borderWidth: 0.5,
+    borderColor: colors.lightGrey,
   },
   productDetails: {
     flex: 1,
@@ -165,13 +157,9 @@ export default StyleSheet.create({
     fontFamily: 'Poppins-Regular',
     marginBottom: 8,
   },
-  productPrice: {
-    fontSize: 12,
-    color: '#324356',
-  },
   detailsButton: {
-    position:"absolute",
-    bottom:0,
+    position: 'absolute',
+    bottom: 0,
     justifyContent: 'center',
     alignSelf: 'flex-end',
     backgroundColor: colors.orange,
@@ -181,7 +169,6 @@ export default StyleSheet.create({
     height: wp(8),
   },
   detailsButtonText: {
-    // padding: 10,
     fontSize: fontSize.Fourteen,
     color: colors.white,
     fontFamily: 'Poppins-Regular',
@@ -189,26 +176,23 @@ export default StyleSheet.create({
   },
   horizontalSeparator: {
     height: 1,
-    width:'98.3%',
-    alignSelf:'center',
+    width: '98.3%',
+    alignSelf: 'center',
     backgroundColor: '#EAEAEA',
   },
   backBtn: {
-    marginTop:-5,
+    marginTop: -5,
     height: wp(4),
     width: wp(2.3),
-    // resizeMode: 'stretch',
     marginRight: 20,
   },
-  statusText:{
-    position:"absolute",
+  statusText: {
+    position: 'absolute',
     fontSize: fontSize.Ten,
-    // color: colors.white,
     fontFamily: 'Poppins-Regular',
-    top:0,
-    right:0,
-    paddingVertical:5,
-    paddingHorizontal:8,
-    // borderBottomLeftRadius:10
-  }
+    top: 0,
+    right: 0,
+    paddingVertical: 5,
+    paddingHorizontal: 8,
+  },
 });

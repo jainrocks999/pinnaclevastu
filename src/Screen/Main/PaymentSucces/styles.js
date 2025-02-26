@@ -1,7 +1,7 @@
-import { StyleSheet } from 'react-native';
-import { fontSize } from '../../../Component/fontsize';
-import { colors } from '../../../Component/colors';
-import { widthPrecent as wp } from '../../../Component/ResponsiveScreen/responsive';
+import {StyleSheet} from 'react-native';
+import {fontSize} from '../../../Component/fontsize';
+import {colors} from '../../../Component/colors';
+import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
 
 export default StyleSheet.create({
   container: {
@@ -24,8 +24,10 @@ export default StyleSheet.create({
     fontFamily: 'Poppins-Regular',
   },
   bankNameSection: {
-    flexDirection: "row",
-    justifyContent: "center", alignItems: "center", gap: 10
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 10,
   },
   upiText: {
     margin: 8,
@@ -103,9 +105,9 @@ export default StyleSheet.create({
     width: '85%',
     height: wp(13),
     borderRadius: 28,
-    justifyContent:"center",
-    alignItems:"center",
-   marginHorizontal:"auto"
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 'auto',
   },
   btext1: {
     fontFamily: 'Poppins-Medium',
@@ -120,11 +122,10 @@ export default StyleSheet.create({
     top: 10,
     left: 10,
   },
-  arrowDownIcon:{
-    position:"absolute",
-    right:10,
-    height:wp(5),
-    width:wp(5),
-
-  }
+  arrowDownIcon: {
+    position: 'absolute',
+    right: 10,
+    height: wp(5),
+    width: wp(5),
+  },
 });

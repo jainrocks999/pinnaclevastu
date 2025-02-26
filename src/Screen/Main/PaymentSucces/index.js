@@ -1,15 +1,16 @@
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import {View, Text, Image, TouchableOpacity} from 'react-native';
 import React from 'react';
 import styles from './styles';
 
-const PaymentApp = ({ navigation }) => {
+const PaymentApp = ({navigation}) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.closeBtn}
-        onPress={() => navigation.goBack()}  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+        onPress={() => navigation.goBack()}
+        hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
         <Image
-          style={{ height: "100%", width: "100%" }}
+          style={{height: '100%', width: '100%'}}
           source={require('../../../assets/image/lightClose.png')}
         />
       </TouchableOpacity>
@@ -21,9 +22,8 @@ const PaymentApp = ({ navigation }) => {
       <Text style={styles.containerText}>Paying Pinnacle Vastu</Text>
       <View style={styles.bankNameSection}>
         <View style={styles.blueDot} />
-        <Text style={[styles.containerText,{textAlign:"auto"}]}>
-          Banking name: PINNACLE
-          VASTU...
+        <Text style={[styles.containerText, {textAlign: 'auto'}]}>
+          Banking name: PINNACLE VASTU...
         </Text>
       </View>
       <Text style={[styles.containerText, styles.upiText]}>
@@ -44,17 +44,20 @@ const PaymentApp = ({ navigation }) => {
             <View>
               <Text style={styles.bankNameTxt}>ICICI Bank . . . 2134</Text>
               <Text style={styles.bankNameTxt}>
-                Balance : <Text style={{ color: '#206EBC' }}>Check now</Text>
+                Balance : <Text style={{color: '#206EBC'}}>Check now</Text>
               </Text>
             </View>
 
-            <Image source={require('../../../assets/image/arrowDownLight.png')} style={styles.arrowDownIcon}/>
+            <Image
+              source={require('../../../assets/image/arrowDownLight.png')}
+              style={styles.arrowDownIcon}
+            />
           </View>
         </View>
 
         <TouchableOpacity
-         style={styles.book}
-        onPress={() => navigation.navigate('Thankyou')}>
+          style={styles.book}
+          onPress={() => navigation.navigate('Thankyou')}>
           <Text style={styles.payBtn}>PAY ₹ 7300.00</Text>
         </TouchableOpacity>
         <View style={styles.imageSection}>
@@ -69,11 +72,6 @@ const PaymentApp = ({ navigation }) => {
           />
         </View>
       </View>
-      {/* <View style={{position:'absolute',bottom:40,width:'100%',paddingHorizontal:25}}>
-      <TouchableOpacity onPress={()=>navigation.navigate('Appoiment')} style={styles.book}>
-       <Text style={styles.btext1}>PAY ₹ 7300.00</Text>
-       </TouchableOpacity>
-       </View> */}
     </View>
   );
 };

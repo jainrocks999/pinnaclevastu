@@ -1,5 +1,4 @@
 import {
-  StyleSheet,
   Text,
   View,
   ScrollView,
@@ -11,12 +10,10 @@ import {
   Dimensions,
   Animated,
   Share,
-  ActivityIndicator,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import Collapsible from 'react-native-collapsible';
 import styles from './styles';
-import {colors} from '../../../Component/colors';
 import {useDispatch, useSelector} from 'react-redux';
 import Imagepath from '../../../Component/Imagepath';
 import {widthPrecent} from '../../../Component/ResponsiveScreen/responsive';
@@ -28,9 +25,9 @@ import constants from '../../../Redux/constant/constants';
 import {checkout} from '../../../models/Checkout';
 import {convertVariantId} from '../../../common/shopifyConverter';
 import Toast from 'react-native-simple-toast';
-import {clearRemeiesDetail1} from '../../../Redux/Slice/HomeSlice';
 import {fetchProduct, InitProduct} from '../../../Redux/Slice/productSlice';
 import {getProductMetafieldsApiCall} from '../../../Redux/Api';
+import Loader from '../../../Component/Loader';
 const {width} = Dimensions.get('window');
 
 const CourseDetail = ({route}) => {
@@ -39,10 +36,10 @@ const CourseDetail = ({route}) => {
   const coursetype = route?.params?.coursetype;
   const Detail1 = useSelector(state => state?.Product?.productDetails);
   const [metaData, setMetaData] = useState([]);
-  const imagearray = useSelector(state => state?.Product?.productImages);
   const [userType, setUserType] = useState('');
   const CourceDetailA = useSelector(state => state?.home?.CourceDetailA);
   const isLoading = useSelector(state => state.home?.loading);
+  const [isMetaDataLoading, setIsMetaDataLoading] = useState(false);
   const [videoPlay, setVideoPlay] = useState(true);
   const [videoState, setVideoState] = useState({
     isPlaying: true,
@@ -50,74 +47,9 @@ const CourseDetail = ({route}) => {
   });
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
 
-  const images = [
-    require('../../../assets/otherApp/reviewslider.png'),
-    require('../../../assets/otherApp/reviewslider.png'),
-    require('../../../assets/otherApp/reviewslider.png'),
-    require('../../../assets/otherApp/reviewslider.png'),
-    // Add more images as needed
-  ];
-
-  const dummyDatas = [
-    {
-      id: '1',
-      title: 'Benefits to Join',
-      subItems: [
-        'Benefit 1: In-depth study of topic A',
-        'Benefit 2: In-depth study of topic B',
-        'Benefit 3: In-depth study of topic C',
-      ],
-    },
-    {
-      id: '2',
-      title: 'Vastu Course Content',
-      subItems: [
-        'Topic 1: Introduction to Vastu',
-        'Topic 2: Advanced Vastu Practices',
-        'Topic 3: Practical Vastu Applications',
-      ],
-    },
-    {
-      id: '3',
-      title: 'Numerology Course Content',
-      subItems: [
-        'Topic 1: Basics of Numerology',
-        'Topic 2: Advanced Numerology Concepts',
-        'Topic 3: Numerology Applications',
-      ],
-    },
-  ];
-
-  const dummyData = [
-    {
-      id: '1',
-      title: 'Course Description',
-      subItems: [
-        '● : In-depth study of Five Elements.',
-        '● : Understanding Control Cycles.',
-        '● : Practical Applications.',
-        '● : Practical Applications.',
-        '● : Practical Applications.',
-        '● : Practical Applications.',
-        '● : Practical Applications.',
-      ],
-    },
-    {
-      id: '2',
-      title: 'Numerology Expertise',
-      subItems: ['Numerology Basics', 'Advanced Numerology Techniques'],
-    },
-    {
-      id: '3',
-      title: 'Rudraksha Science',
-      subItems: ['Introduction to Rudraksha', 'Types and Significance'],
-    },
-  ];
-
   useEffect(() => {
     getUserType();
     handleApi(route?.params?.itemId);
-    // setVideoPlay(false
     setVideoState(prevState => ({
       ...prevState,
       isPlaying: false,
@@ -125,16 +57,17 @@ const CourseDetail = ({route}) => {
   }, []);
 
   const handleApi = async itemId => {
-    dispatch(clearRemeiesDetail1());
-
+    setIsMetaDataLoading(true);
     dispatch(InitProduct());
     dispatch(fetchProduct(itemId));
 
     const data = await getProductMetafieldsApiCall(itemId);
-    console.log('datata get by meta feild', data);
     setMetaData(data?.metafields);
+    setIsMetaDataLoading(false);
   };
-  console.log(metaData, 'Venom');
+
+  console.log(metaData, 'meta data');
+
   const groupedMeta = metaData
     ?.filter(item => item?.key?.includes('question'))
     ?.map(question => {
@@ -155,100 +88,104 @@ const CourseDetail = ({route}) => {
     const userType = userData?.user_type;
     setUserType(userType);
   };
-
-  const toggleCollapsed = index => {
-    setCollapsedStates(prevStates => {
-      const newStates = [...prevStates];
-      newStates[index] = !newStates[index];
-      return newStates;
-    });
-  };
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [collapsedStates, setCollapsedStates] = useState(
-    dummyData?.map(() => true),
-  ); // Initialize all collapsed
   const handleImageChange = index => {
     setCurrentIndex(index);
   };
 
   const [expandedSection, setExpandedSection] = useState(null);
 
-  const videoData = CourceDetailA?.demo_video
-    ? JSON.parse(CourceDetailA.demo_video)
-    : [];
+  // const videoData = CourceDetailA?.demo_video
+  //   ? JSON.parse(CourceDetailA.demo_video)
+  //   : [];
 
-  let videoFileName = null;
-  videoData.forEach(videoItem => {
-    if (!videoFileName) {
-      const fileItem = videoItem.find(
-        item => item.key === 'file' && item.value !== null,
-      );
-      const urlItem = videoItem.find(
-        item => item.key === 'url' && item.value !== null,
-      );
+  // let videoFileName = null;
+  // videoData.forEach(videoItem => {
+  //   if (!videoFileName) {
+  //     const fileItem = videoItem.find(
+  //       item => item.key === 'file' && item.value !== null,
+  //     );
+  //     const urlItem = videoItem.find(
+  //       item => item.key === 'url' && item.value !== null,
+  //     );
 
-      if (fileItem) {
-        videoFileName = `${Imagepath.Path}${fileItem.value}`;
-      } else if (urlItem) {
-        videoFileName = urlItem.value;
-      }
-    }
-  });
-  const isYouTubeUrl1 =
-    videoFileName?.includes('youtube.com') ||
-    videoFileName?.includes('youtu.be');
-  let finalUrl1 = videoFileName;
+  //     if (fileItem) {
+  //       videoFileName = `${Imagepath.Path}${fileItem.value}`;
+  //     } else if (urlItem) {
+  //       videoFileName = urlItem.value;
+  //     }
+  //   }
+  // });
+  // const isYouTubeUrl1 =
+  //   videoFileName?.includes('youtube.com') ||
+  //   videoFileName?.includes('youtu.be');
+  // let finalUrl1 = videoFileName;
 
-  if (isYouTubeUrl1) {
-    let videoId = videoFileName?.split('youtu.be/')[1]?.split('?')[0];
-    if (!videoId) {
-      videoId = videoFileName?.split('v=')[1]?.split('&')[0];
-    }
-    finalUrl1 = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=1&autohide=1&enablejsapi=1`;
+  // if (isYouTubeUrl1) {
+  //   let videoId = videoFileName?.split('youtu.be/')[1]?.split('?')[0];
+  //   if (!videoId) {
+  //     videoId = videoFileName?.split('v=')[1]?.split('&')[0];
+  //   }
+  //   finalUrl1 = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=1&autohide=1&enablejsapi=1`;
+  // }
+
+  // const videoDat = CourceDetailA?.course_video
+  //   ? JSON.parse(CourceDetailA.course_video)
+  //   : [];
+
+  // let videoFileName1 = null;
+
+  // videoDat.forEach(videoItem => {
+  //   if (!videoFileName1) {
+  //     const fileItem = videoItem.find(
+  //       item => item.key === 'file' && item.value !== null,
+  //     );
+  //     const urlItem = videoItem.find(
+  //       item => item.key === 'url' && item.value !== null,
+  //     );
+  //     if (fileItem) {
+  //       videoFileName1 = `${Imagepath.Path}${fileItem.value}`;
+  //     } else if (urlItem) {
+  //       videoFileName1 = urlItem.value;
+  //     }
+  //   }
+  // });
+
+  // const isYouTubeUrl =
+  //   videoFileName1?.includes('youtube.com') ||
+  //   videoFileName1?.includes('youtu.be');
+  // let finalUrl = videoFileName1;
+
+  // if (isYouTubeUrl) {
+  //   let videoId = videoFileName1?.split('youtu.be/')[1]?.split('?')[0];
+  //   if (!videoId) {
+  //     videoId = videoFileName1.split('v=')[1]?.split('&')[0];
+  //   }
+  //   finalUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=1&autohide=1&enablejsapi=1`;
+  // }
+
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date?.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
   }
 
-  const videoDat = CourceDetailA?.course_video
-    ? JSON.parse(CourceDetailA.course_video)
-    : [];
-
-  let videoFileName1 = null;
-
-  videoDat.forEach(videoItem => {
-    if (!videoFileName1) {
-      const fileItem = videoItem.find(
-        item => item.key === 'file' && item.value !== null,
-      );
-      const urlItem = videoItem.find(
-        item => item.key === 'url' && item.value !== null,
-      );
-      if (fileItem) {
-        videoFileName1 = `${Imagepath.Path}${fileItem.value}`;
-      } else if (urlItem) {
-        videoFileName1 = urlItem.value;
-      }
+  const getYouTubeEmbedUrl = url => {
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+      const videoIdMatch = url.match(/(?:v=|\/)([0-9A-Za-z_-]{11})/);
+      const videoId = videoIdMatch ? videoIdMatch[1] : null;
+      return videoId
+        ? `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=1&rel=0&modestbranding=1&fs=1`
+        : url;
     }
-  });
 
-  const isYouTubeUrl =
-    videoFileName1?.includes('youtube.com') ||
-    videoFileName1?.includes('youtu.be');
-  let finalUrl = videoFileName1;
-
-  if (isYouTubeUrl) {
-    let videoId = videoFileName1?.split('youtu.be/')[1]?.split('?')[0];
-    if (!videoId) {
-      videoId = videoFileName1.split('v=')[1]?.split('&')[0];
-    }
-    finalUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=1&autohide=1&enablejsapi=1`;
-  }
-
-  const [loading, setLoading] = useState(true);
-
-  const handleLoadEnd = () => {
-    setLoading(false);
+    return url;
   };
+ 
   const toggleSection = id => {
-    // console.log(index,'hulk')
     setExpandedSection(prevSection => (prevSection == id ? null : id));
   };
 
@@ -266,8 +203,6 @@ const CourseDetail = ({route}) => {
       }),
     ]).start(() => {
       if (userType) {
-        console.log(Detail1);
-
         if (Detail1?.variants?.length != 0) {
           const image = Detail1?.images[0]?.src;
           let product = {...Detail1};
@@ -287,7 +222,6 @@ const CourseDetail = ({route}) => {
 
             properties: {},
           };
-          console.log(productTemp, 'fjfjff');
 
           if (productTemp?.availableForSale) {
             checkout([productTemp], navigation);
@@ -295,8 +229,6 @@ const CourseDetail = ({route}) => {
             Toast.show('This course is currently not available for sale');
           }
         }
-
-        // navigation.navigate('PaymentCourse', {data1: CourceDetailA});
       } else {
         navigation.navigate('Login', {from: 'CourseDetails'});
       }
@@ -377,12 +309,7 @@ const CourseDetail = ({route}) => {
                 ? require('../../../assets/otherApp/updown1.png')
                 : require('../../../assets/image/arrow_icon.png')
             }
-            style={[
-              styles.toggleIcon2,
-              // expandedSection !== item.desc_data_id
-              //   ? {resizeMode: 'contain'}
-              //   : null,
-            ]}
+            style={[styles.toggleIcon2]}
           />
         </TouchableOpacity>
 
@@ -407,8 +334,6 @@ const CourseDetail = ({route}) => {
       if (supported) {
         await Linking.openURL(appUrl);
       } else {
-        // Fallback to WhatsApp Web
-
         await Linking.openURL(webUrl);
       }
     } catch (error) {
@@ -446,8 +371,10 @@ const CourseDetail = ({route}) => {
       controlsVisible: !prevState.controlsVisible,
     }));
   };
+
   return (
     <View style={styles.container}>
+      {isLoading || isMetaDataLoading ? <Loader /> : null}
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
@@ -463,26 +390,18 @@ const CourseDetail = ({route}) => {
         </View>
       </View>
       <ScrollView contentContainerStyle={styles.scrollview}>
-        <TouchableOpacity
-          // onPress={()=>handleVideoPress()}
-          style={styles.firstimgview}>
-          {finalUrl ? (
+        <TouchableOpacity style={styles.firstimgview}>
+          {metaData?.find(item => item?.key?.includes('lecture')) ? (
             <WebView
-              source={{uri: finalUrl ? finalUrl : ''}}
+              source={{
+                uri: getYouTubeEmbedUrl(
+                  metaData?.find(item => item?.key?.includes('lecture'))?.value,
+                ),
+              }}
               style={styles.img1}
-              // resizeMode='contain'
               javaScriptEnabled={true}
               domStorageEnabled={true}
               allowsFullscreenVideo={true}
-              // startInLoadingState={true}
-              // onLoadEnd={handleLoadEnd}
-              // renderLoading={() => (
-              //   loading && (
-              //     <View style={styles.loader}>
-              //       <ActivityIndicator size="large" color={colors.orange} />
-              //     </View>
-              //   )
-              // )}
             />
           ) : (
             <Image
@@ -498,20 +417,18 @@ const CourseDetail = ({route}) => {
         </TouchableOpacity>
         <View style={styles.advanceview}>
           <Text style={styles.advancetext}>{Detail1?.title} </Text>
-          {console.log('Detail1>.................', Detail1)}
 
           <Text style={styles.learntext}>
-            {/* {Detail1?.description != null ? Detail1?.description : ''} */}
             {metaData.find(item => item.key?.includes('description'))?.value ||
               ''}
           </Text>
           <View style={styles.direction}>
-            {/* <Text style={styles.ruppestext}>{`₹ ${CourceDetailA?.price}`}</Text> */}
             <View style={{flexDirection: 'row', gap: 10}}>
-              <Text style={[styles.ruppestext]}>
-                {`₹ ${Detail1?.variants?.[0]?.price}`}
-              </Text>
-
+              {Detail1?.variants?.[0]?.price && (
+                <Text style={[styles.ruppestext]}>
+                  {`₹ ${Detail1?.variants?.[0]?.price}`}
+                </Text>
+              )}
               {Detail1?.variants?.[0]?.compare_at_price >
                 Detail1?.variants?.[0]?.price &&
                 Detail1?.variants?.[0]?.compare_at_price >= 0 && (
@@ -532,48 +449,59 @@ const CourseDetail = ({route}) => {
             </TouchableOpacity>
           </View>
         </View>
+
         <View style={styles.horizontalLine} />
-        {/* Card Component */}
         <View style={styles.card}>
           {metaData?.find(item => item?.key?.includes('language')) && (
-            <View style={styles.cardItem}>
-              <Image
-                source={require('../../../assets/otherApp/cardimg1.png')}
-                style={styles.cardimg1}
-              />
-              <Text style={styles.languagetext}>Languages</Text>
-              <Text style={styles.languagetext1}>
-                {metaData?.find(item => item?.key?.includes('language'))?.value}
-              </Text>
-            </View>
+            <>
+              <View style={styles.cardItem}>
+                <Image
+                  source={require('../../../assets/otherApp/cardimg1.png')}
+                  style={styles.cardimg1}
+                />
+                <Text style={styles.languagetext}>Languages</Text>
+                <Text style={styles.languagetext1}>
+                  {
+                    metaData?.find(item => item?.key?.includes('language'))
+                      ?.value
+                  }
+                </Text>
+              </View>
+              <View style={styles.verticalLine} />
+            </>
           )}
-          <View style={styles.verticalLine} />
           {metaData?.find(item => item?.key?.includes('date')) && (
-            <View style={styles.cardItem}>
-              <Image
-                source={require('../../../assets/otherApp/cardimg1.png')}
-                style={styles.cardimg1}
-              />
-              <Text style={styles.languagetext}>Date</Text>
-              <Text style={styles.languagetext1}>
-                {metaData?.find(item => item?.key?.includes('date'))?.value}
-              </Text>
-            </View>
+            <>
+              <View style={styles.cardItem}>
+                <Image
+                  source={require('../../../assets/otherApp/cardimg1.png')}
+                  style={styles.cardimg1}
+                />
+                <Text style={styles.languagetext}>Date</Text>
+                <Text style={styles.languagetext1}>
+                  {formatDate(
+                    metaData?.find(item => item?.key?.includes('date'))?.value,
+                  )}
+                </Text>
+              </View>
+              <View style={styles.verticalLine} />
+            </>
           )}
-          <View style={styles.verticalLine} />
           {metaData?.find(item => item?.key?.includes('time')) && (
-            <View style={styles.cardItem}>
-              <Image
-                source={require('../../../assets/otherApp/cardimg1.png')}
-                style={styles.cardimg1}
-              />
-              <Text style={styles.languagetext}>Time</Text>
-              <Text style={styles.languagetext1}>
-                {metaData?.find(item => item?.key?.includes('time'))?.value}
-              </Text>
-            </View>
+            <>
+              <View style={styles.cardItem}>
+                <Image
+                  source={require('../../../assets/otherApp/cardimg1.png')}
+                  style={styles.cardimg1}
+                />
+                <Text style={styles.languagetext}>Time</Text>
+                <Text style={styles.languagetext1}>
+                  {metaData?.find(item => item?.key?.includes('time'))?.value}
+                </Text>
+              </View>
+              <View style={styles.verticalLine} />
+            </>
           )}
-          <View style={styles.verticalLine} />
           {metaData?.find(item => item?.key?.includes('trained')) && (
             <View style={styles.cardItem}>
               <Image
@@ -623,11 +551,14 @@ const CourseDetail = ({route}) => {
 
         <View style={styles.firstimgview}>
           <Text style={styles.demotext}>Demo Lecture</Text>
-          {finalUrl1 ? (
+          {metaData?.find(item => item?.key?.includes('lecture')) ? (
             <WebView
-              source={{uri: finalUrl1 ? finalUrl1 : ''}}
+              source={{
+                uri: getYouTubeEmbedUrl(
+                  metaData?.find(item => item?.key?.includes('lecture'))?.value,
+                ),
+              }}
               style={styles.img1}
-              // resizeMode='contain'
               javaScriptEnabled={true}
               domStorageEnabled={true}
               allowsFullscreenVideo={true}
@@ -642,16 +573,6 @@ const CourseDetail = ({route}) => {
               style={styles.img1}
             />
           )}
-
-          {/* <Video
-            source={{
-              uri: videoFileName,
-            }}
-            style={styles.img1}
-            resizeMode="contain"
-            controls={true}
-            onError={error => console.error('Video Error:', error)} // Debug video errors
-          /> */}
         </View>
         <FlatList
           scrollEnabled={false}
@@ -675,21 +596,29 @@ const CourseDetail = ({route}) => {
               style={styles.imgtrainer}
             />
           </View>
-          <View>
-            <Text style={styles.acharya}>{CourceDetailA?.trainer?.title}</Text>
-            <Text style={styles.acharya1}>
-              {CourceDetailA?.trainer?.subtitle}
-            </Text>
-          </View>
+
+          <Text style={styles.acharya1}>
+            {
+              metaData?.find(item => item?.key?.includes('know_your_trainer'))
+                ?.value
+            }
+          </Text>
         </View>
 
         <View style={styles.journeyview}>
-          <RenderHTML
+          {/* <RenderHTML
             contentWidth={width}
             source={{
               html: CourceDetailA?.trainer?.description,
             }}
-          />
+          /> */}
+          <Text style={styles.journeytext}>
+            {
+              metaData?.find(item =>
+                item?.key?.includes('know_your_trainer_description'),
+              )?.value
+            }
+          </Text>
         </View>
         {CourceDetailA?.reviews ? (
           <View style={styles.courseview}>
@@ -712,12 +641,10 @@ const CourseDetail = ({route}) => {
                   <WebView
                     source={{uri: item?.videos}}
                     style={styles.reviewImage}
-                    // resizeMode='contain'
                     javaScriptEnabled={true}
                     domStorageEnabled={true}
                     allowsFullscreenVideo={true}
                   />
-                  {/* <Image source={item} style={styles.reviewImage} /> */}
                 </View>
               )}
               horizontal
@@ -788,28 +715,28 @@ export default CourseDetail;
 const data1 = [
   {
     id: '1',
-    icon: require('../../../assets/otherApp/trusted.png'), // Replace with actual icon
+    icon: require('../../../assets/otherApp/trusted.png'),
     title: 'Trusted Content',
     description:
       'Content specially created to understand Vastu Techniques in easy way.',
   },
   {
     id: '2',
-    icon: require('../../../assets/otherApp/trusted1.png'), // Replace with actual icon
+    icon: require('../../../assets/otherApp/trusted1.png'),
     title: 'Experienced Teachers',
     description:
       'Content specially created to understand Vastu Techniques in easy way.',
   },
   {
     id: '3',
-    icon: require('../../../assets/otherApp/trusted2.png'), // Replace with actual icon
+    icon: require('../../../assets/otherApp/trusted2.png'),
     title: 'Lifetime Access',
     description:
       'Content specially created to understand Vastu Techniques in easy way.',
   },
   {
     id: '4',
-    icon: require('../../../assets/otherApp/trusted3.png'), // Replace with actual icon
+    icon: require('../../../assets/otherApp/trusted3.png'),
     title: 'Certification',
     description:
       'Content specially created to understand Vastu Techniques in easy way.',

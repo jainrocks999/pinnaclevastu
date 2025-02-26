@@ -3,8 +3,6 @@ import {colors} from '../../../Component/colors';
 import {fontSize} from '../../../Component/fontsize';
 import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
 
-const {width} = Dimensions.get('screen');
-
 export default StyleSheet.create({
   container: {
     flex: 1,
@@ -12,7 +10,6 @@ export default StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    // justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 18,
     paddingVertical: 10,
@@ -34,8 +31,6 @@ export default StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: colors.ordercolor,
     borderRadius: 20,
-    // elevation: 10,
-    // shadowColor: '#bdc3c7',
     paddingHorizontal: 15,
     marginBottom: 5,
   },
@@ -47,18 +42,11 @@ export default StyleSheet.create({
     color: colors.heading,
     paddingVertical: 10,
   },
-  searchIcon: {
-    width: wp(3.5),
-    height: '100%',
-    resizeMode: 'contain',
-    borderWidth: 1,
-  },
   headingText: {
     fontSize: fontSize.Fourteen,
     color: colors.heading,
     fontFamily: 'Poppins-Medium',
   },
-  cardContainer: {},
   card: {
     backgroundColor: colors.white,
     borderWidth: 1,
@@ -77,7 +65,6 @@ export default StyleSheet.create({
   },
   cardInfo: {
     height: wp(20),
-    // paddingVertical:5,
     width: '60%',
     gap: 5,
   },
@@ -124,7 +111,6 @@ export default StyleSheet.create({
     marginTop:-5,
     height: wp(4),
     width: wp(2.3),
-    // resizeMode: 'stretch',
     marginRight: 20,
   },
 });

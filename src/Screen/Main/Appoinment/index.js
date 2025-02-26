@@ -16,83 +16,21 @@ import {Rating} from 'react-native-ratings';
 import {heightPercent} from '../../../Component/ResponsiveScreen/responsive';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-  clearConsultationDataList,
-  getAppoinment,
-} from '../../../Redux/Slice/ConsultancySlice';
+import {getAppoinment} from '../../../Redux/Slice/ConsultancySlice';
 import {useDispatch, useSelector} from 'react-redux';
 import Imagepath from '../../../Component/Imagepath';
-import {colors} from '../../../Component/colors';
-
-const upcomingAppointments = [
-  {
-    id: '1',
-    title: 'Residential Vastu',
-    title1: 'Appointment',
-    date: '25 Jan 2024',
-    time: '02:30 PM',
-    image: require('../../../assets/otherApp/upcomings2.png'),
-  },
-  {
-    id: '2',
-    title: 'Industrial Vastu',
-    title1: 'Appointment',
-    date: '25 Jan 2024',
-    time: '07:00 PM',
-    image: require('../../../assets/otherApp/upcomings1.png'),
-  },
-  {
-    id: '3',
-    title: 'Gemstone',
-    title1: 'Appointment',
-    date: '25 Jan 2024',
-    time: '07:00 PM',
-    image: require('../../../assets/otherApp/upcomings3.png'),
-  },
-];
-
-const completedAppointments = [
-  {
-    id: '4',
-    title: 'Shreni Rajbhandary - Vastu',
-    title1: 'Appointment',
-    date: '25 Jan 2024',
-    time: '02:30 PM',
-    reviews: '5 Reviews',
-    image: require('../../../assets/otherApp/upcomings2.png'),
-  },
-  {
-    id: '5',
-    title: 'Industrial Vastu',
-    title1: 'Appointment',
-    date: '25 Jan 2024',
-    time: '07:00 PM',
-    reviews: '5 Reviews',
-    image: require('../../../assets/otherApp/upcomings1.png'),
-  },
-  {
-    id: '6',
-    title: 'Gemstone',
-    title1: 'Appointment',
-    date: '25 Jan 2024',
-    time: '07:00 PM',
-    reviews: '5 Reviews',
-    image: require('../../../assets/otherApp/upcomings3.png'),
-  },
-];
 
 const Appointment = ({route}) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const appoinment1 = useSelector(state => state?.consultation?.Appoinment1);
   const [selectedTab, setSelectedTab] = useState('upcoming');
-  // const [sessionOver, setSessionOver] = useState(true);
   const [scaleAnims, setScaleAnims] = useState({});
 
   useEffect(() => {
     APPoinemet();
   }, []);
-  
+
   const APPoinemet = async status => {
     const token = await AsyncStorage.getItem('Token');
     const userid = await AsyncStorage.getItem('user_id');
@@ -153,11 +91,8 @@ const Appointment = ({route}) => {
   }, [navigation]);
 
   function formatDateDirectly(dateString) {
-    // Convert "16-01-2025" into a valid Date object
     const [day, month, year] = dateString.split('-');
     const date = new Date(`${year}-${month}-${day}`);
-
-    // Use Intl.DateTimeFormat for formatting
     return new Intl.DateTimeFormat('en-GB', {
       day: 'numeric',
       month: 'short',
@@ -202,7 +137,7 @@ const Appointment = ({route}) => {
               ]}>
               {item.franchise_details?.franchise_name}
             </Text>
-          
+
             <View style={styles.direction1}>
               <Image
                 source={require('../../../assets/image/cale.png')}
@@ -226,7 +161,7 @@ const Appointment = ({route}) => {
                 style={[
                   styles.appointmentTime,
                   item?.status == 'completed' && styles.redText,
-                  item?.status == 'upcoming' && styles.upcomingTimeStyle, // Conditional styling for time
+                  item?.status == 'upcoming' && styles.upcomingTimeStyle,
                 ]}>
                 {convertToAmPm(item.booking_time)}
               </Text>
@@ -278,9 +213,7 @@ const Appointment = ({route}) => {
                 index: 0,
                 routes: [{name: 'UserProfile'}],
               })
-            }
-            // onPress={() => navigation.goBack()}
-          >
+            }>
             <Image
               style={{height: 15, width: 10}}
               source={require('../../../assets/drawer/Back.png')}
@@ -291,7 +224,6 @@ const Appointment = ({route}) => {
       </View>
       <ScrollView
         contentContainerStyle={{
-          // paddingHorizontal: 20,
           paddingBottom: heightPercent(10),
           minHeight: '100%',
         }}>
@@ -328,7 +260,6 @@ const Appointment = ({route}) => {
           </View>
         ) : (
           <FlatList
-            // data={appoinment1.reverse}
             data={[...appoinment1].reverse()}
             showsVerticalScrollIndicator={false}
             scrollEnabled={false}

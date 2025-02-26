@@ -10,21 +10,16 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-    // paddingTop: 50,
   },
   header: {
     flexDirection: 'row',
-    // justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 18,
     paddingVertical: 10,
     backgroundColor: '#fff',
-
     elevation: 5,
   },
-  headerview: {
-    //    marginLeft:wp(3)
-  },
+
   logoText: {
     fontSize: fontSize.Eighteen,
     color: colors.heading,
@@ -38,14 +33,10 @@ export default StyleSheet.create({
     marginVertical: 15,
     backgroundColor: colors.ordercolor,
     borderRadius: 20,
-    // elevation: 20,
-    // shadowColor:"#000",
-    // shadowColor: '#bdc3c7',
     paddingHorizontal: 15,
   },
   searchInput: {
     width: '80%',
-    // flex: 1,
     fontFamily: 'Poppins-Regular',
     fontSize: fontSize.Fourteen,
     paddingHorizontal: 15,
@@ -84,23 +75,19 @@ export default StyleSheet.create({
   },
   servicesContainer: {
     minHeight: '100%',
-    // paddingHorizontal:15
     marginHorizontal: 5,
     paddingBottom: hp(8),
   },
   nextBtn: {
-    // borderWidth:1,
     height: wp(5),
     width: wp(2.5),
     tintColor: colors.orange,
     alignSelf: 'center',
-    // marginRight: 10,
     resizeMode: 'contain',
   },
   listContainer: {
     margin: 10,
     paddingHorizontal: 5,
-    // paddingTop: hp(2),
   },
 
   imgContainer: {
@@ -112,7 +99,6 @@ export default StyleSheet.create({
   },
 
   cardContainer2: {
-    // width: wp(90),
     padding: 10,
     marginTop: 15,
     backgroundColor: '#FFFFFF',
@@ -123,11 +109,8 @@ export default StyleSheet.create({
     shadowOffset: {width: 0, height: 6},
     shadowOpacity: 0.5,
     shadowRadius: 10,
-    elevation: 8, /// For Android shadow effect
-    // margin:5,
-
+    elevation: 8,
     justifyContent: 'center',
-    // marginVertical: 10,
   },
   card: {
     paddingLeft: 10,
@@ -140,17 +123,6 @@ export default StyleSheet.create({
     resizeMode: 'cover',
   },
 
-  starContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    marginBottom: 10,
-  },
-  third: {
-    fontSize: fontSize.Fifteen,
-    color: colors.orange,
-    fontFamily: 'Poppins-Medium',
-  },
   third1: {
     fontSize: fontSize.Eighteen,
     color: colors.heading,
@@ -176,12 +148,9 @@ export default StyleSheet.create({
     marginRight: 20,
   },
   emptyMessageContainer: {
-    // borderWidth: 1,
-    // marginTop:wp(8),
     margin: 'auto',
     width: '60%',
     padding: 10,
-    // borderWidth:1
   },
   emptyMessage: {
     fontSize: fontSize.Fourteen,

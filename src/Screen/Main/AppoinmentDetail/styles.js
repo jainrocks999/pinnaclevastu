@@ -26,7 +26,6 @@ export default StyleSheet.create({
   headerView:{
     flexDirection: 'row', 
     alignItems: 'center',
-    // marginTop:5,
   },
   headerTitle: {
     fontSize: fontSize.Sixteen,
@@ -43,7 +42,6 @@ export default StyleSheet.create({
   mainImg: {
     height: wp(30),
     width: wp(30),
-    // resizeMode: 'contain',
     borderRadius: 80,
     margin: 'auto',
     borderWidth: 2,
@@ -57,14 +55,12 @@ export default StyleSheet.create({
     zIndex: 1,
   },
   scroll:{
-    // flex:1,
     paddingBottom:hp(6)
   },
   ProfileInfoSection: {
     overflow: 'hidden',
     backgroundColor: '#F5FAFF',
     marginTop:-21,
-    // borderWidth: 1,
     borderColor: '#D8E3E980',
     shadowColor: '#00000029',
     shadowOffset: {width: 0, height: 3},
@@ -78,17 +74,16 @@ export default StyleSheet.create({
     backgroundColor: '#F5FAFF',
     padding: 15,
     width: '100%',
-    // height: 250,
     paddingTop:wp(16),
     justifyContent: 'flex-end',
     alignItems: 'center',
     gap: 5,
-    shadowColor: '#EAF0F5', // Light pink color for the shadow
-    shadowOffset: { width: 0, height: 6 }, // Offset 0px horizontally, 6px vertically
-    shadowOpacity: 0.5, // Opacity of the shadow (transparent but visible)
-    shadowRadius: 14, // Blur radius of 10px
+    shadowColor: '#EAF0F5',
+    shadowOffset: { width: 0, height: 6 }, 
+    shadowOpacity: 0.5, 
+    shadowRadius: 14,
     
-    // Android Elevation
+  
     elevation: 5,
   },
   nameText: {
@@ -142,7 +137,6 @@ export default StyleSheet.create({
   reviewForm: {
     backgroundColor: '#F1F1F1',
     paddingVertical: 20,
-    // paddingHorizontal: 30,
     gap: 10,
     borderRadius:10,
     marginTop:10
@@ -189,7 +183,6 @@ export default StyleSheet.create({
     width: '100%',
     borderRadius: 10,
     justifyContent: 'center',
-    // padding:16,
     borderRadius:10,
     shadowColor: '#E5C8C1',
     shadowOffset: {width: 0, height: 3},
@@ -220,11 +213,10 @@ export default StyleSheet.create({
     shadowOffset: {width: 0, height: 6},
     shadowOpacity: 0.5,
     shadowRadius: 10,
-    elevation: 5, /// For Android shadow effect
-    // margin:5,
+    elevation: 5,
+   
 
     justifyContent: 'center',
-    // marginVertical: 10,
   },
   reviewSection: {
     marginTop: 20,
@@ -233,8 +225,6 @@ export default StyleSheet.create({
   reviewCard: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    // alignItems: 'center',
-    // padding: 10,
   },
   reviewImage: {
     width: wp(20),
@@ -246,7 +236,6 @@ export default StyleSheet.create({
   card: {
     paddingLeft: 15,
     width: '70%',
-    // borderWidth:1
   },
   third1: {
     marginBottom: 5,
