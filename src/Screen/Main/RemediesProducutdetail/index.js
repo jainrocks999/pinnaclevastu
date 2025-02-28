@@ -31,7 +31,7 @@ import {convertVariantId} from '../../../common/shopifyConverter';
 import {fetchProductData} from '../../../Redux/Api';
 import {getProductRecomendation} from '../../../models/products';
 import {fetchProduct, InitProduct} from '../../../Redux/Slice/productSlice';
-import { getReviewList } from '../../../Redux/Api/Ratings';
+import {getReviewList} from '../../../Redux/Api/Ratings';
 import Reviewform from '../../../Component/ReviewForm';
 
 const RemediesProductDetail = ({route}) => {
@@ -52,9 +52,9 @@ const RemediesProductDetail = ({route}) => {
   const [similardata, setSimilarData] = useState([]);
   const [topBestSellerData, setTopBestSellerData] = useState([]);
   const [isMetaDataLoading, setIsMetaDataLoading] = useState(false);
-  const [modelvisible,setmodelvisible]=useState(false)
-  const [review ,setReview]=useState('')
-  const [reviewlist,setReviewList]=useState('');
+  const [modelvisible, setmodelvisible] = useState(false);
+  const [review, setReview] = useState('');
+  const [reviewlist, setReviewList] = useState('');
   const [isDataLoading, setIsDataLoading] = useState(true);
 
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
@@ -85,7 +85,7 @@ const RemediesProductDetail = ({route}) => {
     handleApi(route?.params?.itemId);
     setSimilarData([]);
     setReviewList('');
-    setmodelvisible(false)
+    setmodelvisible(false);
   }, [route?.params?.itemId]);
 
   useEffect(() => {
@@ -147,7 +147,6 @@ const RemediesProductDetail = ({route}) => {
 
     newArray.push(updatedItem);
   });
-
 
   const [checkedItems, setCheckedItems] = useState({});
   const [totalPrice, setTotalPrice] = useState(0);
@@ -702,8 +701,9 @@ const RemediesProductDetail = ({route}) => {
                   <View style={styles.dividerView} />
                 </>
               )}
-              <Text onPress={()=>setmodelvisible(true)}
-             hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
+              <Text
+                onPress={() => setmodelvisible(true)}
+                hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
                 style={[
                   styles.third1,
                   {
@@ -920,6 +920,12 @@ const RemediesProductDetail = ({route}) => {
                 </>
               )}
             </View>
+            {modelvisible ? (
+              <Reviewform
+                setmodelvisible={setmodelvisible}
+                productId={route?.params?.itemId}
+              />
+            ) : null}
           </ScrollView>
           <View style={styles.bookContainer}>
             <Animated.View
@@ -965,7 +971,6 @@ const RemediesProductDetail = ({route}) => {
           </View>
         </>
       ) : null}
-      
     </View>
   );
 };
