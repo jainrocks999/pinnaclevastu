@@ -280,6 +280,7 @@ export default StyleSheet.create({
     color: colors.light_gr,
     marginLeft: wp(3),
     marginBottom: 15,
+    lineHeight: wp(6),
   },
 
   direction1: {
@@ -522,5 +523,10 @@ export default StyleSheet.create({
     marginBottom: 10,
     marginHorizontal: 15,
     elevation: 10,
+  },
+  bookContainer: {
+    borderTopColor:colors.placeholder,
+    borderTopWidth: 1,
+    paddingVertical: 5,
   },
 });

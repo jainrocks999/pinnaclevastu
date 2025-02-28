@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   ScrollView,
   FlatList,
-  Dimensions,
   Animated,
   Share as SocialShare,
   Pressable,
@@ -28,44 +27,29 @@ import Imagepath from '../../../Component/Imagepath';
 import {useNavigation} from '@react-navigation/native';
 import AnimatedLine from '../../../Component/progressbar';
 import {convertVariantId} from '../../../common/shopifyConverter';
-import {
-  fetchProductData,
-  getProductMetafieldsApiCall,
-  getSimilarProductMetafieldValue,
-} from '../../../Redux/Api';
+import {fetchProductData} from '../../../Redux/Api';
 import {getProductRecomendation} from '../../../models/products';
 import {fetchProduct, InitProduct} from '../../../Redux/Slice/productSlice';
-import { getReviewList } from '../../../Redux/Api/Ratings';
 
 const RemediesProductDetail = ({route}) => {
   const product = route?.params?.itemId;
   const navigation = useNavigation();
   const Detail1 = useSelector(state => state?.Product?.productDetails);
+  const isLoading = useSelector(state => state.Product?.isLoading);
   const imagearray = useSelector(state => state?.Product?.productImages);
   const Detail = useSelector(state => state.home?.RemeiesDetail?.data);
-
   const localCartDataList = useSelector(
     state => state?.cart?.localStorageCartData,
   );
   const cartTotalQuantity = useSelector(
     state => state?.cart?.cartTotalQuantity,
   );
-  const isLoading = useSelector(state => state.Product?.isLoading);
-
   const [quantity, setQuantity] = useState(1);
-
   const [isInCart, setIsInCart] = useState(false);
   const [similardata, setSimilarData] = useState([]);
-
-  const [metafieldsData, setMetafieldsData] = useState([]);
-  const [metaDescription, setMetaDescription] = useState('');
   const [topBestSellerData, setTopBestSellerData] = useState([]);
   const [isMetaDataLoading, setIsMetaDataLoading] = useState(false);
-  const [review ,setReview]=useState('')
-  const [isDataLoading, setIsDataLoading] = useState(true);
-const [reviewlist,setReviewList]=useState('');
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
-
   const animation = useRef(new Animated.Value(0)).current;
   const [buttonText, setButtonText] = useState('ADD TO CART');
 
@@ -75,32 +59,29 @@ const [reviewlist,setReviewList]=useState('');
   });
 
   const dataArray = [];
-  const similarProduct = metafieldsData.find(
+  const similarProduct = Detail1?.metafieldsData?.find(
     itm => itm.key === 'similar_product_',
   );
   if (similarProduct) {
     dataArray.push({
       id: similarProduct.value,
-
       key: similarProduct?.key,
     });
   }
   dataArray.push({
     id: product,
-
     key: 'product_title',
   });
 
   useEffect(() => {
     handleApi(route?.params?.itemId);
     setSimilarData([]);
-    setReviewList('');
   }, [route?.params?.itemId]);
 
   useEffect(() => {
-    if (!metafieldsData) return;
+    if (!Detail1?.metafieldsData) return;
 
-    const similarProduct = metafieldsData.find(
+    const similarProduct = Detail1?.metafieldsData?.find(
       itm => itm.key === 'similar_product_',
     );
 
@@ -110,7 +91,7 @@ const [reviewlist,setReviewList]=useState('');
       setIsMetaDataLoading(false);
       setSimilarData([]);
     }
-  }, [metafieldsData]);
+  }, [Detail1?.metafieldsData]);
 
   const getSimilarrdata = async () => {
     try {
@@ -143,36 +124,7 @@ const [reviewlist,setReviewList]=useState('');
     setIsMetaDataLoading(true);
     dispatch(InitProduct());
     dispatch(fetchProduct(id));
-    const originalString = id;
-const prefix = 'gid://shopify/Product/';
-let Id1 = originalString.replace(prefix, '');
-    const getreview =await getReviewList(Id1);
-    setReviewList(getreview);
-    const review = await getSimilarProductMetafieldValue(id);
-
-    if (review && review.value && review.value.trim() !== '') {
-      try {
-        const parsedReview = JSON.parse(review.value);
-        setReview(parsedReview);
-      } catch (error) {
-        console.error(
-          'JSON Parse error:',
-          error.message,
-          'with value:',
-          review.value,
-        );
-      }
-    } else {
-      setReview(null);
-      console.log('No valid JSON string to parse.');
-    }
-    const data = await getProductMetafieldsApiCall(id);
     const topBestSellerData = await getProductRecomendation(id);
-
-    setMetafieldsData(data?.metafields);
-    setMetaDescription(
-      data?.metafields.find(item => item.key?.includes('description'))?.value,
-    );
     setTopBestSellerData(topBestSellerData?.productRecommendations);
   };
 
@@ -186,17 +138,6 @@ let Id1 = originalString.replace(prefix, '');
     newArray.push(updatedItem);
   });
 
-  const calculateAverageRating = reviews => {
-    const totalRatings = reviews?.reduce(
-      (sum, review) => sum + review.rating,
-      0,
-    );
-    const averageRating =
-      reviews?.length > 0 ? totalRatings / reviews.length : 0;
-    return averageRating.toFixed(1);
-  };
-
-  const averageRating = calculateAverageRating(Detail?.reviews);
 
   const [checkedItems, setCheckedItems] = useState({});
   const [totalPrice, setTotalPrice] = useState(0);
@@ -253,11 +194,11 @@ let Id1 = originalString.replace(prefix, '');
   const dispatch = useDispatch();
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const groupedMetafields = metafieldsData
+  const groupedMetafields = Detail1?.metafieldsData
     ?.filter(item => item?.key?.includes('question'))
     ?.map(question => {
       const keyPrefix = question?.key?.match(/\d+/)?.[0];
-      const answer = metafieldsData
+      const answer = Detail1?.metafieldsData
         ?.filter(item => item?.key?.includes('answer'))
         ?.find(ans => ans?.key?.includes(`${keyPrefix}_answer`));
 
@@ -438,9 +379,7 @@ let Id1 = originalString.replace(prefix, '');
   };
   const renderItem3 = ({item}) => {
     return (
-      <TouchableOpacity
-       
-        style={[styles.cardContainer1]}>
+      <TouchableOpacity style={[styles.cardContainer1]}>
         <View style={styles.reviewCard}>
           <View style={{paddingLeft: 5}}>
             <Image
@@ -451,7 +390,6 @@ let Id1 = originalString.replace(prefix, '');
                   : require('../../../assets/image/Ellipse1.png')
               }
             />
-
             <Rating
               type="custom"
               tintColor={colors.white}
@@ -466,9 +404,7 @@ let Id1 = originalString.replace(prefix, '');
           <View style={[styles.card, {paddingLeft: 10}]}>
             <Text style={styles.reviewText}>{item?.reviewer?.name}</Text>
 
-            <Text style={[styles.third2, {marginTop: -8}]}>
-              {item?.body}
-            </Text>
+            <Text style={[styles.third2, {marginTop: -8}]}>{item?.body}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -676,166 +612,305 @@ let Id1 = originalString.replace(prefix, '');
       </View>
 
       {Detail1 ? (
-        <ScrollView contentContainerStyle={styles.servicesContainer}>
-          {imagearray?.length != 0 ? (
-            <View style={styles.welcomeCard}>
-              <BannerSlider
-                onPress={item => {}}
-                data={imagearray}
-                local={true}
-                height1={wp(60)}
-              />
+        <>
+          <ScrollView contentContainerStyle={styles.servicesContainer}>
+            {imagearray?.length != 0 ? (
+              <View style={styles.welcomeCard}>
+                <BannerSlider
+                  onPress={item => {}}
+                  data={imagearray}
+                  local={true}
+                  height1={wp(60)}
+                />
+              </View>
+            ) : (
+              <View style={styles.welcomeCard}>
+                <Image
+                  source={require('../../../assets/image/Remedies/Image-not.png')}
+                  style={{
+                    width: '100%',
+                    height: wp(60),
+                    borderRadius: 15,
+                  }}
+                />
+              </View>
+            )}
+            <View style={styles.contain}>
+              <Text style={styles.service}>{Detail1?.title}</Text>
             </View>
-          ) : (
-            <View style={styles.welcomeCard}>
-              <Image
-                source={require('../../../assets/image/Remedies/Image-not.png')}
-                style={{
-                  width: '100%',
-                  height: wp(60),
-                  borderRadius: 15,
-                }}
-              />
-            </View>
-          )}
-          <View style={styles.contain}>
-            <Text style={styles.service}>{Detail1?.title}</Text>
-          </View>
-          <View style={styles.main}>
-            {review != null && (
-              <>
-                <View style={styles.headerview}>
-                  <View style={{marginTop: -5}}>
-                    <Rating
-                      type="custom"
-                      tintColor={colors.white}
-                      ratingCount={review?.scale_max}
-                      imageSize={16}
-                      startingValue={review?.value}
-                      ratingColor="#52B1E9"
-                      readonly
-                      ratingBackgroundColor={colors.lightGrey}
-                    />
+            <View style={styles.main}>
+              {Detail1?.rating && (
+                <>
+                  <View style={styles.headerview}>
+                    <View style={{marginTop: -5}}>
+                      <Rating
+                        type="custom"
+                        tintColor={colors.white}
+                        ratingCount={Detail1?.rating?.value?.scale_max}
+                        imageSize={16}
+                        startingValue={Detail1?.rating?.value?.value}
+                        ratingColor="#52B1E9"
+                        readonly
+                        ratingBackgroundColor={colors.lightGrey}
+                      />
+                    </View>
+
+                    <Text
+                      style={[
+                        styles.third1,
+                        {
+                          fontSize: fontSize.Twelve,
+                          color: colors.heading,
+                          marginLeft: 8,
+                        },
+                      ]}>
+                      {'('}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.third1,
+                        {fontSize: fontSize.Twelve, color: '#27C571'},
+                      ]}>
+                      {Detail1?.reviews?.count}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.third1,
+                        {fontSize: fontSize.Twelve, color: colors.heading},
+                      ]}>
+                      {')'}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.third1,
+                        {fontSize: fontSize.Fourteen, color: colors.light_gr},
+                      ]}>
+                      {' reviews'}
+                    </Text>
                   </View>
 
-                  <Text
-                    style={[
-                      styles.third1,
-                      {
-                        fontSize: fontSize.Twelve,
-                        color: colors.heading,
-                        marginLeft: 8,
-                      },
-                    ]}>
-                    {'('}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.third1,
-                      {fontSize: fontSize.Twelve, color: '#27C571'},
-                    ]}>
-                    {reviewlist?.count}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.third1,
-                      {fontSize: fontSize.Twelve, color: colors.heading},
-                    ]}>
-                    {')'}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.third1,
-                      {fontSize: fontSize.Fourteen, color: colors.light_gr},
-                    ]}>
-                    {' reviews'}
-                  </Text>
-                </View>
-
-                <View style={styles.dividerView} />
-              </>
-            )}
-            <Text
-              style={[
-                styles.third1,
-                {
-                  fontSize: fontSize.Twelve,
-                  color: colors.light_gr,
-                  textDecorationLine: 'underline',
-                },
-              ]}>
-              {'write a review'}
-            </Text>
-            <TouchableOpacity
-              style={{
-                backgroundColor: colors.ordercolor,
-                position: 'absolute',
-                right: 5,
-              }}
-              onPress={() => share()}>
-              <Image
-                style={styles.shareIcon}
-                source={require('../../../assets/otherApp/share.png')}
-              />
-            </TouchableOpacity>
-          </View>
-
-          <View>
-            <Text style={styles.cont}>
-              {Detail1?.description || metaDescription}
-            </Text>
-
-            <View
-              style={{
-                marginTop: 15,
-                marginHorizontal: 15,
-                flexDirection: 'row',
-                gap: 10,
-              }}>
-              <Text style={[styles.third1]}>
-                {`₹ ${Detail1?.variants?.[0]?.price}`}
+                  <View style={styles.dividerView} />
+                </>
+              )}
+              <Text
+                style={[
+                  styles.third1,
+                  {
+                    fontSize: fontSize.Twelve,
+                    color: colors.light_gr,
+                    textDecorationLine: 'underline',
+                  },
+                ]}>
+                {'write a review'}
               </Text>
-              {Detail1?.variants?.[0]?.compare_at_price &&
-                parseInt(Detail1?.variants?.[0]?.compare_at_price) > 0 && (
-                  <Text
-                    style={[
-                      styles.third1,
-                      {textDecorationLine: 'line-through'},
-                    ]}>
-                    ₹ {Detail1?.variants?.[0]?.compare_at_price}
-                  </Text>
-                )}
+              <TouchableOpacity
+                style={{
+                  backgroundColor: colors.ordercolor,
+                  position: 'absolute',
+                  right: 5,
+                }}
+                onPress={() => share()}>
+                <Image
+                  style={styles.shareIcon}
+                  source={require('../../../assets/otherApp/share.png')}
+                />
+              </TouchableOpacity>
             </View>
-            <View
-              style={[
-                styles.headerview,
-                {marginTop: 15, marginHorizontal: 15},
-              ]}>
-              <Text style={[styles.third2, {color: colors.heading}]}>
-                Quantity:
+
+            <View>
+              <Text style={styles.cont}>
+                {Detail1?.description ||
+                  Detail1?.metafieldsData?.find(item =>
+                    item.key?.includes('description'),
+                  )?.value}
               </Text>
-              <View style={[styles.headerview, styles.quantitySection]}>
-                <TouchableOpacity
-                  style={styles.touch}
-                  hitSlop={{bottom: 10, top: 10, left: 10, right: 10}}
-                  onPress={() => decrement()}>
-                  <Text style={[styles.third1, styles.quantityBtns]}>
-                    {'-'}
-                  </Text>
-                </TouchableOpacity>
-                <Text style={[styles.third1, {marginLeft: 5, marginTop: 3}]}>
-                  {quantity}
+
+              <View
+                style={{
+                  marginTop: 15,
+                  marginHorizontal: 15,
+                  flexDirection: 'row',
+                  gap: 10,
+                }}>
+                <Text style={[styles.third1]}>
+                  {`₹ ${Detail1?.variants?.[0]?.price}`}
                 </Text>
-                <TouchableOpacity
-                  style={[styles.touch, {marginLeft: 0}]}
-                  hitSlop={{bottom: 10, top: 10, left: 10, right: 10}}
-                  onPress={() => increment()}>
-                  <Text style={[styles.third1, styles.quantityBtns]}>
-                    {'+'}
+                {Detail1?.variants?.[0]?.compare_at_price &&
+                  parseInt(Detail1?.variants?.[0]?.compare_at_price) > 0 && (
+                    <Text
+                      style={[
+                        styles.third1,
+                        {textDecorationLine: 'line-through'},
+                      ]}>
+                      ₹ {Detail1?.variants?.[0]?.compare_at_price}
+                    </Text>
+                  )}
+              </View>
+              <View
+                style={[
+                  styles.headerview,
+                  {marginTop: 15, marginHorizontal: 15},
+                ]}>
+                <Text style={[styles.third2, {color: colors.heading}]}>
+                  Quantity:
+                </Text>
+                <View style={[styles.headerview, styles.quantitySection]}>
+                  <TouchableOpacity
+                    style={styles.touch}
+                    hitSlop={{bottom: 10, top: 10, left: 10, right: 10}}
+                    onPress={() => decrement()}>
+                    <Text style={[styles.third1, styles.quantityBtns]}>
+                      {'-'}
+                    </Text>
+                  </TouchableOpacity>
+                  <Text style={[styles.third1, {marginLeft: 5, marginTop: 3}]}>
+                    {quantity}
                   </Text>
-                </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.touch, {marginLeft: 0}]}
+                    hitSlop={{bottom: 10, top: 10, left: 10, right: 10}}
+                    onPress={() => increment()}>
+                    <Text style={[styles.third1, styles.quantityBtns]}>
+                      {'+'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
+
+            <View>
+              <FlatList
+                data={data5}
+                renderItem={renderItem4}
+                keyExtractor={item => item.id}
+                numColumns={3}
+                scrollEnabled={false}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.listContainer}
+              />
+            </View>
+
+            <View style={{marginTop: 10, marginHorizontal: 15}}>
+              <FlatList
+                data={groupedMetafields || []}
+                keyExtractor={(item, index) => index.toString()}
+                scrollEnabled={false}
+                renderItem={renderItems}
+              />
+            </View>
+            {similardata?.length != 0 ? (
+              <View style={[styles.productsContainer, {gap: 0}]}>
+                <Text style={[styles.header1, {marginLeft: 20}]}>
+                  Frequently Bought Together
+                </Text>
+                <FlatList
+                  data={similardata}
+                  renderItem={renderItem}
+                  keyExtractor={item => item?.id?.toString()}
+                  horizontal={true}
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={[
+                    styles.productsContainer,
+                    {paddingVertical: 0, paddingRight: 25},
+                  ]}
+                />
+                <View style={styles.viewBorder} />
+                {totalPrice != 0 ? (
+                  <Text style={styles.totalText}>Total: ₹ {totalPrice}</Text>
+                ) : null}
+                {Object.values(checkedItems)?.filter(Boolean)?.length !== 0 ? (
+                  <Animated.View
+                    style={[
+                      {
+                        transform: [{scale: buttonAnimatedValue}],
+                      },
+                      // styles.book,
+                      {marginTop: 15},
+                    ]}>
+                    <TouchableOpacity
+                      onPress={() => AddExtraItemInCart(checkedItems)}
+                      style={styles.book}>
+                      <Text style={styles.btext1}>
+                        ADD{' '}
+                        {Object.values(checkedItems)?.filter(Boolean)?.length}{' '}
+                        ITEMS TO CART
+                      </Text>
+                    </TouchableOpacity>
+                  </Animated.View>
+                ) : null}
+              </View>
+            ) : null}
+
+            {topBestSellerData?.length != 0 ? (
+              <View style={styles.suggestItemContainer}>
+                <Text style={styles.header1}>Top Best Sellers</Text>
+                <FlatList
+                  data={topBestSellerData}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={renderItem2}
+                  pagingEnabled
+                  snapToAlignment="center"
+                  decelerationRate="fast"
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  onMomentumScrollEnd={e => {
+                    const contentOffsetX = e.nativeEvent.contentOffset.x;
+                    const slideWidth = styles.slide.width;
+                    const currentIndex = Math.round(
+                      contentOffsetX / slideWidth,
+                    );
+                    setCurrentIndex(currentIndex);
+                  }}
+                />
+
+                <View style={styles.dotContainer}>
+                  {topBestSellerData?.map((_, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      style={[
+                        styles.dot,
+                        currentIndex === index && styles.activeDot,
+                      ]}
+                    />
+                  ))}
+                </View>
+              </View>
+            ) : null}
+
+            <View style={{backgroundColor: '#F1F1F1'}}>
+              {Detail1?.reviews?.count === 0 ? null : (
+                <>
+                  <View style={styles.shareview}>
+                    <View style={{marginBottom: -20}}>
+                      <Text
+                        style={
+                          styles.service
+                        }>{`User Reviews (${Detail1?.reviews?.count})`}</Text>
+                    </View>
+
+                    <TouchableOpacity style={styles.button1}>
+                      <Text style={styles.btext}>Write a Review</Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  <FlatList
+                    data={Detail1?.reviews?.reviewsList}
+                    renderItem={renderItem3}
+                    scrollEnabled={false}
+                    keyExtractor={index => index.toString()}
+                    showsVerticalScrollIndicator={false}
+                  />
+
+                  <TouchableOpacity onPress={() => setShowAllReviews(true)}>
+                    <Text style={styles.seeall}>
+                      {Detail1?.reviews?.count > 3 && 'See all Reviews'}
+                    </Text>
+                  </TouchableOpacity>
+                </>
+              )}
+            </View>
+          </ScrollView>
+          <View style={styles.bookContainer}>
             <Animated.View
               style={[
                 {
@@ -877,139 +952,7 @@ let Id1 = originalString.replace(prefix, '');
               </TouchableOpacity>
             </Animated.View>
           </View>
-
-          <View>
-            <FlatList
-              data={data5}
-              renderItem={renderItem4}
-              keyExtractor={item => item.id}
-              numColumns={3}
-              scrollEnabled={false}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.listContainer}
-            />
-          </View>
-
-          <View style={{marginTop: 10, marginHorizontal: 15}}>
-            <FlatList
-              data={groupedMetafields || []}
-              keyExtractor={(item, index) => index.toString()}
-              scrollEnabled={false}
-              renderItem={renderItems}
-            />
-          </View>
-          {similardata?.length != 0 ? (
-            <View style={[styles.productsContainer, {gap: 0}]}>
-              <Text style={[styles.header1, {marginLeft: 20}]}>
-                Frequently Bought Together
-              </Text>
-              <FlatList
-                data={similardata}
-                renderItem={renderItem}
-                keyExtractor={item => item?.id?.toString()}
-                horizontal={true}
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={[
-                  styles.productsContainer,
-                  {paddingVertical: 0, paddingRight: 25},
-                ]}
-              />
-              <View style={styles.viewBorder} />
-              {totalPrice != 0 ? (
-                <Text style={styles.totalText}>Total: ₹ {totalPrice}</Text>
-              ) : null}
-              {Object.values(checkedItems)?.filter(Boolean)?.length !== 0 ? (
-                <Animated.View
-                  style={[
-                    {
-                      transform: [{scale: buttonAnimatedValue}],
-                    },
-                    // styles.book,
-                    {marginTop: 15},
-                  ]}>
-                  <TouchableOpacity
-                    onPress={() => AddExtraItemInCart(checkedItems)}
-                    style={styles.book}>
-                    <Text style={styles.btext1}>
-                      ADD {Object.values(checkedItems)?.filter(Boolean)?.length}{' '}
-                      ITEMS TO CART
-                    </Text>
-                  </TouchableOpacity>
-                </Animated.View>
-              ) : null}
-            </View>
-          ) : null}
-
-          {topBestSellerData?.length != 0 ? (
-            <View style={styles.suggestItemContainer}>
-              <Text style={styles.header1}>Top Best Sellers</Text>
-              <FlatList
-                data={topBestSellerData}
-                keyExtractor={(item,index) => index.toString()}
-                renderItem={renderItem2}
-                pagingEnabled
-                snapToAlignment="center"
-                decelerationRate="fast"
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                onMomentumScrollEnd={e => {
-                  const contentOffsetX = e.nativeEvent.contentOffset.x;
-                  const slideWidth = styles.slide.width;
-                  const currentIndex = Math.round(contentOffsetX / slideWidth);
-                  setCurrentIndex(currentIndex);
-                }}
-              />
-
-              <View style={styles.dotContainer}>
-                {topBestSellerData?.map((_, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={[
-                      styles.dot,
-                      currentIndex === index && styles.activeDot,
-                    ]}
-                  />
-                ))}
-              </View>
-            </View>
-          ) : null}
-
-          <View style={{backgroundColor: '#F1F1F1'}}>
-
-            {console.log('jkhjkhkjhdfkjdhgdfkjg',reviewlist?.reviewsList)}
-            
-            {reviewlist?.count === 0 ? null : (
-              <>
-                <View style={styles.shareview}>
-                  <View style={{marginBottom: -20}}>
-                    <Text
-                      style={
-                        styles.service
-                      }>{`User Reviews (${reviewlist?.count})`}</Text>
-                  </View>
-
-                  <TouchableOpacity style={styles.button1}>
-                    <Text style={styles.btext}>Write a Review</Text>
-                  </TouchableOpacity>
-                </View>
-
-                <FlatList
-                  data={reviewlist?.reviewsList}
-                  renderItem={renderItem3}
-                  scrollEnabled={false}
-                  keyExtractor={index => index.toString()}
-                  showsVerticalScrollIndicator={false}
-                />
-               
-                  <TouchableOpacity onPress={() => setShowAllReviews(true)}>
-      
-                    <Text style={styles.seeall}>{reviewlist?.count > 3 &&'See all Reviews'}</Text>
-                  </TouchableOpacity>
-               
-              </>
-            )}
-          </View>
-        </ScrollView>
+        </>
       ) : null}
     </View>
   );

@@ -24,7 +24,6 @@ import {
 import {useDispatch, useSelector} from 'react-redux';
 import {
   Banner,
-  clearRemeiesDetail1,
   CourceLis,
   submitEnquryApi,
 } from '../../../Redux/Slice/HomeSlice';
@@ -38,20 +37,22 @@ import {consultationDetail1} from '../../../Redux/Slice/ConsultancySlice';
 import {Dropdown} from 'react-native-element-dropdown';
 import WebView from 'react-native-webview';
 import {SvgUri} from 'react-native-svg';
-import {fetchExtraCollectonHome} from '../../../Redux/Slice/HomeBannerSlice';
-import {fetchProduct, InitProduct} from '../../../Redux/Slice/productSlice';
+import {
+  fetchExtraCollectonHome,
+} from '../../../Redux/Slice/HomeBannerSlice';
 import {addToCart} from '../../../Redux/Slice/CartSlice';
+
 
 let backPress = 0;
 const HomeScreen = () => {
   const flatListRef = useRef(null);
   const navigation = useNavigation();
-  const [scaleAnim] = useState(new Animated.Value(1));
+  // const [scaleAnim] = useState(new Animated.Value(1));
   const [scaleAnims, setScaleAnims] = useState({});
   const [userType, setUserType] = useState('');
   const [isLiveCourse, setIsLiveCourse] = useState(true);
   const [isPhoto, setIsPhoto] = useState(true);
-  const [course, setCourse] = useState('');
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentIndex1, setCurrentIndex1] = useState({
     imgBannerIndex2: 0,
@@ -181,26 +182,9 @@ const HomeScreen = () => {
     }
   }, [submitedEnqury]);
 
-  const Detail1 = async (item, id) => {
-    dispatch(clearRemeiesDetail1());
-    if (Object.keys(item).length == 0) {
-    } else {
-      dispatch(InitProduct());
-      dispatch(fetchProduct(id));
-    }
-  };
-
   const apicall = async () => {
     await dispatch(Banner({url: 'home-slider'}));
-    await dispatch(
-      fetchExtraCollectonHome(homeData?.courses_section?.content?.live_courses),
-    );
     await dispatch(CourceLis({url: 'fetch-course-data'}));
-    await dispatch(
-      fetchExtraCollectonHome(
-        homeData?.best_Products_section?.content?.collection,
-      ),
-    );
   };
 
   const Addtocard = async item => {
@@ -520,6 +504,8 @@ const HomeScreen = () => {
   };
 
   const renderItem5 = ({item}) => {
+    const rating =
+      item?.metafields[0]?.value && JSON.parse(item?.metafields[0]?.value);
     return (
       <TouchableOpacity
         style={[styles.card, styles.prodCard]}
@@ -551,17 +537,23 @@ const HomeScreen = () => {
             ) : null}
           </View>
           <View style={styles.starContainer}>
-            <Rating
-              type="custom"
-              tintColor={colors.white}
-              ratingCount={5}
-              imageSize={13}
-              startingValue={2}
-              ratingColor="#F4C76C"
-              readonly
-              ratingBackgroundColor={colors.lightGrey}
-            />
-            <Text style={[styles.third3]}>{32} reviews</Text>
+            {rating?.value && (
+              <>
+                <Rating
+                  type="custom"
+                  tintColor={colors.white}
+                  ratingCount={rating?.scale_max || 5}
+                  imageSize={13}
+                  startingValue={rating?.value}
+                  ratingColor="#F4C76C"
+                  readonly
+                  ratingBackgroundColor={colors.lightGrey}
+                />
+                <Text style={[styles.third3]}>
+                  ({item?.review?.count}) reviews
+                </Text>
+              </>
+            )}
           </View>
           <TouchableOpacity
             onPress={() => {
@@ -626,8 +618,10 @@ const HomeScreen = () => {
     return (
       <TouchableOpacity
         onPress={() => {
-          Detail1(item, item?.id),
-            navigation.navigate('CourseDetail', {coursetype: isLiveCourse});
+          navigation.navigate('CourseDetail', {
+            coursetype: isLiveCourse,
+            itemId: item?.id,
+          });
         }}
         style={[styles.card, {margin: 0, marginLeft: 15}]}>
         <Image
@@ -757,11 +751,11 @@ const HomeScreen = () => {
               placeholderTextColor={colors.searchBarTextColor}
             />
           </View>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.filterBtn}
             hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
             <Image source={require('../../../assets/image/Vector.png')} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         <View style={styles.welcomeCard}>

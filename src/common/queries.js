@@ -57,7 +57,7 @@ export const ProductMetafieldsQuery = `
 }
 `;
 
-export const similarproduct=   `
+export const similarproduct = `
 query($id: ID!) {
   product(id: $id) {
     id
@@ -91,7 +91,6 @@ query($id: ID!) {
   }
 }
 `;
-
 
 export const GetExtraData = `
 query {
@@ -436,7 +435,7 @@ export const GraphQlAdminConfig = data => {
     data: data,
   };
 };
-
+export default GraphQlAdminConfig;
 {
   /***
  

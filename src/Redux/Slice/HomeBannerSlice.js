@@ -1,7 +1,8 @@
 import {createSlice} from '@reduxjs/toolkit';
 import axios from 'axios';
 import {getThemdata} from '../../models/them';
-import Config from '../../common/config.json';
+import GraphQlAdminConfig, {GraphQlConfig} from '../../common/queries';
+import getReviewList from '../Api/Ratings';
 
 const initialState = {
   isLoading: true,
@@ -165,7 +166,7 @@ export const homeApiCall = () => {
 
       const formated = JSON.parse(data?.asset?.value);
 
-      const formateData = await modifyHomeObject(formated?.sections);
+      const formateData = await modifyHomeObject(formated?.sections, dispatch);
       dispatch(setHomeBanners(formateData));
     } catch (error) {
       console.error('error', error);
@@ -183,7 +184,7 @@ export const settingJsonCall = () => {
       const assetval = JSON.parse(json.asset.value);
 
       const currentval = assetval.sections;
-      const getModifiedData = await modifyHomeObject(currentval);
+      const getModifiedData = await modifyHomeObject(currentval, dispatch);
 
       dispatch(setHomeBanners(getModifiedData));
     } catch (error) {
@@ -198,7 +199,7 @@ export const settingJsonCall = () => {
   };
 };
 
-export const modifyHomeObject = async currentval => {
+export const modifyHomeObject = async (currentval, dispatch) => {
   return new Promise(async (resolve, reject) => {
     try {
       let replaceImage = '';
@@ -219,7 +220,6 @@ export const modifyHomeObject = async currentval => {
       for (const key in currentval) {
         if (currentval.hasOwnProperty(key)) {
           const element = currentval[key];
-
           if (
             element.type === 'our-services' &&
             Object.keys(element.blocks)?.length > 0
@@ -475,6 +475,9 @@ export const modifyHomeObject = async currentval => {
                 ...element.settings,
               },
             };
+            dispatch(
+              fetchExtraCollectonHome(courses_section?.content?.live_courses),
+            );
           }
           if (element.type == 'featured-collection-2') {
             best_Products_section = {
@@ -482,6 +485,11 @@ export const modifyHomeObject = async currentval => {
                 ...element.settings,
               },
             };
+            dispatch(
+              fetchExtraCollectonHome(
+                best_Products_section?.content?.collection,
+              ),
+            );
           }
           if (element.type == 'featured-blog') {
             let replaceBgImage = element.settings?.background_image?.replace(
@@ -536,6 +544,10 @@ export const fetchExtraCollectonHome = collectionHandle => {
           products(first: 10) {
             edges {
               node {
+               metafields(identifiers: [{ namespace: "reviews", key: "rating" }]) {
+                key
+                value
+            }
                 id
                 title
                 description
@@ -577,7 +589,7 @@ export const fetchExtraCollectonHome = collectionHandle => {
                   altText
                 }
               }
-            }
+             }
               }
               }
             }
@@ -585,18 +597,12 @@ export const fetchExtraCollectonHome = collectionHandle => {
         }
       }
     `;
-      const response = await fetch(Config.Shopify.graphqlUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Storefront-Access-Token': Config?.Shopify.storeAccessToken,
-        },
-        body: JSON.stringify({query}),
-      });
-
-      const result = await response.json();
-      const products = result?.data?.collectionByHandle?.products?.edges;
-      const includesCourse = result?.data?.collectionByHandle?.title
+      const response = await axios.request(
+        GraphQlConfig(JSON.stringify({query})),
+      );
+      const products =
+        response?.data?.data?.collectionByHandle?.products?.edges;
+      const includesCourse = response?.data?.data?.collectionByHandle?.title
         ?.toLowerCase()
         .includes('course');
 
@@ -604,48 +610,26 @@ export const fetchExtraCollectonHome = collectionHandle => {
       if (includesCourse) {
         dispatch(GET_COURSES_SUCCESS(transformedProducts));
       } else {
- 
-//  let updatedProducts = await Promise.all(
-//   transformedProducts.map(async (product) => {
-  
-//     const review = await getSimilarProductMetafieldValue(product?.id);
-//     let parsedReview = null;
-
-    
-//     if (review && review.value && review.value.trim() !== '') {
-//       try {
-       
-//         parsedReview = JSON.parse(review.value);
-//       } catch (error) {
-//         console.error(
-//           'JSON Parse error:',
-//           error.message,
-//           'with value:',
-//           review.value
-//         );
-//       }
-//     } else {
-//       console.log('No valid JSON string to parse for product id', product?.id);
-//     }
-
-//     // Return the updated product with review attached directly
-//     return {
-//       ...product,
-//       review: parsedReview,
-//     };
-//   })
-// );
-
-// console.log('updatedProducts with review data:', updatedProducts);
-
-
-        dispatch(
-          GET_BEST_PROD_SUCCESS({
-            collectionId: result?.data?.collectionByHandle?.id,
-
-            products: transformedProducts,
-          }),
-        );
+        try {
+          const updatedProducts = await Promise.all(
+            transformedProducts.map(async product => {
+              let Id1 = product?.id?.replace('gid://shopify/Product/', '');
+              const getreview = await getReviewList(Id1);
+              return {
+                ...product,
+                review: getreview,
+              };
+            }),
+          );
+          dispatch(
+            GET_BEST_PROD_SUCCESS({
+              collectionId: response?.data?.data?.collectionByHandle?.id,
+              products: updatedProducts,
+            }),
+          );
+        } catch (error) {
+          console.log('Error fetching reviews:', error);
+        }
       }
     } catch (error) {
       console.error('Error fetching collection:', error);
@@ -657,16 +641,17 @@ export const fetchExtraCollectonHome = collectionHandle => {
   };
 };
 
-export const getSimilarProductMetafieldValue = async (id) => {
+export const getSimilarProductMetafieldValue = async id => {
   try {
     if (!id) {
-      throw new Error("Product ID is required");
+      throw new Error('Product ID is required');
     }
 
     const variables = {
-      id: typeof id === "string" && id.includes("gid://shopify/Product")
-        ? id
-        : convertProductId(id),
+      id:
+        typeof id === 'string' && id.includes('gid://shopify/Product')
+          ? id
+          : convertProductId(id),
     };
 
     const data = JSON.stringify({
@@ -682,18 +667,15 @@ export const getSimilarProductMetafieldValue = async (id) => {
       }`,
       variables,
     });
-
-    
-
     const response = await axios.request(GraphQlAdminConfig(data));
-    console.log("GraphQL Request Data:", response.data);
+    console.log('GraphQL Request Data:', response.data);
     if (response?.data?.errors) {
-      console.error("GraphQL Errors:", response.data.errors);
+      console.error('GraphQL Errors:', response.data.errors);
       return null;
     }
     return response?.data?.data?.product?.review || null;
   } catch (err) {
-    console.error("Error fetching similar product metafield:", err);
+    console.error('Error fetching similar product metafield:', err);
     throw err;
   }
 };

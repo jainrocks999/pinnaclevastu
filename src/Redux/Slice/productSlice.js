@@ -1,6 +1,8 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {SHOPIFY_CLIENT} from '../../common/shopifyClient';
-
+import {getSimilarProductMetafieldValue} from './HomeBannerSlice';
+import getReviewList from '../Api/Ratings';
+import {getProductMetafieldsApiCall} from '../Api';
 const initialState = {
   isLoading: false,
   productDetails: [],
@@ -35,12 +37,7 @@ export const ProductSlice = createSlice({
   },
 });
 
-export const {
-  LOADING,
-  SUCCESS,
-  FAILED,
-  InitProduct,
-} = ProductSlice.actions;
+export const {LOADING, SUCCESS, FAILED, InitProduct} = ProductSlice.actions;
 
 export default ProductSlice.reducer;
 
@@ -52,6 +49,7 @@ export const setProductDetails = (products, productImages) => {
     let isSelected = [];
     var imagesObj;
     let ImagesArr = [];
+    let ItemRating = [];
     try {
       dispatch(LOADING(true));
       for (let i = 0; i < productImages.length; i++) {
@@ -104,18 +102,53 @@ export const setProductDetails = (products, productImages) => {
             image: productParam.variants[i]?.image,
             isSelected: false,
           };
-    
+
           productParam.variants[i] = variantsObj;
           Variants.push(variantsObj);
         }
-        dispatch(
-          SUCCESS({
-            productVariants: Variants,
-            productImages: ImagesArr,
-            productDetails: productParam,
-            error: '',
-          }),
-        );
+
+        const fetchProductDetails = async products => {
+          try {
+            const metaData = await getProductMetafieldsApiCall(products.id);
+            const rating = await getSimilarProductMetafieldValue(products.id);
+            const updatedRating = rating?.value
+              ? {...rating, value: JSON.parse(rating.value)}
+              : rating;
+
+            const getreview = await getReviewList(
+              products?.id?.replace('gid://shopify/Product/', ''),
+            );
+            dispatch(
+              SUCCESS({
+                productVariants: Variants,
+                productImages: ImagesArr,
+                productDetails: {
+                  ...productParam,
+                  rating: updatedRating,
+                  reviews: getreview,
+                  metafieldsData: metaData?.metafields,
+                },
+                error: '',
+              }),
+            );
+          } catch (error) {
+            dispatch(
+              FAILURE({
+                error: error.message,
+              }),
+            );
+          }
+        };
+
+        fetchProductDetails(products);
+        // dispatch(
+        //   SUCCESS({
+        //     productVariants: Variants,
+        //     productImages: ImagesArr,
+        //     productDetails: productParam,
+        //     error: '',
+        //   }),
+        // );
       }
     }
   };
@@ -129,7 +162,6 @@ export const fetchProduct = productId => {
       SHOPIFY_CLIENT.product
         .fetch(productId)
         .then(async product => {
-          
           if (product) {
             dispatch(setProductDetails(product, product.images));
           } else {

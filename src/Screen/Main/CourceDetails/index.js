@@ -35,11 +35,10 @@ const CourseDetail = ({route}) => {
   const dispatch = useDispatch();
   const coursetype = route?.params?.coursetype;
   const Detail1 = useSelector(state => state?.Product?.productDetails);
-  const [metaData, setMetaData] = useState([]);
+  const isLoading = useSelector(state => state.Product?.isLoading);
   const [userType, setUserType] = useState('');
   const CourceDetailA = useSelector(state => state?.home?.CourceDetailA);
-  const isLoading = useSelector(state => state.home?.loading);
-  const [isMetaDataLoading, setIsMetaDataLoading] = useState(false);
+  
   const [videoPlay, setVideoPlay] = useState(true);
   const [videoState, setVideoState] = useState({
     isPlaying: true,
@@ -57,22 +56,16 @@ const CourseDetail = ({route}) => {
   }, []);
 
   const handleApi = async itemId => {
-    setIsMetaDataLoading(true);
     dispatch(InitProduct());
     dispatch(fetchProduct(itemId));
-
-    const data = await getProductMetafieldsApiCall(itemId);
-    setMetaData(data?.metafields);
-    setIsMetaDataLoading(false);
+    
   };
 
-  console.log(metaData, 'meta data');
-
-  const groupedMeta = metaData
+  const groupedMeta = Detail1?.metafieldsData
     ?.filter(item => item?.key?.includes('question'))
     ?.map(question => {
       const keyPrefix = question?.key?.match(/\d+/)?.[0];
-      const answer = metaData
+      const answer = Detail1?.metafieldsData
         ?.filter(item => item?.key?.includes('answer'))
         ?.find(ans => ans?.key?.includes(`${keyPrefix}_answer`));
 
@@ -184,7 +177,7 @@ const CourseDetail = ({route}) => {
 
     return url;
   };
- 
+
   const toggleSection = id => {
     setExpandedSection(prevSection => (prevSection == id ? null : id));
   };
@@ -374,7 +367,7 @@ const CourseDetail = ({route}) => {
 
   return (
     <View style={styles.container}>
-      {isLoading || isMetaDataLoading ? <Loader /> : null}
+      {isLoading ? <Loader /> : null}
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
@@ -391,11 +384,15 @@ const CourseDetail = ({route}) => {
       </View>
       <ScrollView contentContainerStyle={styles.scrollview}>
         <TouchableOpacity style={styles.firstimgview}>
-          {metaData?.find(item => item?.key?.includes('lecture')) ? (
+          {Detail1?.metafieldsData?.find(item =>
+            item?.key?.includes('lecture'),
+          ) ? (
             <WebView
               source={{
                 uri: getYouTubeEmbedUrl(
-                  metaData?.find(item => item?.key?.includes('lecture'))?.value,
+                  Detail1?.metafieldsData?.find(item =>
+                    item?.key?.includes('lecture'),
+                  )?.value,
                 ),
               }}
               style={styles.img1}
@@ -419,8 +416,9 @@ const CourseDetail = ({route}) => {
           <Text style={styles.advancetext}>{Detail1?.title} </Text>
 
           <Text style={styles.learntext}>
-            {metaData.find(item => item.key?.includes('description'))?.value ||
-              ''}
+            {Detail1?.metafieldsData?.find(item =>
+              item.key?.includes('description'),
+            )?.value || ''}
           </Text>
           <View style={styles.direction}>
             <View style={{flexDirection: 'row', gap: 10}}>
@@ -452,7 +450,9 @@ const CourseDetail = ({route}) => {
 
         <View style={styles.horizontalLine} />
         <View style={styles.card}>
-          {metaData?.find(item => item?.key?.includes('language')) && (
+          {Detail1?.metafieldsData?.find(item =>
+            item?.key?.includes('language'),
+          ) && (
             <>
               <View style={styles.cardItem}>
                 <Image
@@ -462,15 +462,18 @@ const CourseDetail = ({route}) => {
                 <Text style={styles.languagetext}>Languages</Text>
                 <Text style={styles.languagetext1}>
                   {
-                    metaData?.find(item => item?.key?.includes('language'))
-                      ?.value
+                    Detail1?.metafieldsData?.find(item =>
+                      item?.key?.includes('language'),
+                    )?.value
                   }
                 </Text>
               </View>
               <View style={styles.verticalLine} />
             </>
           )}
-          {metaData?.find(item => item?.key?.includes('date')) && (
+          {Detail1?.metafieldsData?.find(item =>
+            item?.key?.includes('date'),
+          ) && (
             <>
               <View style={styles.cardItem}>
                 <Image
@@ -480,14 +483,18 @@ const CourseDetail = ({route}) => {
                 <Text style={styles.languagetext}>Date</Text>
                 <Text style={styles.languagetext1}>
                   {formatDate(
-                    metaData?.find(item => item?.key?.includes('date'))?.value,
+                    Detail1?.metafieldsData?.find(item =>
+                      item?.key?.includes('date'),
+                    )?.value,
                   )}
                 </Text>
               </View>
               <View style={styles.verticalLine} />
             </>
           )}
-          {metaData?.find(item => item?.key?.includes('time')) && (
+          {Detail1?.metafieldsData?.find(item =>
+            item?.key?.includes('time'),
+          ) && (
             <>
               <View style={styles.cardItem}>
                 <Image
@@ -496,13 +503,19 @@ const CourseDetail = ({route}) => {
                 />
                 <Text style={styles.languagetext}>Time</Text>
                 <Text style={styles.languagetext1}>
-                  {metaData?.find(item => item?.key?.includes('time'))?.value}
+                  {
+                    Detail1?.metafieldsData?.find(item =>
+                      item?.key?.includes('time'),
+                    )?.value
+                  }
                 </Text>
               </View>
               <View style={styles.verticalLine} />
             </>
           )}
-          {metaData?.find(item => item?.key?.includes('trained')) && (
+          {Detail1?.metafieldsData?.find(item =>
+            item?.key?.includes('trained'),
+          ) && (
             <View style={styles.cardItem}>
               <Image
                 source={require('../../../assets/otherApp/cardimg1.png')}
@@ -510,7 +523,11 @@ const CourseDetail = ({route}) => {
               />
               <Text style={styles.languagetext}>Trained</Text>
               <Text style={styles.languagetext1}>
-                {metaData?.find(item => item?.key?.includes('trained'))?.value}
+                {
+                  Detail1?.metafieldsData?.find(item =>
+                    item?.key?.includes('trained'),
+                  )?.value
+                }
               </Text>
             </View>
           )}
@@ -551,11 +568,15 @@ const CourseDetail = ({route}) => {
 
         <View style={styles.firstimgview}>
           <Text style={styles.demotext}>Demo Lecture</Text>
-          {metaData?.find(item => item?.key?.includes('lecture')) ? (
+          {Detail1?.metafieldsData?.find(item =>
+            item?.key?.includes('lecture'),
+          ) ? (
             <WebView
               source={{
                 uri: getYouTubeEmbedUrl(
-                  metaData?.find(item => item?.key?.includes('lecture'))?.value,
+                  Detail1?.metafieldsData?.find(item =>
+                    item?.key?.includes('lecture'),
+                  )?.value,
                 ),
               }}
               style={styles.img1}
@@ -581,40 +602,49 @@ const CourseDetail = ({route}) => {
           renderItem={({item}) => renderCollapsibleItem(item)}
         />
 
-        <View style={styles.trainerview}>
-          <Text style={styles.demotext}>Know Your Trainer</Text>
-        </View>
+        {Detail1?.metafieldsData?.find(item =>
+          item?.key?.includes('know_your_trainer'),
+        ) && (
+          <>
+            <View style={styles.trainerview}>
+              <Text style={styles.demotext}>Know Your Trainer</Text>
+            </View>
 
-        <View style={styles.knowview}>
-          <View style={styles.acharyaview}>
-            <Image
-              source={
-                CourceDetailA?.trainer?.image
-                  ? {uri: `${Imagepath.Path}${CourceDetailA?.trainer?.image}`}
-                  : require('../../../assets/otherApp/trainer.png')
-              }
-              style={styles.imgtrainer}
-            />
-          </View>
+            <View style={styles.knowview}>
+              <View style={styles.acharyaview}>
+                <Image
+                  source={
+                    Detail1?.metafieldsData?.find(item =>
+                      item?.key?.includes('know_your_trainer_image'),
+                    )
+                      ? {
+                          uri: `${
+                            Detail1?.metafieldsData?.find(item =>
+                              item?.key?.includes('know_your_trainer_image'),
+                            ).value
+                          }`,
+                        }
+                      : require('../../../assets/otherApp/trainer.png')
+                  }
+                  style={styles.imgtrainer}
+                />
+              </View>
 
-          <Text style={styles.acharya1}>
-            {
-              metaData?.find(item => item?.key?.includes('know_your_trainer'))
-                ?.value
-            }
-          </Text>
-        </View>
+              <Text style={styles.acharya1}>
+                {
+                  Detail1?.metafieldsData?.find(item =>
+                    item?.key?.includes('know_your_trainer'),
+                  )?.value
+                }
+              </Text>
+            </View>
+          </>
+        )}
 
         <View style={styles.journeyview}>
-          {/* <RenderHTML
-            contentWidth={width}
-            source={{
-              html: CourceDetailA?.trainer?.description,
-            }}
-          /> */}
           <Text style={styles.journeytext}>
             {
-              metaData?.find(item =>
+              Detail1?.metafieldsData?.find(item =>
                 item?.key?.includes('know_your_trainer_description'),
               )?.value
             }
