@@ -21,7 +21,7 @@ import {useIsFocused, useNavigation} from '@react-navigation/native';
 
 const ResidentalScreen = ({route}) => {
   const navigation = useNavigation();
-  const itemId = route?.params?.itemId;
+  const services_name = route?.params?.shopifyName;
   const [textAnim] = useState(new Animated.Value(0));
   const [scaleAnim] = useState(new Animated.Value(1));
   const [scaleAnims, setScaleAnims] = useState({});
@@ -48,12 +48,12 @@ const ResidentalScreen = ({route}) => {
   useEffect(() => {
     apicall();
   }, [focus]);
-
+  // ('https://vastu.craftsweb.co.in/public/api/v1/fetch-franchise-list?franchise_services_name=Insustrial');
   const apicall = async () => {
     await dispatch(
       getCosultationListApi({
-        url: `fetch-franchise-list?franchise_services_id=${
-          itemId ? itemId : 0
+        url: `fetch-franchise-list?franchise_services_name=${
+          services_name ? services_name : ''
         }`,
       }),
     );
@@ -185,6 +185,7 @@ const ResidentalScreen = ({route}) => {
       reviews?.length > 0 ? totalRatings / reviews?.length : 0;
     return averageRating?.toFixed(1);
   };
+
   const renderItem3 = ({item, index}) => {
     const itemScaleAnim = scaleAnims[index] || new Animated.Value(1);
 
@@ -265,7 +266,7 @@ const ResidentalScreen = ({route}) => {
 
         <View style={styles.headerview}>
           <Text style={styles.logoText}>
-            {route?.params?.servicesName || 'Vastu'} Experts
+            {services_name || 'Vastu'} Experts
           </Text>
         </View>
       </View>
@@ -350,5 +351,3 @@ const ResidentalScreen = ({route}) => {
 };
 
 export default ResidentalScreen;
-
-

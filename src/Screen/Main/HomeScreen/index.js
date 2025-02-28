@@ -37,12 +37,10 @@ import {consultationDetail1} from '../../../Redux/Slice/ConsultancySlice';
 import {Dropdown} from 'react-native-element-dropdown';
 import WebView from 'react-native-webview';
 import {SvgUri} from 'react-native-svg';
-import {
-  fetchExtraCollectonHome,
-} from '../../../Redux/Slice/HomeBannerSlice';
+import {fetchExtraCollectonHome} from '../../../Redux/Slice/HomeBannerSlice';
 import {addToCart} from '../../../Redux/Slice/CartSlice';
 import {getUserDetails} from '../../../Redux/Slice/loginSlice';
-import { getDrawerData } from '../../../Redux/Slice/drawerSlice';
+import {getDrawerData} from '../../../Redux/Slice/drawerSlice';
 let backPress = 0;
 const HomeScreen = () => {
   const flatListRef = useRef(null);
@@ -185,6 +183,7 @@ const HomeScreen = () => {
   const apicall = async () => {
     await dispatch(Banner({url: 'home-slider'}));
     await dispatch(CourceLis({url: 'fetch-course-data'}));
+    await dispatch(getDrawerData());
   };
 
   const Addtocard = async item => {
@@ -256,7 +255,7 @@ const HomeScreen = () => {
       const userStatus = await AsyncStorage.getItem('user_data');
       const userData = userStatus ? JSON.parse(userStatus) : null;
       const userType = userData?.user_type;
-          dispatch(getUserDetails(userData?.shopify_access_token));
+      dispatch(getUserDetails(userData?.shopify_access_token));
       setUserType(userType);
       if (userType) {
         if (userDetail.length === 0) {
@@ -280,7 +279,7 @@ const HomeScreen = () => {
     setCurrentIndex(index);
   };
 
-  const handleItemClick = (index, itemId, servicesName) => {
+  const handleItemClick = (index, name) => {
     const newScaleAnims = {...scaleAnims};
 
     if (!newScaleAnims[index]) {
@@ -304,8 +303,7 @@ const HomeScreen = () => {
       navigation.navigate('Home1', {
         screen: 'Consultancy',
         params: {
-          itemId: itemId,
-          servicesName,
+          shopifyName: name,
         },
       });
     });
@@ -332,8 +330,7 @@ const HomeScreen = () => {
             styles.cardContainer,
             {backgroundColor: item?.background_color},
           ]}
-          // onPress={() => handleItemClick(index, item.id, item.services_name)}
-        >
+          onPress={() => handleItemClick(index, item.text)}>
           <SvgUri width="30%" height="30%" uri={item?.CardImage} />
           <Text style={styles.text}>{item.text}</Text>
         </TouchableOpacity>
@@ -740,10 +737,10 @@ const HomeScreen = () => {
       <ScrollView contentContainerStyle={styles.servicesContainer}>
         <View style={styles.searchContainer}>
           <TouchableOpacity
-          onPress={()=>navigation.navigate('Searchlist')}
-          hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
-           style={{flexDirection: 'row', alignItems: 'center'}}>
-            <TouchableOpacity >
+            onPress={() => navigation.navigate('Searchlist')}
+            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
+            style={{flexDirection: 'row', alignItems: 'center'}}>
+            <TouchableOpacity>
               <Image source={require('../../../assets/image/SearchIcon.png')} />
             </TouchableOpacity>
             <TextInput
