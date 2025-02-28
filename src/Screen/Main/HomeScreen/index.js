@@ -185,6 +185,7 @@ const HomeScreen = () => {
   const apicall = async () => {
     await dispatch(Banner({url: 'home-slider'}));
     await dispatch(CourceLis({url: 'fetch-course-data'}));
+    await dispatch(getDrawerData());
   };
 
   const Addtocard = async item => {

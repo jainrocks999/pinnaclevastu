@@ -2,12 +2,13 @@ import {View, Text, Vibration, TextInput, Animated, TouchableOpacity} from 'reac
 import React, {useRef, useState} from 'react';
 import styles from './styles';
 import {Rating} from 'react-native-ratings';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { handleRating } from '../../Redux/Api/Ratings';
+import { fetchProduct } from '../../Redux/Slice/productSlice';
 
 const Reviewform = (props) => {
   const {userDetails} = useSelector(state => state.Login);
-  
+  const dispatch =useDispatch();
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
   const [ratingStar, setRatingStar] = useState(0);
   const [reviewData, setReviewData] = useState({
@@ -73,7 +74,7 @@ const Reviewform = (props) => {
         name: userDetails?.displayName,
         
       });
-     
+      dispatch(fetchProduct(props.productId));
       props?.setmodelvisible(!data)
 
     } catch (error) {

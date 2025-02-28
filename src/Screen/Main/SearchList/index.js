@@ -9,7 +9,8 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
-  StyleSheet, Animated,
+  StyleSheet,
+  Animated,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {colors} from '../../../Component/colors';
@@ -23,8 +24,7 @@ import {
   searchResultLoadMore,
 } from '../../../Redux/Slice/searchSlice';
 import Search from '../../../assets/svg/Search.svg';
-import { widthPrecent } from '../../../Component/ResponsiveScreen/responsive';
-
+import {widthPrecent} from '../../../Component/ResponsiveScreen/responsive';
 
 const CollectionScreen = ({navigation, route}) => {
   const dispatch = useDispatch();
@@ -33,32 +33,32 @@ const CollectionScreen = ({navigation, route}) => {
   const placeholderText = 'Search';
   const [displayedText, setDisplayedText] = useState('');
   const selector = useSelector(state => state?.search);
-    const cartTotalQuantity = useSelector(
-      state => state?.cart?.cartTotalQuantity,
-    );
-    useEffect(() => {
-      let currentIndex = 0;
-      const startAnimation = () => {
-        const intervalId = setInterval(() => {
-          if (currentIndex < placeholderText.length) {
-            setDisplayedText(prev => placeholderText.slice(0, currentIndex + 1));
-            currentIndex++;
-          } else {
-            currentIndex = 0;
-            setDisplayedText('');
-          }
-        }, 450);
-  
-        return intervalId;
-      };
-  
-      const intervalId = startAnimation();
-  
-      return () => clearInterval(intervalId);
-    }, []);
+  const cartTotalQuantity = useSelector(
+    state => state?.cart?.cartTotalQuantity,
+  );
+  useEffect(() => {
+    let currentIndex = 0;
+    const startAnimation = () => {
+      const intervalId = setInterval(() => {
+        if (currentIndex < placeholderText.length) {
+          setDisplayedText(prev => placeholderText.slice(0, currentIndex + 1));
+          currentIndex++;
+        } else {
+          currentIndex = 0;
+          setDisplayedText('');
+        }
+      }, 450);
+
+      return intervalId;
+    };
+
+    const intervalId = startAnimation();
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   const getProductDetails = async (product, id) => {
-    navigation.navigate('ProductDetail', {itemId: id})
+    navigation.navigate('ProductDetail', {itemId: id});
   };
 
   useEffect(() => {
@@ -80,144 +80,143 @@ const CollectionScreen = ({navigation, route}) => {
     }
   };
 
- 
-
   return (
     <View style={{flex: 1, backgroundColor: '#fff'}}>
-         <View style={{
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 18,
-    paddingVertical: 10,
-    backgroundColor: '#fff',
-    elevation: 5,
-  }}>
-             <View style={{
-    flexDirection: 'row',
-    alignItems: 'center',
-  }}>
-               <TouchableOpacity
-                 onPress={() =>
-                  navigation.goBack()
-                 }
-                 hitSlop={{top: 10, left: 10, right: 10, bottom: 10}}
-                 //
-               >
-                 <Image
-                   style={{
-                    height: widthPrecent(4),
-                    marginTop: -5,
-                    width: widthPrecent(2.3),
-                    resizeMode: 'stretch',
-                    marginRight: 20,
-                  }}
-                   source={require('../../../assets/drawer/Back1.png')}
-                 />
-               </TouchableOpacity>
-               <Text style={{
-    fontSize: fontSize.Eighteen,
-    color: colors.heading,
-    fontFamily: 'Poppins-Regular',
-  }}>{'Search Item'}</Text>
-             </View>
-             <TouchableOpacity
-               hitSlop={{top: 10, left: 10, right: 10, bottom: 10}}
-               onPress={() => {
-                 navigation.navigate('Home', {screen: 'MyCart'});
-               }}>
-               {cartTotalQuantity > 0 && (
-                 <View style={{
-                  backgroundColor: '#EF6024',
-                  borderRadius: 10,
-                  zIndex: 1,
-                  bottom: -10,
-                  left: 7,
-                  height: 15,
-                  marginTop: -15,
-                  width: 13,
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                   <Text style={{
-    textAlign: 'center',
-    fontFamily: 'Poppins-Regular',
-    color: colors.white,
-    fontSize: fontSize.Ten,
-  }}>{cartTotalQuantity}</Text>
-                 </View>
-               )}
-               <Image
-                 style={styles.bagBtn}
-                 source={require('../../../assets/image/small_bag.png')}
-               />
-             </TouchableOpacity>
-           </View>
-
-
- <View style={{
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginVertical: 15,
-    marginHorizontal: 12,
-    backgroundColor: colors.ordercolor,
-    borderRadius: 20,
-
-    paddingHorizontal: 15,
-  }}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <TouchableOpacity
-              hitSlop={{top: 10, left: 10, right: 10, bottom: 10}}>
-              <Image source={require('../../../assets/image/SearchIcon.png')} />
-            </TouchableOpacity>
-
-            <TextInput
-               placeholder={displayedText}
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          paddingHorizontal: 18,
+          paddingVertical: 10,
+          backgroundColor: '#fff',
+          elevation: 5,
+        }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            hitSlop={{top: 10, left: 10, right: 10, bottom: 10}}
+            //
+          >
+            <Image
               style={{
-                fontFamily: 'Poppins-Regular',
-                width: '90%',
-                fontSize: fontSize.Fourteen,
-                paddingHorizontal: 10,
-                color: colors.heading,
-                paddingVertical: 10,
+                height: widthPrecent(4),
+                marginTop: -5,
+                width: widthPrecent(2.3),
+                resizeMode: 'stretch',
+                marginRight: 20,
               }}
-              placeholderTextColor={colors.searchBarTextColor}
-              value={input}
+              source={require('../../../assets/drawer/Back1.png')}
+            />
+          </TouchableOpacity>
+          <Text
+            style={{
+              fontSize: fontSize.Eighteen,
+              color: colors.heading,
+              fontFamily: 'Poppins-Regular',
+            }}>
+            {'Search Item'}
+          </Text>
+        </View>
+        <TouchableOpacity
+          hitSlop={{top: 10, left: 10, right: 10, bottom: 10}}
+          onPress={() => {
+            navigation.navigate('Home', {screen: 'MyCart'});
+          }}>
+          {cartTotalQuantity > 0 && (
+            <View
+              style={{
+                backgroundColor: '#EF6024',
+                borderRadius: 10,
+                zIndex: 1,
+                bottom: -10,
+                left: 7,
+                height: 15,
+                marginTop: -15,
+                width: 13,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  fontFamily: 'Poppins-Regular',
+                  color: colors.white,
+                  fontSize: fontSize.Ten,
+                }}>
+                {cartTotalQuantity}
+              </Text>
+            </View>
+          )}
+          <Image
+            style={styles.bagBtn}
+            source={require('../../../assets/image/small_bag.png')}
+          />
+        </TouchableOpacity>
+      </View>
+
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginVertical: 15,
+          marginHorizontal: 12,
+          backgroundColor: colors.ordercolor,
+          borderRadius: 20,
+
+          paddingHorizontal: 15,
+        }}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <TouchableOpacity
+            hitSlop={{top: 10, left: 10, right: 10, bottom: 10}}>
+            <Image source={require('../../../assets/image/SearchIcon.png')} />
+          </TouchableOpacity>
+
+          <TextInput
+            placeholder={displayedText}
+            style={{
+              fontFamily: 'Poppins-Regular',
+              width: '88%',
+              fontSize: fontSize.Fourteen,
+              paddingHorizontal: 10,
+              color: colors.heading,
+              paddingVertical: 10,
+            }}
+            placeholderTextColor={colors.searchBarTextColor}
+            value={input}
             onChangeText={val => {
               setInput(val);
               setValue(val);
               handleSearch(val);
             }}
-            
-             
-            />
-            {input == ''?null:
-             <TouchableOpacity style={{height:18,width:18,borderWidth:1,borderRadius:9,justifyContent:'center',alignItems:'center'}}
-          onPress={() => {
-            setInput('');
-            setValue('');
-            dispatch(InitSearch());
-           
-          }}
-          >
-          <Cross width={10} height={10} />
-        </TouchableOpacity>
-}
-          </View>
+          />
+          {input == '' ? null : (
+            <TouchableOpacity
+              style={{
+                height: 20,
+                width: 20,
+                borderWidth: 1,
+                borderRadius: 10,
+                borderColor:'#4c4a4a',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+              onPress={() => {
+                setInput('');
+                setValue('');
+                dispatch(InitSearch());
+              }}>
+              <Cross width={9} height={9} />
+            </TouchableOpacity>
+          )}
         </View>
-
-
-
-
-
-
-
-
-
-
-
+      </View>
 
       {/* <View
         style={{
@@ -294,7 +293,6 @@ const CollectionScreen = ({navigation, route}) => {
                 marginTop: 15,
               }}
               renderItem={({item}) => {
-              
                 return (
                   <Pressable
                     onPress={() => getProductDetails(item, item?.node?.id)}
@@ -304,17 +302,17 @@ const CollectionScreen = ({navigation, route}) => {
                     }}>
                     <View style={{position: 'relative'}}>
                       {item?.node?.images?.edges[0]?.node?.originalSrc ? (
-                        <Image style={{ 
+                        <Image
+                          style={{
                             width: '100%',
                             height: widthPrecent(60),
                             borderRadius: 10,
                           }}
-                          resizeMode='contain'
+                          resizeMode="contain"
                           source={{
                             uri: item?.node?.images?.edges[0]?.node
                               ?.originalSrc,
                           }}
-                         
                         />
                       ) : null}
                       {item?.node?.variants?.edges[0]?.node?.compareAtPrice
@@ -376,13 +374,13 @@ const CollectionScreen = ({navigation, route}) => {
                             paddingHorizontal: 15,
                             paddingVertical: 4,
                             backgroundColor: colors.ordercolor,
-                             borderColor: 'grey',
+                            borderColor: 'grey',
                             borderRadius: 10,
                           }}>
                           <Text
                             style={{
                               marginTop: -2,
-                              color:'grey',
+                              color: 'grey',
                               fontSize: fontSize.Thirteen,
                               fontFamily: 'Poppins-Medium',
                             }}>
@@ -400,7 +398,7 @@ const CollectionScreen = ({navigation, route}) => {
                           style={{
                             color: '#000',
                             fontSize: fontSize.Sixteen,
-                            fontFamily:'Poppins-SemiBold',
+                            fontFamily: 'Poppins-SemiBold',
                           }}>{`₹ ${parseFloat(
                           item?.node?.variants?.edges[0]?.node?.price?.amount,
                         ).toFixed(2)}`}</Text>
@@ -428,7 +426,7 @@ const CollectionScreen = ({navigation, route}) => {
                   <TouchableOpacity
                     onPress={() => loadMoreData()}
                     style={{
-                      backgroundColor:colors.orange,
+                      backgroundColor: colors.orange,
                       paddingHorizontal: 15,
                       paddingVertical: 8,
                       borderRadius: 10,
@@ -436,8 +434,8 @@ const CollectionScreen = ({navigation, route}) => {
                     <Text
                       style={{
                         fontSize: fontSize.Fifteen,
-                        color:'#fff',
-                        fontFamily:'Poppins-Regular',
+                        color: '#fff',
+                        fontFamily: 'Poppins-Regular',
                       }}>
                       {'Load More'}
                     </Text>
@@ -473,7 +471,7 @@ const CollectionScreen = ({navigation, route}) => {
             backgroundColor: colors?.default_grey,
           }}
         />
-       
+
         <View style={{height: 75}} />
       </ScrollView>
     </View>
