@@ -33,32 +33,39 @@ const Drawer = props => {
   const [name, setName] = useState('');
   const dispatch = useDispatch();
   const data = useSelector(state => state?.HomeBanner?.our_services);
-const service=useSelector(state=>state?.drawerSlice?.Data)
+  const service = useSelector(state => state?.drawerSlice?.Data);
 
-const [expandedItem, setExpandedItem] = useState(null);
-const [animation] = useState(new Animated.Value(0));
+  const [expandedItem, setExpandedItem] = useState(null);
+  const [animation] = useState(new Animated.Value(0));
+  const services_Imgs = useSelector(state => state?.HomeBanner?.our_services);
+  const toggleExpand = title => {
+    if (expandedItem === title) {
+      setExpandedItem(null);
+      Animated.timing(animation, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: false,
+      }).start();
+    } else {
+      setExpandedItem(title);
+      Animated.timing(animation, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: false,
+      }).start();
+    }
+  };
 
-const toggleExpand = (title) => {
-  if (expandedItem === title) {
-    setExpandedItem(null);
-    Animated.timing(animation, { toValue: 0, duration: 300, useNativeDriver: false }).start();
-  } else {
-    setExpandedItem(title);
-    Animated.timing(animation, { toValue: 1, duration: 300, useNativeDriver: false }).start();
-  }
-};
+  const emptyItems = [];
+  const nonEmptyItems = [];
 
-const emptyItems = [];
-const nonEmptyItems = [];
-
-service?.sidebarMenu?.forEach(item => {
-  if (item.items.length > 0) {
-    nonEmptyItems.push(item);
-  } else {
-    emptyItems.push(item);
-  }
-});
-
+  service?.sidebarMenu?.forEach(item => {
+    if (item.items.length > 0) {
+      nonEmptyItems.push(item);
+    } else {
+      emptyItems.push(item);
+    }
+  });
 
   useEffect(() => {
     apicall();
@@ -120,19 +127,17 @@ service?.sidebarMenu?.forEach(item => {
   const renderItem = ({item}) => (
     <TouchableOpacity
       style={styles.listRow}
-      // onPress={() => {
-      //   navigation.navigate('Home', {
-      //     screen: 'Home1',
-      //       params: {
-      //         screen: 'Consultancy',
-      //         params: {
-      //           itemId: item?.id,
-      //           servicesName: item?.services_name,
-      //         },
-      //       },
-      //     });
-      //   }}
-    >
+      onPress={() => {
+        navigation.navigate('Home', {
+          screen: 'Home1',
+          params: {
+            screen: 'Consultancy',
+            params: {
+              shopifyName: item.title,
+            },
+          },
+        });
+      }}>
       {/* <View style={styles.rowContent}> */}
 
       {item?.CardImage?.toLowerCase()?.endsWith('.svg') ? (
@@ -155,18 +160,18 @@ service?.sidebarMenu?.forEach(item => {
     </TouchableOpacity>
   );
 
-
-
-
-
-  const renderItem1 = ({ item }) => {
+  const renderItem1 = ({item}) => {
     const isExpanded = expandedItem === item.title;
     return (
-    <View style={item.title != 'Courses' ?styles.listContainer:null}>
-     <TouchableOpacity
-          style={item.title === 'Courses' ? styles.coursesListRow : styles.specialListRow}
+      <View style={item.title != 'Courses' ? styles.listContainer : null}>
+        <TouchableOpacity
+          style={
+            item.title === 'Courses'
+              ? styles.coursesListRow
+              : styles.specialListRow
+          }
           onPress={() => toggleExpand(item.title)}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <Image
               style={styles.icon}
               source={
@@ -175,36 +180,44 @@ service?.sidebarMenu?.forEach(item => {
                   : require('../../assets/drawer/app.png')
               }
             />
-            <Text style={[styles.listText, item.title === 'Courses' ? { color: 'white' } : {}]}>
+            <Text
+              style={[
+                styles.listText,
+                item.title === 'Courses' ? {color: 'white'} : {},
+              ]}>
               {item.title}
             </Text>
           </View>
           <Image
-            style={item.title === 'Courses' ? { tintColor: '#fff', marginRight: 4 } : {}}
+            style={
+              item.title === 'Courses'
+                ? {tintColor: '#fff', marginRight: 4}
+                : {}
+            }
             source={require('../../assets/drawer/right.png')}
           />
         </TouchableOpacity>
         {isExpanded && (
-          <Animated.View style={[styles.specialListRow, { maxHeight: animation.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, 100] 
-          }) }]}>
-            {item.items.map((subItem) => (
+          <Animated.View
+            style={[
+              styles.specialListRow,
+              {
+                maxHeight: animation.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, 100],
+                }),
+              },
+            ]}>
+            {item.items.map(subItem => (
               <Text key={subItem.id} style={styles.listText}>
                 {subItem.title}
               </Text>
             ))}
           </Animated.View>
         )}
-    </View>
-  )};
-
-
-
-
-
-
-
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -292,7 +305,15 @@ service?.sidebarMenu?.forEach(item => {
 
         <View style={styles.listContainer}>
           <FlatList
-            data={emptyItems ? emptyItems : []}
+            // data={emptyItems ? emptyItems : []}
+            data={
+              emptyItems
+                ? emptyItems.map((item, index) => ({
+                    ...item,
+                    CardImage: services_Imgs[index]?.CardImage, // Add CardImage from services_Imgs
+                  }))
+                : []
+            }
             renderItem={renderItem}
             scrollEnabled={false}
             keyExtractor={(item, index) => index.toString()}
@@ -313,10 +334,10 @@ service?.sidebarMenu?.forEach(item => {
           </TouchableOpacity> */}
         </View>
         <FlatList
-      data={nonEmptyItems}
-      keyExtractor={(item, index) => index.toString()}
-      renderItem={renderItem1}
-    />
+          data={nonEmptyItems}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={renderItem1}
+        />
         {/* <TouchableOpacity
           style={styles.coursesListRow}
           onPress={() => {
@@ -345,21 +366,28 @@ service?.sidebarMenu?.forEach(item => {
       </ScrollView>
 
       <View style={styles.sections}>
-
-      <FlatList
-        data={service?.sidebarMenuLinks}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <TouchableOpacity style={styles.extraListItem}>        
-            <Text style={[styles.extraListText, { color: item?.title=='Numerology Calculator'?'#C2961E': item?.title=='Lucky Gemstone!' ?colors.drawertitle:'#1F5822'}]}>
-              {item.title}
-            </Text>
-          </TouchableOpacity>
-        )}
-      />
-
-
-
+        <FlatList
+          data={service?.sidebarMenuLinks}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({item}) => (
+            <TouchableOpacity style={styles.extraListItem}>
+              <Text
+                style={[
+                  styles.extraListText,
+                  {
+                    color:
+                      item?.title == 'Numerology Calculator'
+                        ? '#C2961E'
+                        : item?.title == 'Lucky Gemstone!'
+                        ? colors.drawertitle
+                        : '#1F5822',
+                  },
+                ]}>
+                {item.title}
+              </Text>
+            </TouchableOpacity>
+          )}
+        />
 
         {/* <TouchableOpacity style={styles.extraListItem}>
           <Text style={[styles.extraListText, {color: '#C2961E'}]}>
