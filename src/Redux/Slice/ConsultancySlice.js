@@ -50,7 +50,7 @@ export const consultationDetail1 = createAsyncThunk(
         Toast.show(response?.data?.msg);
       }
     } catch (error) {
-      console.log('banner error ', error);
+      console.log('banner error 111 ', error);
       return rejectWithValue(
         error.response ? error.response.data : error.message,
       );

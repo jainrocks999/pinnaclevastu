@@ -684,7 +684,8 @@ const CourseDetail = ({route}) => {
         </View>
       </ScrollView>
 
-      <View style={styles.scrollview}>
+      <View style={[styles.scrollview,{borderTopWidth:0.4,borderTopColor:'grey', 
+     paddingBottom: 10,}]}>
         <View style={styles.listItem}>
           <Text style={styles.listItemText}>{Detail1?.title}</Text>
           <Text style={[styles.listitem1]}>

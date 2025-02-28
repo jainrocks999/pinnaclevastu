@@ -23,7 +23,7 @@ export const Banner = createAsyncThunk(
         Toast.show(response?.data?.msg);
       }
     } catch (error) {
-      console.log('banner error ', error);
+      console.log('banner error 33 ', error);
       Toast.show(error.message);
 
       return rejectWithValue(
@@ -51,7 +51,7 @@ export const CourceLis = createAsyncThunk(
         Toast.show(response?.data?.msg);
       }
     } catch (error) {
-      console.log('banner error ', error);
+      console.log('banner error 211', error);
 
       return rejectWithValue(
         error.response ? error.response.data : error.message,

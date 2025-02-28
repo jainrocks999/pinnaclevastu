@@ -9,6 +9,7 @@ import {
   Alert,
   ScrollView,
   Linking,
+  Animated,
 } from 'react-native';
 
 import {
@@ -32,6 +33,33 @@ const Drawer = props => {
   const [name, setName] = useState('');
   const dispatch = useDispatch();
   const data = useSelector(state => state?.HomeBanner?.our_services);
+const service=useSelector(state=>state?.drawerSlice?.Data)
+
+const [expandedItem, setExpandedItem] = useState(null);
+const [animation] = useState(new Animated.Value(0));
+
+const toggleExpand = (title) => {
+  if (expandedItem === title) {
+    setExpandedItem(null);
+    Animated.timing(animation, { toValue: 0, duration: 300, useNativeDriver: false }).start();
+  } else {
+    setExpandedItem(title);
+    Animated.timing(animation, { toValue: 1, duration: 300, useNativeDriver: false }).start();
+  }
+};
+
+const emptyItems = [];
+const nonEmptyItems = [];
+
+service?.sidebarMenu?.forEach(item => {
+  if (item.items.length > 0) {
+    nonEmptyItems.push(item);
+  } else {
+    emptyItems.push(item);
+  }
+});
+
+
   useEffect(() => {
     apicall();
   }, []);
@@ -119,13 +147,64 @@ const Drawer = props => {
         />
       )}
 
-      <Text style={styles.listText}>{item.text}</Text>
+      <Text style={styles.listText}>{item.title}</Text>
       {/* </View> */}
       {/* {item.isSpecial && (
         <Image source={require('../../assets/drawer/right.png')} />
       )} */}
     </TouchableOpacity>
   );
+
+
+
+
+
+  const renderItem1 = ({ item }) => {
+    const isExpanded = expandedItem === item.title;
+    return (
+    <View style={item.title != 'Courses' ?styles.listContainer:null}>
+     <TouchableOpacity
+          style={item.title === 'Courses' ? styles.coursesListRow : styles.specialListRow}
+          onPress={() => toggleExpand(item.title)}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Image
+              style={styles.icon}
+              source={
+                item.title === 'Courses'
+                  ? require('../../assets/drawer/Icon.png')
+                  : require('../../assets/drawer/app.png')
+              }
+            />
+            <Text style={[styles.listText, item.title === 'Courses' ? { color: 'white' } : {}]}>
+              {item.title}
+            </Text>
+          </View>
+          <Image
+            style={item.title === 'Courses' ? { tintColor: '#fff', marginRight: 4 } : {}}
+            source={require('../../assets/drawer/right.png')}
+          />
+        </TouchableOpacity>
+        {isExpanded && (
+          <Animated.View style={[styles.specialListRow, { maxHeight: animation.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, 100] 
+          }) }]}>
+            {item.items.map((subItem) => (
+              <Text key={subItem.id} style={styles.listText}>
+                {subItem.title}
+              </Text>
+            ))}
+          </Animated.View>
+        )}
+    </View>
+  )};
+
+
+
+
+
+
+
 
   return (
     <View style={styles.container}>
@@ -213,13 +292,13 @@ const Drawer = props => {
 
         <View style={styles.listContainer}>
           <FlatList
-            data={data ? data : []}
+            data={emptyItems ? emptyItems : []}
             renderItem={renderItem}
             scrollEnabled={false}
             keyExtractor={(item, index) => index.toString()}
             showsVerticalScrollIndicator={false}
           />
-          <TouchableOpacity style={styles.specialListRow}>
+          {/* <TouchableOpacity style={styles.specialListRow}>
             <View
               style={{
                 flexDirection: 'row',
@@ -231,10 +310,14 @@ const Drawer = props => {
               <Text style={styles.listText}>{'More  '}</Text>
             </View>
             <Image source={require('../../assets/drawer/right.png')} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
-
-        <TouchableOpacity
+        <FlatList
+      data={nonEmptyItems}
+      keyExtractor={(item, index) => index.toString()}
+      renderItem={renderItem1}
+    />
+        {/* <TouchableOpacity
           style={styles.coursesListRow}
           onPress={() => {
             navigation.navigate('Home', {
@@ -258,11 +341,27 @@ const Drawer = props => {
             style={{tintColor: '#fff', marginRight: 4}}
             source={require('../../assets/drawer/right.png')}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </ScrollView>
 
       <View style={styles.sections}>
-        <TouchableOpacity style={styles.extraListItem}>
+
+      <FlatList
+        data={service?.sidebarMenuLinks}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item }) => (
+          <TouchableOpacity style={styles.extraListItem}>        
+            <Text style={[styles.extraListText, { color: item?.title=='Numerology Calculator'?'#C2961E': item?.title=='Lucky Gemstone!' ?colors.drawertitle:'#1F5822'}]}>
+              {item.title}
+            </Text>
+          </TouchableOpacity>
+        )}
+      />
+
+
+
+
+        {/* <TouchableOpacity style={styles.extraListItem}>
           <Text style={[styles.extraListText, {color: '#C2961E'}]}>
             Numerology Calculator
           </Text>
@@ -277,7 +376,7 @@ const Drawer = props => {
           <Text style={[styles.extraListText, {color: '#1F5822'}]}>
             Astro Kundli Insights!
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       <View style={[styles.sections, {marginBottom: 0}]}>

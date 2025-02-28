@@ -11,6 +11,7 @@ import {
   Share as SocialShare,
   Pressable,
   BackHandler,
+  Alert,
 } from 'react-native';
 import styles from './styles';
 import {colors} from '../../../Component/colors';
@@ -36,6 +37,7 @@ import {
 import {getProductRecomendation} from '../../../models/products';
 import {fetchProduct, InitProduct} from '../../../Redux/Slice/productSlice';
 import { getReviewList } from '../../../Redux/Api/Ratings';
+import Reviewform from '../../../Component/ReviewForm';
 
 const RemediesProductDetail = ({route}) => {
   const product = route?.params?.itemId;
@@ -61,9 +63,11 @@ const RemediesProductDetail = ({route}) => {
   const [metaDescription, setMetaDescription] = useState('');
   const [topBestSellerData, setTopBestSellerData] = useState([]);
   const [isMetaDataLoading, setIsMetaDataLoading] = useState(false);
+  const [modelvisible,setmodelvisible]=useState(false)
   const [review ,setReview]=useState('')
+  const [reviewlist,setReviewList]=useState('');
   const [isDataLoading, setIsDataLoading] = useState(true);
-const [reviewlist,setReviewList]=useState('');
+
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
 
   const animation = useRef(new Animated.Value(0)).current;
@@ -95,6 +99,7 @@ const [reviewlist,setReviewList]=useState('');
     handleApi(route?.params?.itemId);
     setSimilarData([]);
     setReviewList('');
+    setmodelvisible(false)
   }, [route?.params?.itemId]);
 
   useEffect(() => {
@@ -702,7 +707,7 @@ let Id1 = originalString.replace(prefix, '');
             <Text style={styles.service}>{Detail1?.title}</Text>
           </View>
           <View style={styles.main}>
-            {review != null && (
+            {review != null  && (
               <>
                 <View style={styles.headerview}>
                   <View style={{marginTop: -5}}>
@@ -717,8 +722,10 @@ let Id1 = originalString.replace(prefix, '');
                       ratingBackgroundColor={colors.lightGrey}
                     />
                   </View>
-
-                  <Text
+                  {reviewlist?.count === 0 || reviewlist?.count ==undefined? null:(
+                 
+                 <>
+                 <Text
                     style={[
                       styles.third1,
                       {
@@ -750,12 +757,15 @@ let Id1 = originalString.replace(prefix, '');
                     ]}>
                     {' reviews'}
                   </Text>
+                  </>
+                )}
                 </View>
 
                 <View style={styles.dividerView} />
               </>
             )}
-            <Text
+            <Text onPress={()=>setmodelvisible(true)}
+             hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
               style={[
                 styles.third1,
                 {
@@ -976,9 +986,9 @@ let Id1 = originalString.replace(prefix, '');
 
           <View style={{backgroundColor: '#F1F1F1'}}>
 
-            {console.log('jkhjkhkjhdfkjdhgdfkjg',reviewlist?.reviewsList)}
+  
             
-            {reviewlist?.count === 0 ? null : (
+            {reviewlist?.count === 0 || reviewlist?.count ==undefined? null : (
               <>
                 <View style={styles.shareview}>
                   <View style={{marginBottom: -20}}>
@@ -988,7 +998,10 @@ let Id1 = originalString.replace(prefix, '');
                       }>{`User Reviews (${reviewlist?.count})`}</Text>
                   </View>
 
-                  <TouchableOpacity style={styles.button1}>
+                  <TouchableOpacity  
+                   hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
+                  onPress={()=>setmodelvisible(true)}
+                  style={styles.button1}>
                     <Text style={styles.btext}>Write a Review</Text>
                   </TouchableOpacity>
                 </View>
@@ -1009,8 +1022,12 @@ let Id1 = originalString.replace(prefix, '');
               </>
             )}
           </View>
+          {modelvisible?<Reviewform setmodelvisible={setmodelvisible} 
+              productId={route?.params?.itemId}
+          />:null}
         </ScrollView>
       ) : null}
+      
     </View>
   );
 };

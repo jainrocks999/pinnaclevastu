@@ -2,15 +2,21 @@ import {View, Text, Vibration, TextInput, Animated, TouchableOpacity} from 'reac
 import React, {useRef, useState} from 'react';
 import styles from './styles';
 import {Rating} from 'react-native-ratings';
+import { useSelector } from 'react-redux';
+import { handleRating } from '../../Redux/Api/Ratings';
 
-const Reviewform = () => {
+const Reviewform = (props) => {
+  const {userDetails} = useSelector(state => state.Login);
+  
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
   const [ratingStar, setRatingStar] = useState(0);
   const [reviewData, setReviewData] = useState({
     reviewTitle: '',
     reviewMessage: '',
   });
-
+  const handleInputChange = (name, value) => {
+    setReviewData({...reviewData, [name]: value});
+  };
   const [shakeAnimation, setShakeAnimation] = useState({
     reviewTitle: new Animated.Value(0),
     reviewMessage: new Animated.Value(0),
@@ -52,6 +58,32 @@ const Reviewform = () => {
     ]).start();
   };
 
+  const addReview = async () => {
+    try {
+      const originalString = props.productId;
+      const prefix = 'gid://shopify/Product/';
+      let productId = originalString.replace(prefix, ''); // Extract product ID
+  
+   const data=   await handleRating({
+        star: ratingStar, 
+        reviewTitle: reviewData.reviewTitle, 
+        reviewDes: reviewData.reviewMessage, 
+        productId: productId,
+        email: userDetails?.email,
+        name: userDetails?.displayName,
+        
+      });
+     
+      props?.setmodelvisible(!data)
+
+    } catch (error) {
+      console.error('Error adding review:', error);
+    }
+  };
+
+
+
+
   const handlePress = () => {
     Animated.sequence([
       Animated.timing(buttonAnimatedValue, {
@@ -81,6 +113,9 @@ const Reviewform = () => {
         shake('reviewMessage');
         return;
       } else {
+
+   
+
         addReview();
       }
       // navigation.navigate('Appoiment');
@@ -89,6 +124,10 @@ const Reviewform = () => {
 
   return (
     <View style={[styles.reviewForm, {paddingHorizontal: 30}]}>
+<TouchableOpacity onPress={()=>props?.setmodelvisible(false)} style={{justifyContent:'flex-end',alignSelf:'flex-end'}}>
+<Text style={styles.formHeadText1}>+</Text>
+</TouchableOpacity>
+
       <Text style={styles.formHeadText}>Review Form</Text>
       <Text style={styles.lableText}>Title</Text>
       <Animated.View
@@ -118,7 +157,7 @@ const Reviewform = () => {
               minValue={1}
               tintColor="#FFFFFF"
               ratingCount={5}
-              imageSize={20}
+              imageSize={17}
               ratingBackgroundColor={'#D8E3E980'}
               startingValue={ratingStar}
               onFinishRating={handleRatingChange}
@@ -146,7 +185,7 @@ const Reviewform = () => {
       <Animated.View style={[{transform: [{scale: buttonAnimatedValue}]}]}>
         <TouchableOpacity
           style={styles.submitBtn}
-          onPress={handlePress}
+          onPress={()=> handlePress()}
           activeOpacity={1}>
           <Text style={styles.btext1}>SUBMIT</Text>
         </TouchableOpacity>

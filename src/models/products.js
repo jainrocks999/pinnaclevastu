@@ -29,10 +29,8 @@ export const getProductRecomendation = async productId => {
             );
           }
         } else {
-          console.log('No valid JSON string to parse for product id', product?.id);
         }
     
-        // Return the updated product while preserving all other data
         return {
           ...product,
           review: parsedReview,
@@ -40,9 +38,7 @@ export const getProductRecomendation = async productId => {
       })
     );
     
-    console.log('Updated Products:', updatedProducts);
     
-    // Return the entire data object with the updated productRecommendations
     return {
       ...response.data.data,
       productRecommendations: updatedProducts,
