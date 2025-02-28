@@ -152,8 +152,10 @@ export default StyleSheet.create({
   },
   listItem: {
     flexDirection: 'row',
-    paddingVertical: 5,
+    paddingVertical: 0,
     alignSelf: 'center',
+    marginTop:10,
+    
   },
 
   listItemText: {
@@ -286,7 +288,7 @@ export default StyleSheet.create({
     width: '100%',
     height: wp(13),
     borderRadius: 10,
-    marginTop: hp(1),
+    marginTop: hp(1.2),
     shadowColor: '#ad3803',
     shadowOffset: {width: 0, height: 6},
     shadowOpacity: 0.8,

@@ -8,17 +8,23 @@ export default StyleSheet.create({
 
 reviewForm: {
     backgroundColor: '#F1F1F1',
-    paddingVertical: 20,
+    paddingVertical: 10,
     // paddingHorizontal: 30,
     gap: 10,
-    borderRadius:10,
-    marginTop:10
+    
   },
   formHeadText: {
     fontSize: fontSize.Eighteen,
     fontFamily:'Poppins-Medium',
     textAlign: 'center',
     color:colors.heading,
+  },
+  formHeadText1:{
+    fontSize: fontSize.Twentysix,
+    fontFamily:'Poppins-Medium',
+    // textAlign: 'center',
+    color:colors.heading,
+    transform: [{rotate: '45deg'}],
   },
   textInputContainer: {
     backgroundColor:colors.white,

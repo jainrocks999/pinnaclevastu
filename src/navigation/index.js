@@ -26,6 +26,7 @@ import {loadCartData} from '../Redux/Slice/CartSlice';
 import PaymentCourse from '../Screen/Main/paymentInformation/payment_Course';
 import PaymentAppointment from '../Screen/Main/paymentInformation/payment_Appointment';
 import CartWeb from '../Screen/Main/paymentInformation/CartWeb';
+import Searchlist from '../Screen/Main/SearchList';
 const Stack = createNativeStackNavigator();
 
 function Navigate() {
@@ -96,6 +97,8 @@ function Navigate() {
         <Stack.Screen name="Address" component={Address} />
         <Stack.Screen name="AddressList" component={AddressList} />
         <Stack.Screen name="CourseDetail" component={CourseDetail} />
+        <Stack.Screen name="Searchlist" component={Searchlist} />
+        
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -41,8 +41,8 @@ import {
   fetchExtraCollectonHome,
 } from '../../../Redux/Slice/HomeBannerSlice';
 import {addToCart} from '../../../Redux/Slice/CartSlice';
-
-
+import {getUserDetails} from '../../../Redux/Slice/loginSlice';
+import { getDrawerData } from '../../../Redux/Slice/drawerSlice';
 let backPress = 0;
 const HomeScreen = () => {
   const flatListRef = useRef(null);
@@ -256,6 +256,7 @@ const HomeScreen = () => {
       const userStatus = await AsyncStorage.getItem('user_data');
       const userData = userStatus ? JSON.parse(userStatus) : null;
       const userType = userData?.user_type;
+          dispatch(getUserDetails(userData?.shopify_access_token));
       setUserType(userType);
       if (userType) {
         if (userDetail.length === 0) {
@@ -738,9 +739,11 @@ const HomeScreen = () => {
       {isLoading ? <Loader /> : null}
       <ScrollView contentContainerStyle={styles.servicesContainer}>
         <View style={styles.searchContainer}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <TouchableOpacity
-              hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+          <TouchableOpacity
+          onPress={()=>navigation.navigate('Searchlist')}
+          hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
+           style={{flexDirection: 'row', alignItems: 'center'}}>
+            <TouchableOpacity >
               <Image source={require('../../../assets/image/SearchIcon.png')} />
             </TouchableOpacity>
             <TextInput
@@ -748,9 +751,10 @@ const HomeScreen = () => {
               value={displayedText1}
               onChangeText={val => setDisplayedText1(val)}
               placeholder={displayedText}
+              editable={false}
               placeholderTextColor={colors.searchBarTextColor}
             />
-          </View>
+          </TouchableOpacity>
           {/* <TouchableOpacity
             style={styles.filterBtn}
             hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>

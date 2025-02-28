@@ -412,6 +412,69 @@ export const customerLogoutQuerry = `mutation customerAccessTokenDelete($custome
     }
   }
 }`;
+
+
+export const menuQuerry = `query GetMenu($handle: String!) {
+  menu(handle: $handle) {
+    handle
+    id
+    title
+    items {
+      items {
+        id
+        title
+        resource {
+          __typename
+        }
+        resourceId
+        url
+        type
+      }
+      title
+      type
+      resource {
+        __typename
+      }
+      url
+    }
+  }
+}
+`;
+
+export const policyQuerry = `{
+  shop {
+ 
+   refundPolicy{
+    id
+    url
+    title
+    handle
+   }
+   privacyPolicy{
+    id
+    url
+    title
+    handle
+   }
+   shippingPolicy{
+    id
+    url
+    title
+    handle
+   }
+   termsOfService{
+    id
+    url
+    title
+    handle
+   }
+  }
+  
+}`;
+
+
+
+
 //https://cdn.shopify.com/s/files/1/0293/6448/6192/files/image_7297bb59-748b-4320-9e7c-7906048c0417.png?v=1661434833
 export const GraphQlConfig = data => {
   return {

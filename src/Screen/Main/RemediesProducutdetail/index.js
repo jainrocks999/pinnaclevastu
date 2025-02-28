@@ -10,6 +10,7 @@ import {
   Share as SocialShare,
   Pressable,
   BackHandler,
+  Alert,
 } from 'react-native';
 import styles from './styles';
 import {colors} from '../../../Component/colors';
@@ -30,6 +31,8 @@ import {convertVariantId} from '../../../common/shopifyConverter';
 import {fetchProductData} from '../../../Redux/Api';
 import {getProductRecomendation} from '../../../models/products';
 import {fetchProduct, InitProduct} from '../../../Redux/Slice/productSlice';
+import { getReviewList } from '../../../Redux/Api/Ratings';
+import Reviewform from '../../../Component/ReviewForm';
 
 const RemediesProductDetail = ({route}) => {
   const product = route?.params?.itemId;
@@ -49,6 +52,11 @@ const RemediesProductDetail = ({route}) => {
   const [similardata, setSimilarData] = useState([]);
   const [topBestSellerData, setTopBestSellerData] = useState([]);
   const [isMetaDataLoading, setIsMetaDataLoading] = useState(false);
+  const [modelvisible,setmodelvisible]=useState(false)
+  const [review ,setReview]=useState('')
+  const [reviewlist,setReviewList]=useState('');
+  const [isDataLoading, setIsDataLoading] = useState(true);
+
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
   const animation = useRef(new Animated.Value(0)).current;
   const [buttonText, setButtonText] = useState('ADD TO CART');
@@ -76,6 +84,8 @@ const RemediesProductDetail = ({route}) => {
   useEffect(() => {
     handleApi(route?.params?.itemId);
     setSimilarData([]);
+    setReviewList('');
+    setmodelvisible(false)
   }, [route?.params?.itemId]);
 
   useEffect(() => {
@@ -692,7 +702,8 @@ const RemediesProductDetail = ({route}) => {
                   <View style={styles.dividerView} />
                 </>
               )}
-              <Text
+              <Text onPress={()=>setmodelvisible(true)}
+             hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
                 style={[
                   styles.third1,
                   {
@@ -954,6 +965,7 @@ const RemediesProductDetail = ({route}) => {
           </View>
         </>
       ) : null}
+      
     </View>
   );
 };

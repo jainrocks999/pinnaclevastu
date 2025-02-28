@@ -239,7 +239,7 @@ export const getUserDetails = customerAccessToken => {
       axios
         .request(GraphQlConfig(data))
         .then(async response => {
-          console.log('this is userDetails', JSON.stringify(response.data));
+        
           const data = response.data.data?.customer;
           if (data) {
             await AsyncStorage.setItem('USERINFO', JSON.stringify(data));

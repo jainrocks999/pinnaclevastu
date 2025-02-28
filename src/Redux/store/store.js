@@ -10,6 +10,8 @@ import ProductSclice from "../Slice/productSlice";
 import LoginSclice from "../Slice/loginSlice";
 import countryStateReducer from '../Slice/countryStateSlice';
 import HomeBannerReducer from '../Slice/HomeBannerSlice';
+import DrawerReducer from '../Slice/drawerSlice';
+import searchSlice from '../Slice/searchSlice';
 const store = configureStore({
   reducer: {
     Auth: authSlice,
@@ -23,6 +25,9 @@ const store = configureStore({
     Product:ProductSclice,
     Login:LoginSclice,
     countryState: countryStateReducer,
+    drawerSlice:DrawerReducer,
+    search: searchSlice,
+
 
   },
 });
