@@ -140,6 +140,7 @@ const MyOrder = ({route}) => {
           }
           style={styles.productImage}
         />
+        {console.log(item, 'venom')}
         <View style={styles.productDetails}>
           <Text style={styles.productName}>
             {item?.node?.lineItems?.edges[0].node?.variant?.product?.title}
@@ -252,8 +253,7 @@ const MyOrder = ({route}) => {
               index: 0,
               routes: [{name: 'UserProfile'}],
             })
-          }
-        >
+          }>
           <Image
             style={styles.backBtn}
             source={require('../../../assets/drawer/Back1.png')}
@@ -306,7 +306,7 @@ const MyOrder = ({route}) => {
 
         {selectedTab == 'Remedies' ? (
           <FlatList
-            data={product}
+            data={product ? [...product].reverse() : []}
             keyExtractor={(item, index) => index}
             scrollEnabled={false}
             renderItem={renderOrderItem}

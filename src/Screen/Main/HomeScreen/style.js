@@ -756,19 +756,19 @@ export default StyleSheet.create({
     fontSize: fontSize.Eighteen,
     color: '#143F71',
     fontFamily: 'Poppins-Medium',
+    textTransform:'capitalize'
   },
   blogCardContantText: {
     color: '#001227',
     fontSize: fontSize.Fifteen,
     fontFamily: 'Poppins-Regular',
-    width: '90%',
   },
   blogCardBtnText: {
     color: colors.white,
     fontSize: fontSize.Twelve,
     fontFamily: 'Poppins-Medium',
     color: colors.orange,
-    marginTop: 20,
+    marginTop: 10,
     borderRadius: 6,
   },
   bannerImg2: {

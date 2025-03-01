@@ -37,7 +37,10 @@ import {consultationDetail1} from '../../../Redux/Slice/ConsultancySlice';
 import {Dropdown} from 'react-native-element-dropdown';
 import WebView from 'react-native-webview';
 import {SvgUri} from 'react-native-svg';
-import {fetchExtraCollectonHome} from '../../../Redux/Slice/HomeBannerSlice';
+import {
+  fetchBlogs,
+  fetchExtraCollectonHome,
+} from '../../../Redux/Slice/HomeBannerSlice';
 import {addToCart} from '../../../Redux/Slice/CartSlice';
 import {getUserDetails} from '../../../Redux/Slice/loginSlice';
 import {getDrawerData} from '../../../Redux/Slice/drawerSlice';
@@ -127,7 +130,11 @@ const HomeScreen = () => {
       );
     }
   };
-
+  const formatDate = dateString => {
+    const date = new Date(dateString);
+    const options = {year: 'numeric', month: 'long', day: 'numeric'};
+    return date.toLocaleDateString('en-US', options);
+  };
   const getYouTubeEmbedUrl1 = url => {
     const videoId = url.split('v=')[1]?.split('&')[0];
     return `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=1&showinfo=0&rel=0&modestbranding=1&fs=1`;
@@ -1599,7 +1606,7 @@ const HomeScreen = () => {
             </TouchableOpacity>
           </View>
           <FlatList
-            data={Homebanner?.remedies?.slice(0, 5)}
+            data={homeData?.featured_blogs}
             keyExtractor={(item, index) => index?.toString()}
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -1610,7 +1617,11 @@ const HomeScreen = () => {
             renderItem={({item}) => (
               <TouchableOpacity style={styles.blogCard}>
                 <Image
-                  source={require('../../../assets/image/Scr2.png')}
+                  source={
+                    item?.node?.image?.url
+                      ? {uri: item?.node?.image?.url}
+                      : require('../../../assets/otherApp/demo3.png')
+                  }
                   style={{
                     borderTopLeftRadius: 10,
                     borderTopRightRadius: 10,
@@ -1620,16 +1631,24 @@ const HomeScreen = () => {
                 />
                 <View style={styles.cardInfo}>
                   {isLiveCourse ? (
-                    <Text style={styles.DateText}>{'January 23, 2024'}</Text>
+                    <Text style={styles.DateText}>
+                      {formatDate(item?.node?.publishedAt)}
+                    </Text>
                   ) : null}
                   <Text style={styles.blogCardHeadText}>
-                    {'Removewat Download Windows 10 ➤ Activate Your OS Today'}
+                    {item?.node?.handle?
+                     item?.node?.handle?.length > 55
+                        ? `${item?.node?.handle?.substring(0, 55)}...`
+                        : item?.node?.handle
+                      : ' '}
                   </Text>
 
                   <Text style={styles.blogCardContantText}>
-                    When we’re setting up our computers, one of the biggest
-                    hassles can be dealing with Windows activation
-                    notifications. It feels... like every time we turn around,
+                    {item?.node?.content
+                      ? item?.node?.content?.length > 100
+                        ? `${item?.node?.content?.substring(0, 100)}...`
+                        : item?.node?.content
+                      : ' '}
                   </Text>
 
                   <Text style={styles.blogCardBtnText}>{'View Details >'}</Text>
