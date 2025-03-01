@@ -21,7 +21,7 @@ const initialState = {
   best_Products_section: [],
   best_Products: [],
   featured_blog_section: [],
-  featured_blog: [],
+  featured_blogs: [],
   courses_section: [],
   course: [],
 };
@@ -72,6 +72,11 @@ export const HomeBannerSlice = createSlice({
       state.error = '';
       state.best_Products = action.payload;
     },
+    GET_BLOGS_SUCCESS: (state, action) => {
+      state.isExtraDataLoading = false;
+      state.error = '';
+      state.featured_blogs = action.payload;
+    },
     GET_SEARCH_SUCCESS: (state, action) => {
       state.error = '';
       state.returnSearchResult = action.payload.returnSearchResult;
@@ -88,6 +93,7 @@ export const {
   GET_EXTRADATA_FAILED,
   GET_COURSES_SUCCESS,
   GET_BEST_PROD_SUCCESS,
+  GET_BLOGS_SUCCESS,
   GET_SEARCH_SUCCESS,
 } = HomeBannerSlice.actions;
 
@@ -502,6 +508,7 @@ export const modifyHomeObject = async (currentval, dispatch) => {
                 mob_background_image: replaceBgImage,
               },
             };
+            await dispatch(fetchBlogs(featured_blog_section?.content?.blog));
           }
         }
       }
@@ -668,7 +675,6 @@ export const getSimilarProductMetafieldValue = async id => {
       variables,
     });
     const response = await axios.request(GraphQlAdminConfig(data));
-    console.log('GraphQL Request Data:', response.data);
     if (response?.data?.errors) {
       console.error('GraphQL Errors:', response.data.errors);
       return null;
@@ -678,4 +684,48 @@ export const getSimilarProductMetafieldValue = async id => {
     console.error('Error fetching similar product metafield:', err);
     throw err;
   }
+};
+
+export const fetchBlogs = collectStr => {
+  return async dispatch => {
+    try {
+      dispatch(GET_EXTRADATA_LOADING());
+      const query = `
+    query {
+       blogByHandle(handle: "${collectStr}") {
+        id
+       title
+        articles(first: 5) {
+        edges {
+          node {
+            id
+          title
+          excerpt
+          content
+          publishedAt
+          authorV2 {
+            name
+            }
+          image {
+            url
+            altText
+          }
+          handle
+        }
+        }
+        }
+        }
+        }`;
+      const response = await axios.request(
+        GraphQlConfig(JSON.stringify({query})),
+      );
+      const blogs = response?.data?.data?.blogByHandle?.articles?.edges;
+      dispatch(GET_BLOGS_SUCCESS(blogs));
+    } catch (error) {
+      console.log(error, 'Blogs Error !');
+      dispatch(
+        GET_EXTRADATA_FAILED({error: error.message || 'An error occurred'}),
+      );
+    }
+  };
 };
