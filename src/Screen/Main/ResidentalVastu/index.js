@@ -44,6 +44,7 @@ const ResidentalScreen = ({route}) => {
 
   const placeholderText = 'Search';
   const [displayedText, setDisplayedText] = useState('');
+  // console.log(services_name, 'venom');
 
   useEffect(() => {
     apicall();
@@ -53,7 +54,7 @@ const ResidentalScreen = ({route}) => {
     await dispatch(
       getCosultationListApi({
         url: `fetch-franchise-list?franchise_services_name=${
-          services_name ? services_name : ''
+          services_name || "${''}"
         }`,
       }),
     );
@@ -327,7 +328,7 @@ const ResidentalScreen = ({route}) => {
           </TouchableOpacity>
         </Animated.View>
 
-        {CosultationListData.length !== 0 ? (
+        {CosultationListData?.length !== 0 ? (
           <FlatList
             data={CosultationListData}
             renderItem={renderItem3}

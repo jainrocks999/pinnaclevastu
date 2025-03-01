@@ -209,7 +209,12 @@ const Drawer = props => {
               },
             ]}>
             {item.items.map(subItem => (
-              <Text key={subItem.id} style={styles.listText}>
+              <Text
+                key={subItem.id}
+                style={[
+                  styles.listText,
+                  {marginLeft: item.title == 'Courses' ? 40 : 10},
+                ]}>
                 {subItem.title}
               </Text>
             ))}
@@ -333,6 +338,7 @@ const Drawer = props => {
             <Image source={require('../../assets/drawer/right.png')} />
           </TouchableOpacity> */}
         </View>
+
         <FlatList
           data={nonEmptyItems}
           keyExtractor={(item, index) => index.toString()}
