@@ -40,7 +40,7 @@ const SignUpPage = ({route}) => {
     setModalVisible(!isModalVisible);
   };
 
-  const [date, setDate] = useState('');
+  const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
 
   const [shakeAnimation, setShakeAnimation] = useState({

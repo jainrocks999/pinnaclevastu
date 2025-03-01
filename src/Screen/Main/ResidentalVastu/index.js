@@ -54,7 +54,7 @@ const ResidentalScreen = ({route}) => {
     await dispatch(
       getCosultationListApi({
         url: `fetch-franchise-list?franchise_services_name=${
-          services_name || "${''}"
+          services_name || "all"
         }`,
       }),
     );
