@@ -215,7 +215,7 @@ const PaymentAppointment = ({route}) => {
         reason: error?.error?.reason || 'Transaction failed',
         code: error.code,
       };
-      createbyord(transactionDetails);
+      // createbyord(transactionDetails);
     }
   };
   return (

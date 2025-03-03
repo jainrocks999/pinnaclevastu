@@ -213,4 +213,10 @@ export default StyleSheet.create({
     color: 'red',
     textDecorationLine: 'underline',
   },
+  errorText: {
+    marginTop: 5,
+    fontSize: fontSize.Twelve,
+    fontFamily: 'Poppins-Regular',
+    color: 'red',
+  },
 });

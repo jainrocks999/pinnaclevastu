@@ -167,4 +167,10 @@ export default StyleSheet.create({
     fontFamily: 'Poppins-Regular',
     color: colors.heading,
   },
+  errorText: {
+    marginTop: 5,
+    fontSize: fontSize.Twelve,
+    fontFamily: 'Poppins-Regular',
+    color: 'red',
+  },
 });

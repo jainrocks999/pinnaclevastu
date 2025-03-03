@@ -28,7 +28,7 @@ export default StyleSheet.create({
   },
   inputmain: {
     paddingHorizontal: 15,
-    paddingVertical: 10,
+    paddingTop: 10,
   },
   title1: {
     marginTop: hp(1),
@@ -76,6 +76,12 @@ export default StyleSheet.create({
     fontSize: fontSize.Sixteen,
     fontFamily: 'Poppins-Regular',
     color: colors.heading,
+  },
+  errorText: {
+    marginTop: 5,
+    fontSize: fontSize.Twelve,
+    fontFamily: 'Poppins-Regular',
+    color: 'red',
   },
   uppload: {
     fontSize: fontSize.Twelve,

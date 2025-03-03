@@ -28,7 +28,6 @@ const SignUpPage = ({route}) => {
 
   const dispatch = useDispatch();
   const [visible, setVisible] = useState(false);
-
   const isLoading = useSelector(state => state.Auth?.loading);
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -50,6 +49,15 @@ const SignUpPage = ({route}) => {
     cityPincode: new Animated.Value(0),
     gender: new Animated.Value(0),
     date: new Animated.Value(0),
+  });
+
+  const [validationError, setValidationError] = useState({
+    name: false,
+    email: false,
+    mobile: false,
+    gender: false,
+    cityPincode: false,
+    date: false,
   });
 
   const [formData, setFormData] = useState({
@@ -152,6 +160,7 @@ const SignUpPage = ({route}) => {
 
   const handleInputChange = (name, value) => {
     setFormData({...formData, [name]: value});
+    setValidationError({...validationError, [name]: false});
 
     if (name === 'mobile') {
       const numericValue = value.replace(/[^0-9]/g, '');
@@ -159,18 +168,21 @@ const SignUpPage = ({route}) => {
 
       mobileRegex.test(numericValue)
         ? setFormData({...formData, mobile: numericValue})
-        : Toast.show('Invalid mobile number.');
+        : (Toast.show('Invalid mobile number.'),
+          setValidationError({...validationError, mobile: true}));
     } else if (name === 'cityPincode') {
       const numericValue = value.replace(/[^0-9]/g, '');
       const pinCodeRegex = /^[0-9]{0,6}$/;
 
       pinCodeRegex.test(numericValue)
         ? setFormData({...formData, cityPincode: numericValue})
-        : Toast.show('Invalid city pincode.');
+        : (Toast.show('Invalid city pincode.'),
+          setValidationError({...validationError, cityPincode: true}));
     }
   };
 
   const shake = field => {
+    setValidationError({...validationError, [field]: true});
     Vibration.vibrate(100);
     Animated.sequence([
       Animated.timing(shakeAnimation[field], {
@@ -235,7 +247,6 @@ const SignUpPage = ({route}) => {
       }),
     ]).start();
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-
     if (formData.name === '') {
       shake('name');
       scrollToField('name');
@@ -320,7 +331,12 @@ const SignUpPage = ({route}) => {
         <View style={{paddingHorizontal: 5}}>
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Full Name*</Text>
-            <View style={[styles.input, styles.inputShadow]}>
+            <View
+              style={[
+                styles.input,
+                styles.inputShadow,
+                validationError.name && {borderColor: 'red'},
+              ]}>
               <Animated.View
                 style={[{transform: [{translateX: shakeAnimation.name}]}]}>
                 <TextInput
@@ -332,10 +348,21 @@ const SignUpPage = ({route}) => {
                 />
               </Animated.View>
             </View>
+
+            {validationError.name && (
+              <Text style={styles.errorText}>
+                Please enter your valid name.
+              </Text>
+            )}
           </View>
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Email*</Text>
-            <View style={[styles.input, styles.inputShadow]}>
+            <View
+              style={[
+                styles.input,
+                styles.inputShadow,
+                validationError.email && {borderColor: 'red'},
+              ]}>
               <Animated.View
                 style={[{transform: [{translateX: shakeAnimation.email}]}]}>
                 <TextInput
@@ -348,10 +375,20 @@ const SignUpPage = ({route}) => {
                 />
               </Animated.View>
             </View>
+            {validationError.email && (
+              <Text style={styles.errorText}>
+                Please enter your valid email.
+              </Text>
+            )}
           </View>
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Mobile Number*</Text>
-            <View style={[styles.input, styles.inputShadow]}>
+            <View
+              style={[
+                styles.input,
+                styles.inputShadow,
+                validationError.mobile && {borderColor: 'red'},
+              ]}>
               <Animated.View
                 style={[{transform: [{translateX: shakeAnimation.mobile}]}]}>
                 <TextInput
@@ -365,6 +402,11 @@ const SignUpPage = ({route}) => {
                 />
               </Animated.View>
             </View>
+            {validationError.mobile && (
+              <Text style={styles.errorText}>
+                Please enter your valid mobile number.
+              </Text>
+            )}
           </View>
 
           <View style={styles.inputmain}>
@@ -375,11 +417,13 @@ const SignUpPage = ({route}) => {
                 style={[
                   styles.input,
                   styles.inputShadow,
+
                   {
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                     alignItems: 'center',
                   },
+                  validationError.gender && {borderColor: 'red'},
                 ]}
                 data={data}
                 labelField="label"
@@ -393,7 +437,10 @@ const SignUpPage = ({route}) => {
                 selectedTextStyle={styles.selectedText}
                 itemTextStyle={styles.itemText}
                 value={gender}
-                onChange={text => setGender(text.value)}
+                onChange={text => (
+                  setGender(text.value),
+                  setValidationError({...validationError, gender: false})
+                )}
                 renderRightIcon={() => (
                   <Image
                     style={{
@@ -405,10 +452,18 @@ const SignUpPage = ({route}) => {
                 )}
               />
             </Animated.View>
+            {validationError.gender && (
+              <Text style={styles.errorText}>Please select your gender.</Text>
+            )}
           </View>
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Current City Pincode*</Text>
-            <View style={[styles.input, styles.inputShadow]}>
+            <View
+              style={[
+                styles.input,
+                styles.inputShadow,
+                validationError.cityPincode && {borderColor: 'red'},
+              ]}>
               <Animated.View
                 style={[
                   {transform: [{translateX: shakeAnimation.cityPincode}]},
@@ -424,6 +479,11 @@ const SignUpPage = ({route}) => {
                 />
               </Animated.View>
             </View>
+            {validationError.cityPincode && (
+              <Text style={styles.errorText}>
+                Please enter your valid city pincode.
+              </Text>
+            )}
           </View>
 
           <View style={styles.inputmain}>
@@ -440,6 +500,7 @@ const SignUpPage = ({route}) => {
                     justifyContent: 'space-between',
                     alignItems: 'center',
                   },
+                  validationError.date && {borderColor: 'red'},
                 ]}>
                 <Text
                   style={[
@@ -470,6 +531,11 @@ const SignUpPage = ({route}) => {
               }}
               onCancel={() => setOpen(false)}
             />
+            {validationError.date && (
+              <Text style={styles.errorText}>
+                Please enter your valid date of birth.
+              </Text>
+            )}
           </View>
 
           <View style={styles.inputmain}>

@@ -84,6 +84,27 @@ const SignUpFranchise = () => {
     selectedImage: new Animated.Value(0),
   });
 
+  const [validationError, setValidationError] = useState({
+    name: false,
+    email: false,
+    mobile: false,
+    date: false,
+    gender: false,
+    fieldOfExp: false,
+    yearOfExp: false,
+    specialization: false,
+    charges: false,
+    language: false,
+
+    country: false,
+    stateName: false,
+    city: false,
+    cityPincode: false,
+    currentLocation: false,
+    services: false,
+    servicesCharges: false,
+  });
+
   const [formData, setFormData] = useState({
     name: userDetail.name || '',
     email: userDetail.email || '',
@@ -114,10 +135,8 @@ const SignUpFranchise = () => {
 
   const addExtraInputs = () => {
     Keyboard.dismiss();
-    if (validateInputs()) {
-      setServicesFields([...servicesFields, {serviceId: '', charges: ''}]);
-      shakeAnimationServices.push(new Animated.Value(0));
-    }
+    setServicesFields([...servicesFields, {serviceId: '', charges: ''}]);
+    shakeAnimationServices.push(new Animated.Value(0));
   };
 
   const handleExtraInputChange = (index, field, value) => {
@@ -127,15 +146,38 @@ const SignUpFranchise = () => {
   };
 
   const validateInputs = () => {
-    for (let i = 0; i < servicesFields.length; i++) {
-      if (
-        servicesFields[i].serviceId === '' ||
-        servicesFields[i].charges === ''
-      ) {
-        shake(i);
-        return false;
-      }
+    // if (
+    //   servicesFields[0].serviceId === '' ||
+    //   servicesFields[0].charges === '' ||
+    //   servicesFields[0].charges <= 0
+    // ) {
+    //   shake(0);
+    //   return false;
+    // }
+    if (servicesFields[0].serviceId === '') {
+      shake(0);
+      setValidationError({...validationError, services: true});
+      return false;
     }
+    if (servicesFields[0].charges === '' || servicesFields[0].charges <= 0) {
+      shake(0);
+      setValidationError({...validationError, servicesCharges: true});
+      return false;
+    }
+    // if (
+    //   servicesFields[0].serviceId !== '' ||
+    //   servicesFields[0].charges !== ''
+    // ) {
+    //   for (let i = 1; i < servicesFields.length; i++) {
+    //     if (
+    //       servicesFields[i].serviceId !== '' ||
+    //       servicesFields[i].charges !== ''
+    //     ) {
+    //       shake(i);
+    //       return false;
+    //     }
+    //   }
+    // }
     return true;
   };
 
@@ -208,26 +250,29 @@ const SignUpFranchise = () => {
 
   const handleInputChange = (name, value) => {
     setFormData({...formData, [name]: value});
-
+    setValidationError({...validationError, [name]: false});
     if (name === 'mobile') {
       const numericValue = value.replace(/[^0-9]/g, '');
       const mobileRegex = /^[0-9]{0,10}$/;
 
       mobileRegex.test(numericValue)
         ? setFormData({...formData, mobile: numericValue})
-        : Toast.show('Invalid mobile number.');
+        : (Toast.show('Invalid mobile number.'),
+          setValidationError({...validationError, mobile: true}));
     } else if (name === 'cityPincode') {
       const numericValue = value.replace(/[^0-9]/g, '');
       const pinCodeRegex = /^[0-9]{0,6}$/;
 
       pinCodeRegex.test(numericValue)
         ? setFormData({...formData, cityPincode: numericValue})
-        : Toast.show('Invalid city pincode.');
+        : (Toast.show('Invalid city pincode.'),
+          setValidationError({...validationError, cityPincode: true}));
     }
   };
 
   const shake = field => {
     Vibration.vibrate(100);
+    setValidationError({...validationError, [field]: true});
     Animated.sequence([
       Animated.timing(shakeAnimation[field] || shakeAnimationServices[field], {
         toValue: 5,
@@ -349,6 +394,7 @@ const SignUpFranchise = () => {
       scrollToField('language');
       return;
     } else if (!validateInputs()) {
+      console.log(validateInputs(), 'Venom');
       return;
     } else if (formData.country === '') {
       shake('country');
@@ -533,7 +579,12 @@ const SignUpFranchise = () => {
         <View style={{paddingHorizontal: 5}}>
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Name*</Text>
-            <View style={[styles.input, styles.inputShadow]}>
+            <View
+              style={[
+                styles.input,
+                styles.inputShadow,
+                validationError.name && {borderColor: 'red'},
+              ]}>
               <Animated.View
                 style={[{transform: [{translateX: shakeAnimation.name}]}]}>
                 <TextInput
@@ -545,10 +596,20 @@ const SignUpFranchise = () => {
                 />
               </Animated.View>
             </View>
+            {validationError.name && (
+              <Text style={styles.errorText}>
+                Please enter your valid name.
+              </Text>
+            )}
           </View>
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Email*</Text>
-            <View style={[styles.input, styles.inputShadow]}>
+            <View
+              style={[
+                styles.input,
+                styles.inputShadow,
+                validationError.email && {borderColor: 'red'},
+              ]}>
               <Animated.View
                 style={[{transform: [{translateX: shakeAnimation.email}]}]}>
                 <TextInput
@@ -561,10 +622,20 @@ const SignUpFranchise = () => {
                 />
               </Animated.View>
             </View>
+            {validationError.email && (
+              <Text style={styles.errorText}>
+                Please enter your valid email.
+              </Text>
+            )}
           </View>
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Phone*</Text>
-            <View style={[styles.input, styles.inputShadow]}>
+            <View
+              style={[
+                styles.input,
+                styles.inputShadow,
+                validationError.mobile && {borderColor: 'red'},
+              ]}>
               <Animated.View
                 style={[{transform: [{translateX: shakeAnimation.mobile}]}]}>
                 <TextInput
@@ -578,6 +649,11 @@ const SignUpFranchise = () => {
                 />
               </Animated.View>
             </View>
+            {validationError.mobile && (
+              <Text style={styles.errorText}>
+                Please enter your valid phone number.
+              </Text>
+            )}
           </View>
 
           <View style={styles.inputmain}>
@@ -594,6 +670,7 @@ const SignUpFranchise = () => {
                     justifyContent: 'space-between',
                     alignItems: 'center',
                   },
+                  validationError.date && {borderColor: 'red'},
                 ]}>
                 <Text
                   style={[
@@ -624,6 +701,11 @@ const SignUpFranchise = () => {
               }}
               onCancel={() => setOpen(false)}
             />
+            {validationError.date && (
+              <Text style={styles.errorText}>
+                Please enter your valid date of birth.
+              </Text>
+            )}
           </View>
 
           <View style={styles.inputmain}>
@@ -634,6 +716,7 @@ const SignUpFranchise = () => {
                 style={[
                   styles.input,
                   styles.inputShadow,
+                  validationError.gender && {borderColor: 'red'},
                   {
                     flexDirection: 'row',
                     justifyContent: 'space-between',
@@ -665,12 +748,20 @@ const SignUpFranchise = () => {
                 )}
               />
             </Animated.View>
+            {validationError.gender && (
+              <Text style={styles.errorText}>Please select your gender.</Text>
+            )}
           </View>
 
           <View style={{flexDirection: 'row'}}>
             <View style={[styles.inputmain, {flex: 1}]}>
               <Text style={styles.title2}>Experience in Field*</Text>
-              <View style={[styles.input, styles.inputShadow]}>
+              <View
+                style={[
+                  styles.input,
+                  styles.inputShadow,
+                  validationError.fieldOfExp && {borderColor: 'red'},
+                ]}>
                 <Animated.View
                   style={[
                     {transform: [{translateX: shakeAnimation.fieldOfExp}]},
@@ -688,7 +779,12 @@ const SignUpFranchise = () => {
 
             <View style={[styles.inputmain, {flex: 1}]}>
               <Text style={styles.title2}>Year of Experience*</Text>
-              <View style={[styles.input, styles.inputShadow]}>
+              <View
+                style={[
+                  styles.input,
+                  styles.inputShadow,
+                  validationError.yearOfExp && {borderColor: 'red'},
+                ]}>
                 <Animated.View
                   style={[
                     {transform: [{translateX: shakeAnimation.yearOfExp}]},
@@ -705,10 +801,34 @@ const SignUpFranchise = () => {
               </View>
             </View>
           </View>
+          {validationError.fieldOfExp && (
+            <Text
+              style={[
+                styles.errorText,
+                {paddingHorizontal: 15, marginTop: -5},
+              ]}>
+              Please enter a valid service name that you have experience in.
+            </Text>
+          )}
+          {validationError.yearOfExp && (
+            <Text
+              style={[
+                styles.errorText,
+                {paddingHorizontal: 15, marginTop: -5},
+              ]}>
+              Please enter a valid year of experience that you have.
+            </Text>
+          )}
+
           <View style={{flexDirection: 'row'}}>
             <View style={[styles.inputmain, {flex: 1}]}>
               <Text style={styles.title2}>Specialization*</Text>
-              <View style={[styles.input, styles.inputShadow]}>
+              <View
+                style={[
+                  styles.input,
+                  styles.inputShadow,
+                  validationError.specialization && {borderColor: 'red'},
+                ]}>
                 <Animated.View
                   style={[
                     {transform: [{translateX: shakeAnimation.specialization}]},
@@ -728,7 +848,12 @@ const SignUpFranchise = () => {
 
             <View style={[styles.inputmain, {flex: 1}]}>
               <Text style={styles.title2}>Charges*</Text>
-              <View style={[styles.input, styles.inputShadow]}>
+              <View
+                style={[
+                  styles.input,
+                  styles.inputShadow,
+                  validationError.charges && {borderColor: 'red'},
+                ]}>
                 <Animated.View
                   style={[{transform: [{translateX: shakeAnimation.charges}]}]}>
                   <TextInput
@@ -745,6 +870,25 @@ const SignUpFranchise = () => {
             </View>
           </View>
 
+          {validationError.specialization && (
+            <Text
+              style={[
+                styles.errorText,
+                {paddingHorizontal: 15, marginTop: -5},
+              ]}>
+              Please enter a valid service name that you have specialized in.
+            </Text>
+          )}
+          {validationError.charges && (
+            <Text
+              style={[
+                styles.errorText,
+                {paddingHorizontal: 15, marginTop: -5},
+              ]}>
+              Please enter a valid service's charges.
+            </Text>
+          )}
+
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Language*</Text>
             <View
@@ -752,6 +896,7 @@ const SignUpFranchise = () => {
                 styles.input,
                 styles.inputShadow,
                 {height: 'auto', paddingVertical: 5},
+                validationError.language && {borderColor: 'red'},
               ]}>
               <Animated.View
                 style={[{transform: [{translateX: shakeAnimation.language}]}]}>
@@ -773,7 +918,13 @@ const SignUpFranchise = () => {
                               ? 'checked'
                               : 'unchecked'
                           }
-                          onPress={() => handleCheckboxPress(item.value)}
+                          onPress={() => (
+                            handleCheckboxPress(item.value),
+                            setValidationError({
+                              ...validationError,
+                              language: false,
+                            })
+                          )}
                           color="#FFF"
                           uncheckedColor="#DFE7EF"
                         />
@@ -784,9 +935,26 @@ const SignUpFranchise = () => {
                 />
               </Animated.View>
             </View>
+            {validationError.language && (
+              <Text style={[styles.errorText, {marginTop: 8}]}>
+                Please select language.
+              </Text>
+            )}
           </View>
+
           <View style={styles.inputmain}>
-            <Text style={styles.title2}>Services*</Text>
+            <View style={styles.inputeLableWithBtn}>
+              <Text
+                style={[styles.title2, {marginBottom: 0, paddingVertical: 5}]}>
+                Services*
+              </Text>
+
+              <TouchableOpacity style={styles.addIconBtn}>
+                <Text style={styles.addIcon} onPress={addExtraInputs}>
+                  + Add services
+                </Text>
+              </TouchableOpacity>
+            </View>
 
             {servicesFields.map((input, index) => (
               <Animated.View
@@ -797,7 +965,13 @@ const SignUpFranchise = () => {
                 <View
                   style={{flexDirection: 'row', gap: 10, marginVertical: 10}}>
                   <Dropdown
-                    style={[styles.input, styles.inputShadow, {flex: 1}]}
+                    style={[
+                      styles.input,
+                      styles.inputShadow,
+                      {flex: 1},
+                      validationError.services &&
+                        index == 0 && {borderColor: 'red'},
+                    ]}
                     data={getFilteredServices(input.serviceId)}
                     labelField="services_name"
                     valueField="id"
@@ -813,9 +987,13 @@ const SignUpFranchise = () => {
                     selectedTextStyle={styles.selectedText}
                     itemTextStyle={styles.inputText}
                     value={input.serviceId}
-                    onChange={item =>
-                      handleExtraInputChange(index, 'serviceId', item.id)
-                    }
+                    onChange={item => (
+                      handleExtraInputChange(index, 'serviceId', item.id),
+                      setValidationError({
+                        ...validationError,
+                        services: false,
+                      })
+                    )}
                     renderRightIcon={() => (
                       <Image
                         style={{
@@ -826,35 +1004,62 @@ const SignUpFranchise = () => {
                       />
                     )}
                   />
-                  <View style={[styles.input, styles.inputShadow, {flex: 1}]}>
+                  <View
+                    style={[
+                      styles.input,
+                      styles.inputShadow,
+                      {flex: 1},
+                      validationError.servicesCharges &&
+                        index == 0 && {borderColor: 'red'},
+                    ]}>
                     <TextInput
                       style={styles.inputText}
                       placeholder="₹ charges"
                       placeholderTextColor={colors.placeholder}
                       keyboardType="numeric"
                       value={input.charges}
-                      onChangeText={text =>
-                        handleExtraInputChange(index, 'charges', text)
-                      }
+                      onChangeText={text => (
+                        handleExtraInputChange(index, 'charges', text),
+                        setValidationError({
+                          ...validationError,
+                          servicesCharges: false,
+                        })
+                      )}
                     />
                   </View>
                 </View>
               </Animated.View>
             ))}
-            <TouchableOpacity style={styles.addIconBtn}>
-              <Text style={styles.addIcon} onPress={addExtraInputs}>
-                Add more services
-              </Text>
-            </TouchableOpacity>
           </View>
-
+          {validationError.services && (
+            <Text
+              style={[
+                styles.errorText,
+                {paddingHorizontal: 15, marginTop: -8},
+              ]}>
+              Please select a service's name.
+            </Text>
+          )}
+          {validationError.servicesCharges && (
+            <Text
+              style={[
+                styles.errorText,
+                {paddingHorizontal: 15, marginTop: -8},
+              ]}>
+              Please enter a valid service's charges.
+            </Text>
+          )}
           <View style={{flexDirection: 'row'}}>
             <View style={[styles.inputmain, {flex: 1}]}>
               <Text style={styles.title2}>Country*</Text>
               <Animated.View
                 style={[{transform: [{translateX: shakeAnimation.country}]}]}>
                 <Dropdown
-                  style={[styles.input, styles.inputShadow]}
+                  style={[
+                    styles.input,
+                    styles.inputShadow,
+                    validationError.country && {borderColor: 'red'},
+                  ]}
                   data={countryOptions}
                   labelField="name"
                   valueField="id"
@@ -889,7 +1094,11 @@ const SignUpFranchise = () => {
               <Animated.View
                 style={[{transform: [{translateX: shakeAnimation.stateName}]}]}>
                 <Dropdown
-                  style={[styles.input, styles.inputShadow]}
+                  style={[
+                    styles.input,
+                    styles.inputShadow,
+                    validationError.stateName && {borderColor: 'red'},
+                  ]}
                   data={stateOptions}
                   labelField="name"
                   valueField="id"
@@ -920,13 +1129,30 @@ const SignUpFranchise = () => {
             </View>
           </View>
 
+          {validationError.country && (
+            <Text
+              style={[styles.errorText, {paddingHorizontal: 15, marginTop: 0}]}>
+              Please select your country.
+            </Text>
+          )}
+          {validationError.stateName && (
+            <Text
+              style={[styles.errorText, {paddingHorizontal: 15, marginTop: 0}]}>
+              Please select your state.
+            </Text>
+          )}
+
           <View style={{flexDirection: 'row'}}>
             <View style={[styles.inputmain, {flex: 1}]}>
               <Text style={styles.title2}>City*</Text>
               <Animated.View
-                style={[{transform: [{translateX: shakeAnimation.stateName}]}]}>
+                style={[{transform: [{translateX: shakeAnimation.city}]}]}>
                 <Dropdown
-                  style={[styles.input, styles.inputShadow]}
+                  style={[
+                    styles.input,
+                    styles.inputShadow,
+                    validationError.city && {borderColor: 'red'},
+                  ]}
                   data={cityOptions}
                   labelField="name"
                   valueField="id"
@@ -958,7 +1184,12 @@ const SignUpFranchise = () => {
 
             <View style={[styles.inputmain, {flex: 1}]}>
               <Text style={styles.title2}>City Pincode*</Text>
-              <View style={[styles.input, styles.inputShadow]}>
+              <View
+                style={[
+                  styles.input,
+                  styles.inputShadow,
+                  validationError.cityPincode && {borderColor: 'red'},
+                ]}>
                 <Animated.View
                   style={[
                     {transform: [{translateX: shakeAnimation.cityPincode}]},
@@ -978,10 +1209,26 @@ const SignUpFranchise = () => {
               </View>
             </View>
           </View>
-
+          {validationError.city && (
+            <Text
+              style={[styles.errorText, {paddingHorizontal: 15, marginTop: 0}]}>
+              Please select your city.
+            </Text>
+          )}
+          {validationError.cityPincode && (
+            <Text
+              style={[styles.errorText, {paddingHorizontal: 15, marginTop: 0}]}>
+              Please enter your valid city pincode.
+            </Text>
+          )}
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Current Location*</Text>
-            <View style={[styles.input, styles.inputShadow]}>
+            <View
+              style={[
+                styles.input,
+                styles.inputShadow,
+                validationError.currentLocation && {borderColor: 'red'},
+              ]}>
               <Animated.View
                 style={[
                   {transform: [{translateX: shakeAnimation.currentLocation}]},
@@ -997,6 +1244,11 @@ const SignUpFranchise = () => {
                 />
               </Animated.View>
             </View>
+            {validationError.currentLocation && (
+              <Text style={styles.errorText}>
+                Please enter your valid current location.
+              </Text>
+            )}
           </View>
 
           <View style={styles.inputmain}>

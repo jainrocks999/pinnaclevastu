@@ -44,6 +44,15 @@ const EditProfile = () => {
 
   const [isModalVisible, setModalVisible] = useState(false);
 
+  const [validationError, setValidationError] = useState({
+    name: false,
+    email: false,
+    mobile: false,
+    gender: false,
+    cityPincode: false,
+    date: false,
+  });
+
   const [formData, setFormData] = useState({
     name: userDetail.name,
     email: userDetail.email,
@@ -197,6 +206,7 @@ const EditProfile = () => {
 
   const handleInputChange = (name, value) => {
     setFormData({...formData, [name]: value});
+    setValidationError({...validationError, [name]: false});
 
     if (name === 'mobile') {
       const numericValue = value.replace(/[^0-9]/g, '');
@@ -204,18 +214,21 @@ const EditProfile = () => {
 
       mobileRegex.test(numericValue)
         ? setFormData({...formData, mobile: numericValue})
-        : Toast.show('Invalid mobile number.');
+        : (Toast.show('Invalid mobile number.'),
+          setValidationError({...validationError, mobile: true}));
     } else if (name === 'cityPincode') {
       const numericValue = value.replace(/[^0-9]/g, '');
       const pinCodeRegex = /^[0-9]{0,6}$/;
 
       pinCodeRegex.test(numericValue)
         ? setFormData({...formData, cityPincode: numericValue})
-        : Toast.show('Invalid city pincode.');
+        : (Toast.show('Invalid city pincode.'),
+          setValidationError({...validationError, [name]: true}));
     }
   };
 
   const shake = field => {
+    setValidationError({...validationError, [field]: true});
     Vibration.vibrate(100);
     Animated.sequence([
       Animated.timing(shakeAnimation[field], {
@@ -372,20 +385,29 @@ const EditProfile = () => {
           <Animated.View
             style={[{transform: [{translateX: shakeAnimation.name}]}]}>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                validationError.name && {borderColor: 'red'},
+              ]}
               placeholder="Name"
               placeholderTextColor={colors.placeholder}
               value={formData.name}
               onChangeText={text => handleInputChange('name', text)}
             />
           </Animated.View>
+          {validationError.name && (
+            <Text style={styles.errorText}>Please enter your valid name.</Text>
+          )}
         </View>
         <View style={styles.inputmain}>
           <Text style={styles.title2}>Email*</Text>
           <Animated.View
             style={[{transform: [{translateX: shakeAnimation.email}]}]}>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                validationError.email && {borderColor: 'red'},
+              ]}
               placeholder="Email"
               placeholderTextColor={colors.placeholder}
               keyboardType="email-address"
@@ -393,13 +415,19 @@ const EditProfile = () => {
               onChangeText={text => handleInputChange('email', text)}
             />
           </Animated.View>
+          {validationError.email && (
+            <Text style={styles.errorText}>Please enter your valid email.</Text>
+          )}
         </View>
         <View style={styles.inputmain}>
           <Text style={styles.title2}>Mobile Number*</Text>
           <Animated.View
             style={[{transform: [{translateX: shakeAnimation.mobile}]}]}>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                validationError.mobile && {borderColor: 'red'},
+              ]}
               placeholder="Mobile Number"
               placeholderTextColor={colors.placeholder}
               keyboardType="phone-pad"
@@ -408,6 +436,11 @@ const EditProfile = () => {
               onChangeText={text => handleInputChange('mobile', text)}
             />
           </Animated.View>
+          {validationError.mobile && (
+            <Text style={styles.errorText}>
+              Please enter your valid mobile number.
+            </Text>
+          )}
         </View>
 
         <View style={styles.inputmain}>
@@ -423,6 +456,7 @@ const EditProfile = () => {
                   justifyContent: 'space-between',
                   alignItems: 'center',
                 },
+                validationError.gender && {borderColor: 'red'},
               ]}
               data={data}
               labelField="label"
@@ -436,7 +470,10 @@ const EditProfile = () => {
               selectedTextStyle={styles.selectedText}
               itemTextStyle={styles.itemText}
               value={gender}
-              onChange={text => setGender(text.value)}
+              onChange={text => (
+                setGender(text.value),
+                setValidationError({...validationError, gender: false})
+              )}
               renderRightIcon={() => (
                 <Image
                   style={{
@@ -448,6 +485,9 @@ const EditProfile = () => {
               )}
             />
           </Animated.View>
+          {/* {validationError.gender && ( */}
+            <Text style={styles.errorText}>Please select your gender.</Text>
+          {/* )} */}
         </View>
 
         <View style={styles.inputmain}>
@@ -455,7 +495,10 @@ const EditProfile = () => {
           <Animated.View
             style={[{transform: [{translateX: shakeAnimation.cityPincode}]}]}>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                validationError.cityPincode && {borderColor: 'red'},
+              ]}
               placeholder="Current City Pincode"
               placeholderTextColor={colors.placeholder}
               keyboardType="numeric"
@@ -464,6 +507,11 @@ const EditProfile = () => {
               onChangeText={text => handleInputChange('cityPincode', text)}
             />
           </Animated.View>
+          {validationError.cityPincode && (
+            <Text style={styles.errorText}>
+              Please enter your valid city pincode.
+            </Text>
+          )}
         </View>
 
         <View style={styles.inputmain}>
@@ -477,6 +525,7 @@ const EditProfile = () => {
                 justifyContent: 'space-between',
                 alignItems: 'center',
               },
+              validationError.date && {borderColor: 'red'},
             ]}>
             <Text
               style={[
@@ -506,6 +555,11 @@ const EditProfile = () => {
             }}
             onCancel={() => setOpen(false)}
           />
+          {validationError.date && (
+            <Text style={styles.errorText}>
+              Please enter your valid date of birth.
+            </Text>
+          )}
         </View>
 
         <View style={styles.inputmain}>

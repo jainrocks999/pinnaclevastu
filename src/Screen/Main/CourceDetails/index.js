@@ -183,6 +183,7 @@ const CourseDetail = ({route}) => {
   };
 
   const handleJoinCourse = () => {
+    
     Animated.sequence([
       Animated.timing(buttonAnimatedValue, {
         toValue: 0.94,
