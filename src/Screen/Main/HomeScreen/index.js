@@ -1603,7 +1603,7 @@ const HomeScreen = () => {
               {homeData?.featured_blog_section?.content?.heading}
             </Text>
             <TouchableOpacity
-              onPress={() => navigation.navigate('Home', {screen: 'BlogList'})}
+             onPress={() => navigation.navigate('Home', {screen: 'BlogList' })}
               hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
               <Text style={styles.service1}>VIEW ALL</Text>
             </TouchableOpacity>
@@ -1633,7 +1633,7 @@ const HomeScreen = () => {
                   }}
                 />
                 <View style={styles.cardInfo}>
-                  {item?.node?.publishedAt ? (
+                  {item?.node?.publishedAt ? (   
                     <Text style={styles.DateText}>
                       {formatDate(item?.node?.publishedAt)}
                     </Text>
@@ -1654,16 +1654,7 @@ const HomeScreen = () => {
                       : ' '}
                   </Text>
 
-                  <Text
-                    onPress={() =>
-                      navigation.navigate('Home', {
-                        screen: 'BlogDetail',
-                        params: {item: item},
-                      })
-                    }
-                    style={styles.blogCardBtnText}>
-                    {'View Details >'}
-                  </Text>
+                  <Text   onPress={() => navigation.navigate('Home', {screen: 'BlogDetail',params:{item:item} })}style={styles.blogCardBtnText}>{'View Details >'}</Text>
                 </View>
               </TouchableOpacity>
             )}
