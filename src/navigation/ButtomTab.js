@@ -30,6 +30,9 @@ export default function BottomTab() {
   const cartisLoading = useSelector(state => state.cart?.loading);
   const orderisLoading = useSelector(state => state.order?.loading);
   const collection1 = useSelector(state => state.collection?.isLoading);
+  const search =useSelector(state => state?.search?.isLoading)
+ 
+  
   const PDP = useSelector(state => state.Product?.isLoading);
 
   const ConsultancyLoading = useSelector(state => state?.consultation?.loading);
@@ -43,6 +46,7 @@ export default function BottomTab() {
       {
       isExtraDataLoading ||
       collection1 ||
+      search ||
       PDP ||
       cartisLoading ||
       orderisLoading ||

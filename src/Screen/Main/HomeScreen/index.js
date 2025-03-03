@@ -1600,7 +1600,9 @@ const HomeScreen = () => {
         <View style={styles.contain2}>
           <View style={[styles.contain1, {marginBottom: 15}]}>
             <Text style={styles.service}>Latest Blogs</Text>
-            <TouchableOpacity
+            <TouchableOpacity 
+             onPress={() => navigation.navigate('Home', {screen: 'BlogList' })}
+          
               hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
               <Text style={styles.service1}>VIEW ALL</Text>
             </TouchableOpacity>
@@ -1651,7 +1653,7 @@ const HomeScreen = () => {
                       : ' '}
                   </Text>
 
-                  <Text style={styles.blogCardBtnText}>{'View Details >'}</Text>
+                  <Text   onPress={() => navigation.navigate('Home', {screen: 'BlogDetail',params:{item:item} })}style={styles.blogCardBtnText}>{'View Details >'}</Text>
                 </View>
               </TouchableOpacity>
             )}

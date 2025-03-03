@@ -27,6 +27,8 @@ import PaymentCourse from '../Screen/Main/paymentInformation/payment_Course';
 import PaymentAppointment from '../Screen/Main/paymentInformation/payment_Appointment';
 import CartWeb from '../Screen/Main/paymentInformation/CartWeb';
 import Searchlist from '../Screen/Main/SearchList';
+import BlogList from '../Screen/Main/BlogListPage';
+import BlogDetails from '../Screen/Main/BlogDetailPage';
 const Stack = createNativeStackNavigator();
 
 function Navigate() {
@@ -121,6 +123,8 @@ function MyDrawer() {
       <DrawerStack.Screen name="Home1" component={BottomTab} />
       <DrawerStack.Screen name="MyCart" component={Mycart} />
       <DrawerStack.Screen name="Courses" component={Courses} />
+      <DrawerStack.Screen name="BlogList"component={BlogList}/>
+      <DrawerStack.Screen name="BlogDetail"component={BlogDetails}/>
     </DrawerStack.Navigator>
   );
 }

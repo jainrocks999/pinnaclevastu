@@ -130,10 +130,14 @@ export const searchResult = (char) => {
 
             axios.request(config)
                 .then((response) => {
-                    console.log('this is response data', response.data);
+                    const filteredProducts = response?.data?.data?.search?.edges?.filter(item =>
+                        item?.node?.title?.toLowerCase().includes(char.toLowerCase())
+                    ) || [];
+
+                    console.log('this is response data', filteredProducts);
                     dispatch(
                         SUCCESS({
-                            products: response.data.data.search.edges,
+                            products:filteredProducts,
                             totalCount: response.data.data.search.totalCount,
                             endCursor: response.data.data.search.pageInfo.endCursor
                         })

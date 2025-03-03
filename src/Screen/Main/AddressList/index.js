@@ -186,8 +186,8 @@ const DeliveryAddress = ({route}) => {
             contentContainerStyle={{paddingVertical:20}}
           />
         ) : (
-          <View style={{}}>
-            <Text>No Address Found</Text>
+          <View style={{alignItems:'center',justifyContent:'center',height:'100%',marginTop:'40%'}}>
+            <Text style={styles.logoText}>No Address Found</Text>
           </View>
         )}
       </ScrollView>
@@ -200,7 +200,7 @@ const DeliveryAddress = ({route}) => {
             {marginTop: 15},
           ]}>
           <TouchableOpacity onPress={handleConformPayment} style={styles.book}>
-            <Text style={styles.btext}>CONFORM PAYMENT</Text>
+            <Text style={styles.btext}>{"CONFIRM PAYMENT"}</Text>
           </TouchableOpacity>
         </Animated.View>
       </View>

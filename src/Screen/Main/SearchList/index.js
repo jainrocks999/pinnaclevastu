@@ -25,6 +25,7 @@ import {
 } from '../../../Redux/Slice/searchSlice';
 import Search from '../../../assets/svg/Search.svg';
 import {widthPrecent} from '../../../Component/ResponsiveScreen/responsive';
+import Loader from '../../../Component/Loader';
 
 const CollectionScreen = ({navigation, route}) => {
   const dispatch = useDispatch();
@@ -33,6 +34,7 @@ const CollectionScreen = ({navigation, route}) => {
   const placeholderText = 'Search';
   const [displayedText, setDisplayedText] = useState('');
   const selector = useSelector(state => state?.search);
+   const search =useSelector(state => state?.search?.isLoading)
   const cartTotalQuantity = useSelector(
     state => state?.cart?.cartTotalQuantity,
   );
@@ -218,69 +220,7 @@ const CollectionScreen = ({navigation, route}) => {
         </View>
       </View>
 
-      {/* <View
-        style={{
-          paddingHorizontal: 15,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginTop: 15,
-          paddingBottom: 10,
-        }}>
-        <View
-          style={{
-
-            
-             
-              // marginVertical: 15,
-              // marginHorizontal: 12,
-              backgroundColor: colors.ordercolor,
-              borderRadius: 20,
-          
-              paddingHorizontal: 15,
-            
-
-            height: 45,
-            width: '90%',
-             borderWidth: 0.5,
-           
-            backgroundColor: colors.ordercolor,
-           
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}>
-          <TextInput
-            placeholder="Search"
-            style={{
-              color:'#000',
-              fontFamily: 'Poppins-Medium',
-              width: '90%',
-              margin: 0,
-              padding: 0,
-            }}
-             placeholderTextColor={colors.searchBarTextColor}
-            value={input}
-            // ref={inputRef}
-            onChangeText={val => {
-              setInput(val);
-              setValue(val);
-              handleSearch(val);
-            }}
-          />
-          <Search />
-        </View>
-        <TouchableOpacity
-          onPress={() => {
-            setInput('');
-            setValue('');
-            dispatch(InitSearch());
-            navigation.goBack();
-          }}
-          style={{}}>
-          <Cross width={14} height={14} />
-        </TouchableOpacity>
-      </View> */}
+    {search?<Loader/>:null}
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={{paddingHorizontal: 15}}>
           {selector?.products?.length > 0 ? (
@@ -379,7 +319,7 @@ const CollectionScreen = ({navigation, route}) => {
                           }}>
                           <Text
                             style={{
-                              marginTop: -2,
+                              marginTop: 2,
                               color: 'grey',
                               fontSize: fontSize.Thirteen,
                               fontFamily: 'Poppins-Medium',
@@ -423,6 +363,8 @@ const CollectionScreen = ({navigation, route}) => {
               }}
               ListFooterComponent={() => (
                 <View style={{alignItems: 'center'}}>
+                  {console.log(selector?.products?.length,'selector.endCursor')}
+                  {selector?.products?.length>9 &&(
                   <TouchableOpacity
                     onPress={() => loadMoreData()}
                     style={{
@@ -440,6 +382,7 @@ const CollectionScreen = ({navigation, route}) => {
                       {'Load More'}
                     </Text>
                   </TouchableOpacity>
+            )  }
                 </View>
               )}
             />
