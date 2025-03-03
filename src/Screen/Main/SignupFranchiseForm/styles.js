@@ -120,7 +120,7 @@ export default StyleSheet.create({
     color: colors.white,
     fontFamily: 'Poppins-Regular',
   },
-  
+
   inputShadow: {
     shadowColor: '#c2c0c0',
     shadowOffset: {width: 0, height: 2},
@@ -177,13 +177,15 @@ export default StyleSheet.create({
     width: '100%',
     resizeMode: 'contain',
   },
+  addIconBtn:{
+    backgroundColor: colors.orange,
+    padding: 5,
+    borderRadius: 5,
+  },
   addIcon: {
-    backgroundColor: colors.placeholder,
     color: colors.white,
-    textAlign: 'center',
-    fontSize: fontSize.Eighteen,
-    padding: 15,
-    borderRadius: 10,
+    fontSize: fontSize.Fourteen,
+    fontFamily: 'Poppins-Regular'
   },
   checkboxWrapper: {
     height: 20,
@@ -208,8 +210,23 @@ export default StyleSheet.create({
   },
   inputSearchStyle: {
     borderRadius: 10,
-    fontSize: 16,
     color: colors.heading,
     fontFamily: 'Poppins-Regular',
+    fontSize: fontSize.Fourteen,
   },
+  inputeLableWithBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  errorText: {
+    marginTop: 8,
+    fontSize: fontSize.Twelve,
+    fontFamily: 'Poppins-Regular',
+    color: 'red',
+  },
+   errorTextCommon:{
+    position: 'absolute',
+    bottom:0
+   }
 });

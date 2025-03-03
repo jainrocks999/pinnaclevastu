@@ -34,6 +34,7 @@ const AppointmentDetails = ({route}) => {
   const [ratingStar, setRatingStar] = useState(0);
   const handleInputChange = (name, value) => {
     setReviewData({...reviewData, [name]: value});
+    setValidationError({...validationError, [name]: false});
   };
   useEffect(() => {
     const backAction = () => {
@@ -52,6 +53,12 @@ const AppointmentDetails = ({route}) => {
     reviewTitle: new Animated.Value(0),
     reviewMessage: new Animated.Value(0),
     ratingStar: new Animated.Value(0),
+  });
+
+  const [validationError, setValidationError] = useState({
+    reviewTitle: false,
+    reviewMessage: false,
+    ratingStar: false,
   });
 
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
@@ -86,6 +93,7 @@ const AppointmentDetails = ({route}) => {
   }
 
   const handleRatingChange = newRating => {
+    setValidationError({...validationError, ratingStar: false});
     setRatingStar(newRating);
   };
 
@@ -166,6 +174,7 @@ const AppointmentDetails = ({route}) => {
   };
 
   const shake = field => {
+    setValidationError({...validationError, [field]: true});
     Vibration.vibrate(100);
     Animated.sequence([
       Animated.timing(shakeAnimation[field], {
@@ -364,7 +373,11 @@ const AppointmentDetails = ({route}) => {
             <Text style={styles.lableText}>Title</Text>
             <Animated.View
               style={[{transform: [{translateX: shakeAnimation.reviewTitle}]}]}>
-              <View style={styles.textInputContainer}>
+              <View
+                style={[
+                  styles.textInputContainer,
+                  validationError.reviewTitle && {borderColor: 'red'},
+                ]}>
                 <TextInput
                   placeholder="Title"
                   placeholderTextColor={'#D2D2D2'}
@@ -374,11 +387,20 @@ const AppointmentDetails = ({route}) => {
                 />
               </View>
             </Animated.View>
+            {validationError.reviewTitle && (
+              <Text style={styles.errorText}>
+                Please give your valid title.
+              </Text>
+            )}
 
             <Text style={styles.lableText}>Rate</Text>
             <Animated.View
               style={[{transform: [{translateX: shakeAnimation.ratingStar}]}]}>
-              <View style={styles.textInputContainer}>
+              <View
+                style={[
+                  styles.textInputContainer,
+                  validationError.ratingStar && {borderColor: 'red'},
+                ]}>
                 <Text style={[styles.textInput, {color: '#D2D2D2'}]}>
                   How would you rate this services
                 </Text>
@@ -398,13 +420,23 @@ const AppointmentDetails = ({route}) => {
                 </View>
               </View>
             </Animated.View>
+            {validationError.ratingStar && (
+              <Text style={styles.errorText}>
+                Please give your rating by selecting a star.
+              </Text>
+            )}
 
             <Text style={styles.lableText}>Write a Review</Text>
             <Animated.View
               style={[
                 {transform: [{translateX: shakeAnimation.reviewMessage}]},
               ]}>
-              <View style={[styles.textInputContainer, styles.heightInput]}>
+              <View
+                style={[
+                  styles.textInputContainer,
+                  styles.heightInput,
+                  validationError.reviewMessage && {borderColor: 'red'},
+                ]}>
                 <TextInput
                   placeholder="Type here..."
                   placeholderTextColor={'#D2D2D2'}
@@ -416,6 +448,11 @@ const AppointmentDetails = ({route}) => {
                 />
               </View>
             </Animated.View>
+            {validationError.reviewMessage && (
+              <Text style={styles.errorText}>
+                Please give your valid review message.
+              </Text>
+            )}
 
             <Animated.View
               style={[{transform: [{scale: buttonAnimatedValue}]}]}>

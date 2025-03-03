@@ -37,10 +37,7 @@ import {consultationDetail1} from '../../../Redux/Slice/ConsultancySlice';
 import {Dropdown} from 'react-native-element-dropdown';
 import WebView from 'react-native-webview';
 import {SvgUri} from 'react-native-svg';
-import {
-  fetchBlogs,
-  fetchExtraCollectonHome,
-} from '../../../Redux/Slice/HomeBannerSlice';
+import {fetchExtraCollectonHome} from '../../../Redux/Slice/HomeBannerSlice';
 import {addToCart} from '../../../Redux/Slice/CartSlice';
 import {getUserDetails} from '../../../Redux/Slice/loginSlice';
 import {getDrawerData} from '../../../Redux/Slice/drawerSlice';
@@ -1596,13 +1593,17 @@ const HomeScreen = () => {
             />
           </View>
         </View>
-
-        <View style={styles.contain2}>
+        <ImageBackground
+          source={{
+            uri: `${homeData?.featured_blog_section?.content?.mob_background_image}`,
+          }}
+          style={styles.contain2}>
           <View style={[styles.contain1, {marginBottom: 15}]}>
-            <Text style={styles.service}>Latest Blogs</Text>
-            <TouchableOpacity 
-             onPress={() => navigation.navigate('Home', {screen: 'BlogList' })}
-          
+            <Text style={styles.service}>
+              {homeData?.featured_blog_section?.content?.heading}
+            </Text>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Home', {screen: 'BlogList'})}
               hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
               <Text style={styles.service1}>VIEW ALL</Text>
             </TouchableOpacity>
@@ -1632,14 +1633,14 @@ const HomeScreen = () => {
                   }}
                 />
                 <View style={styles.cardInfo}>
-                  {isLiveCourse ? (
+                  {item?.node?.publishedAt ? (
                     <Text style={styles.DateText}>
                       {formatDate(item?.node?.publishedAt)}
                     </Text>
                   ) : null}
                   <Text style={styles.blogCardHeadText}>
-                    {item?.node?.handle?
-                     item?.node?.handle?.length > 55
+                    {item?.node?.handle
+                      ? item?.node?.handle?.length > 55
                         ? `${item?.node?.handle?.substring(0, 55)}...`
                         : item?.node?.handle
                       : ' '}
@@ -1653,12 +1654,21 @@ const HomeScreen = () => {
                       : ' '}
                   </Text>
 
-                  <Text   onPress={() => navigation.navigate('Home', {screen: 'BlogDetail',params:{item:item} })}style={styles.blogCardBtnText}>{'View Details >'}</Text>
+                  <Text
+                    onPress={() =>
+                      navigation.navigate('Home', {
+                        screen: 'BlogDetail',
+                        params: {item: item},
+                      })
+                    }
+                    style={styles.blogCardBtnText}>
+                    {'View Details >'}
+                  </Text>
                 </View>
               </TouchableOpacity>
             )}
           />
-        </View>
+        </ImageBackground>
 
         <View style={styles.bottomCardContainer}>
           <FlatList

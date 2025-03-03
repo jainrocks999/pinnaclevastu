@@ -207,6 +207,15 @@ const PaymentAppointment = ({route}) => {
       createbyord(transactionDetails);
     } catch (error) {
       console.log(error);
+      const transactionDetails = {
+        radioActive,
+        paymentId: '',
+        status: 'failed',
+        amount: totals?.grandTotalAmount,
+        reason: error?.error?.reason || 'Transaction failed',
+        code: error.code,
+      };
+      // createbyord(transactionDetails);
     }
   };
   return (

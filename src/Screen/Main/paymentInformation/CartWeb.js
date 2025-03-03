@@ -95,8 +95,13 @@ const CartWeb = props => {
                   await dispatch(clearLocalCartData());
                   await dispatch(clearcartdata());
                 }
-console.log('raju nasa karke baitha hai ',event,props.route.params.Url);
+                console.log(
+                  'raju nasa karke baitha hai ',
+                  event,
+                  props.route.params.Url,
+                );
 
+                // console.log(event,props.route.params.Url,"Venom")
                 if (event.url === 'https://pinnaclevastu-in.myshopify.com/') {
                   navigation.reset({
                     index: 0,

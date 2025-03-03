@@ -483,8 +483,9 @@ export default StyleSheet.create({
   },
   contain2: {
     paddingVertical: 10,
-    backgroundColor: '#FAF6ED',
+    // backgroundColor: '#FAF6ED',
     marginVertical: wp(3),
+    resizeMode:"contain"
   },
   prodCrossPriceText: {
     color: '#A4A4A4',

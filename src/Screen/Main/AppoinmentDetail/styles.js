@@ -1,7 +1,10 @@
 import {StyleSheet} from 'react-native';
-import { fontSize } from '../../../Component/fontsize';
-import { colors } from '../../../Component/colors';
-import { heightPercent as hp, widthPrecent as wp } from '../../../Component/ResponsiveScreen/responsive';
+import {fontSize} from '../../../Component/fontsize';
+import {colors} from '../../../Component/colors';
+import {
+  heightPercent as hp,
+  widthPrecent as wp,
+} from '../../../Component/ResponsiveScreen/responsive';
 
 export default StyleSheet.create({
   container: {
@@ -12,7 +15,7 @@ export default StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 18,
-    paddingVertical:10,
+    paddingVertical: 10,
     backgroundColor: '#FBF5F2',
     borderBottomWidth: 0.5,
     borderColor: '#DFE7EF',
@@ -23,14 +26,14 @@ export default StyleSheet.create({
     height: 14,
     color: '#324356',
   },
-  headerView:{
-    flexDirection: 'row', 
+  headerView: {
+    flexDirection: 'row',
     alignItems: 'center',
   },
   headerTitle: {
     fontSize: fontSize.Sixteen,
-    fontFamily:'Poppins-Regular',
-    color:colors.heading,
+    fontFamily: 'Poppins-Regular',
+    color: colors.heading,
   },
   imageSection: {
     backgroundColor: '#FBF5F2',
@@ -54,13 +57,13 @@ export default StyleSheet.create({
     marginBottom: -wp(15),
     zIndex: 1,
   },
-  scroll:{
-    paddingBottom:hp(6)
+  scroll: {
+    paddingBottom: hp(6),
   },
   ProfileInfoSection: {
     overflow: 'hidden',
     backgroundColor: '#F5FAFF',
-    marginTop:-21,
+    marginTop: -21,
     borderColor: '#D8E3E980',
     shadowColor: '#00000029',
     shadowOffset: {width: 0, height: 3},
@@ -74,25 +77,24 @@ export default StyleSheet.create({
     backgroundColor: '#F5FAFF',
     padding: 15,
     width: '100%',
-    paddingTop:wp(16),
+    paddingTop: wp(16),
     justifyContent: 'flex-end',
     alignItems: 'center',
     gap: 5,
     shadowColor: '#EAF0F5',
-    shadowOffset: { width: 0, height: 6 }, 
-    shadowOpacity: 0.5, 
+    shadowOffset: {width: 0, height: 6},
+    shadowOpacity: 0.5,
     shadowRadius: 14,
-    
-  
+
     elevation: 5,
   },
   nameText: {
     marginBottom: 5,
-    color:colors.heading,
+    color: colors.heading,
     lineHeight: wp(6),
     textAlign: 'center',
     fontSize: fontSize.Seventeen,
-    fontFamily:'Poppins-Medium',
+    fontFamily: 'Poppins-Medium',
     width: wp(50),
   },
   dateInfoContainer: {
@@ -103,12 +105,12 @@ export default StyleSheet.create({
   },
   sectionText: {
     fontSize: fontSize.Twelve,
-    fontFamily:'Poppins-Medium',
-    color:colors.heading,
+    fontFamily: 'Poppins-Medium',
+    color: colors.heading,
   },
   dateText: {
     fontSize: fontSize.Twelve,
-    fontFamily:'Poppins-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
   },
   ImgIcon: {
     height: wp(3.5),
@@ -118,58 +120,59 @@ export default StyleSheet.create({
     paddingVertical: hp(4),
     paddingHorizontal: 18,
   },
-  cardStar:{
-    flexDirection:'row',
-    justifyContent:"center",
-    alignItems:"center",
-    gap:5
+  cardStar: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 5,
   },
-  ratingText:{
-  fontSize:fontSize.Twelve,
-  color:"#949494"
+  ratingText: {
+    fontSize: fontSize.Twelve,
+    color: '#949494',
   },
   smallText: {
-    fontSize:fontSize.Fourteen,
+    fontSize: fontSize.Fourteen,
     color: colors.paymenttext,
-    fontFamily:'Poppins-Regular',
+    fontFamily: 'Poppins-Regular',
     lineHeight: wp(4.5),
   },
   reviewForm: {
     backgroundColor: '#F1F1F1',
     paddingVertical: 20,
     gap: 10,
-    borderRadius:10,
-    marginTop:10
+    borderRadius: 10,
+    marginTop: 10,
   },
   formHeadText: {
     fontSize: fontSize.Eighteen,
-    fontFamily:'Poppins-Medium',
+    fontFamily: 'Poppins-Medium',
     textAlign: 'center',
-    color:colors.heading,
+    color: colors.heading,
   },
   textInputContainer: {
-    backgroundColor:colors.white,
+    backgroundColor: colors.white,
     paddingHorizontal: 15,
-    paddingVertical:7,
+    paddingVertical: 7,
     borderRadius: 10,
     borderWidth: 0.5,
     borderColor: '#E9E9E9',
-    marginBottom:5
+    marginBottom: 5,
   },
   lableText: {
-    fontSize:fontSize.Fourteen,
-    fontFamily:'Poppins-Medium',
-    color:colors.heading,marginLeft:5
+    fontSize: fontSize.Fourteen,
+    fontFamily: 'Poppins-Medium',
+    color: colors.heading,
+    marginLeft: 5,
   },
   textInput: {
     fontSize: fontSize.Fourteen,
-    color:colors.heading,
-    fontFamily:'Poppins-Regular',
+    color: colors.heading,
+    fontFamily: 'Poppins-Regular',
   },
   starContainer: {
     marginVertical: 5,
-    alignSelf:"flex-start",
-    borderWidth:0.1
+    alignSelf: 'flex-start',
+    borderWidth: 0.1,
   },
   btext1: {
     fontFamily: 'Poppins-Medium',
@@ -183,23 +186,23 @@ export default StyleSheet.create({
     width: '100%',
     borderRadius: 10,
     justifyContent: 'center',
-    borderRadius:10,
+    borderRadius: 10,
     shadowColor: '#E5C8C1',
     shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.8,
     shadowRadius: 12,
     elevation: 12,
-    marginVertical:15,
+    marginVertical: 15,
   },
-  heightInput:{
-    height:120
+  heightInput: {
+    height: 120,
   },
   backBtn: {
-    marginTop:-5,
+    marginTop: -5,
     height: wp(4),
     width: wp(2.3),
     resizeMode: 'stretch',
-    marginRight:20
+    marginRight: 20,
   },
   cardContainer1: {
     marginHorizontal: 15,
@@ -214,7 +217,6 @@ export default StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 10,
     elevation: 5,
-   
 
     justifyContent: 'center',
   },
@@ -255,5 +257,11 @@ export default StyleSheet.create({
     marginVertical: hp(0.5),
     marginRight: 20,
     textAlign: 'right',
+  },
+  errorText: {
+    marginTop: -5,
+    fontSize: fontSize.Twelve,
+    fontFamily: 'Poppins-Regular',
+    color: 'red',
   },
 });
