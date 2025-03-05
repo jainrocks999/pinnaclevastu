@@ -341,6 +341,7 @@ const Drawer = props => {
 
         <FlatList
           data={nonEmptyItems}
+          scrollEnabled={false}
           keyExtractor={(item, index) => index.toString()}
           renderItem={renderItem1}
         />

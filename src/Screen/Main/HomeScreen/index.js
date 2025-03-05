@@ -25,6 +25,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {
   Banner,
   CourceLis,
+  GetConsultationList,
   submitEnquryApi,
 } from '../../../Redux/Slice/HomeSlice';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
@@ -67,6 +68,7 @@ const HomeScreen = () => {
   const homeData = useSelector(state => state?.HomeBanner);
 
   const Cource1 = useSelector(state => state?.home?.Cource);
+  const consultationList = useSelector(state => state?.home?.ConsultationList);
   const submitedEnqury = useSelector(state => state?.home?.submitedEnqury);
   const userDetail = useSelector(state => state?.Auth?.userData);
   const Homebanner = useSelector(state => state.home?.HomeBanner?.data);
@@ -187,6 +189,7 @@ const HomeScreen = () => {
   const apicall = async () => {
     await dispatch(Banner({url: 'home-slider'}));
     await dispatch(CourceLis({url: 'fetch-course-data'}));
+    await dispatch(GetConsultationList({url: 'franchise-data'}));
     await dispatch(getDrawerData());
   };
 
@@ -244,13 +247,11 @@ const HomeScreen = () => {
 
   const calculateAverageRating = data => {
     if (!data?.length) return 0;
-
     const totalStars = data.reduce((sum, item) => {
       return sum + Number(item?.star);
     }, 0);
 
     const averageStars = totalStars / data?.length;
-
     return averageStars;
   };
 
@@ -453,8 +454,8 @@ const HomeScreen = () => {
               style={styles.cardImage}
             />
             <View style={styles.infoSection}>
-              <Text style={styles.third}>{item?.franchise_name}</Text>
-              <Text style={styles.third1}>{item?.specializations}</Text>
+              <Text style={styles.third}>{item?.level}</Text>
+              <Text style={styles.third1}>{item?.franchise_name}</Text>
               <Text style={[styles.third2, {width: '85%'}]}>
                 Services :{' '}
                 {item?.franchise_services
@@ -1185,7 +1186,7 @@ const HomeScreen = () => {
             </TouchableOpacity>
           </View>
           <FlatList
-            data={Homebanner?.franchises}
+            data={consultationList.slice(0, 3)}
             pagingEnabled
             snapToAlignment="center"
             decelerationRate="fast"
@@ -1603,7 +1604,7 @@ const HomeScreen = () => {
               {homeData?.featured_blog_section?.content?.heading}
             </Text>
             <TouchableOpacity
-             onPress={() => navigation.navigate('Home', {screen: 'BlogList' })}
+              onPress={() => navigation.navigate('Home', {screen: 'BlogList'})}
               hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
               <Text style={styles.service1}>VIEW ALL</Text>
             </TouchableOpacity>
@@ -1633,7 +1634,7 @@ const HomeScreen = () => {
                   }}
                 />
                 <View style={styles.cardInfo}>
-                  {item?.node?.publishedAt ? (   
+                  {item?.node?.publishedAt ? (
                     <Text style={styles.DateText}>
                       {formatDate(item?.node?.publishedAt)}
                     </Text>
@@ -1654,7 +1655,16 @@ const HomeScreen = () => {
                       : ' '}
                   </Text>
 
-                  <Text   onPress={() => navigation.navigate('Home', {screen: 'BlogDetail',params:{item:item} })}style={styles.blogCardBtnText}>{'View Details >'}</Text>
+                  <Text
+                    onPress={() =>
+                      navigation.navigate('Home', {
+                        screen: 'BlogDetail',
+                        params: {item: item},
+                      })
+                    }
+                    style={styles.blogCardBtnText}>
+                    {'View Details >'}
+                  </Text>
                 </View>
               </TouchableOpacity>
             )}

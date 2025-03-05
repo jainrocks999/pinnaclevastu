@@ -33,7 +33,7 @@ export const { SUCCESS, LOADING, FAILED, SUCCESS_BANNER } = drawerSlice.actions;
 
 export default drawerSlice.reducer;
 export const getDrawerData = () => async (dispatch) => {
-  console.log("Fetching drawer data...");
+  // console.log("Fetching drawer data...");
 
   try {
     dispatch(LOADING());
@@ -49,7 +49,7 @@ export const getDrawerData = () => async (dispatch) => {
       sidebarMenuLinks: sidebarMenuLinks?.items || [],
     };
 
-    console.log("Drawer response:", combinedData);
+    // console.log("Drawer response:", combinedData);
     dispatch(SUCCESS(combinedData));
   } catch (error) {
     console.log("Error fetching drawer data:", error);

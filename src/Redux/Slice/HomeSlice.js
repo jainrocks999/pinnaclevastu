@@ -3,6 +3,7 @@ import axios from 'axios';
 import constant from '../constant/constants';
 import Toast from 'react-native-simple-toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {getCosultationListApi} from './ConsultancySlice';
 
 export const Banner = createAsyncThunk(
   'home/Banner',
@@ -25,6 +26,36 @@ export const Banner = createAsyncThunk(
     } catch (error) {
       console.log('banner error 33 ', error);
       Toast.show(error.message);
+
+      return rejectWithValue(
+        error.response ? error.response.data : error.message,
+      );
+    }
+  },
+);
+
+export const GetConsultationList = createAsyncThunk(
+  'home/ConsultationList',
+  async ({url}, {rejectWithValue}) => {
+    try {
+      const config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: `${constant.mainUrl}${url}`,
+        headers: {},
+      };
+
+      const response = await axios.request(config);
+      // console.log(response?.data?.data, 'venom');
+      if (response?.data?.status == 200) {
+        // console.log(response?.data?.data?.franchises, 'venom');
+        return response?.data?.data?.franchises;
+      } else {
+        console.log(response?.data);
+        // Toast.show(response?.data?.msg);
+      }
+    } catch (error) {
+      console.log('consultationList error 211', error);
 
       return rejectWithValue(
         error.response ? error.response.data : error.message,
@@ -95,6 +126,7 @@ const homeSlice = createSlice({
   name: 'home',
   initialState: {
     HomeBanner: [],
+    ConsultationList: [],
     submitedEnqury: false,
     loading: false,
     error: null,
@@ -141,6 +173,18 @@ const homeSlice = createSlice({
       .addCase(submitEnquryApi.rejected, (state, action) => {
         state.loading = false;
         state.submitedEnqury = false;
+        state.error = action.payload;
+      })
+      .addCase(GetConsultationList.pending, state => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(GetConsultationList.fulfilled, (state, action) => {
+        state.loading = false;
+        state.ConsultationList = action.payload;
+      })
+      .addCase(getCosultationListApi.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.payload;
       });
   },

@@ -1,6 +1,6 @@
-import { StyleSheet } from 'react-native';
-import { fontSize } from '../../../Component/fontsize';
-import { colors } from '../../../Component/colors';
+import {StyleSheet} from 'react-native';
+import {fontSize} from '../../../Component/fontsize';
+import {colors} from '../../../Component/colors';
 import {
   widthPrecent as wp,
   heightPercent as hp,
@@ -9,21 +9,15 @@ import {
 export default StyleSheet.create({
   container: {
     flex: 1,
-   
     backgroundColor: '#F9F9F9',
-  
     elevation: 4,
-   
   },
   header: {
     flexDirection: 'row',
-  
     alignItems: 'center',
     paddingHorizontal: 18,
     paddingVertical: 10,
     backgroundColor: '#fff',
-
-
     elevation: 2,
   },
   headerview: {
@@ -39,7 +33,6 @@ export default StyleSheet.create({
   buttoncontainer: {
     height: wp(12),
     width: '50%',
-
     borderRadius: 10,
     paddingHorizontal: 15,
     justifyContent: 'center',
@@ -66,7 +59,7 @@ export default StyleSheet.create({
     marginBottom: 15,
   },
   input: {
-    borderWidth:0.5,
+    borderWidth: 0.5,
     height: wp(13),
     borderColor: colors.lightGrey,
     width: '100%',
@@ -105,7 +98,7 @@ export default StyleSheet.create({
     width: 21,
     justifyContent: 'center',
     alignItems: 'center',
-    transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }],
+    transform: [{scaleX: 1.2}, {scaleY: 1.2}],
     borderRadius: 4,
     backgroundColor: '#fff',
   },
@@ -115,10 +108,9 @@ export default StyleSheet.create({
   checkboxRow: {
     flexDirection: 'row',
     alignItems: 'center',
-   
   },
   checkboxText: {
-    color: colors.heading, 
+    color: colors.heading,
     fontSize: fontSize.Fourteen,
     fontFamily: 'Poppins-Regular',
     marginLeft: 5,
@@ -133,13 +125,12 @@ export default StyleSheet.create({
     borderRadius: 10,
 
     marginTop: hp(5),
-     shadowColor: "#ad3803",
+    shadowColor: '#ad3803',
     shadowOffset: {width: 0, height: 6},
-    shadowOpacity: 0.8, 
-    shadowRadius: 10, 
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
 
     elevation: 8,
-
   },
   btext1: {
     fontFamily: 'Poppins-Medium',
@@ -148,8 +139,7 @@ export default StyleSheet.create({
   },
   customIcon: {
     fontSize: fontSize.Fifteen,
-    color: colors.paymenttext, 
-   
+    color: colors.paymenttext,
   },
   backBtn: {
     height: wp(4),

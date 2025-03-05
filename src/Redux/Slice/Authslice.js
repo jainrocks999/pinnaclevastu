@@ -8,7 +8,7 @@ export const loginUser = createAsyncThunk(
   async ({mobile, navigation, url, route}, {rejectWithValue}) => {
     let data = {
       phone_no: mobile,
-    };   
+    };
     let config = {
       method: 'post',
       maxBodyLength: Infinity,
@@ -21,9 +21,8 @@ export const loginUser = createAsyncThunk(
 
     try {
       const response = await axios.request(config);
-  
+
       if (response.data.status == 200) {
-  
         Toast.show(response.data.msg);
 
         if (navigation) {
@@ -70,9 +69,8 @@ export const signupUser = createAsyncThunk(
     {formUserData, url, navigation, route},
     {dispatch, rejectWithValue},
   ) => {
-
-    
     try {
+    
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
@@ -80,14 +78,15 @@ export const signupUser = createAsyncThunk(
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-        
+
         data: formUserData,
       };
       const response = await axios.request(config);
 
+
       if (response.data.status == 200) {
         const responseDataString = JSON.stringify(response.data);
-
+        
         AsyncStorage.setItem('user_data', responseDataString);
         AsyncStorage.setItem('user_type', response.data.user_type);
         AsyncStorage.setItem('user_id', JSON.stringify(response.data.user_id));
@@ -103,7 +102,6 @@ export const signupUser = createAsyncThunk(
           navigation.pop();
           navigation.pop();
           navigation.replace('profile');
-
         } else if (route?.params?.from == 'CourseDetails') {
           await dispatch(
             getUserDetailApi({
@@ -117,7 +115,7 @@ export const signupUser = createAsyncThunk(
         } else {
           navigation.navigate('Home');
         }
-  
+
         return response.data;
       } else {
         Toast.show(response.data.msg);
@@ -163,7 +161,6 @@ export const updateApi = createAsyncThunk(
     {formUserData, url, navigation, token, userid},
     {rejectWithValue, dispatch},
   ) => {
-
     try {
       let config = {
         method: 'post',

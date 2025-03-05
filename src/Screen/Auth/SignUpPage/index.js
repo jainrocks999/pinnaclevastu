@@ -234,78 +234,87 @@ const SignUpPage = ({route}) => {
   };
 
   const handleSubmit = async () => {
-    Animated.sequence([
-      Animated.timing(buttonAnimatedValue, {
-        toValue: 0.94,
-        duration: 500,
-        useNativeDriver: true,
-      }),
-      Animated.timing(buttonAnimatedValue, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-    ]).start();
-    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-    if (formData.name === '') {
-      shake('name');
-      scrollToField('name');
-      return;
-    } else if (formData.email === '') {
-      shake('email');
-      scrollToField('email');
-      return;
-    } else if (!emailRegex.test(formData.email)) {
-      shake('email');
-      scrollToField('email');
-      return;
-    } else if (formData.mobile === '') {
-      shake('mobile');
-      scrollToField('mobile');
-      return;
-    } else if (formData.mobile.length < 10) {
-      shake('mobile');
-      scrollToField('mobile');
-      return;
-    } else if (gender === '') {
-      shake('gender');
-      scrollToField('gender');
-      return;
-    } else if (formData.cityPincode === '') {
-      shake('cityPincode');
-      scrollToField('cityPincode');
-      return;
-    } else if (date === '') {
-      shake('date');
-      scrollToField('date');
-      return;
-    } else if (formData.cityPincode.length < 6) {
-      shake('cityPincode');
-      scrollToField('cityPincode');
-      return;
-    } else {
-      const formUserData = new FormData();
-      formUserData.append('name', formData.name);
-      formUserData.append('email', formData.email);
-      formUserData.append('phone', formData.mobile);
-      formUserData.append('gender', gender);
-      formUserData.append('dob', formatDate(date));
-      formUserData.append('city_pincode', formData.cityPincode);
-      formUserData.append('time_of_birth', formatTime(time));
-      formUserData.append('place_of_birth', formData.birthPlace);
-      formUserData.append('avatar', {
-        uri: selectedImage.uri,
-        name: selectedImage.fileName,
-        type: selectedImage.type,
-      });
-      await dispatch(
-        signupUser({
-          formUserData,
-          url: 'sign-up',
-          navigation,
-          route,
+    try {
+      Animated.sequence([
+        Animated.timing(buttonAnimatedValue, {
+          toValue: 0.94,
+          duration: 500,
+          useNativeDriver: true,
         }),
-      );
+        Animated.timing(buttonAnimatedValue, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start();
+      const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+      if (formData.name === '') {
+        shake('name');
+        scrollToField('name');
+        return;
+      } else if (formData.email === '') {
+        shake('email');
+        scrollToField('email');
+        return;
+      } else if (!emailRegex.test(formData.email)) {
+        shake('email');
+        scrollToField('email');
+        return;
+      } else if (formData.mobile === '') {
+        shake('mobile');
+        scrollToField('mobile');
+        return;
+      } else if (formData.mobile.length < 10) {
+        shake('mobile');
+        scrollToField('mobile');
+        return;
+      } else if (gender === '') {
+        shake('gender');
+        scrollToField('gender');
+        return;
+      } else if (formData.cityPincode === '') {
+        shake('cityPincode');
+        scrollToField('cityPincode');
+        return;
+      } else if (date === '') {
+        shake('date');
+        scrollToField('date');
+        return;
+      } else if (formData.cityPincode.length < 6) {
+        shake('cityPincode');
+        scrollToField('cityPincode');
+        return;
+      } else {
+        const formUserData = new FormData();
+        formUserData.append('name', formData.name);
+        formUserData.append('email', formData.email);
+        formUserData.append('phone', formData.mobile);
+        formUserData.append('gender', gender);
+        formUserData.append('dob', formatDate(date));
+        formUserData.append('city_pincode', formData.cityPincode);
+        formUserData.append('time_of_birth', formatTime(time));
+        formUserData.append('place_of_birth', formData.birthPlace);
+        {
+          selectedImage?.uri &&
+            selectedImage?.fileName &&
+            selectedImage?.type &&
+            formUserData.append('avatar', {
+              uri: selectedImage?.uri,
+              name: selectedImage?.fileName,
+              type: selectedImage?.type,
+            });
+        }
+        await dispatch(
+          signupUser({
+            formUserData,
+            url: 'sign-up',
+            navigation,
+            route,
+          }),
+        );
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -626,7 +635,7 @@ const SignUpPage = ({route}) => {
 
           <Animated.View style={[{transform: [{scale: buttonAnimatedValue}]}]}>
             <TouchableOpacity
-              onPress={() => handleSubmit()}
+              onPress={handleSubmit}
               style={styles.buttoncontainer}>
               <Text style={styles.btext}>{'SUBMIT'}</Text>
             </TouchableOpacity>
