@@ -1,10 +1,12 @@
 import axios from 'axios';
 import {
+  customermetafeildgetid,
   GraphQlAdminConfig,
   ProductMetafieldsQuery,
   similarproduct,
 } from '../../common/queries';
 import {convertCustomerIdNum, convertProductId} from '../../common/shopifyConverter';
+import { API_PSW, MAIN_URL } from '../../common/constants';
 
 export const getProductMetafieldsApiCall = product_id => {
   try {
@@ -126,6 +128,46 @@ export const getSimilarProductMetafieldValue = async id => {
 };
 
 
+
+
+
+export const getCutomerMetafields = async customerId => {
+  try {
+    const data = JSON.stringify({
+      query: customermetafeildgetid,
+      variables: {
+        id:
+        typeof customerId === "string" && customerId.includes("gid://shopify/Customer/")
+          ? customerId
+          : `gid://shopify/Customer/${customerId}`
+      },
+    });
+
+
+    const response = await axios.request(GraphQlAdminConfig(data));
+    const assetval = response?.data?.data?.customer
+    return assetval;
+    // if (assetval) {
+    //   const processedData = assetval.map(item => item.node);
+    //   return processedData;
+    // } else {
+    //   return [];
+    // }
+  } catch (err) {
+    console.log('errror in product metafileds');
+    console.log(err);
+    throw err;
+  }
+};
+
+
+
+
+
+
+
+
+
 export const updateCustomerMetafields = async (customerId, metafields) => {
   try {
     console.log("📌 Received customerId:", customerId);
@@ -170,11 +212,12 @@ export const updateCustomerMetafields = async (customerId, metafields) => {
 
     // ✅ Axios request configuration
     const response = await axios.post(
-      "https://pinnaclevastu-in.myshopify.com/admin/api/2024-04/graphql.json",
+      `${MAIN_URL}/graphql.json`,
+      // "https://pinnaclevastu-in.myshopify.com/admin/api/2024-04/graphql.json",
       { query, variables },
       {
         headers: {
-          "X-Shopify-Access-Token": "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",
+          "X-Shopify-Access-Token":  API_PSW,
           "Content-Type": "application/json",
         },
       }

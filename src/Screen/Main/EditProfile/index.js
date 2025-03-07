@@ -25,7 +25,7 @@ import {updateApi} from '../../../Redux/Slice/Authslice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loader from '../../../Component/Loader';
 import { updatedata1 } from '../../../Redux/Slice/loginSlice';
-import { updateCustomerMetafields } from '../../../Redux/Api';
+import { getCutomerMetafields, updateCustomerMetafields } from '../../../Redux/Api';
 
 const EditProfile = () => {
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
@@ -102,12 +102,13 @@ const EditProfile = () => {
         .then(data => console.log("✅ Final Metafields Response:", data))
         .catch(error => console.error("❌ Error:", error));
 
-    
+          
+        
  }
 
-useEffect(()=>{
-  Apicall()
-},[userDetails])
+// useEffect(()=>{
+//   Apicall()
+// },[userDetails])
 
 
 
@@ -123,9 +124,9 @@ useEffect(()=>{
   });
 
   const [formData, setFormData] = useState({
-    name: userDetail.name,
-    email: userDetail.email,
-    mobile: userDetail.phone,
+    name: userDetails?.displayName,
+    email: userDetails?.email,
+    mobile: userDetails?.phone,
     cityPincode: JSON.stringify(userDetail?.city_pincode) ?? '',
     birthPlace: userDetail?.place_of_birth ?? '',
   });
@@ -279,7 +280,7 @@ useEffect(()=>{
 
     if (name === 'mobile') {
       const numericValue = value.replace(/[^0-9]/g, '');
-      const mobileRegex = /^[0-9]{0,10}$/;
+      const mobileRegex = /^[0-9]{0,13}$/;
 
       mobileRegex.test(numericValue)
         ? setFormData({...formData, mobile: numericValue})
@@ -378,7 +379,7 @@ useEffect(()=>{
       shake('mobile');
       scrollToField('mobile');
       return;
-    } else if (formData.mobile.length < 10) {
+    } else if (formData.mobile.length < 13) {
       shake('mobile');
       scrollToField('mobile');
       return;
@@ -500,7 +501,7 @@ useEffect(()=>{
               placeholder="Mobile Number"
               placeholderTextColor={colors.placeholder}
               keyboardType="phone-pad"
-              maxLength={10}
+              maxLength={13}
               value={formData.mobile}
               onChangeText={text => handleInputChange('mobile', text)}
             />
@@ -554,9 +555,9 @@ useEffect(()=>{
               )}
             />
           </Animated.View>
-          {/* {validationError.gender && ( */}
+           {validationError.gender && ( 
             <Text style={styles.errorText}>Please select your gender.</Text>
-          {/* )} */}
+          )} 
         </View>
 
         <View style={styles.inputmain}>

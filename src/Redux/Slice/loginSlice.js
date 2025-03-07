@@ -10,6 +10,7 @@ import {
 } from '../../common/queries';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {removeUserAccount, resetUserPassoword} from '../../models/UserInfo';
+import { getCutomerMetafields } from '../Api';
 const initialState = {
   isLoading: false,
   otpData: {},
@@ -257,12 +258,15 @@ export const getUserDetails = customerAccessToken => {
       axios
         .request(GraphQlConfig(data))
         .then(async response => {
-          console.log('response data ,,', response, data, customerAccessToken);
+          console.log('response data ,,111', response?.data?.data?.customer);
 
           const data = response.data.data?.customer;
+
+          const usermetadata=  await getCutomerMetafields(response.data.data?.customer?.id);
+         
           if (data) {
             await AsyncStorage.setItem('USERINFO', JSON.stringify(data));
-            dispatch(SHOPIFY_USER_DATA_FETCH_SUCCESS(data));
+            dispatch(SHOPIFY_USER_DATA_FETCH_SUCCESS({...data,...usermetadata}));
           } else {
             SHOPIFY_USER_DATA_FETCH_FAILED(data);
           }

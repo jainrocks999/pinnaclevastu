@@ -228,7 +228,27 @@ export const updateCutomer = `
 
 
 
-
+ export   const customermetafeildgetid = `
+    query getCustomerMetafields($id: ID!) {
+      customer(id: $id) {
+        id
+        firstName
+        lastName
+        email
+        metafields(first: 10) {
+          edges {
+            node {
+              id
+              namespace
+              key
+              type
+              value
+            }
+          }
+        }
+      }
+    }
+  `;
 
 
 
