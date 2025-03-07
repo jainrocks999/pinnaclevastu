@@ -3,6 +3,7 @@ import axios from 'axios';
 import Toast from 'react-native-simple-toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import constants from '../constant/constants';
+import { getUserDetails } from './loginSlice';
 export const loginUser = createAsyncThunk(
   'auth/loginUser',
   async ({mobile, navigation, url, route}, {rejectWithValue}) => {
@@ -93,6 +94,10 @@ export const signupUser = createAsyncThunk(
         AsyncStorage.setItem('Token', response.data.token);
 
         if (route?.params?.from == 'profile') {
+
+await dispatch(getUserDetails(response?.data?.shopify_access_token));
+
+
           await dispatch(
             getUserDetailApi({
               token: response.data.token,
@@ -103,6 +108,7 @@ export const signupUser = createAsyncThunk(
           navigation.pop();
           navigation.replace('profile');
         } else if (route?.params?.from == 'CourseDetails') {
+          await dispatch(getUserDetails(response?.data?.shopify_access_token));
           await dispatch(
             getUserDetailApi({
               token: response.data.token,
@@ -177,6 +183,8 @@ export const updateApi = createAsyncThunk(
       const response = await axios.request(config);
 
       if (response.data.status == 200) {
+
+        
         await dispatch(
           getUserDetailApi({
             token: token,

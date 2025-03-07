@@ -4,7 +4,7 @@ import {
   ProductMetafieldsQuery,
   similarproduct,
 } from '../../common/queries';
-import {convertProductId} from '../../common/shopifyConverter';
+import {convertCustomerIdNum, convertProductId} from '../../common/shopifyConverter';
 
 export const getProductMetafieldsApiCall = product_id => {
   try {
@@ -124,3 +124,122 @@ export const getSimilarProductMetafieldValue = async id => {
     throw err;
   }
 };
+
+
+export const updateCustomerMetafields = async (customerId, metafields) => {
+  try {
+    console.log("📌 Received customerId:", customerId);
+    console.log("📌 Received metafields:", metafields);
+
+    // ✅ Convert customerId to Shopify format if needed
+    const ownerId =
+      typeof customerId === "string" && customerId.includes("gid://shopify/Customer/")
+        ? customerId
+        : `gid://shopify/Customer/${customerId}`;
+
+    // ✅ Properly formatting metafields
+    const formattedMetafields = metafields.map(({ key, type, value }) => ({
+      ownerId,
+      namespace: "custom",
+      key,
+      type,
+      value: Array.isArray(value) ? JSON.stringify(value) : value, // Ensuring correct format
+    }));
+
+    console.log("🔹 Formatted metafields:", formattedMetafields);
+
+    // ✅ Correct GraphQL mutation
+    const query = `
+      mutation metafieldsSet($metafields: [MetafieldsSetInput!]!) {
+        metafieldsSet(metafields: $metafields) {
+          metafields {
+            id
+            key
+            value
+            type
+          }
+          userErrors {
+            field
+            message
+          }
+        }
+      }
+    `;
+
+    const variables = { metafields: formattedMetafields };
+
+    // ✅ Axios request configuration
+    const response = await axios.post(
+      "https://pinnaclevastu-in.myshopify.com/admin/api/2024-04/graphql.json",
+      { query, variables },
+      {
+        headers: {
+          "X-Shopify-Access-Token": "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",
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const metafieldsData = response?.data?.data?.metafieldsSet;
+
+    if (metafieldsData?.userErrors?.length) {
+      console.error("❌ Shopify API Errors:", metafieldsData.userErrors);
+      throw new Error("Shopify GraphQL returned errors.");
+    }
+
+    console.log("✅ Metafields updated successfully:", metafieldsData?.metafields);
+    return metafieldsData?.metafields || [];
+
+  } catch (error) {
+    console.error("❌ Error in updating metafields:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+
+
+
+
+
+// export const updateCustomerMetafields = async (customerId, metafields) => {
+//   try {
+//     console.log('get item  ',customerId,metafields);
+    
+//     const formattedMetafields = metafields.map(({ key, type, value }) => ({
+//       ownerId: typeof customerId == 'string' && customerId.includes('gid://shopify/Customer/')
+//       ? customerId
+//       : convertCustomerIdNum(customerId),
+//       namespace: "custom",
+//       key,
+//       type,
+//       value: Array.isArray(value) ? JSON.stringify(value) : value, // Ensure correct formatting
+//     }));
+//     console.log('get item  332232323',formattedMetafields);
+//     const query = `
+//       mutation {
+//         metafieldsSet(metafields: ${formattedMetafields}) {
+//           metafields {
+//             id
+//             key
+//             value
+//             type
+//           }
+//           userErrors {
+//             field
+//             message
+//           }
+//         }
+//       }
+//     `;
+// console.log('logdddd',query);
+
+//     const response =  await axios.request(GraphQlAdminConfig(query));;
+
+//     const metafieldsData = response?.data?.data || [];
+//     return metafieldsData;
+
+//   } catch (error) {
+//     console.error("❌ Error in updating metafields:", error);
+//     throw error;
+//   }
+// };

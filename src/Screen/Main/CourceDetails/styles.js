@@ -445,12 +445,12 @@ export default StyleSheet.create({
 
   subItemTitle: {
     fontSize: fontSize.Sixteen,
-    fontFamily: 'Poppins-Medium',
+    fontFamily: 'Poppins-Regular',
     color: colors.heading,
   },
   subItemSubtitle: {
     fontSize: fontSize.Fourteen,
-    fontFamily: 'Poppins-Normal',
+    fontFamily: 'Poppins-Regular',
     color: colors.light_gr,
     marginLeft: wp(3),
     marginBottom: 15,

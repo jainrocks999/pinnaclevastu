@@ -60,7 +60,7 @@ const LoginScreen = ({route, navigation}) => {
         {isLoading ? <Loader /> : null}
         <View style={styles.main}>
           <View style={styles.subt}>
-            <Text style={styles.title}>Login</Text>
+            <Text style={styles.title}>Login / Sign up</Text>
             <Text style={styles.title1}>{'Hello there !\nWelcome Back'}</Text>
           </View>
           <View style={styles.inputcontainer}>
@@ -113,16 +113,19 @@ const LoginScreen = ({route, navigation}) => {
             </TouchableOpacity>
           </Animated.View>
 
-          <View style={styles.endview}>
+          {/* <View style={styles.endview}>
             <Text style={styles.endtext}>
               {"Don't have an account ? "}
               <Text
-                onPress={() => navigation.navigate('Signup', route.params)}
+                onPress={() => {
+                  console.log('datatatta login',route);
+                  
+                  navigation.navigate('Signup', route.params)}}
                 style={{color: colors.orange}}>
                 Sign up
               </Text>
             </Text>
-          </View>
+          </View> */}
         </View>
       </ImageBackground>
     </KeyboardAwareScrollView>

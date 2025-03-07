@@ -260,10 +260,13 @@ const HomeScreen = () => {
       const userStatus = await AsyncStorage.getItem('user_data');
       const userData = userStatus ? JSON.parse(userStatus) : null;
       const userType = userData?.user_type;
-      dispatch(getUserDetails(userData?.shopify_access_token));
+     await dispatch(getUserDetails(userData?.shopify_access_token));
       setUserType(userType);
       if (userType) {
         if (userDetail.length === 0) {
+
+  await dispatch(getUserDetails(userData?.shopify_access_token));
+          
           await dispatch(
             getUserDetailApi({
               token: userData.token,

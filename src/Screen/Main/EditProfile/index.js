@@ -10,7 +10,7 @@ import {
   Animated,
   Vibration,
 } from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import styles from './styles';
 import {colors} from '../../../Component/colors';
 
@@ -24,12 +24,17 @@ import {Dropdown} from 'react-native-element-dropdown';
 import {updateApi} from '../../../Redux/Slice/Authslice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loader from '../../../Component/Loader';
+import { updatedata1 } from '../../../Redux/Slice/loginSlice';
+import { updateCustomerMetafields } from '../../../Redux/Api';
 
 const EditProfile = () => {
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
   const userDetail = useSelector(state => state?.Auth?.userData);
   const isLoading = useSelector(state => state?.Auth?.loading);
+ const {userDetails} = useSelector(state => state.Login);
 
+     const loginUserData = useSelector(state => state?.Auth?.loginUserData);
+     console.log('datata ....12332',userDetails,loginUserData?.shopify_access_token);
   const [isuserselectimage, setIsuserselectimage] = useState(false);
 
   const navigation = useNavigation();
@@ -41,6 +46,70 @@ const EditProfile = () => {
     name: '',
     type: '',
   });
+
+ const Apicall =async()=>{
+  // const variables = {
+  //   customer: {
+  //     acceptsMarketing: true,
+  //     email: userDetails?.email,
+  //     firstName:userDetails?.firstName,
+  //     lastName: userDetails?.lastName,
+  //     password: '123456',
+  //     phone: userDetails?.phone
+  //   },
+  //   customerAccessToken:loginUserData?.shopify_access_token
+   
+  //   }
+  const userStatus = await AsyncStorage.getItem('user_data');
+  const userData = userStatus ? JSON.parse(userStatus) : null;
+ 
+    // await dispatch(
+    //   updatedata1({
+    //       acceptsMarketing: true,
+    //       email: userDetails?.email,
+    //       firstName:userDetails?.firstName,
+    //       lastName: userDetails?.lastName,
+    //       password: '123456',
+    //       phone: userDetails?.phone,
+    //     customerAccessToken:userData?.shopify_access_token,
+    //     navigation
+    //   }),
+    // );
+      // const customerId = userDetails?.id;
+
+      // data.append('name', formData.name);
+      // data.append('email', formData.email);
+      // data.append('phone', formData.mobile);
+      // data.append('dob', formatDate(date));
+      // data.append('time_of_birth', formatTime(time));
+      // data.append('place_of_birth', formData.birthPlace);
+      // data.append('gender', gender);
+      // data.append('city_pincode', formData.cityPincode);
+      // data.append('user_id', userid);
+
+      const customerId =userDetails?.id;  // ✅ Ensure this is correct format
+
+      const metafields = [
+        { key: "gender", type: "list.single_line_text_field", value: [gender] },
+        { key: "current_city_pincode", type: "single_line_text_field", value:formData.cityPincode },
+        { key: "mobile_number", type: "single_line_text_field", value: formData.mobile },
+        { key: "full_name", type: "single_line_text_field", value: formData.name },
+        { key: "birth_time", type: "date_time", value: "2005-08-06T20:30:00Z" },
+        { key: "birth_date", type: "date", value: "2005-11-30" }
+      ];
+      
+      updateCustomerMetafields(customerId, metafields)
+        .then(data => console.log("✅ Final Metafields Response:", data))
+        .catch(error => console.error("❌ Error:", error));
+
+    
+ }
+
+useEffect(()=>{
+  Apicall()
+},[userDetails])
+
+
 
   const [isModalVisible, setModalVisible] = useState(false);
 

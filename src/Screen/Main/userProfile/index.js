@@ -29,7 +29,8 @@ const MyProfile = () => {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const userDetail = useSelector(state => state?.Auth?.userData);
-  const isUserLoading = useSelector(state => state?.Auth?.loading);
+    const {userDetails} = useSelector(state => state.Login);
+     const isUserLoading = useSelector(state => state?.Auth?.loading);
   const focus = useIsFocused();
 
   const [count, setCount] = useState('');
@@ -179,7 +180,7 @@ const MyProfile = () => {
           }
           style={styles.profileImage}
         />
-        <Text style={styles.profileName}>{userDetail?.name}</Text>
+        <Text style={styles.profileName}>{userDetails?.displayName}</Text>
         <Text
           style={[
             styles.profileID,
@@ -187,14 +188,14 @@ const MyProfile = () => {
           ]}>
           ID: {userDetail?.id}
         </Text>
-        <Text style={styles.profileEmail}>{userDetail?.email}</Text>
+        <Text style={styles.profileEmail}>{userDetails?.email}</Text>
         <Text
           style={[
             styles.profileEmail,
             {marginBottom: 4},
             {opacity: userDetail.length === 0 ? 0 : 1},
           ]}>
-          +91 {userDetail?.phone}
+           {userDetails?.phone}
         </Text>
         <TouchableOpacity
           onPress={() => navigation.navigate('EditProfile')}

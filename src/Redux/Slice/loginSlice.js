@@ -5,6 +5,7 @@ import {
   GraphQlConfig,
   LoginUser,
   RegisterUser,
+  updateCutomer,
   userDetails,
 } from '../../common/queries';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -21,6 +22,7 @@ const initialState = {
   errorAccessToken: '',
   isLoadingUser: false,
   userDetails: {},
+  customerupdate: {},
   errorUser: '',
   isLoadingRegister: false,
   registerData: '',
@@ -71,6 +73,19 @@ export const loginSlice = createSlice({
       state.isLoadingUser = false;
       state.errorUser = action.payload;
     },
+
+    SHOPIFY_UPDATE_DATA_FETCH_LOADING: (state, action) => {
+      state.isLoadingUser = true;
+    },
+    SHOPIFY_UPDATE_DATA_FETCH_SUCCESS: (state, action) => {
+      state.isLoadingUser = false;
+      state.customerupdate = action.payload;
+    },
+    SHOPIFY_UPDATE_DATA_FETCH_FAILED: (state, action) => {
+      state.isLoadingUser = false;
+      state.errorUser = action.payload;
+    },
+
     INIT_SHOPIFY_USER_REGISTRAION: (state, action) => {
       state.errorRegister = '';
       state.registerData = {};
@@ -110,6 +125,9 @@ export const {
   SHOPIFY_USER_DATA_FETCH_LOADING,
   SHOPIFY_USER_DATA_FETCH_SUCCESS,
   SHOPIFY_USER_DATA_FETCH_FAILED,
+  SHOPIFY_UPDATE_DATA_FETCH_LOADING,
+  SHOPIFY_UPDATE_DATA_FETCH_SUCCESS,
+  SHOPIFY_UPDATE_DATA_FETCH_FAILED,
   INIT_SHOPIFY_USER_REGISTRAION,
   INIT_USER,
   SHOPIFY_USER_RESET_PASSWORD_LOADING,
@@ -196,7 +214,7 @@ export const ShopifyUserLogin = (input, navigation) => {
           console.log('this is token', data?.customerAccessToken);
           if (data?.customerAccessToken) {
             await AsyncStorage.setItem(
-            'ACCESSTOKEN',
+              'ACCESSTOKEN',
               data?.customerAccessToken?.accessToken,
             );
             dispatch(getUserDetails(data?.customerAccessToken?.accessToken));
@@ -239,7 +257,8 @@ export const getUserDetails = customerAccessToken => {
       axios
         .request(GraphQlConfig(data))
         .then(async response => {
-        
+          console.log('response data ,,', response, data, customerAccessToken);
+
           const data = response.data.data?.customer;
           if (data) {
             await AsyncStorage.setItem('USERINFO', JSON.stringify(data));
@@ -315,6 +334,52 @@ export const DeleteShopifyUserAccount = (id, navigation) => {
     } catch (error) {
       console.log('delete acoount error', error);
       dispatch(SHOPIFY_USER_DELTE_ACCOUNT_FAILED(''));
+    }
+  };
+};
+
+export const updatedata1 = customerAccessToken => {
+  return async dispatch => {
+    try {
+      console.log('datatttaaaa', customerAccessToken);
+
+      dispatch(SHOPIFY_UPDATE_DATA_FETCH_LOADING());
+      let data = JSON.stringify({
+        query: updateCutomer,
+        variables: {
+          customer: {
+            acceptsMarketing: customerAccessToken?.acceptsMarketing,
+            email: customerAccessToken?.email,
+            firstName: customerAccessToken?.firstName,
+            lastName: customerAccessToken?.lastName,
+            password: customerAccessToken?.password,
+            phone: customerAccessToken?.phone,
+          },
+          customerAccessToken: customerAccessToken?.customerAccessToken,
+        },
+      });
+      axios
+        .request(GraphQlConfig(data))
+        .then(async response => {
+          console.log('response data ,,32323', response?.data?.data?.customerUpdate?.customerAccessToken?.accessToken);
+          const userStatus = await AsyncStorage.getItem('user_data');
+          const userData = userStatus ? JSON.parse(userStatus) : null;
+           let newdata ={...userData,shopify_access_token:response?.data?.data?.customerUpdate?.customerAccessToken?.accessToken}
+          const data = response.data.data?.customerUpdate?.customer;
+          if (data) {
+            await AsyncStorage.setItem('user_data',JSON.stringify(newdata));
+            
+await dispatch(getUserDetails(response?.data?.data?.customerUpdate?.customerAccessToken?.accessToken));
+            dispatch(SHOPIFY_UPDATE_DATA_FETCH_SUCCESS(data));
+          } else {
+            SHOPIFY_UPDATE_DATA_FETCH_FAILED(data);
+          }
+        })
+        .catch(error => {
+          dispatch(SHOPIFY_UPDATE_DATA_FETCH_FAILED(error));
+        });
+    } catch (error) {
+      dispatch(SHOPIFY_UPDATE_DATA_FETCH_FAILED(error));
     }
   };
 };

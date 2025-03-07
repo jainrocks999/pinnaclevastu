@@ -217,11 +217,11 @@ const Remedies12SecondComponent = () => {
   );
 
   const renderItem = ({item}) => (
-    <View style={styles.viewinner}>
+    <TouchableOpacity    onPress={() =>
+      navigation.navigate('ProductDetail', {itemId: item.productId})
+    }style={styles.viewinner}>
       <TouchableOpacity
-        onPress={() =>
-          navigation.navigate('ProductDetail', {itemId: item.productId})
-        }>
+      >
         <Image
           source={
             item?.image
@@ -270,7 +270,7 @@ const Remedies12SecondComponent = () => {
           <Text style={styles.closeIcon}>+</Text>
         </View>
       </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 
   return (

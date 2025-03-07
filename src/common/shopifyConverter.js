@@ -20,3 +20,6 @@ export const convertVariantId = (id) => {
 export const convertVariantIdNum = (id) => {
   return atob(id).split("/").pop();
 };
+export const convertCustomerIdNum = (customerId) => {
+  return (`gid://shopify/Customer/${customerId}`);
+};

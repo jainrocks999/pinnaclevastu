@@ -200,6 +200,38 @@ query($customerAccessToken: String!) {
   } 
 }`;
 
+
+export const updateCutomer = `
+      mutation customerUpdate($customer: CustomerUpdateInput!, $customerAccessToken: String!) {
+        customerUpdate(customer: $customer, customerAccessToken: $customerAccessToken) {
+          customer {
+            displayName
+            firstName
+            lastName
+            email
+          }
+          customerAccessToken {
+            accessToken
+          }
+          customerUserErrors {
+            message
+          }
+          userErrors {
+            field
+            message
+          }
+        }
+      }
+    `;
+
+
+
+
+
+
+
+
+
 // export const getProducts = "query getCollectionById($id: ID!) { collection(id: $id) { title products(first: 10) { edges { node  { id title descriptionHtml priceRange { minVariantPrice { amount currencyCode } maxVariantPrice { amount currencyCode } } variants(first: 250) { edges { node { id price { amount currencyCode } compareAtPrice { amount currencyCode } image { src altText } } } } } } filters { id label values { count id input label  } }  } } }"
 export const EditAddressQuery = `
   mutation customerAddressUpdate($customerAccessToken: String!, $id: ID!, $address: MailingAddressInput!) {

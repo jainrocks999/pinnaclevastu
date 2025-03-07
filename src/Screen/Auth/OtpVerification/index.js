@@ -17,10 +17,10 @@ import Loader from '../../../Component/Loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getUserDetailApi, loginUser} from '../../../Redux/Slice/Authslice';
 import {useDispatch, useSelector} from 'react-redux';
+import { getUserDetails } from '../../../Redux/Slice/loginSlice';
 
 const OTPPAGE = ({route}) => {
   const loginUserData = useSelector(state => state?.Auth?.loginUserData);
-
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
 
   const dispatch = useDispatch();
@@ -79,7 +79,7 @@ const OTPPAGE = ({route}) => {
       return;
     }
     try {
-      await AsyncStorage.setItem('user_data', JSON.stringify(loginUserData));
+    if(loginUserData?.shopify_user_exist=='yes') { await AsyncStorage.setItem('user_data', JSON.stringify(loginUserData));
       await AsyncStorage.setItem('user_type', loginUserData?.user_type);
       await AsyncStorage.setItem(
         'user_id',
@@ -94,7 +94,7 @@ const OTPPAGE = ({route}) => {
         navigation.replace('Home', {screen: 'MyCart', params: {from: 'OTP'}});
       } else if (route?.params?.from == 'CourseDetails') {
         setIsLoading(false);
-
+await dispatch(getUserDetails(loginUserData?.shopify_access_token));
         await dispatch(
           getUserDetailApi({
             token: loginUserData?.token,
@@ -105,6 +105,8 @@ const OTPPAGE = ({route}) => {
         navigation.replace('CourseDetail');
       } else if (route?.params?.from === 'profile') {
         setIsLoading(false);
+
+        await dispatch(getUserDetails(loginUserData?.shopify_access_token));
         await dispatch(
           getUserDetailApi({
             token: loginUserData?.token,
@@ -117,6 +119,9 @@ const OTPPAGE = ({route}) => {
       } else {
         setIsLoading(false);
         navigation.replace('Home');
+      }}else{
+        Toast.show('OTP verified successfully!');
+          navigation.navigate('Signup', route.params?.from) 
       }
     } catch (error) {
       console.error('Error storing user data:', error);
@@ -142,10 +147,10 @@ const OTPPAGE = ({route}) => {
             style={
               styles.title
             }>{`Mobile Number +91 ${route?.params.item}`}</Text>
-          <Text
+          {isDisabled && (<Text
             style={
               styles.title1
-            }>{`verification code sent to your ${loginUserData.OTP}`}</Text>
+            }>{`verification code sent to your ${loginUserData.OTP}`}</Text>)}
         </View>
         {isDisabled && (
           <Text style={{color: '#FC0600', textAlign: 'center'}}>

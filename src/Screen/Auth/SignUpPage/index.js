@@ -25,6 +25,9 @@ import Loader from '../../../Component/Loader';
 
 const SignUpPage = ({route}) => {
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
+  const loginUserData = useSelector(state => state?.Auth?.loginUserData);
+console.log('otp very fy ',loginUserData);
+console.log('datattatatat1213',route.params);
 
   const dispatch = useDispatch();
   const [visible, setVisible] = useState(false);
@@ -34,10 +37,6 @@ const SignUpPage = ({route}) => {
 
   const navigation = useNavigation();
   const [gender, setGender] = useState('');
-
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible);
-  };
 
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
@@ -63,7 +62,7 @@ const SignUpPage = ({route}) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    mobile: '',
+    mobile: loginUserData?.mobile_no,
     gender: '',
     cityPincode: '',
     date: '',
@@ -78,7 +77,7 @@ const SignUpPage = ({route}) => {
     return `${day}-${month}-${year}`;
   };
 
-  const [time, setTime] = useState('');
+  const [time, setTime] = useState(new Date());
   const [open1, setOpen1] = useState(false);
 
   const formatTime = time => {
@@ -407,6 +406,7 @@ const SignUpPage = ({route}) => {
                   keyboardType="phone-pad"
                   value={formData.mobile}
                   maxLength={10}
+                  editable={false}
                   onChangeText={text => handleInputChange('mobile', text)}
                 />
               </Animated.View>
@@ -580,6 +580,7 @@ const SignUpPage = ({route}) => {
             <DatePicker
               modal
               open={open1}
+             
               date={time || new Date()}
               mode="time"
               onConfirm={selectedTime => {
