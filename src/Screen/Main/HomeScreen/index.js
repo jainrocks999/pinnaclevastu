@@ -1507,10 +1507,10 @@ const HomeScreen = () => {
               {
                 textAlign: 'center',
                 marginVertical: 10,
-                color: homeData?.captured_highlights?.title_color,
+                color: homeData?.captured_highlights?.content?.title_color,
               },
             ]}>
-            {homeData?.captured_highlights?.title}
+            {homeData?.captured_highlights?.content?.title}
           </Text>
         </View>
 

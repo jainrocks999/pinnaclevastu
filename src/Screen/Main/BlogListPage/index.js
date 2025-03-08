@@ -13,7 +13,7 @@ import {useNavigation} from '@react-navigation/native';
 import styles from './styles';
 
 import {useDispatch, useSelector} from 'react-redux';
-
+import DrawerIcon from '../../../assets/image/Drawer.svg';
 import {
   heightPercent as hp,
   widthPrecent as wp,

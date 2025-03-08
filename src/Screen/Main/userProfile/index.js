@@ -183,19 +183,19 @@ const MyProfile = () => {
           style={styles.profileImage}
         />
         <Text style={styles.profileName}>{userDetails?.displayName}</Text>
-        <Text
+        {/* <Text
           style={[
             styles.profileID,
             {opacity: userDetail.length === 0 ? 0 : 1},
           ]}>
           ID: {userDetail?.id}
-        </Text>
+        </Text> */}
         <Text style={styles.profileEmail}>{userDetails?.email}</Text>
         <Text
           style={[
             styles.profileEmail,
             {marginBottom: 4},
-            {opacity: userDetail.length === 0 ? 0 : 1},
+            {opacity: userDetails.length === 0 ? 0 : 1},
           ]}>
            {userDetails?.phone}
         </Text>

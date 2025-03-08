@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
-import Drawer from '../../../assets/image/Drawer.svg';
+import DrawerIcon from '../../../assets/image/Drawer.svg';
 import styles from './styles';
 
 import {useDispatch, useSelector} from 'react-redux';
