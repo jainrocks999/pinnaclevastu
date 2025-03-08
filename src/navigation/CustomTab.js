@@ -96,26 +96,26 @@ const TabBar = ({state, descriptors, navigation}) => {
   const buttonWidth = dimensions.width / state.routes.length;
   const profile = buttonWidth * state.index;
 
-  const tabPositionX = useSharedValue(0);
+  // const tabPositionX = useSharedValue(0);
 
-  const animateStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        translateX: tabPositionX.value,
-      },
-    ],
-  }));
+  // const animateStyle = useAnimatedStyle(() => ({
+  //   transform: [
+  //     {
+  //       translateX: tabPositionX.value,
+  //     },
+  //   ],
+  // }));
 
-  useEffect(() => {
-    tabPositionX.value = withTiming(profile ?? buttonWidth * state.index);
-  }, [state.index, profile]);
+  // useEffect(() => {
+  //   tabPositionX.value = withTiming(profile ?? buttonWidth * state.index);
+  // }, [state.index, profile]);
 
-  const onTabBarLayout = e => {
-    setDimensions({
-      height: e.nativeEvent.layout.height,
-      width: e.nativeEvent.layout.width,
-    });
-  };
+  // const onTabBarLayout = e => {
+  //   setDimensions({
+  //     height: e.nativeEvent.layout.height,
+  //     width: e.nativeEvent.layout.width,
+  //   });
+  // };
 
   const shouldHide = shouldHideTabBar(state.routes[state.index]);
 
@@ -125,20 +125,8 @@ const TabBar = ({state, descriptors, navigation}) => {
 
   return (
     <View style={[styles.container]}>
-      <View onLayout={onTabBarLayout} style={styles.tab}>
-        <Animated.View
-          style={[
-            animateStyle,
-            {
-              borderTopWidth: widthPrecent(0.6),
-              borderColor: '#FFFFFF',
-              position: 'absolute',
-              height: "100%",
-              width: buttonWidth,
-              backgroundColor: 'rgba(173, 216, 230, 0.15)',
-            },
-          ]}
-        />
+      <View style={styles.tab}>
+     
         {state.routes.map((route, index) => {
           const isFocused = state.index === index;
 
@@ -154,7 +142,7 @@ const TabBar = ({state, descriptors, navigation}) => {
               target: route.key,
               canPreventDefault: true,
             });
-            tabPositionX.value = withTiming(buttonWidth * state.index);
+            // tabPositionX.value = withTiming(buttonWidth * state.index);
 
             if (!isFocused && !event.defaultPrevented) {
               navigation.navigate(route.name=="MyProfile"?isLoggedIn?"MyProfile":"Login":route.name)

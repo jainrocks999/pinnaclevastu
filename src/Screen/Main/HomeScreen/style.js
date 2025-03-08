@@ -70,8 +70,8 @@ export default StyleSheet.create({
     backgroundColor: colors.white,
     borderRadius: 15,
     elevation: 3,
-    borderWidth:1,
-    borderColor:"#bdc3c7",
+    borderWidth: 1,
+    borderColor: '#bdc3c7',
     // shadowColor: '#000', // Shadow for iOS
     shadowColor: '',
     shadowOffset: {width: 0, height: 2},
@@ -135,7 +135,7 @@ export default StyleSheet.create({
     overflow: 'hidden',
   },
   cardContainer2: {
-    width: wp(90),
+    width: wp(80),
     minHeight: wp(35),
     backgroundColor: colors.white,
     padding: 6,
@@ -205,7 +205,7 @@ export default StyleSheet.create({
   },
   text: {
     marginTop: hp(1),
-    paddingHorizontal: 5,
+    paddingHorizontal: 10,
     fontSize: fontSize.Twelve,
     fontFamily: 'Poppins-Regular',
     color: colors.heading,
@@ -400,8 +400,8 @@ export default StyleSheet.create({
   },
   cardImage: {
     borderRadius: wp(50),
-    width: '36%',
-    height: '93%',
+    width: '38%',
+    height: '80%',
     resizeMode: 'contain',
   },
   infoSection: {
@@ -485,7 +485,7 @@ export default StyleSheet.create({
     paddingVertical: 10,
     // backgroundColor: '#FAF6ED',
     marginVertical: wp(3),
-    resizeMode:"contain"
+    resizeMode: 'contain',
   },
   prodCrossPriceText: {
     color: '#A4A4A4',
@@ -496,7 +496,7 @@ export default StyleSheet.create({
   },
   imgContainer: {
     backgroundColor: '#f3f3f3',
-    height: hp(40),
+    height: hp(35),
     margin: 10,
     borderRadius: 10,
   },
@@ -583,6 +583,12 @@ export default StyleSheet.create({
     fontSize: fontSize.Sixteen,
     fontFamily: 'Poppins-Regular',
     color: colors.heading,
+  },
+  inputSearchStyle: {
+    borderRadius: 10,
+    color: colors.heading,
+    fontFamily: 'Poppins-Regular',
+    fontSize: fontSize.Fourteen,
   },
   selectedText: {
     fontSize: fontSize.Sixteen,
@@ -757,7 +763,7 @@ export default StyleSheet.create({
     fontSize: fontSize.Eighteen,
     color: '#143F71',
     fontFamily: 'Poppins-Medium',
-    textTransform:'capitalize'
+    textTransform: 'capitalize',
   },
   blogCardContantText: {
     color: '#001227',
@@ -822,4 +828,12 @@ export default StyleSheet.create({
     fontFamily: 'Poppins-SemiBold',
   },
 
+  errorText: {
+    marginLeft: 5,
+    marginTop: -5,
+    marginBottom: 5,
+    fontSize: fontSize.Twelve,
+    fontFamily: 'Poppins-Regular',
+    color: 'red',
+  },
 });
