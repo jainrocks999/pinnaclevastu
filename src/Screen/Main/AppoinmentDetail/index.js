@@ -12,8 +12,11 @@ import {
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import styles from './styles';
+import BackIcon from '../../../assets/image/backIcon.svg';
+import ClockIcon from '../../../assets/image/timeIcon.svg';
+import CalendarIcon from '../../../assets/image/calendarIcon.svg';
 import {Rating} from 'react-native-ratings';
-import {widthPrecent} from '../../../Component/ResponsiveScreen/responsive';
+import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
 import {useNavigation} from '@react-navigation/native';
 import Imagepath from '../../../Component/Imagepath';
 import axios from 'axios';
@@ -222,7 +225,7 @@ const AppointmentDetails = ({route}) => {
               type="custom"
               tintColor={colors.white}
               ratingCount={5}
-              imageSize={widthPrecent(3.5)}
+              imageSize={wp(3.5)}
               startingValue={item.star}
               ratingColor="#52B1E9"
               readonly
@@ -248,10 +251,7 @@ const AppointmentDetails = ({route}) => {
           <TouchableOpacity
             onPress={() => navigation.goBack()}
             hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-            <Image
-              style={styles.backBtn}
-              source={require('../../../assets/drawer/Back1.png')}
-            />
+            <BackIcon width={wp(4)} height={wp(4)} style={styles.backBtn} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Residential Vastu</Text>
         </View>
@@ -283,9 +283,10 @@ const AppointmentDetails = ({route}) => {
 
             <Text style={styles.sectionText}>Appointment</Text>
             <View style={styles.dateInfoContainer}>
-              <Image
-                style={styles.ImgIcon}
-                source={require('../../../assets/image/cale.png')}
+              <CalendarIcon
+                width={wp(4)}
+                height={wp(4)}
+                style={{marginRight: 5}}
               />
               <Text
                 style={[
@@ -297,9 +298,10 @@ const AppointmentDetails = ({route}) => {
             </View>
 
             <View style={styles.dateInfoContainer}>
-              <Image
-                style={styles.ImgIcon}
-                source={require('../../../assets/image/Layer.png')}
+              <ClockIcon
+                width={wp(4)}
+                height={wp(4)}
+                style={{marginRight: 5}}
               />
               <Text
                 style={[
@@ -318,7 +320,7 @@ const AppointmentDetails = ({route}) => {
                   startingValue={data?.franchise_details?.reviews_star || ''}
                   tintColor="#F5FAFF"
                   readonly
-                  imageSize={widthPrecent(3.5)}
+                  imageSize={wp(3.5)}
                   style={styles.starContainer}
                 />
                 <Text style={styles.ratingText}>

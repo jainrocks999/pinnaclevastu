@@ -70,22 +70,19 @@ export default StyleSheet.create({
 
   backBtn: {
     marginTop: -5,
-    height: wp(4),
-    width: wp(2.3),
-    resizeMode: 'stretch',
-    marginRight: 20,
+    marginRight: 10,
   },
   bagBtn: {
-    resizeMode: 'contain',
+    marginTop:-5,
   },
   itemCount: {
     backgroundColor: '#EF6024',
     borderRadius: 10,
     zIndex: 1,
-    bottom: -10,
+    bottom: -5,
     left: 7,
-    marginTop: -15,
     height: 15,
+    marginTop: -15,
     width: 13,
     display: 'flex',
     justifyContent: 'center',

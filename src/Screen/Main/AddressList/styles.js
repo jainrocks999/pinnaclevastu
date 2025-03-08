@@ -196,10 +196,8 @@ export default StyleSheet.create({
   },
 
   backBtn: {
-    height: wp(4),
-    width: wp(2.3),
-    resizeMode: 'stretch',
-    marginRight: 20,
+    marginTop: -5,
+    marginRight: 10,
   },
   viewLine: {
     height: 12,

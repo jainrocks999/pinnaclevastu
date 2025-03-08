@@ -28,10 +28,7 @@ export default StyleSheet.create({
   },
 
   backBtn: {
-    height: wp(4),
-    width: wp(2.3),
-    resizeMode: 'stretch',
-    marginRight: 20,
+    marginRight: 10,
     marginTop: -5,
   },
   servicesContainer: {

@@ -1,17 +1,18 @@
 import {
-    View,
-    Text,
-    Image,
-    TouchableOpacity,
-    ScrollView,
-    TextInput,
-    Animated,
-    BackHandler,
-    Vibration,
-    FlatList,
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  TextInput,
+  Animated,
+  BackHandler,
+  Vibration,
+  FlatList,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
+import Drawer from '../../../assets/image/Drawer.svg';
 import styles from './styles';
 
 import {useDispatch, useSelector} from 'react-redux';
@@ -29,10 +30,10 @@ const BlogDetails = ({route}) => {
   console.log('datatattatata', route.params?.item?.node?.image?.url);
   const item = route.params.item;
   const navigation = useNavigation();
- const [reviewData, setReviewData] = useState({
+  const [reviewData, setReviewData] = useState({
     reviewTitle: '',
     reviewMessage: '',
-    ratingStar:''
+    ratingStar: '',
   });
   const cartTotalQuantity = useSelector(
     state => state?.cart?.cartTotalQuantity,
@@ -74,7 +75,7 @@ const BlogDetails = ({route}) => {
           <TouchableOpacity
             onPress={() => navigation.openDrawer()}
             hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-            <Image source={require('../../../assets/image/Drawer.png')} />
+            <DrawerIcon />
           </TouchableOpacity>
           <Image
             style={{marginLeft: 15}}
@@ -140,107 +141,98 @@ const BlogDetails = ({route}) => {
             </TouchableOpacity>
           </View>
 
-
-<View style={styles.shareview}>
-          <View style={styles.rowSection}>
-            <TouchableOpacity style={styles.shareIcon} onPress={() => share()}>
-              <Image
-                style={styles.shareIcon}
-                source={require('../../../assets/otherApp/share.png')}
-              />
-            </TouchableOpacity>
-
-            <Text style={[styles.cont, {marginTop: 0}]}>{'Share it :'}</Text>
-
-            <TouchableOpacity
-              onPress={() => openApp('fb://profile', 'https://facebook.com')}>
-              <Image
-                style={styles.socialImg}
-                source={require('../../..//assets/drawer/fb.png')}
-              />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() =>
-                openApp('instagram://app', 'https://instagram.com')
-              }>
-              <Image
-                style={styles.socialImg}
-                source={require('../../../assets/drawer/instagram.png')}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => copyToClipboard()}>
-              <Image
-                style={styles.socialImg}
-                source={require('../../../assets/drawer/copy.png')}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        </View>
- <View style={[styles.reviewForm, {paddingHorizontal: 30}]}>
-            <Text style={styles.formHeadText}>Review Form</Text>
-            <Text style={styles.lableText}>Title</Text>
-            <Animated.View
-              style={[{transform: [{translateX: shakeAnimation.reviewTitle}]}]}>
-              <View style={styles.textInputContainer}>
-                <TextInput
-                  placeholder="Title"
-                  placeholderTextColor={'#D2D2D2'}
-                  style={styles.textInput}
-                  value={reviewData.reviewTitle}
-                  onChangeText={text => handleInputChange('reviewTitle', text)}
-                />
-              </View>
-            </Animated.View>
-
-            <Text style={styles.lableText}>Write a Review</Text>
-            <Animated.View
-              style={[
-                {transform: [{translateX: shakeAnimation.ratingStar}]},
-              ]}>
-              <View style={[styles.textInputContainer, styles.heightInput]}>
-                <TextInput
-                  placeholder="Type here..."
-                  placeholderTextColor={'#D2D2D2'}
-                  style={styles.textInput}
-                  value={reviewData.ratingStar}
-                  onChangeText={text =>
-                    handleInputChange('ratingStar', text)
-                  }
-                />
-              </View>
-            </Animated.View>
-
-            <Text style={styles.lableText}>Write a Review</Text>
-            <Animated.View
-              style={[
-                {transform: [{translateX: shakeAnimation.reviewMessage}]},
-              ]}>
-              <View style={[styles.textInputContainer, styles.heightInput]}>
-                <TextInput
-                  placeholder="Type here..."
-                  placeholderTextColor={'#D2D2D2'}
-                  style={styles.textInput}
-                  value={reviewData.reviewMessage}
-                  onChangeText={text =>
-                    handleInputChange('reviewMessage', text)
-                  }
-                />
-              </View>
-            </Animated.View>
-
-            <Animated.View
-              style={[{transform: [{scale: buttonAnimatedValue}]}]}>
+          <View style={styles.shareview}>
+            <View style={styles.rowSection}>
               <TouchableOpacity
-                style={styles.submitBtn}
-                // onPress={handlePress}
-                activeOpacity={1}>
-                <Text style={styles.btext1}>SUBMIT</Text>
+                style={styles.shareIcon}
+                onPress={() => share()}>
+                <Image
+                  style={styles.shareIcon}
+                  source={require('../../../assets/otherApp/share.png')}
+                />
               </TouchableOpacity>
-            </Animated.View>
+
+              <Text style={[styles.cont, {marginTop: 0}]}>{'Share it :'}</Text>
+
+              <TouchableOpacity
+                onPress={() => openApp('fb://profile', 'https://facebook.com')}>
+                <Image
+                  style={styles.socialImg}
+                  source={require('../../..//assets/drawer/fb.png')}
+                />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() =>
+                  openApp('instagram://app', 'https://instagram.com')
+                }>
+                <Image
+                  style={styles.socialImg}
+                  source={require('../../../assets/drawer/instagram.png')}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => copyToClipboard()}>
+                <Image
+                  style={styles.socialImg}
+                  source={require('../../../assets/drawer/copy.png')}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
+        </View>
+        <View style={[styles.reviewForm, {paddingHorizontal: 30}]}>
+          <Text style={styles.formHeadText}>Review Form</Text>
+          <Text style={styles.lableText}>Title</Text>
+          <Animated.View
+            style={[{transform: [{translateX: shakeAnimation.reviewTitle}]}]}>
+            <View style={styles.textInputContainer}>
+              <TextInput
+                placeholder="Title"
+                placeholderTextColor={'#D2D2D2'}
+                style={styles.textInput}
+                value={reviewData.reviewTitle}
+                onChangeText={text => handleInputChange('reviewTitle', text)}
+              />
+            </View>
+          </Animated.View>
+
+          <Text style={styles.lableText}>Write a Review</Text>
+          <Animated.View
+            style={[{transform: [{translateX: shakeAnimation.ratingStar}]}]}>
+            <View style={[styles.textInputContainer, styles.heightInput]}>
+              <TextInput
+                placeholder="Type here..."
+                placeholderTextColor={'#D2D2D2'}
+                style={styles.textInput}
+                value={reviewData.ratingStar}
+                onChangeText={text => handleInputChange('ratingStar', text)}
+              />
+            </View>
+          </Animated.View>
+
+          <Text style={styles.lableText}>Write a Review</Text>
+          <Animated.View
+            style={[{transform: [{translateX: shakeAnimation.reviewMessage}]}]}>
+            <View style={[styles.textInputContainer, styles.heightInput]}>
+              <TextInput
+                placeholder="Type here..."
+                placeholderTextColor={'#D2D2D2'}
+                style={styles.textInput}
+                value={reviewData.reviewMessage}
+                onChangeText={text => handleInputChange('reviewMessage', text)}
+              />
+            </View>
+          </Animated.View>
+
+          <Animated.View style={[{transform: [{scale: buttonAnimatedValue}]}]}>
+            <TouchableOpacity
+              style={styles.submitBtn}
+              // onPress={handlePress}
+              activeOpacity={1}>
+              <Text style={styles.btext1}>SUBMIT</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </View>
         {/* <LinearGradient
           colors={['#52B0E8', '#FF9770']}
           start={{x: 0, y: 0}}

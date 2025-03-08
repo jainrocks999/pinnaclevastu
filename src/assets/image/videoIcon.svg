@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
+  <g id="Group_21155" data-name="Group 21155" transform="translate(-41 -261)">
+    <g id="Ellipse_2851" data-name="Ellipse 2851" transform="translate(41 261)" fill="none" stroke="#d2a086" stroke-width="1.5">
+      <circle cx="10" cy="10" r="10" stroke="none"/>
+      <circle cx="10" cy="10" r="9.25" fill="none"/>
+    </g>
+    <path id="_211876_play_icon" data-name="211876_play_icon" d="M102.758,67.692,96.673,64.07a.459.459,0,0,0-.238-.07.436.436,0,0,0-.433.437h0v7.519h0a.436.436,0,0,0,.433.437.5.5,0,0,0,.245-.074l6.079-3.617a.658.658,0,0,0,0-1.01Z" transform="translate(-47.986 202.524)" fill="#d2a086"/>
+  </g>
+</svg>

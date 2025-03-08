@@ -14,10 +14,13 @@ import {
 import React, {useEffect, useRef, useState} from 'react';
 import Collapsible from 'react-native-collapsible';
 import styles from './styles';
+import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
 import {useDispatch, useSelector} from 'react-redux';
 import Imagepath from '../../../Component/Imagepath';
-import {widthPrecent} from '../../../Component/ResponsiveScreen/responsive';
-import RenderHTML from 'react-native-render-html';
+import BackIcon from '../../../assets/image/backIcon.svg';
+import ShareIcon from '../../../assets/image/share.svg';
+import DownarrowIcon from '../../../assets/image/down_grey_icon.svg';
+import UparrowIcon from '../../../assets/image/org_up_arrow_icon.svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 import WebView from 'react-native-webview';
@@ -26,7 +29,6 @@ import {checkout} from '../../../models/Checkout';
 import {convertVariantId} from '../../../common/shopifyConverter';
 import Toast from 'react-native-simple-toast';
 import {fetchProduct, InitProduct} from '../../../Redux/Slice/productSlice';
-import {getProductMetafieldsApiCall} from '../../../Redux/Api';
 import Loader from '../../../Component/Loader';
 const {width} = Dimensions.get('window');
 
@@ -38,7 +40,7 @@ const CourseDetail = ({route}) => {
   const isLoading = useSelector(state => state.Product?.isLoading);
   const [userType, setUserType] = useState('');
   const CourceDetailA = useSelector(state => state?.home?.CourceDetailA);
-  
+
   const [videoPlay, setVideoPlay] = useState(true);
   const [videoState, setVideoState] = useState({
     isPlaying: true,
@@ -58,7 +60,6 @@ const CourseDetail = ({route}) => {
   const handleApi = async itemId => {
     dispatch(InitProduct());
     dispatch(fetchProduct(itemId));
-    
   };
 
   const groupedMeta = Detail1?.metafieldsData
@@ -183,7 +184,6 @@ const CourseDetail = ({route}) => {
   };
 
   const handleJoinCourse = () => {
-    
     Animated.sequence([
       Animated.timing(buttonAnimatedValue, {
         toValue: 0.94,
@@ -297,14 +297,27 @@ const CourseDetail = ({route}) => {
               {item?.question?.value}
             </Text>
           </View>
-          <Image
+          {/* <Image
             source={
               expandedSection == item?.question?.id
                 ? require('../../../assets/otherApp/updown1.png')
                 : require('../../../assets/image/arrow_icon.png')
             }
             style={[styles.toggleIcon2]}
-          />
+          /> */}
+          {expandedSection != item?.question?.id ? (
+            <DownarrowIcon
+              width={wp(4)}
+              height={wp(3)}
+              style={{marginRight: 10}}
+            />
+          ) : (
+            <UparrowIcon
+              width={wp(4)}
+              height={wp(3)}
+              style={{marginRight: 10}}
+            />
+          )}
         </TouchableOpacity>
 
         <Collapsible collapsed={expandedSection != item?.question?.id}>
@@ -373,10 +386,7 @@ const CourseDetail = ({route}) => {
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-          <Image
-            style={styles.backBtn}
-            source={require('../../../assets/drawer/Back1.png')}
-          />
+          <BackIcon width={wp(4)} height={wp(4)} style={styles.backBtn} />
         </TouchableOpacity>
 
         <View style={styles.headerview}>
@@ -440,11 +450,10 @@ const CourseDetail = ({route}) => {
                   </Text>
                 )}
             </View>
-            <TouchableOpacity onPress={() => handleShare()}>
-              <Image
-                source={require('../../../assets/otherApp/share.png')}
-                style={styles.shareimage}
-              />
+            <TouchableOpacity
+              style={styles.shareimage}
+              onPress={() => handleShare()}>
+              <ShareIcon width={wp(4)} height={wp(4)} />
             </TouchableOpacity>
           </View>
         </View>
@@ -715,8 +724,11 @@ const CourseDetail = ({route}) => {
         </View>
       </ScrollView>
 
-      <View style={[styles.scrollview,{borderTopWidth:0.4,borderTopColor:'grey', 
-     paddingBottom: 10,}]}>
+      <View
+        style={[
+          styles.scrollview,
+          {borderTopWidth: 0.4, borderTopColor: 'grey', paddingBottom: 10},
+        ]}>
         <View style={styles.listItem}>
           <Text style={styles.listItemText}>{Detail1?.title}</Text>
           <Text style={[styles.listitem1]}>

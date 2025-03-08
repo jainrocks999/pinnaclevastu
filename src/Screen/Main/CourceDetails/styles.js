@@ -69,9 +69,9 @@ export default StyleSheet.create({
     fontFamily: 'Poppins-Medium',
   },
   shareimage: {
-    marginRight: 5,
-    width: wp(7),
-    height: wp(7),
+    backgroundColor:colors.ordercolor,
+    paddingVertical:6,
+    paddingHorizontal:15,
     borderRadius: wp(3),
   },
   horizontalLine: {
@@ -392,10 +392,7 @@ export default StyleSheet.create({
   },
   backBtn: {
     marginTop: -5,
-    height: wp(4),
-    width: wp(2.3),
-
-    marginRight: 20,
+    marginRight: 10,
   },
 
   courseToggle1: {

@@ -27,7 +27,7 @@ export default StyleSheet.create({
   cardImage: {
     height: wp(30),
     width: wp(28),
-    borderRadius: 10,
+    borderRadius: wp(50),
   },
 
   direction: {
@@ -185,11 +185,6 @@ export default StyleSheet.create({
     borderRadius: 60,
     marginBottom: 5,
   },
-  shareIcon: {
-    borderRadius: 50,
-    width: wp(6),
-    height: wp(6),
-  },
   rowSection: {
     flexDirection: 'row',
     gap: 5,
@@ -197,10 +192,7 @@ export default StyleSheet.create({
   },
   backBtn: {
     marginTop: -5,
-    height: wp(4),
-    width: wp(2.3),
-    resizeMode: 'stretch',
-    marginRight: 20,
+    marginRight: 10,
   },
   subItemContainer: {
     marginTop: 15,

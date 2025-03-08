@@ -14,8 +14,12 @@ import {
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import styles from './styles';
+import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
 import {colors} from '../../../Component/colors';
 import {useNavigation} from '@react-navigation/native';
+import DownarrowIcon from '../../../assets/image/down_grey_icon.svg';
+import ClockIcon from '../../../assets/image/timeIcon.svg';
+import CalendarIcon from '../../../assets/image/calendarIcon.svg';
 import {fontSize} from '../../../Component/fontsize';
 import DatePicker from 'react-native-date-picker';
 import Toast from 'react-native-simple-toast';
@@ -680,12 +684,10 @@ const SignUpFranchise = () => {
                   {formatDate(date)}
                 </Text>
 
-                <Image
-                  style={{
-                    height: 20,
-                    width: 20,
-                  }}
-                  source={require('../../../assets/image/cale.png')}
+                <CalendarIcon
+                  width={wp(4)}
+                  height={wp(4)}
+                  style={{marginRight: 10}}
                 />
               </TouchableOpacity>
             </Animated.View>
@@ -738,12 +740,10 @@ const SignUpFranchise = () => {
                 value={gender}
                 onChange={text => setGender(text.value)}
                 renderRightIcon={() => (
-                  <Image
-                    style={{
-                      height: 8,
-                      width: 15,
-                    }}
-                    source={require('../../../assets/image/arrow_icon.png')}
+                  <DownarrowIcon
+                    width={wp(4)}
+                    height={wp(3)}
+                    style={{marginRight: 5}}
                   />
                 )}
               />
@@ -995,12 +995,10 @@ const SignUpFranchise = () => {
                       })
                     )}
                     renderRightIcon={() => (
-                      <Image
-                        style={{
-                          height: 8,
-                          width: 15,
-                        }}
-                        source={require('../../../assets/image/arrow_icon.png')}
+                      <DownarrowIcon
+                        width={wp(4)}
+                        height={wp(3)}
+                        style={{marginRight: 5}}
                       />
                     )}
                   />
@@ -1077,13 +1075,11 @@ const SignUpFranchise = () => {
                   value={formData.country}
                   onChange={text => handleInputChange('country', text.id)}
                   renderRightIcon={() => (
-                    <Image
-                      style={{
-                        height: 8,
-                        width: 15,
-                      }}
-                      source={require('../../../assets/image/arrow_icon.png')}
-                    />
+                    <DownarrowIcon
+                    width={wp(4)}
+                    height={wp(3)}
+                    style={{marginRight: 5}}
+                  />
                   )}
                 />
               </Animated.View>
@@ -1116,13 +1112,11 @@ const SignUpFranchise = () => {
                   value={formData.stateName}
                   onChange={text => handleInputChange('stateName', text.id)}
                   renderRightIcon={() => (
-                    <Image
-                      style={{
-                        height: 8,
-                        width: 15,
-                      }}
-                      source={require('../../../assets/image/arrow_icon.png')}
-                    />
+                    <DownarrowIcon
+                    width={wp(4)}
+                    height={wp(3)}
+                    style={{marginRight: 5}}
+                  />
                   )}
                 />
               </Animated.View>
@@ -1170,13 +1164,11 @@ const SignUpFranchise = () => {
                   value={formData.city}
                   onChange={text => handleInputChange('city', text.id)}
                   renderRightIcon={() => (
-                    <Image
-                      style={{
-                        height: 8,
-                        width: 15,
-                      }}
-                      source={require('../../../assets/image/arrow_icon.png')}
-                    />
+                    <DownarrowIcon
+                    width={wp(4)}
+                    height={wp(3)}
+                    style={{marginRight: 5}}
+                  />
                   )}
                 />
               </Animated.View>

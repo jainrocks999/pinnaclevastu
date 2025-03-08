@@ -11,10 +11,15 @@ import {
   Modal,
 } from 'react-native';
 import Collapsible from 'react-native-collapsible';
-
+import BackIcon from '../../../assets/image/backIcon.svg';
+import SearchIcon from '../../../assets/image/searchIcon.svg';
+import DownarrowIcon from '../../../assets/image/down_grey_icon.svg';
+import UparrowIcon from '../../../assets/image/org_up_arrow_icon.svg';
+import DownloadIcon from '../../../assets/image/downloadIcon.svg';
+import VideoIcon from '../../../assets/image/videoIcon.svg';
 import styles from './styles';
 import {colors} from '../../../Component/colors';
-import {widthPrecent} from '../../../Component/ResponsiveScreen/responsive';
+import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
 import WebView from 'react-native-webview';
 import axios from 'axios';
 import Loader from '../../../Component/Loader';
@@ -100,7 +105,7 @@ const CourceListDownload = ({navigation}) => {
     <View style={styles.singleSubItem}>
       <View style={[styles.direction]}>
         <TouchableOpacity onPress={() => openVideoModel(item)}>
-          <Image
+          {/* <Image
             source={
               item.type?.includes('mp4')
                 ? require('../../../assets/otherApp/vedio.png')
@@ -109,7 +114,17 @@ const CourceListDownload = ({navigation}) => {
                 : null
             }
             style={styles.subItemIcon}
-          />
+          /> */}
+          <View style={styles.videoIcon}>
+            {item.type?.includes('mp4') ? (
+              <VideoIcon width={wp(5)} height={wp(5)} />
+            ) : item.type?.includes('pdf') ? (
+              <Image
+                style={styles.subItemIcon}
+                source={require('../../../assets/otherApp/fileIcon.png')}
+              />
+            ) : null}
+          </View>
         </TouchableOpacity>
         <View>
           <Text style={styles.subItemTitle}>{item.material_name}</Text>
@@ -124,10 +139,7 @@ const CourceListDownload = ({navigation}) => {
       </View>
 
       <TouchableOpacity style={styles.downloadIconContainer}>
-        <Image
-          source={require('../../../assets/otherApp/download.png')}
-          style={styles.subItemDownloadIcon}
-        />
+        <DownloadIcon width={wp(4)} height={wp(4)} />
       </TouchableOpacity>
     </View>
   );
@@ -156,18 +168,11 @@ const CourceListDownload = ({navigation}) => {
             {item.section_name}
           </Text>
         </View>
-
-        <Image
-          source={
-            expandedSection === index
-              ? require('../../../assets/otherApp/updown.png')
-              : require('../../../assets/image/arrow_icon.png')
-          }
-          style={[
-            styles.toggleIcon2,
-            expandedSection === index && styles.toggleIcon23,
-          ]}
-        />
+        {expandedSection !== index ? (
+          <DownarrowIcon width={wp(4)} height={wp(3)} />
+        ) : (
+          <UparrowIcon width={wp(4)} height={wp(3)} />
+        )}
       </TouchableOpacity>
 
       <Collapsible collapsed={expandedSection !== index}>
@@ -195,10 +200,7 @@ const CourceListDownload = ({navigation}) => {
             navigation.goBack();
           }}
           hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-          <Image
-            style={styles.backBtn}
-            source={require('../../../assets/drawer/Back1.png')}
-          />
+          <BackIcon width={wp(4)} height={wp(4)} style={styles.backBtn} />
         </TouchableOpacity>
 
         <View style={styles.headerview}>
@@ -212,14 +214,14 @@ const CourceListDownload = ({navigation}) => {
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
-          paddingBottom: widthPrecent(25),
+          paddingBottom: wp(25),
           marginTop: 15,
         }}>
         <View style={styles.searchContainer}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <TouchableOpacity
               hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-              <Image source={require('../../../assets/image/SearchIcon.png')} />
+              <SearchIcon width={wp(5)} height={wp(5)} />
             </TouchableOpacity>
 
             <TextInput

@@ -10,7 +10,11 @@ import React, {useEffect, useRef, useState} from 'react';
 import styles from './styles';
 import {colors} from '../../../Component/colors';
 import {useDispatch, useSelector} from 'react-redux';
-import {widthPrecent} from '../../../Component/ResponsiveScreen/responsive';
+import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
+import DrawerIcon from '../../../assets/image/Drawer.svg';
+import BagIcon from '../../../assets/image/bagIcon.svg';
+import SearchIcon from '../../../assets/image/searchIcon.svg';
+import FilterIcon from '../../../assets/image/filterIcon.svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {fetchCollection} from '../../../Redux/Slice/collectionSlice';
 
@@ -88,7 +92,7 @@ const OtherCourses = ({navigation}) => {
 
   const handleImageLoad = (event, id) => {
     const {width: imgWidth, height: imgHeight} = event.nativeEvent.source;
-    const calculatedHeight = (widthPrecent(45) * imgHeight) / imgWidth;
+    const calculatedHeight = (wp(45) * imgHeight) / imgWidth;
     setImageHeights(prev => ({...prev, [id]: calculatedHeight}));
   };
 
@@ -115,13 +119,13 @@ const OtherCourses = ({navigation}) => {
                 ? {uri: `${item?.node?.variants?.edges?.[0]?.node?.image?.src}`}
                 : require('../../../assets/image/Remedies/Image-not.png')
             }
-            width={widthPrecent(45)}
+            width={wp(45)}
             style={[
               styles.cardImg,
               {
                 height:
                   imageHeights[item?.node?.id] ||
-                  widthPrecent(isLiveCourse ? 45 : 25),
+                  wp(isLiveCourse ? 45 : 25),
               },
             ]}
             onLoad={e => handleImageLoad(e, item?.node?.id)}
@@ -182,7 +186,7 @@ const OtherCourses = ({navigation}) => {
         <TouchableOpacity
           onPress={() => navigation.openDrawer()}
           hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-          <Image source={require('../../../assets/image/Drawer.png')} />
+           <DrawerIcon />
         </TouchableOpacity>
         <Image source={require('../../../assets/image/header.png')} />
         <TouchableOpacity
@@ -194,7 +198,7 @@ const OtherCourses = ({navigation}) => {
               <Text style={styles.countText}>{cartTotalQuantity}</Text>
             </View>
           )}
-          <Image source={require('../../../assets/image/small_bag.png')} />
+          <BagIcon  width={wp(5)} height={wp(5)} style={styles.bagBtn} />
         </TouchableOpacity>
       </View>
 
@@ -204,7 +208,7 @@ const OtherCourses = ({navigation}) => {
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <TouchableOpacity
               hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-              <Image source={require('../../../assets/image/SearchIcon.png')} />
+              <SearchIcon width={wp(5)} height={wp(5)} />
             </TouchableOpacity>
 
             <TextInput
@@ -216,7 +220,7 @@ const OtherCourses = ({navigation}) => {
           <TouchableOpacity
             style={styles.filterBtn}
             hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-            <Image source={require('../../../assets/image/Vector.png')} />
+             <FilterIcon width={wp(5)} height={wp(5)} />
           </TouchableOpacity>
         </View>
 

@@ -164,8 +164,6 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
   actionIcon: {
-    width: wp(5.2),
-    height: wp(5.2),
     marginRight: 16,
   },
   actionText: {

@@ -10,7 +10,9 @@ import {
 } from 'react-native';
 import React, {useRef, useState} from 'react';
 import styles from './styles';
+import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
 import {colors} from '../../../Component/colors';
+import WhiteArrowIcon from '../../../assets/image/white_arrow_right.svg';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Toast from 'react-native-simple-toast';
 import {useDispatch, useSelector} from 'react-redux';
@@ -105,10 +107,11 @@ const LoginScreen = ({route, navigation}) => {
               <View style={styles.touch}>
                 <View />
                 <Text style={styles.btext}>GET OTP</Text>
-                <Image
+                {/* <Image
                   style={{height: 7, width: 15, tintColor: '#fff'}}
                   source={require('../../../assets/image/aerow.png')}
-                />
+                /> */}
+                <WhiteArrowIcon width={wp(3)} height={wp(3)} style={{marginRight: 10}} />
               </View>
             </TouchableOpacity>
           </Animated.View>

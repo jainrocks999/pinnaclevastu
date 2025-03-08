@@ -8,8 +8,13 @@ import {
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import styles from './styles';
+import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
 import {Rating} from 'react-native-ratings';
 import {colors} from '../../../Component/colors';
+import BackIcon from '../../../assets/image/backIcon.svg';
+import BagIcon from '../../../assets/image/bagIcon.svg';
+import SearchIcon from '../../../assets/image/searchIcon.svg';
+import FilterIcon from '../../../assets/image/filterIcon.svg';
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 import {fetchCollection} from '../../../Redux/Slice/collectionSlice';
@@ -208,13 +213,8 @@ const RemediesProductList = ({route}) => {
             onPress={() =>
               name1?.Id ? navigation.goBack() : navigation.goBack()
             }
-            hitSlop={{top: 10, left: 10, right: 10, bottom: 10}}
-            //
-          >
-            <Image
-              style={styles.backBtn}
-              source={require('../../../assets/drawer/Back1.png')}
-            />
+            hitSlop={{top: 10, left: 10, right: 10, bottom: 10}}>
+            <BackIcon width={wp(4)} height={wp(4)} style={styles.backBtn} />
           </TouchableOpacity>
           <Text style={styles.logoText}>{name1?.item?.title}</Text>
         </View>
@@ -228,10 +228,7 @@ const RemediesProductList = ({route}) => {
               <Text style={styles.countText}>{cartTotalQuantity}</Text>
             </View>
           )}
-          <Image
-            style={styles.bagBtn}
-            source={require('../../../assets/image/small_bag.png')}
-          />
+          <BagIcon width={wp(5)} height={wp(5)} />
         </TouchableOpacity>
       </View>
       <View style={[styles.Scroll, {flexGrow: 1}]}>
@@ -239,7 +236,8 @@ const RemediesProductList = ({route}) => {
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <TouchableOpacity
               hitSlop={{top: 10, left: 10, right: 10, bottom: 10}}>
-              <Image source={require('../../../assets/image/SearchIcon.png')} />
+              {/* <Image source={require('../../../assets/image/SearchIcon.png')} /> */}
+               <SearchIcon width={wp(5)} height={wp(5)} />
             </TouchableOpacity>
 
             <TextInput
@@ -253,7 +251,7 @@ const RemediesProductList = ({route}) => {
           <TouchableOpacity
             style={styles.filterBtn}
             hitSlop={{top: 10, left: 10, right: 10, bottom: 10}}>
-            <Image source={require('../../../assets/image/Vector.png')} />
+            <FilterIcon width={wp(5)} height={wp(5)} />
           </TouchableOpacity>
         </View>
 

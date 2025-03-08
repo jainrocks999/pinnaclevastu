@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="17" height="18" viewBox="0 0 17 18">
+  <g id="Layer_2" data-name="Layer 2" transform="translate(0)">
+    <g id="facebook" transform="translate(0)">
+      <rect id="background" width="17" height="18" rx="5" transform="translate(0)" fill="#3a559f"/>
+      <path id="icon" d="M65.562,37.366l-.173,1.5a.281.281,0,0,1-.276.252H63.546l-.008,4.451a.2.2,0,0,1-.2.2H61.755a.2.2,0,0,1-.2-.2v-4.45H60.384a.281.281,0,0,1-.278-.284l-.006-1.5a.282.282,0,0,1,.278-.286h1.181V35.6A2.338,2.338,0,0,1,64.023,33h1.2a.282.282,0,0,1,.279.286v1.263a.282.282,0,0,1-.279.286h-.736c-.8,0-.951.392-.951.958v1.254h1.75a.282.282,0,0,1,.276.318Z" transform="translate(-54.476 -29.768)" fill="#fff"/>
+    </g>
+  </g>
+</svg>

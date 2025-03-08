@@ -16,6 +16,9 @@ import {
   heightPercent,
   widthPrecent as wp,
 } from '../../../Component/ResponsiveScreen/responsive';
+import BackIcon from '../../../assets/image/backIcon.svg';
+import DownarrowIcon from '../../../assets/image/down_grey_icon.svg';
+import UparrowIcon from '../../../assets/image/org_up_arrow_icon.svg';
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import Collapsible from 'react-native-collapsible';
@@ -220,10 +223,7 @@ const OrderDetail = ({route}) => {
           <TouchableOpacity
             onPress={() => navigation.goBack()}
             hitSlop={{bottom: 10, top: 10, left: 10, right: 10}}>
-            <Image
-              style={styles.backBtn}
-              source={require('../../../assets/drawer/Back1.png')}
-            />
+            <BackIcon width={wp(4)} height={wp(4)} style={styles.backBtn} />
           </TouchableOpacity>
           <Text style={styles.logoText}>Orders detail</Text>
         </View>
@@ -441,14 +441,20 @@ const OrderDetail = ({route}) => {
               onPress={toggleCollapse}>
               <Text style={styles.sectionTitle}>Shipping Address</Text>
 
-              <Image
-                source={
-                  !isCollapsed
-                    ? require('../../../assets/otherApp/updown.png')
-                    : require('../../../assets/image/arrow_icon.png')
-                }
-                style={[styles.toggleIcon2, {marginLeft: wp(-10)}]}
-              />
+        
+              {isCollapsed ? (
+                <DownarrowIcon
+                  width={wp(4)}
+                  height={wp(3)}
+                  style={{marginRight: 5}}
+                />
+              ) : (
+                <UparrowIcon
+                  width={wp(4)}
+                  height={wp(3)}
+                  style={{marginRight: 5}}
+                />
+              )}
             </TouchableOpacity>
 
             <Collapsible collapsed={isCollapsed}>
@@ -501,14 +507,19 @@ const OrderDetail = ({route}) => {
               onPress={toggleCollapse1}>
               <Text style={styles.sectionTitle}>Billing Address</Text>
 
-              <Image
-                source={
-                  !isCollapsed1
-                    ? require('../../../assets/otherApp/updown.png')
-                    : require('../../../assets/image/arrow_icon.png')
-                }
-                style={[styles.toggleIcon2, {marginLeft: wp(-10)}]}
-              />
+              {isCollapsed1 ? (
+                <DownarrowIcon
+                  width={wp(4)}
+                  height={wp(3)}
+                  style={{marginRight: 5}}
+                />
+              ) : (
+                <UparrowIcon
+                  width={wp(4)}
+                  height={wp(3)}
+                  style={{marginRight: 5}}
+                />
+              )}
             </TouchableOpacity>
             <Collapsible collapsed={isCollapsed1}>
               <Text style={styles.customerName}>

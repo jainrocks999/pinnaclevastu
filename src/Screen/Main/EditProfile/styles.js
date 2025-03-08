@@ -103,10 +103,8 @@ export default StyleSheet.create({
     fontFamily: 'Poppins-Regular',
   },
   backBtn: {
-    height: wp(4),
-    width: wp(2.3),
-    resizeMode: 'stretch',
-    marginRight: 20,
+    marginTop: -5,
+    marginRight: 10,
   },
   modalContainer: {
     flex: 1,

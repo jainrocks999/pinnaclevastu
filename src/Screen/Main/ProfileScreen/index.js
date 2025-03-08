@@ -12,6 +12,12 @@ import {
   Share,
 } from 'react-native';
 import styles from './styles';
+import BackIcon from '../../../assets/image/backIcon.svg';
+import DownarrowIcon from '../../../assets/image/down_grey_icon.svg';
+import ShareIcon from '../../../assets/image/share.svg';
+import FbIcon from '../../../assets/image/fbIcon.svg';
+import InstaIcon from '../../../assets/image/instaIcon.svg';
+import CopyIcon from '../../../assets/image/copyIcon.svg';
 import {colors} from '../../../Component/colors';
 import {Rating} from 'react-native-ratings';
 import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
@@ -211,10 +217,7 @@ const ResidentalScreen = ({navigation}) => {
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-          <Image
-            style={styles.backBtn}
-            source={require('../../../assets/drawer/Back1.png')}
-          />
+          <BackIcon width={wp(4)} height={wp(4)} style={styles.backBtn} />
         </TouchableOpacity>
 
         <View style={styles.headerview}>
@@ -342,37 +345,37 @@ const ResidentalScreen = ({navigation}) => {
 
         <View style={styles.shareview}>
           <View style={styles.rowSection}>
-            <TouchableOpacity style={styles.shareIcon} onPress={() => share()}>
-              <Image
-                style={styles.shareIcon}
-                source={require('../../../assets/otherApp/share.png')}
-              />
+            <TouchableOpacity onPress={() => share()}>
+              <ShareIcon width={wp(4)} height={wp(4)} />
             </TouchableOpacity>
 
             <Text style={[styles.cont, {marginTop: 0}]}>{'Share it :'}</Text>
 
             <TouchableOpacity
               onPress={() => openApp('fb://profile', 'https://facebook.com')}>
-              <Image
+              {/* <Image
                 style={styles.socialImg}
                 source={require('../../..//assets/drawer/fb.png')}
-              />
+              /> */}
+              <FbIcon width={wp(4)} height={wp(4)} />
             </TouchableOpacity>
 
             <TouchableOpacity
               onPress={() =>
                 openApp('instagram://app', 'https://instagram.com')
               }>
-              <Image
+              {/* <Image
                 style={styles.socialImg}
                 source={require('../../../assets/drawer/instagram.png')}
-              />
+              /> */}
+              <InstaIcon width={wp(4)} height={wp(4)} />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => copyToClipboard()}>
-              <Image
+              {/* <Image
                 style={styles.socialImg}
                 source={require('../../../assets/drawer/copy.png')}
-              />
+              /> */}
+              <CopyIcon width={wp(4)} height={wp(4)} />
             </TouchableOpacity>
           </View>
         </View>
@@ -404,14 +407,18 @@ const ResidentalScreen = ({navigation}) => {
                             Q{index + 1}. {item.question}
                           </Text>
                         </View>
-                        <Image
-                          source={
-                            expandedSection === index
-                              ? require('../../../assets/otherApp/updown1.png')
-                              : require('../../../assets/image/arrow_icon.png')
-                          }
-                          style={[styles.toggleIcon2]}
-                        />
+                        {expandedSection === index ? (
+                          <Image
+                            source={require('../../../assets/otherApp/updown1.png')}
+                            style={[styles.toggleIcon2]}
+                          />
+                        ) : (
+                          <DownarrowIcon
+                            width={wp(4)}
+                            height={wp(3)}
+                            style={{marginRight: 10}}
+                          />
+                        )}
                       </TouchableOpacity>
 
                       <Collapsible collapsed={expandedSection !== index}>

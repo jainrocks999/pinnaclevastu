@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="15.335" height="24.536" viewBox="0 0 15.335 24.536">
+  <g id="Group_21110" data-name="Group 21110" transform="translate(-20 -530.464)">
+    <g id="reviews" transform="translate(-13.653 530.986)">
+      <g id="star" transform="translate(35.671 10.046)">
+        <path id="Path_64553" data-name="Path 64553" d="M25.694,26.661l-1.047.548.2-1.161L24,25.226l1.17-.169L25.694,24l.523,1.056,1.17.169-.847.823.2,1.161Z" transform="translate(-24 -24)" fill="#52b1e9"/>
+      </g>
+      <g id="star-2" data-name="star" transform="translate(43.643 10.046)">
+        <path id="Path_64553-2" data-name="Path 64553" d="M25.694,26.661l-1.047.548.2-1.161L24,25.226l1.17-.169L25.694,24l.523,1.056,1.17.169-.847.823.2,1.161Z" transform="translate(-24 -24)" fill="#52b1e9"/>
+      </g>
+      <g id="star-3" data-name="star" transform="translate(39.657 10.046)">
+        <path id="Path_64553-3" data-name="Path 64553" d="M25.694,26.661l-1.047.548.2-1.161L24,25.226l1.17-.169L25.694,24l.523,1.056,1.17.169-.847.823.2,1.161Z" transform="translate(-24 -24)" fill="#52b1e9"/>
+      </g>
+    </g>
+    <g id="mobile" transform="translate(-4700 442.464)">
+      <g id="Group_21108" data-name="Group 21108" transform="translate(4725.367 107.936)">
+        <path id="Path_64562" data-name="Path 64562" d="M2214.767,139.534h3.067a.767.767,0,1,0,0-1.534h-3.067a.767.767,0,1,0,0,1.534Z" transform="translate(-2214 -138)" fill="#ef6022" fill-rule="evenodd"/>
+      </g>
+      <g id="Group_21109" data-name="Group 21109" transform="translate(4720 88)">
+        <path id="Path_64563" data-name="Path 64563" d="M2215.335,91.834A3.835,3.835,0,0,0,2211.5,88h-7.667A3.835,3.835,0,0,0,2200,91.834V108.7a3.835,3.835,0,0,0,3.834,3.834h7.667a3.835,3.835,0,0,0,3.834-3.834Zm-9.968-2.3h-1.533a2.3,2.3,0,0,0-2.3,2.3V108.7a2.3,2.3,0,0,0,2.3,2.3h7.667a2.3,2.3,0,0,0,2.3-2.3V91.834a2.3,2.3,0,0,0-2.3-2.3h-1.533a.768.768,0,0,1-.767.767h-3.067A.768.768,0,0,1,2205.367,89.534Z" transform="translate(-2200 -88)" fill="#ef6022" fill-rule="evenodd"/>
+      </g>
+    </g>
+  </g>
+</svg>

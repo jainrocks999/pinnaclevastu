@@ -11,8 +11,13 @@ import {
 import React, {useEffect, useState} from 'react';
 import styles from './styles';
 import {colors} from '../../../Component/colors';
-import {heightPercent} from '../../../Component/ResponsiveScreen/responsive';
+import {
+  heightPercent,
+  widthPrecent as wp,
+} from '../../../Component/ResponsiveScreen/responsive';
 import {useDispatch, useSelector} from 'react-redux';
+import BackIcon from '../../../assets/image/backIcon.svg';
+import SearchIcon from '../../../assets/image/searchIcon.svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {orderlistcource} from '../../../Redux/Slice/orderSclice';
 import Imagepath from '../../../Component/Imagepath';
@@ -107,10 +112,7 @@ const CoureList = ({navigation}) => {
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-          <Image
-            style={styles.backBtn}
-            source={require('../../../assets/drawer/Back1.png')}
-          />
+          <BackIcon width={wp(4)} height={wp(4)} style={styles.backBtn} />
         </TouchableOpacity>
 
         <View style={styles.headerview}>
@@ -123,7 +125,7 @@ const CoureList = ({navigation}) => {
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <TouchableOpacity
               hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-              <Image source={require('../../../assets/image/SearchIcon.png')} />
+              <SearchIcon width={wp(5)} height={wp(5)} />
             </TouchableOpacity>
 
             <TextInput
@@ -144,7 +146,6 @@ const CoureList = ({navigation}) => {
           }}
           data={cource}
           renderItem={({item}) => {
-      
             const itemScaleAnim = scaleAnims[item.id] || new Animated.Value(1);
 
             return (
@@ -153,7 +154,7 @@ const CoureList = ({navigation}) => {
                   transform: [{scale: itemScaleAnim}],
                 }}>
                 <TouchableOpacity
-                  onPress={() => handlePress(item)} 
+                  onPress={() => handlePress(item)}
                   style={styles.card}>
                   <View style={styles.cardInfo}>
                     <Text style={styles.headingText}>

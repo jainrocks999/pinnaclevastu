@@ -128,7 +128,12 @@ export default StyleSheet.create({
     color: colors.heading,
     fontFamily: 'Poppins-Medium',
   },
-
+  shareimage: {
+    backgroundColor:colors.ordercolor,
+    paddingVertical:6,
+    paddingHorizontal:15,
+    borderRadius: wp(3),
+  },
   reviewText: {
     marginBottom: 5,
     fontSize: fontSize.Sixteen,
@@ -147,19 +152,20 @@ export default StyleSheet.create({
   },
 
   plusBtn: {
-    width: 30,
-    height: 30,
-    color: '#324356',
-    textAlign: 'center',
-    textAlignVertical: 'center',
-    borderWidth: 2,
-    borderRadius: 20,
-    fontSize: 18,
-    fontWeight: '700',
-    borderColor: '#324356',
+  //   width: 30,
+  //   height: 30,
+  //   color: '#324356',
+    // textAlign: 'center',
+    // textAlignVertical: 'center',
+    // borderWidth: 2,
+    // borderRadius: 20,
+    // fontSize: 18,
+    // fontWeight: '700',
+    // borderColor: '#324356',
     position: 'absolute',
     right: -33,
-    top: 80,
+    // top: 80,
+    top: 150,
   },
 
   contain: {
@@ -442,10 +448,7 @@ export default StyleSheet.create({
   },
   backBtn: {
     marginTop: -5,
-    height: wp(4),
-    width: wp(2.3),
-    resizeMode: 'stretch',
-    marginRight: 20,
+    marginRight: 10,
   },
 
   backBtn1: {

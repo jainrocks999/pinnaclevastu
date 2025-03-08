@@ -14,7 +14,13 @@ import {
 import {colors} from '../../../Component/colors';
 
 import styles from './styles';
-import {heightPercent} from '../../../Component/ResponsiveScreen/responsive';
+import BackIcon from '../../../assets/image/backIcon.svg';
+import SearchIcon from '../../../assets/image/searchIcon.svg';
+import FilterIcon from '../../../assets/image/filterIcon.svg';
+import {
+  widthPrecent as wp,
+  heightPercent,
+} from '../../../Component/ResponsiveScreen/responsive';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -254,10 +260,7 @@ const MyOrder = ({route}) => {
               routes: [{name: 'UserProfile'}],
             })
           }>
-          <Image
-            style={styles.backBtn}
-            source={require('../../../assets/drawer/Back1.png')}
-          />
+          <BackIcon width={wp(4)} height={wp(4)} style={styles.backBtn} />
         </TouchableOpacity>
 
         <Text style={styles.logoText}>My Orders</Text>
@@ -269,7 +272,7 @@ const MyOrder = ({route}) => {
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <TouchableOpacity
               hitSlop={{bottom: 10, top: 10, left: 10, right: 10}}>
-              <Image source={require('../../../assets/image/SearchIcon.png')} />
+              <SearchIcon width={wp(5)} height={wp(5)} />
             </TouchableOpacity>
             <TextInput
               style={styles.searchInput}
@@ -280,7 +283,7 @@ const MyOrder = ({route}) => {
           <TouchableOpacity
             style={styles.filterBtn}
             hitSlop={{bottom: 10, top: 10, left: 10, right: 10}}>
-            <Image source={require('../../../assets/image/Vector.png')} />
+            <FilterIcon width={wp(5)} height={wp(5)} />
           </TouchableOpacity>
         </View>
 

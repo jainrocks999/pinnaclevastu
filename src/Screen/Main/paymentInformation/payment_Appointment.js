@@ -9,6 +9,8 @@ import {
   Animated,
 } from 'react-native';
 import styles from './styles';
+import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
+import BackIcon from '../../../assets/image/backIcon.svg';
 import {colors} from '../../../Component/colors';
 import Toast from 'react-native-simple-toast';
 import {RadioButton} from 'react-native-paper';
@@ -30,7 +32,7 @@ const PaymentAppointment = ({route}) => {
   const vastuExpertData = useSelector(
     state => state?.consultation?.ConsultationDetail,
   );
- 
+
   const [radioActive, setRadioActive] = useState('');
   const [loading1, setLoading] = useState(false);
   const [userType, setUserType] = useState('');
@@ -224,10 +226,7 @@ const PaymentAppointment = ({route}) => {
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-          <Image
-            style={styles.backBtn}
-            source={require('../../../assets/drawer/Back1.png')}
-          />
+          <BackIcon width={wp(4)} height={wp(4)} style={styles.backBtn} />
         </TouchableOpacity>
 
         <View style={styles.headerview}>
