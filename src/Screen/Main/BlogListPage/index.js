@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
+import DrawerIcon from '../../../assets/image/Drawer.svg';
+import BagIcon from '../../../assets/image/bagIcon.svg';
 import styles from './styles';
 
 import {useDispatch, useSelector} from 'react-redux';
@@ -111,7 +113,7 @@ const BlogList = () => {
               <Text style={styles.countText}>{cartTotalQuantity}</Text>
             </View>
           )}
-          <Image source={require('../../../assets/image/small_bag.png')} />
+          <BagIcon width={wp(5)} height={wp(5)} style={styles.bagBtn} />
         </TouchableOpacity>
       </View>
 

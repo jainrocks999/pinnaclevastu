@@ -12,7 +12,12 @@ import {
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
-import Drawer from '../../../assets/image/Drawer.svg';
+import DrawerIcon from '../../../assets/image/Drawer.svg';
+import BagIcon from '../../../assets/image/bagIcon.svg';
+import ShareIcon from '../../../assets/image/share.svg';
+import FbIcon from '../../../assets/image/fbIcon.svg';
+import InstaIcon from '../../../assets/image/instaIcon.svg';
+import CopyIcon from '../../../assets/image/copyIcon.svg';
 import styles from './styles';
 
 import {useDispatch, useSelector} from 'react-redux';
@@ -86,7 +91,7 @@ const BlogDetails = ({route}) => {
               <Text style={styles.countText}>{cartTotalQuantity}</Text>
             </View>
           )}
-          <Image source={require('../../../assets/image/small_bag.png')} />
+          <BagIcon width={wp(5)} height={wp(5)} style={styles.bagBtn} />
         </TouchableOpacity>
       </View>
 
@@ -128,36 +133,25 @@ const BlogDetails = ({route}) => {
               <TouchableOpacity
                 style={styles.shareIcon}
                 onPress={() => share()}>
-                <Image
-                  style={styles.shareIcon}
-                  source={require('../../../assets/otherApp/share.png')}
-                />
+               
+                 <ShareIcon width={wp(4)} height={wp(4)}/>
               </TouchableOpacity>
 
               <Text style={[styles.cont, {marginTop: 0}]}>{'Share it :'}</Text>
 
               <TouchableOpacity
                 onPress={() => openApp('fb://profile', 'https://facebook.com')}>
-                <Image
-                  style={styles.socialImg}
-                  source={require('../../..//assets/drawer/fb.png')}
-                />
+                <FbIcon width={wp(4)} height={wp(4)} />
               </TouchableOpacity>
 
               <TouchableOpacity
                 onPress={() =>
                   openApp('instagram://app', 'https://instagram.com')
                 }>
-                <Image
-                  style={styles.socialImg}
-                  source={require('../../../assets/drawer/instagram.png')}
-                />
+                 <InstaIcon width={wp(4)} height={wp(4)} />
               </TouchableOpacity>
               <TouchableOpacity onPress={() => copyToClipboard()}>
-                <Image
-                  style={styles.socialImg}
-                  source={require('../../../assets/drawer/copy.png')}
-                />
+                <CopyIcon width={wp(4)} height={wp(4)} />
               </TouchableOpacity>
             </View>
           </View>
