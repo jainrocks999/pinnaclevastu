@@ -207,7 +207,7 @@ export const updateCustomerMetafields = async (customerId, metafields) => {
 
     const variables = { metafields: formattedMetafields };
 
-    console.log('variabbaleieiei',variables);
+
     
     const response = await axios.post(
       `${MAIN_URL}/graphql.json`,
@@ -221,7 +221,6 @@ export const updateCustomerMetafields = async (customerId, metafields) => {
     );
 
     const metafieldsData = response?.data?.data?.metafieldsSet;
-console.log('addd meta daata ',metafieldsData);
 
     if (metafieldsData?.userErrors?.length) {
       throw new Error("Shopify GraphQL returned errors.");
@@ -234,51 +233,3 @@ console.log('addd meta daata ',metafieldsData);
     throw error;
   }
 };
-
-
-
-
-
-
-// export const updateCustomerMetafields = async (customerId, metafields) => {
-//   try {
-//     console.log('get item  ',customerId,metafields);
-    
-//     const formattedMetafields = metafields.map(({ key, type, value }) => ({
-//       ownerId: typeof customerId == 'string' && customerId.includes('gid://shopify/Customer/')
-//       ? customerId
-//       : convertCustomerIdNum(customerId),
-//       namespace: "custom",
-//       key,
-//       type,
-//       value: Array.isArray(value) ? JSON.stringify(value) : value, // Ensure correct formatting
-//     }));
-//     console.log('get item  332232323',formattedMetafields);
-//     const query = `
-//       mutation {
-//         metafieldsSet(metafields: ${formattedMetafields}) {
-//           metafields {
-//             id
-//             key
-//             value
-//             type
-//           }
-//           userErrors {
-//             field
-//             message
-//           }
-//         }
-//       }
-//     `;
-// console.log('logdddd',query);
-
-//     const response =  await axios.request(GraphQlAdminConfig(query));;
-
-//     const metafieldsData = response?.data?.data || [];
-//     return metafieldsData;
-
-//   } catch (error) {
-//     console.error("❌ Error in updating metafields:", error);
-//     throw error;
-//   }
-// };

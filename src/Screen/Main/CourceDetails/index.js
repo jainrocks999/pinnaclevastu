@@ -354,9 +354,9 @@ const CourseDetail = ({route}) => {
     try {
       const product = `${constants?.mainUrl}fetch-courses-details?course_id=${CourceDetailA?.id}`;
       const result = await Share.share({
-        message: `Check out this awesome app! ${product}`, // Text to share
+        message: `Check out this awesome app! ${product}`,
         url: product,
-        title: 'Share this App', // Title of the share dialog
+        title: 'Share this App',
       });
 
       if (result.action === Share.sharedAction) {

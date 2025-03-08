@@ -46,7 +46,6 @@ export default function Header(props) {
   const getProductDetails = async product => {
     setVisible(false), setInput('');
     dispatch(InitSearch());
-    console.log('this is product and product details', product);
     if (Object.keys(product).length == 0) {
     } else {
       dispatch(InitSearch());

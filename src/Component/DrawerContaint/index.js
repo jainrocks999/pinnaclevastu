@@ -22,7 +22,7 @@ import YoutubeIcon from '../../assets/image/youtubeIcon.svg';
 import {colors} from '../colors';
 import styles from './styles';
 import {useDispatch, useSelector} from 'react-redux';
-import {DrawerApi} from '../../Redux/Slice/HomeSlice';
+
 
 import Collapsible from 'react-native-collapsible';
 
@@ -66,15 +66,6 @@ const Drawer = props => {
       emptyItems.push(item);
     }
   });
-
-  useEffect(() => {
-    apicall();
-  }, []);
-
-  const apicall = async () => {
-    await dispatch(DrawerApi({url: 'draw-menu'}));
-  };
-
   const openApp = async (url, fallbackUrl) => {
     try {
       const supported = await Linking.canOpenURL(url);
@@ -91,7 +82,7 @@ const Drawer = props => {
         }
       }
     } catch (error) {
-      // Alert.alert('Error', `An error occurred: ${error.message}`);
+     
     }
   };
 
@@ -124,40 +115,8 @@ const Drawer = props => {
     );
   };
 
-  // const renderItem = ({item}) => (
-  //   <TouchableOpacity
-  //     style={styles.listRow}
-  //     onPress={() => {
-  //       navigation.navigate('Home', {
-  //         screen: 'Home1',
-  //         params: {
-  //           screen: 'Consultancy',
-  //           params: {
-  //             shopifyName: item.title,
-  //           },
-  //         },
-  //       });
-  //     }}>
-  //     {/* <View style={styles.rowContent}> */}
-
-  //     {/* {item?.CardImage?.toLowerCase()?.endsWith('.svg') ? (
-  //       <View style={styles.icon}>
-  //         <SvgUri width="100%" height="100%" uri={item?.CardImage} />
-  //       </View>
-  //     ) : (
-  //       <Image
-  //         style={styles.icon}
-  //         source={{uri: `${item?.CardImage}`}}
-  //         resizeMode="contain"
-  //       />
-  //     )} */}
-
-  //     <Text style={styles.listText}>{item.title}</Text>
-  //   </TouchableOpacity>
-  // );
-
+  
   const renderItem1 = ({item}) => {
-    // console.log(item, 'spiderman');
     const isExpanded = expandedItem === item.title;
 
     const rotateInterpolation = rotationAnim.interpolate({

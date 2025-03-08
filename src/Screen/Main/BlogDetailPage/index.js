@@ -22,12 +22,7 @@ import {
   widthPrecent as wp,
 } from '../../../Component/ResponsiveScreen/responsive';
 
-import {fontSize} from '../../../Component/fontsize';
-
-import LinearGradient from 'react-native-linear-gradient';
-
 const BlogDetails = ({route}) => {
-  console.log('datatattatata', route.params?.item?.node?.image?.url);
   const item = route.params.item;
   const navigation = useNavigation();
   const [reviewData, setReviewData] = useState({
@@ -96,19 +91,6 @@ const BlogDetails = ({route}) => {
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll}>
-        {/* <View
-            style={{marginTop: hp(3), marginBottom: hp(2), marginLeft: wp(3)}}>
-            <Text
-              style={{
-                fontSize: fontSize.TwentyThree,
-                color: '#143F71',
-                fontFamily: 'Poppins-Medium',
-                textTransform: 'capitalize',
-              }}>
-              {blog?.featured_blog_section?.content?.heading}
-            </Text>
-          </View> */}
-
         <View style={styles.viewinner1}>
           <View style={styles.viewinner}>
             <TouchableOpacity style={styles.blogCard}>

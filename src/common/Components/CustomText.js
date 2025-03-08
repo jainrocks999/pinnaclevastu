@@ -21,7 +21,7 @@ const CustomText = props => {
     onPress,
     width
   } = props;
-  // console.log("lines", lines);
+
   const defaultStyles = {
     marginTop: mTop,
     margin: margin,

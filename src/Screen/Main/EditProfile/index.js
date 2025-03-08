@@ -40,12 +40,11 @@ const EditProfile = () => {
   const {userDetails} = useSelector(state => state.Login);
   const metadata = userDetails?.metafields?.edges;
   const loginUserData = useSelector(state => state?.Auth?.loginUserData);
- 
+
   const [isuserselectimage, setIsuserselectimage] = useState(false);
 
   const navigation = useNavigation();
   const dispatch = useDispatch();
-
 
   const [selectedImage, setSelectedImage] = useState({
     uri: userDetail?.avatar ?? '',
@@ -58,83 +57,34 @@ const EditProfile = () => {
     if (!metafield) return null; // Agar key nahi mili to null return karein
 
     let value = metafield.node.value; // Value extract karein
-   // Debugging ke liye print karein
+    // Debugging ke liye print karein
 
     // Check karein ki value ek array hai
     if (Array.isArray(value)) {
-        return value.length > 0 ? value[0] : null;
+      return value.length > 0 ? value[0] : null;
     }
 
-   
-    if (typeof value === "string" && value.startsWith("[") && value.endsWith("]")) {
-        try {
-            const parsedValue = JSON.parse(value);
-            
-            return Array.isArray(parsedValue) && parsedValue.length > 0 ? parsedValue[0] : null;
-        } catch (error) {
-            console.log("Error parsing JSON:", error);
-            return null;
-        }
+    if (
+      typeof value === 'string' &&
+      value.startsWith('[') &&
+      value.endsWith(']')
+    ) {
+      try {
+        const parsedValue = JSON.parse(value);
+
+        return Array.isArray(parsedValue) && parsedValue.length > 0
+          ? parsedValue[0]
+          : null;
+      } catch (error) {
+        console.log('Error parsing JSON:', error);
+        return null;
+      }
     }
 
-    return value; 
-};
-
-
-  const Apicall = async () => {
-    // const variables = {
-    //   customer: {
-    //     acceptsMarketing: true,
-    //     email: userDetails?.email,
-    //     firstName:userDetails?.firstName,
-    //     lastName: userDetails?.lastName,
-    //     password: '123456',
-    //     phone: userDetails?.phone
-    //   },
-    //   customerAccessToken:loginUserData?.shopify_access_token
-
-    //   }
-    const userStatus = await AsyncStorage.getItem('user_data');
-    const userData = userStatus ? JSON.parse(userStatus) : null;
-
-    // await dispatch(
-    //   updatedata1({
-    //       acceptsMarketing: true,
-    //       email: userDetails?.email,
-    //       firstName:userDetails?.firstName,
-    //       lastName: userDetails?.lastName,
-    //       password: '123456',
-    //       phone: userDetails?.phone,
-    //     customerAccessToken:userData?.shopify_access_token,
-    //     navigation
-    //   }),
-    // );
-
-    const customerId = userDetails?.id; // ✅ Ensure this is correct format
-
-    const metafields = [
-      {key: 'gender', type: 'list.single_line_text_field', value: [gender]},
-      {
-        key: 'current_city_pincode',
-        type: 'single_line_text_field',
-        value: formData.cityPincode,
-      },
-      {
-        key: 'mobile_number',
-        type: 'single_line_text_field',
-        value: formData.mobile,
-      },
-      {key: 'full_name', type: 'single_line_text_field', value: formData.name},
-      {key: 'birth_time', type: 'date_time', value: '2005-08-06T20:30:00Z'},
-      {key: 'birth_date', type: 'date', value: '2005-11-30'},
-    ];
-
-    updateCustomerMetafields(customerId, metafields)
+    return value;
   };
 
-  // useEffect(()=>{
-  //   Apicall()
-  // },[userDetails])
+
 
   const [isModalVisible, setModalVisible] = useState(false);
 
@@ -157,12 +107,12 @@ const EditProfile = () => {
   const [gender, setGender] = useState(null); // Initialize with null
 
   useEffect(() => {
-      if (metadata) {
-          const extractedGender = getMetafieldValue(metadata, 'gender');
-          setGender(extractedGender);
-      }
-  }, [metadata])
-  
+    if (metadata) {
+      const extractedGender = getMetafieldValue(metadata, 'gender');
+      setGender(extractedGender);
+    }
+  }, [metadata]);
+
   const [shakeAnimation, setShakeAnimation] = useState({
     name: new Animated.Value(0),
     email: new Animated.Value(0),
@@ -172,7 +122,9 @@ const EditProfile = () => {
     birthPlace: new Animated.Value(0),
   });
   const scrollViewRef = useRef(null);
-const [birthdate,setBirth]=useState(getMetafieldValue(metadata, 'birth_date'))
+  const [birthdate, setBirth] = useState(
+    getMetafieldValue(metadata, 'birth_date'),
+  );
   const [date, setDate] = useState(
     new Date(getMetafieldValue(metadata, 'birth_date')),
   );
@@ -185,28 +137,27 @@ const [birthdate,setBirth]=useState(getMetafieldValue(metadata, 'birth_date'))
     const year = date.getFullYear().toString();
     return `${day}-${month}-${year}`;
   };
-  const formatTime2 = (timeString) => {
-    console.log("Raw Time:", timeString);
+  const formatTime2 = utcTime => {
+    if (!utcTime) return 'Invalid Time';
 
-    if (!timeString) return 'Time Of Birth';
-
-    const date = new Date(timeString.trim());
+    const date = new Date(utcTime); // Parse UTC time
 
     if (isNaN(date.getTime())) return 'Invalid Time';
 
-    let hours = date.getUTCHours(); 
-    const minutes = date.getUTCMinutes().toString().padStart(2, '0');
-    const ampm = hours >= 12 ? 'PM' : 'AM'; 
+    // Convert to IST directly using 'Asia/Kolkata' timezone
+    const istTime = date.toLocaleString('en-US', {
+      timeZone: 'Asia/Kolkata',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    });
 
-    hours = hours % 12 || 12; // 12-hour format
+    return istTime;
+  };
 
-    const formattedTime = `${hours}:${minutes} ${ampm}`;
-    console.log("Formatted Time:", formattedTime);
-
-    return formattedTime;
-};
-
-const [birthtime,setBirthTime]=useState(getMetafieldValue(metadata, 'birth_time'))
+  const [birthtime, setBirthTime] = useState(
+    getMetafieldValue(metadata, 'birth_time'),
+  );
   const [time, setTime] = useState(() => {
     if (metadata) {
       return formatTime2(getMetafieldValue(metadata, 'birth_time'));
@@ -217,18 +168,14 @@ const [birthtime,setBirthTime]=useState(getMetafieldValue(metadata, 'birth_time'
   const [open1, setOpen1] = useState(false);
 
   const formatTime = time1 => {
- console.log(time1,);
- 
-  
     if (!time1) return 'Time Of Birth';
-    let time =new Date(time1)
+    let time = new Date(time1);
     let hours = time.getHours();
     const minutes = time.getMinutes().toString().padStart(2, '0');
     const ampm = hours >= 12 ? 'PM' : 'AM';
     hours = hours % 12;
     hours = hours ? hours : 12;
     const strTime = `${hours}:${minutes} ${ampm}`;
-    console.log(strTime,'hdhdhdhdd');
     setTime(strTime);
     return strTime;
   };
@@ -249,7 +196,6 @@ const [birthtime,setBirthTime]=useState(getMetafieldValue(metadata, 'birth_time'
           buttonPositive: 'OK',
         },
       );
-      console.log(granted);
     } catch (err) {
       console.warn(err);
     }
@@ -320,16 +266,10 @@ const [birthtime,setBirthTime]=useState(getMetafieldValue(metadata, 'birth_time'
     if (name === 'mobile') {
       const numericValue = value.replace(/[^0-9]/g, '');
       const mobileRegex = /^\+91[0-9]{0,10}$/;
-     
 
-      
       mobileRegex.test(numericValue)
-     
-      
         ? setFormData({...formData, mobile: numericValue})
-        : 
-        (
-          setValidationError({...validationError, mobile:false}));
+        : setValidationError({...validationError, mobile: false});
     } else if (name === 'cityPincode') {
       const numericValue = value.replace(/[^0-9]/g, '');
       const pinCodeRegex = /^[0-9]{0,6}$/;
@@ -423,13 +363,11 @@ const [birthtime,setBirthTime]=useState(getMetafieldValue(metadata, 'birth_time'
       shake('mobile');
       scrollToField('mobile');
       return;
-    } 
-    else if (formData.mobile.length < 13) {
+    } else if (formData.mobile.length < 13) {
       shake('mobile');
       scrollToField('mobile');
       return;
-    } 
-    else if (gender === '') {
+    } else if (gender === '') {
       shake('gender');
       scrollToField('gender');
       return;
@@ -475,65 +413,76 @@ const [birthtime,setBirthTime]=useState(getMetafieldValue(metadata, 'birth_time'
       //   }),
       // );
 
-        const userStatus = await AsyncStorage.getItem('user_data');
-        const userData = userStatus ? JSON.parse(userStatus) : null;
-        const fullName = formData.name || "";
-        const nameParts = fullName.trim().split(" "); 
-        const firstName = nameParts[0] || ""; // First part is first name
-        const lastName = nameParts.slice(1).join(" ") || ""; 
-        await dispatch(
-          updatedata1({
-              acceptsMarketing: true,
-              email: formData.email,
-              firstName:firstName,
-              lastName: lastName,
-              password: '123456',
-              phone: formData?.mobile,
-            customerAccessToken:userData?.shopify_access_token,
-             navigation
-          }),
-        );
-    
-        const customerId = userDetails?.id;
-    
+      const userStatus = await AsyncStorage.getItem('user_data');
+      const userData = userStatus ? JSON.parse(userStatus) : null;
+      const fullName = formData.name || '';
+      const nameParts = fullName.trim().split(' ');
+      const firstName = nameParts[0] || ''; // First part is first name
+      const lastName = nameParts.slice(1).join(' ') || '';
+      await dispatch(
+        updatedata1({
+          acceptsMarketing: true,
+          email: formData.email,
+          firstName: firstName,
+          lastName: lastName,
+          password: '123456',
+          phone: formData?.mobile,
+          customerAccessToken: userData?.shopify_access_token,
+          navigation,
+        }),
+      );
 
+      const customerId = userDetails?.id;
 
+      const metafields = [
+        {
+          namespace: 'custom',
+          key: 'gender',
+          type: 'list.single_line_text_field',
+          value: [gender],
+        },
+        {
+          namespace: 'custom',
+          key: 'current_city_pincode',
+          type: 'single_line_text_field',
+          value: formData.cityPincode,
+        },
 
+        {
+          namespace: 'custom',
+          key: 'place_of_birth',
+          type: 'single_line_text_field',
+          value: formData.birthPlace,
+        },
+        {
+          namespace: 'custom',
+          key: 'mobile_number',
+          type: 'single_line_text_field',
+          value: formData.mobile,
+        },
+        {
+          namespace: 'custom',
+          key: 'full_name',
+          type: 'single_line_text_field',
+          value: formData.name,
+        },
+        {
+          namespace: 'custom',
+          key: 'birth_time',
+          type: 'date_time',
+          value: birthtime,
+        },
+        {
+          namespace: 'custom',
+          key: 'birth_date',
+          type: 'date',
+          value: birthdate,
+        },
+        {namespace: 'facts', key: 'birth_date', type: 'date', value: birthdate},
+      ];
 
-        const metafields = [
-          {namespace: "custom", key: 'gender', type: 'list.single_line_text_field', value: [gender]},
-          {namespace: "custom",
-            key: 'current_city_pincode',
-            type: 'single_line_text_field',
-            value: formData.cityPincode,
-          },
-
-          {namespace: "custom", key: 'place_of_birth', type: 'single_line_text_field', value:formData.birthPlace },
-          {namespace: "custom",
-            key: 'mobile_number',
-            type: 'single_line_text_field',
-            value: formData.mobile,
-          },
-          {namespace: "custom", key: 'full_name', type: 'single_line_text_field', value: formData.name},
-          {namespace: "custom", key: 'birth_time', type: 'date_time', value: birthtime},
-          {namespace: "custom", key: 'birth_date', type: 'date', value: birthdate},
-          {  namespace: "facts",key: 'birth_date', type: 'date', value: birthdate},
-        ];
-    
-        updateCustomerMetafields(customerId, metafields)
-      };
-
-
-
-
-
-
-
-
-
-
-
-    
+      updateCustomerMetafields(customerId, metafields);
+    }
   };
 
   return (
@@ -656,7 +605,7 @@ const [birthtime,setBirthTime]=useState(getMetafieldValue(metadata, 'birth_time'
             />
           </Animated.View>
           {validationError.gender && (
-          <Text style={styles.errorText}>Please select your gender.</Text>
+            <Text style={styles.errorText}>Please select your gender.</Text>
           )}
         </View>
 
@@ -717,8 +666,7 @@ const [birthtime,setBirthTime]=useState(getMetafieldValue(metadata, 'birth_time'
             date={date || new Date()}
             mode="date"
             maximumDate={new Date()}
-            onConfirm={(selectedDate) => {
-
+            onConfirm={selectedDate => {
               const formattedTime = selectedDate.toISOString();
               setOpen(false);
               setDate(selectedDate);
@@ -726,7 +674,7 @@ const [birthtime,setBirthTime]=useState(getMetafieldValue(metadata, 'birth_time'
             }}
             onCancel={() => setOpen(false)}
           />
-         
+
           {validationError.date && (
             <Text style={styles.errorText}>
               Please enter your valid date of birth.
@@ -762,14 +710,13 @@ const [birthtime,setBirthTime]=useState(getMetafieldValue(metadata, 'birth_time'
             open={open1}
             date={new Date()}
             mode="time"
-            onConfirm={(selectedTime) => {          
+            onConfirm={selectedTime => {
               const formattedTime = selectedTime.toISOString();
-             
+
               setOpen1(false);
-              formatTime(selectedTime)
-             
+              formatTime(selectedTime);
+
               setBirthTime(formattedTime);
-    
             }}
             onCancel={() => setOpen1(false)}
           />

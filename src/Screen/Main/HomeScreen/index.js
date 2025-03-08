@@ -101,7 +101,6 @@ const HomeScreen = () => {
   };
 
   const handleSubmit = async () => {
-    console.log('Submitted Data:', formData);
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     const {name, email, phone, course} = formData;
 
@@ -220,10 +219,8 @@ const HomeScreen = () => {
 
           properties: {},
         };
-        console.log('before add to cart ', productTemp);
-        if (productTemp?.availableForSale) {
-          console.log('hfghkjghfdkg', product?.selectedVarient.id);
 
+        if (productTemp?.availableForSale) {
           dispatch(addToCart(productTemp));
         }
       }
@@ -268,13 +265,10 @@ const HomeScreen = () => {
       const userStatus = await AsyncStorage.getItem('user_data');
       const userData = userStatus ? JSON.parse(userStatus) : null;
       const userType = userData?.user_type;
-     await dispatch(getUserDetails(userData?.shopify_access_token));
       setUserType(userType);
       if (userType) {
+        await dispatch(getUserDetails(userData?.shopify_access_token));
         if (userDetail.length === 0) {
-
-  await dispatch(getUserDetails(userData?.shopify_access_token));
-          
           await dispatch(
             getUserDetailApi({
               token: userData.token,
@@ -743,7 +737,7 @@ const HomeScreen = () => {
               <Text style={styles.countText}>{cartTotalQuantity}</Text>
             </View>
           )}
-          <BagIcon  width={wp(5)} height={wp(5)} style={styles.bagBtn} />
+          <BagIcon width={wp(5)} height={wp(5)} style={styles.bagBtn} />
         </TouchableOpacity>
       </View>
       {isLoading ? <Loader /> : null}
@@ -1232,9 +1226,6 @@ const HomeScreen = () => {
                   if (index < Homebanner?.franchises.length) {
                     handleImageChange(index);
                   }
-                  {
-                    console.log(index, 'skldf');
-                  }
                 }}
               />
             ))}
@@ -1519,10 +1510,6 @@ const HomeScreen = () => {
                   {height: wp(50), width: wp(85)},
                 ]}>
                 <WebView
-                  // source={{
-                  //   uri:  item.video_url
-                  //    uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-                  // }}
                   source={{uri: getYouTubeEmbedUrl(item.video_url)}}
                   style={{height: '100%', width: '100%'}}
                   javaScriptEnabled={true}
@@ -1705,16 +1692,16 @@ const data5 = [
   {
     id: '1',
     name: 'Private & Confidential',
-    svg:<BottomGrp1 width={wp(6)} height={wp(6)}/>
+    svg: <BottomGrp1 width={wp(6)} height={wp(6)} />,
   },
   {
     id: '2',
     name: 'Verified Vastu Experts',
-    svg:<BottomGrp2 width={wp(6)} height={wp(6)}/>
+    svg: <BottomGrp2 width={wp(6)} height={wp(6)} />,
   },
   {
     id: '3',
     name: 'Secure Payments',
-    svg:<BottomGrp3 width={wp(5)} height={wp(5)}/>
+    svg: <BottomGrp3 width={wp(5)} height={wp(5)} />,
   },
 ];

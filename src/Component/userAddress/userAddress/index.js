@@ -9,8 +9,7 @@ const UserAddress = ({data}) => {
 
   return (
     <View style={styles.section}>
-      {console.log('datata',data)
-      }
+     
         <Text style={styles.titleText}>Confirm Address</Text>
         <Text style={styles.NameText}>{data?.name}</Text>
         <Text style={styles.smallText}>{data?.address1} {data?.address2}  {data?.city} ({data?.zip})

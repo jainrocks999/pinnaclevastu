@@ -16,18 +16,16 @@ import {Checkbox} from 'react-native-paper';
 import Toast from 'react-native-simple-toast';
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
-import { createAddress } from '../../../Redux/Slice/Addresslice';
+import {createAddress} from '../../../Redux/Slice/Addresslice';
 import Loader from '../../../Component/Loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Address = ({route}) => {
-
   const item = route.params;
- 
+
   const navigation = useNavigation();
   const isLoading = useSelector(state => state.address?.loading);
   const dispatch = useDispatch();
-
 
   const [formData, setFormData] = useState({
     name: '',
@@ -57,10 +55,7 @@ const Address = ({route}) => {
 
   useEffect(() => {
     if (item.data == false && item.item) {
-
-      // console.log('flkdfmkldsfmlkdf',item?.item);
-      
-      setFormData((prevData) => ({
+      setFormData(prevData => ({
         ...prevData,
         name: item?.item?.name,
         phoneNumber: item?.item?.phone,
@@ -73,7 +68,7 @@ const Address = ({route}) => {
         state: item?.item?.state,
       }));
 
-       setBillingData((prevData) => ({
+      setBillingData(prevData => ({
         ...prevData,
         name: item?.item?.billing_address?.name,
         phoneNumber: item?.item?.billing_address?.phone,
@@ -85,12 +80,9 @@ const Address = ({route}) => {
         country: item?.item?.billing_address?.country,
         state: item?.item?.billing_address?.state,
       }));
-      setSaveInfo(item?.item?.billing_status==1?true:false)
+      setSaveInfo(item?.item?.billing_status == 1 ? true : false);
     }
   }, [item.data, item]);
-
-
-
 
   const handleInputChange = (name, value, isBilling = false) => {
     let updatedValue = value;
@@ -100,33 +92,33 @@ const Address = ({route}) => {
         name === 'phoneNumber'
           ? /^[0-9]{0,10}$/ // Maximum 10 digits
           : /^[0-9]{0,6}$/; // Maximum 6 digits
-  
+
       if (!regex.test(numericValue)) {
         Toast.show(
           name === 'phoneNumber'
             ? 'Invalid mobile number.'
-            : 'Invalid pincode.'
+            : 'Invalid pincode.',
         );
         return;
       }
       updatedValue = numericValue;
     }
-  
+
     // Update the correct state based on isBilling
     if (isBilling) {
-      setBillingData((prevState) => ({
+      setBillingData(prevState => ({
         ...prevState,
         [name]: updatedValue,
       }));
     } else {
-      setFormData((prevState) => ({
+      setFormData(prevState => ({
         ...prevState,
         [name]: updatedValue,
       }));
     }
   };
-  
-  const validateFields = (data) => {
+
+  const validateFields = data => {
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
 
     if (data.name === '') return 'Please enter full name';
@@ -146,9 +138,9 @@ const Address = ({route}) => {
       Toast.show(errorMessage);
       return;
     }
-  
+
     let finalBillingAddressData;
-  
+
     if (saveInfo) {
       // saveInfo true hai, to formData se billingAddressData set karein
       finalBillingAddressData = {
@@ -181,12 +173,10 @@ const Address = ({route}) => {
         apartment: billingData.apartment,
       };
     }
-  
+
     const token = await AsyncStorage.getItem('Token');
     const userid = await AsyncStorage.getItem('user_id');
-   
-  
-   
+
     // Address data API payload ke liye
     const addressData = {
       name: formData.name,
@@ -200,7 +190,7 @@ const Address = ({route}) => {
       apartment: formData.apartment,
       user_id: userid,
       is_default: '1',
-      billing_status:saveInfo?1:0,
+      billing_status: saveInfo ? 1 : 0,
       billing: {
         name: finalBillingAddressData?.name,
         phone: finalBillingAddressData?.phone,
@@ -210,30 +200,29 @@ const Address = ({route}) => {
         state: finalBillingAddressData?.state,
         city: finalBillingAddressData?.city,
         zip_code: finalBillingAddressData?.pincode,
-        apartment:finalBillingAddressData?.apartment,
+        apartment: finalBillingAddressData?.apartment,
       },
-      
-      ...(item?.data === false && { customer_address_id: item?.item?.id }),
-      ...(item?.data === false && { billing_address_id: item?.item?.billing_address?.biling_address_id}), // Fixed typo
+
+      ...(item?.data === false && {customer_address_id: item?.item?.id}),
+      ...(item?.data === false && {
+        billing_address_id: item?.item?.billing_address?.biling_address_id,
+      }), // Fixed typo
     };
-  
+
     // Final payload
     const apiPayload = {
-      url: item?.data === false ? 'update-customer-address' : 'create-customer-address',
-       token,
-      data:addressData,
+      url:
+        item?.data === false
+          ? 'update-customer-address'
+          : 'create-customer-address',
+      token,
+      data: addressData,
       // Data1: finalBillingAddressData,
-       navigation
+      navigation,
     };
-  
-  
-      await dispatch(createAddress(apiPayload));
+
+    await dispatch(createAddress(apiPayload));
   };
-  
-
-
-  
-  
 
   // const handleInputChange = (name, value) => {
   //   setFormData({...formData, [name]: value});
@@ -286,7 +275,7 @@ const Address = ({route}) => {
   //     Toast.show('Pincode should be at least 6 digits');
   //     return;
   //   } else {
-     
+
   //     const token = await AsyncStorage.getItem('Token');
   //     const userid = await AsyncStorage.getItem('user_id');
   //     const addressData = {
@@ -304,9 +293,8 @@ const Address = ({route}) => {
   //       // is_default: item?.data === false ? (saveInfo ? '1' : '0') : (saveInfo ? '1' : '0'),
   //        ...(item?.data == false && {customer_address_id: item?.item?.id}),
   //     };
-  
-  //     // try {
 
+  //     // try {
 
   //       // alert('fjnhdjkg',formData.phoneNumber)
   //     await dispatch(
@@ -329,7 +317,6 @@ const Address = ({route}) => {
   //     // saveInfo ? navigation.navigate('AddressList') : null;
   //   }
   // };
-
 
   // const [formData, setFormData] = useState({
   //   name: '',
@@ -362,8 +349,6 @@ const Address = ({route}) => {
   //   }
   // }, [item.data, item]);
 
-
-
   const countryOptions = [
     {label: 'India', value: 'India'},
     {label: 'USA', value: 'USA'},
@@ -376,12 +361,12 @@ const Address = ({route}) => {
     {label: 'Madhyapradesh', value: 'Madhyapredesh'},
   ];
 
-
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
           <Image
             style={styles.backBtn}
             source={require('../../../assets/drawer/Back1.png')}
@@ -389,278 +374,289 @@ const Address = ({route}) => {
         </TouchableOpacity>
 
         <View style={styles.headerview}>
-          <Text style={styles.logoText}>{item.data?"Add Details":"Edit Details"}</Text>
-        </View>
-      </View>
-      {isLoading?<Loader/>:null}
-      <ScrollView contentContainerStyle={styles.scrollview}>
-      
-        <View>
-        <Text style={styles.addresstext}>Delivery Address</Text>
-
-        {/* Full Name Input */}
-        <View style={styles.inputWrapper}>
-          <TextInput
-            style={styles.input}
-            placeholder="Full Name"
-            placeholderTextColor={colors.paymenttext}
-            value={formData.name}
-            onChangeText={text => handleInputChange('name', text)}
-          />
-        </View>
-
-        {/* Phone Number Input */}
-        <View style={styles.inputWrapper}>
-          <TextInput
-            style={styles.input}
-            placeholder="Phone"
-            placeholderTextColor={colors.paymenttext}
-            maxLength={10}
-            keyboardType="phone-pad"
-            value={formData.phoneNumber}
-            onChangeText={text => handleInputChange('phoneNumber', text)}
-          />
-        </View>
-
-        {/* Email Input */}
-        <View style={styles.inputWrapper}>
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            placeholderTextColor={colors.paymenttext}
-            keyboardType="email-address"
-            value={formData.email}
-            onChangeText={text => handleInputChange('email', text)}
-          />
-        </View>
-
-        {/* Address Input */}
-        <View style={styles.inputWrapper}>
-          <TextInput
-            style={styles.input}
-            placeholder="Address"
-            placeholderTextColor={colors.paymenttext}
-            value={formData.address}
-            onChangeText={text => handleInputChange('address', text)}
-          />
-        </View>
-
-        {/* Apartment Input */}
-        <View style={styles.inputWrapper}>
-          <TextInput
-            style={styles.input}
-            placeholder="Apartment, suite, etc. (optional)"
-            placeholderTextColor={colors.paymenttext}
-            value={formData.apartment}
-            onChangeText={text => handleInputChange('apartment', text)}
-          />
-        </View>
-
-        {/* City Input */}
-        <View style={styles.inputWrapper}>
-          <TextInput
-            style={styles.input}
-            placeholder="City"
-            placeholderTextColor={colors.paymenttext}
-            value={formData.city}
-            onChangeText={text => handleInputChange('city', text)}
-          />
-        </View>
-
-        {/* Country Dropdown */}
-        <View style={styles.inputWrapper}>
-          <Dropdown
-            style={styles.input}
-            data={countryOptions}
-            labelField="label"
-            valueField="value"
-            placeholder={'Country/Regionborder india'}
-            placeholderStyle={styles.placeholder}
-            selectedTextStyle={styles.selectedText}
-            itemTextStyle={styles.itemText}
-            value={formData.country}
-            onChange={text => handleInputChange('country', text.value)}
-            renderRightIcon={() => <Text style={styles.customIcon}>▼</Text>}
-          />
-        </View>
-
-        {/* State and Pincode Row */}
-        <View style={styles.row}>
-          {/* State Dropdown */}
-          <View style={styles.halfWidth}>
-            <Dropdown
-              style={styles.input}
-              data={stateOptions}
-              labelField="label"
-              valueField="value"
-              placeholder="State"
-              placeholderStyle={styles.placeholder}
-              selectedTextStyle={styles.selectedText}
-              itemTextStyle={styles.itemText}
-              value={formData.state}
-              onChange={text => handleInputChange('state', text.value)}
-              renderRightIcon={() => <Text style={styles.customIcon}>▼</Text>}
-            />
-          </View>
-
-          {/* Pincode Input */}
-          <View style={styles.halfWidth}>
-            <TextInput
-              style={styles.input}
-              placeholder="Pincode"
-              keyboardType="numeric"
-              placeholderTextColor={colors.paymenttext}
-              value={formData.pincode}
-              maxLength={6}
-              onChangeText={text => handleInputChange('pincode', text)}
-            />
-          </View>
-        </View>
-      
-        <View style={styles.checkboxRow}>
-          <View
-            style={[
-              styles.checkboxWrapper,
-              saveInfo && styles.checkedBackground,
-            ]}>
-            <Checkbox
-              status={saveInfo ? 'checked' : 'unchecked'}
-              onPress={() => setSaveInfo(!saveInfo)}
-              color="#FFF"
-              uncheckedColor="#DFE7EF"
-            />
-          </View>
-          <Text style={styles.checkboxText}>
-            Save this information for the billing address
+          <Text style={styles.logoText}>
+            {item.data ? 'Add Details' : 'Edit Details'}
           </Text>
         </View>
-        </View>
-        {!saveInfo?
-<View style={{marginTop:20}}>
-     
-        <Text style={styles.addresstext}>Billing Address</Text>
+      </View>
+      {isLoading ? <Loader /> : null}
+      <ScrollView contentContainerStyle={styles.scrollview}>
+        <View>
+          <Text style={styles.addresstext}>Delivery Address</Text>
 
-        {/* Full Name Input */}
-        <View style={styles.inputWrapper}>
-          <TextInput
-            style={styles.input}
-            placeholder="Full Name"
-            placeholderTextColor={colors.paymenttext}
-            value={billingData.name}
-            onChangeText={text => handleInputChange('name', text,true)}
-          />
-        
-        </View>
+          {/* Full Name Input */}
+          <View style={styles.inputWrapper}>
+            <TextInput
+              style={styles.input}
+              placeholder="Full Name"
+              placeholderTextColor={colors.paymenttext}
+              value={formData.name}
+              onChangeText={text => handleInputChange('name', text)}
+            />
+          </View>
 
-        {/* Phone Number Input */}
-        <View style={styles.inputWrapper}>
-          <TextInput
-            style={styles.input}
-            placeholder="Phone"
-            placeholderTextColor={colors.paymenttext}
-            maxLength={10}
-            keyboardType="phone-pad"
-            value={billingData.phoneNumber}
-            onChangeText={text => handleInputChange('phoneNumber', text,true)}
-          />
-        </View>
+          {/* Phone Number Input */}
+          <View style={styles.inputWrapper}>
+            <TextInput
+              style={styles.input}
+              placeholder="Phone"
+              placeholderTextColor={colors.paymenttext}
+              maxLength={10}
+              keyboardType="phone-pad"
+              value={formData.phoneNumber}
+              onChangeText={text => handleInputChange('phoneNumber', text)}
+            />
+          </View>
 
-        {/* Email Input */}
-        <View style={styles.inputWrapper}>
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            placeholderTextColor={colors.paymenttext}
-            keyboardType="email-address"
-            value={billingData.email}
-            onChangeText={text => handleInputChange('email', text,true)}
-          />
-        </View>
+          {/* Email Input */}
+          <View style={styles.inputWrapper}>
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              placeholderTextColor={colors.paymenttext}
+              keyboardType="email-address"
+              value={formData.email}
+              onChangeText={text => handleInputChange('email', text)}
+            />
+          </View>
 
-        {/* Address Input */}
-        <View style={styles.inputWrapper}>
-          <TextInput
-            style={styles.input}
-            placeholder="Address"
-            placeholderTextColor={colors.paymenttext}
-            value={billingData.address}
-            onChangeText={text => handleInputChange('address', text,true)}
-          />
-        </View>
+          {/* Address Input */}
+          <View style={styles.inputWrapper}>
+            <TextInput
+              style={styles.input}
+              placeholder="Address"
+              placeholderTextColor={colors.paymenttext}
+              value={formData.address}
+              onChangeText={text => handleInputChange('address', text)}
+            />
+          </View>
 
-        {/* Apartment Input */}
-        <View style={styles.inputWrapper}>
-          <TextInput
-            style={styles.input}
-            placeholder="Apartment, suite, etc. (optional)"
-            placeholderTextColor={colors.paymenttext}
-            value={billingData.apartment}
-            onChangeText={text => handleInputChange('apartment', text,true)}
-          />
-        </View>
+          {/* Apartment Input */}
+          <View style={styles.inputWrapper}>
+            <TextInput
+              style={styles.input}
+              placeholder="Apartment, suite, etc. (optional)"
+              placeholderTextColor={colors.paymenttext}
+              value={formData.apartment}
+              onChangeText={text => handleInputChange('apartment', text)}
+            />
+          </View>
 
-        {/* City Input */}
-        <View style={styles.inputWrapper}>
-          <TextInput
-            style={styles.input}
-            placeholder="City"
-            placeholderTextColor={colors.paymenttext}
-            value={billingData.city}
-            onChangeText={text => handleInputChange('city', text,true)}
-          />
-        </View>
+          {/* City Input */}
+          <View style={styles.inputWrapper}>
+            <TextInput
+              style={styles.input}
+              placeholder="City"
+              placeholderTextColor={colors.paymenttext}
+              value={formData.city}
+              onChangeText={text => handleInputChange('city', text)}
+            />
+          </View>
 
-        {/* Country Dropdown */}
-        <View style={styles.inputWrapper}>
-          <Dropdown
-            style={styles.input}
-            data={countryOptions}
-            labelField="label"
-            valueField="value"
-            placeholder={'Country/Regionborder india'}
-            placeholderStyle={styles.placeholder}
-            selectedTextStyle={styles.selectedText}
-            itemTextStyle={styles.itemText}
-            value={billingData.country}
-            onChange={text => handleInputChange('country', text.value ,true)}
-            renderRightIcon={() => <Text style={styles.customIcon}>▼</Text>}
-          />
-        </View>
-
-        {/* State and Pincode Row */}
-        <View style={styles.row}>
-          {/* State Dropdown */}
-          <View style={styles.halfWidth}>
+          {/* Country Dropdown */}
+          <View style={styles.inputWrapper}>
             <Dropdown
               style={styles.input}
-              data={stateOptions}
+              data={countryOptions}
               labelField="label"
               valueField="value"
-              placeholder="State"
+              placeholder={'Country/Regionborder india'}
               placeholderStyle={styles.placeholder}
               selectedTextStyle={styles.selectedText}
               itemTextStyle={styles.itemText}
-              value={billingData.state}
-              onChange={text => handleInputChange('state', text.value,true)}
+              value={formData.country}
+              onChange={text => handleInputChange('country', text.value)}
               renderRightIcon={() => <Text style={styles.customIcon}>▼</Text>}
             />
           </View>
 
-          {/* Pincode Input */}
-          <View style={styles.halfWidth}>
-            <TextInput
-              style={styles.input}
-              placeholder="Pincode"
-              keyboardType="numeric"
-              placeholderTextColor={colors.paymenttext}
-              value={billingData.pincode}
-              maxLength={6}
-              onChangeText={text => handleInputChange('pincode', text,true)}
-            />
+          {/* State and Pincode Row */}
+          <View style={styles.row}>
+            {/* State Dropdown */}
+            <View style={styles.halfWidth}>
+              <Dropdown
+                style={styles.input}
+                data={stateOptions}
+                labelField="label"
+                valueField="value"
+                placeholder="State"
+                placeholderStyle={styles.placeholder}
+                selectedTextStyle={styles.selectedText}
+                itemTextStyle={styles.itemText}
+                value={formData.state}
+                onChange={text => handleInputChange('state', text.value)}
+                renderRightIcon={() => <Text style={styles.customIcon}>▼</Text>}
+              />
+            </View>
+
+            {/* Pincode Input */}
+            <View style={styles.halfWidth}>
+              <TextInput
+                style={styles.input}
+                placeholder="Pincode"
+                keyboardType="numeric"
+                placeholderTextColor={colors.paymenttext}
+                value={formData.pincode}
+                maxLength={6}
+                onChangeText={text => handleInputChange('pincode', text)}
+              />
+            </View>
+          </View>
+
+          <View style={styles.checkboxRow}>
+            <View
+              style={[
+                styles.checkboxWrapper,
+                saveInfo && styles.checkedBackground,
+              ]}>
+              <Checkbox
+                status={saveInfo ? 'checked' : 'unchecked'}
+                onPress={() => setSaveInfo(!saveInfo)}
+                color="#FFF"
+                uncheckedColor="#DFE7EF"
+              />
+            </View>
+            <Text style={styles.checkboxText}>
+              Save this information for the billing address
+            </Text>
           </View>
         </View>
-        </View>
-:null}
+        {!saveInfo ? (
+          <View style={{marginTop: 20}}>
+            <Text style={styles.addresstext}>Billing Address</Text>
+
+            {/* Full Name Input */}
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.input}
+                placeholder="Full Name"
+                placeholderTextColor={colors.paymenttext}
+                value={billingData.name}
+                onChangeText={text => handleInputChange('name', text, true)}
+              />
+            </View>
+
+            {/* Phone Number Input */}
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.input}
+                placeholder="Phone"
+                placeholderTextColor={colors.paymenttext}
+                maxLength={10}
+                keyboardType="phone-pad"
+                value={billingData.phoneNumber}
+                onChangeText={text =>
+                  handleInputChange('phoneNumber', text, true)
+                }
+              />
+            </View>
+
+            {/* Email Input */}
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.input}
+                placeholder="Email"
+                placeholderTextColor={colors.paymenttext}
+                keyboardType="email-address"
+                value={billingData.email}
+                onChangeText={text => handleInputChange('email', text, true)}
+              />
+            </View>
+
+            {/* Address Input */}
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.input}
+                placeholder="Address"
+                placeholderTextColor={colors.paymenttext}
+                value={billingData.address}
+                onChangeText={text => handleInputChange('address', text, true)}
+              />
+            </View>
+
+            {/* Apartment Input */}
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.input}
+                placeholder="Apartment, suite, etc. (optional)"
+                placeholderTextColor={colors.paymenttext}
+                value={billingData.apartment}
+                onChangeText={text =>
+                  handleInputChange('apartment', text, true)
+                }
+              />
+            </View>
+
+            {/* City Input */}
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.input}
+                placeholder="City"
+                placeholderTextColor={colors.paymenttext}
+                value={billingData.city}
+                onChangeText={text => handleInputChange('city', text, true)}
+              />
+            </View>
+
+            {/* Country Dropdown */}
+            <View style={styles.inputWrapper}>
+              <Dropdown
+                style={styles.input}
+                data={countryOptions}
+                labelField="label"
+                valueField="value"
+                placeholder={'Country/Regionborder india'}
+                placeholderStyle={styles.placeholder}
+                selectedTextStyle={styles.selectedText}
+                itemTextStyle={styles.itemText}
+                value={billingData.country}
+                onChange={text =>
+                  handleInputChange('country', text.value, true)
+                }
+                renderRightIcon={() => <Text style={styles.customIcon}>▼</Text>}
+              />
+            </View>
+
+            {/* State and Pincode Row */}
+            <View style={styles.row}>
+              {/* State Dropdown */}
+              <View style={styles.halfWidth}>
+                <Dropdown
+                  style={styles.input}
+                  data={stateOptions}
+                  labelField="label"
+                  valueField="value"
+                  placeholder="State"
+                  placeholderStyle={styles.placeholder}
+                  selectedTextStyle={styles.selectedText}
+                  itemTextStyle={styles.itemText}
+                  value={billingData.state}
+                  onChange={text =>
+                    handleInputChange('state', text.value, true)
+                  }
+                  renderRightIcon={() => (
+                    <Text style={styles.customIcon}>▼</Text>
+                  )}
+                />
+              </View>
+
+              {/* Pincode Input */}
+              <View style={styles.halfWidth}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Pincode"
+                  keyboardType="numeric"
+                  placeholderTextColor={colors.paymenttext}
+                  value={billingData.pincode}
+                  maxLength={6}
+                  onChangeText={text =>
+                    handleInputChange('pincode', text, true)
+                  }
+                />
+              </View>
+            </View>
+          </View>
+        ) : null}
         <TouchableOpacity onPress={handleSubmit} style={styles.book}>
           <Text style={styles.btext1}>CONTINUE</Text>
         </TouchableOpacity>

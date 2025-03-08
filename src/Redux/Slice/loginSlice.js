@@ -165,7 +165,6 @@ export const ShopifyUserRegister = (input, navigation, footter) => {
       axios
         .request(GraphQlConfig(data))
         .then(response => {
-          console.log(JSON.stringify(response.data));
           if (response?.data?.data?.customerCreate?.customer) {
             dispatch(
               SHOPIFY_USER_REGISTER_SUCCESS(
@@ -210,7 +209,7 @@ export const ShopifyUserLogin = (input, navigation) => {
       axios
         .request(GraphQlConfig(data))
         .then(async response => {
-          console.log(JSON.stringify(response.data));
+        
           const data = response.data.data?.customerAccessTokenCreate;
           console.log('this is token', data?.customerAccessToken);
           if (data?.customerAccessToken) {
@@ -258,8 +257,6 @@ export const getUserDetails = customerAccessToken => {
       axios
         .request(GraphQlConfig(data))
         .then(async response => {
-          console.log('response data ,,111', response?.data?.data?.customer);
-
           const data = response.data.data?.customer;
          
           if (data) {

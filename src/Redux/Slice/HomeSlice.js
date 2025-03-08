@@ -46,12 +46,10 @@ export const GetConsultationList = createAsyncThunk(
       };
 
       const response = await axios.request(config);
-      // console.log(response?.data?.data, 'venom');
+
       if (response?.data?.status == 200) {
-        // console.log(response?.data?.data?.franchises, 'venom');
         return response?.data?.data?.franchises;
       } else {
-        console.log(response?.data);
         // Toast.show(response?.data?.msg);
       }
     } catch (error) {
