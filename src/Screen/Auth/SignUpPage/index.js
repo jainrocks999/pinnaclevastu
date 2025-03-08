@@ -9,6 +9,8 @@ import {
   PermissionsAndroid,
   Animated,
   Vibration,
+  KeyboardAvoidingView,
+  Keyboard,
 } from 'react-native';
 import React, {useRef, useState} from 'react';
 import styles from './styles';
@@ -28,6 +30,7 @@ import ClockIcon from '../../../assets/image/timeIcon.svg';
 import CalendarIcon from '../../../assets/image/calendarIcon.svg';
 
 const SignUpPage = ({route}) => {
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
   const loginUserData = useSelector(state => state?.Auth?.loginUserData);
   const dispatch = useDispatch();
@@ -38,7 +41,7 @@ const SignUpPage = ({route}) => {
 
   const navigation = useNavigation();
   const [gender, setGender] = useState('');
-const [birthdate,setBirth]=useState(new Date());
+  const [birthdate, setBirth] = useState(new Date());
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
 
@@ -77,7 +80,7 @@ const [birthdate,setBirth]=useState(new Date());
     const year = date.getFullYear().toString();
     return `${day}-${month}-${year}`;
   };
-const [birthtime,setBirthTime]=useState('');
+  const [birthtime, setBirthTime] = useState('');
   const [time, setTime] = useState(new Date());
   const [open1, setOpen1] = useState(false);
 
@@ -305,17 +308,16 @@ const [birthtime,setBirthTime]=useState('');
             });
         }
 
-        const data={
-        name:formData.name,
-        email:formData.email,
-        mobile:formData.mobile,
-        gender:gender,
-        pincode:formData.cityPincode,
-        palceofbirth:formData.birthPlace,
-        birthdate:birthdate,
-        birthtime:birthtime
-
-        }
+        const data = {
+          name: formData.name,
+          email: formData.email,
+          mobile: formData.mobile,
+          gender: gender,
+          pincode: formData.cityPincode,
+          palceofbirth: formData.birthPlace,
+          birthdate: birthdate,
+          birthtime: birthtime,
+        };
         await dispatch(
           signupUser({
             formUserData,
@@ -338,181 +340,247 @@ const [birthtime,setBirthTime]=useState('');
   ];
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView style={styles.container}>
       {isLoading ? <Loader /> : null}
-      <ScrollView
-        ref={scrollViewRef}
-        contentContainerStyle={styles.main1}
-        keyboardShouldPersistTaps="handled">
-        <View style={styles.subt}>
-          <Text style={styles.title}>Sign up</Text>
+      <KeyboardAvoidingView onPress={Keyboard.dismiss}>
+        <ScrollView
+          scrollEnabled={!isKeyboardOpen}
+          ref={scrollViewRef}
+          contentContainerStyle={styles.main1}
+          keyboardShouldPersistTaps="handled">
+          <View style={styles.subt}>
+            <Text style={styles.title}>Sign up</Text>
 
-          <Text style={styles.title1}>{'Hello there !\nwelcome to you.'}</Text>
-        </View>
-
-        <View style={{paddingHorizontal: 5}}>
-          <View style={styles.inputmain}>
-            <Text style={styles.title2}>Full Name*</Text>
-            <View
-              style={[
-                styles.input,
-                styles.inputShadow,
-                validationError.name && {borderColor: 'red'},
-              ]}>
-              <Animated.View
-                style={[{transform: [{translateX: shakeAnimation.name}]}]}>
-                <TextInput
-                  style={styles.inputText}
-                  placeholder="Name"
-                  placeholderTextColor={colors.placeholder}
-                  value={formData.name}
-                  onChangeText={text => handleInputChange('name', text)}
-                />
-              </Animated.View>
-            </View>
-
-            {validationError.name && (
-              <Text style={styles.errorText}>
-                Please enter your valid name.
-              </Text>
-            )}
-          </View>
-          <View style={styles.inputmain}>
-            <Text style={styles.title2}>Email*</Text>
-            <View
-              style={[
-                styles.input,
-                styles.inputShadow,
-                validationError.email && {borderColor: 'red'},
-              ]}>
-              <Animated.View
-                style={[{transform: [{translateX: shakeAnimation.email}]}]}>
-                <TextInput
-                  style={styles.inputText}
-                  placeholder="Email"
-                  placeholderTextColor={colors.placeholder}
-                  keyboardType="email-address"
-                  value={formData.email}
-                  onChangeText={text => handleInputChange('email', text)}
-                />
-              </Animated.View>
-            </View>
-            {validationError.email && (
-              <Text style={styles.errorText}>
-                Please enter your valid email.
-              </Text>
-            )}
-          </View>
-          <View style={styles.inputmain}>
-            <Text style={styles.title2}>Mobile Number*</Text>
-            <View
-              style={[
-                styles.input,
-                styles.inputShadow,
-                validationError.mobile && {borderColor: 'red'},
-              ]}>
-              <Animated.View
-                style={[{transform: [{translateX: shakeAnimation.mobile}]}]}>
-                <TextInput
-                  style={styles.inputText}
-                  placeholder="Mobile Number"
-                  placeholderTextColor={colors.placeholder}
-                  keyboardType="phone-pad"
-                  value={formData.mobile}
-                  maxLength={10}
-                  editable={false}
-                  onChangeText={text => handleInputChange('mobile', text)}
-                />
-              </Animated.View>
-            </View>
-            {validationError.mobile && (
-              <Text style={styles.errorText}>
-                Please enter your valid mobile number.
-              </Text>
-            )}
+            <Text style={styles.title1}>
+              {'Hello there !\nwelcome to you.'}
+            </Text>
           </View>
 
-          <View style={styles.inputmain}>
-            <Text style={styles.title2}>Gender*</Text>
-            <Animated.View
-              style={[{transform: [{translateX: shakeAnimation.gender}]}]}>
-              <Dropdown
+          <View style={{paddingHorizontal: 5}}>
+            <View style={styles.inputmain}>
+              <Text style={styles.title2}>Full Name*</Text>
+              <View
                 style={[
                   styles.input,
                   styles.inputShadow,
+                  validationError.name && {borderColor: 'red'},
+                ]}>
+                <Animated.View
+                  style={[{transform: [{translateX: shakeAnimation.name}]}]}>
+                  <TextInput
+                    style={styles.inputText}
+                    placeholder="Name"
+                    placeholderTextColor={colors.placeholder}
+                    value={formData.name}
+                    onChangeText={text => handleInputChange('name', text)}
+                    onFocus={() => setIsKeyboardOpen(true)}
+                    onBlur={() => setIsKeyboardOpen(false)}
+                  />
+                </Animated.View>
+              </View>
 
-                  {
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  },
-                  validationError.gender && {borderColor: 'red'},
-                ]}
-                data={data}
-                labelField="label"
-                valueField="value"
-                placeholder={'Gender'}
-                placeholderStyle={{
-                  color: gender ? colors.heading : colors.placeholder,
-                  fontSize: fontSize.Sixteen,
-                  fontFamily: 'Poppins-Regular',
-                }}
-                selectedTextStyle={styles.selectedText}
-                itemTextStyle={styles.itemText}
-                value={gender}
-                onChange={text => (
-                  setGender(text.value),
-                  setValidationError({...validationError, gender: false})
-                )}
-                renderRightIcon={() => (
-                  <DownarrowIcon
+              {validationError.name && (
+                <Text style={styles.errorText}>
+                  Please enter your valid name.
+                </Text>
+              )}
+            </View>
+            <View style={styles.inputmain}>
+              <Text style={styles.title2}>Email*</Text>
+              <View
+                style={[
+                  styles.input,
+                  styles.inputShadow,
+                  validationError.email && {borderColor: 'red'},
+                ]}>
+                <Animated.View
+                  style={[{transform: [{translateX: shakeAnimation.email}]}]}>
+                  <TextInput
+                    style={styles.inputText}
+                    placeholder="Email"
+                    placeholderTextColor={colors.placeholder}
+                    keyboardType="email-address"
+                    value={formData.email}
+                    onChangeText={text => handleInputChange('email', text)}
+                    onFocus={() => setIsKeyboardOpen(true)}
+                    onBlur={() => setIsKeyboardOpen(false)}
+                  />
+                </Animated.View>
+              </View>
+              {validationError.email && (
+                <Text style={styles.errorText}>
+                  Please enter your valid email.
+                </Text>
+              )}
+            </View>
+            <View style={styles.inputmain}>
+              <Text style={styles.title2}>Mobile Number*</Text>
+              <View
+                style={[
+                  styles.input,
+                  styles.inputShadow,
+                  validationError.mobile && {borderColor: 'red'},
+                ]}>
+                <Animated.View
+                  style={[{transform: [{translateX: shakeAnimation.mobile}]}]}>
+                  <TextInput
+                    style={styles.inputText}
+                    placeholder="Mobile Number"
+                    placeholderTextColor={colors.placeholder}
+                    keyboardType="phone-pad"
+                    value={formData.mobile}
+                    maxLength={10}
+                    editable={false}
+                    onChangeText={text => handleInputChange('mobile', text)}
+                  />
+                </Animated.View>
+              </View>
+              {validationError.mobile && (
+                <Text style={styles.errorText}>
+                  Please enter your valid mobile number.
+                </Text>
+              )}
+            </View>
+
+            <View style={styles.inputmain}>
+              <Text style={styles.title2}>Gender*</Text>
+              <Animated.View
+                style={[{transform: [{translateX: shakeAnimation.gender}]}]}>
+                <Dropdown
+                  style={[
+                    styles.input,
+                    styles.inputShadow,
+
+                    {
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    },
+                    validationError.gender && {borderColor: 'red'},
+                  ]}
+                  data={data}
+                  labelField="label"
+                  valueField="value"
+                  placeholder={'Gender'}
+                  placeholderStyle={{
+                    color: gender ? colors.heading : colors.placeholder,
+                    fontSize: fontSize.Sixteen,
+                    fontFamily: 'Poppins-Regular',
+                  }}
+                  selectedTextStyle={styles.selectedText}
+                  itemTextStyle={styles.itemText}
+                  value={gender}
+                  onChange={text => (
+                    setGender(text.value),
+                    setValidationError({...validationError, gender: false})
+                  )}
+                  renderRightIcon={() => (
+                    <DownarrowIcon
+                      width={wp(4)}
+                      height={wp(3)}
+                      style={{marginRight: 10}}
+                    />
+                  )}
+                />
+              </Animated.View>
+              {validationError.gender && (
+                <Text style={styles.errorText}>Please select your gender.</Text>
+              )}
+            </View>
+            <View style={styles.inputmain}>
+              <Text style={styles.title2}>Current City Pincode*</Text>
+              <View
+                style={[
+                  styles.input,
+                  styles.inputShadow,
+                  validationError.cityPincode && {borderColor: 'red'},
+                ]}>
+                <Animated.View
+                  style={[
+                    {transform: [{translateX: shakeAnimation.cityPincode}]},
+                  ]}>
+                  <TextInput
+                    style={styles.inputText}
+                    placeholder="Current City Pincode"
+                    placeholderTextColor={colors.placeholder}
+                    keyboardType="numeric"
+                    maxLength={6}
+                    value={formData.cityPincode}
+                    onChangeText={text =>
+                      handleInputChange('cityPincode', text)
+                    }
+                    onFocus={() => setIsKeyboardOpen(true)}
+                    onBlur={() => setIsKeyboardOpen(false)}
+                  />
+                </Animated.View>
+              </View>
+              {validationError.cityPincode && (
+                <Text style={styles.errorText}>
+                  Please enter your valid city pincode.
+                </Text>
+              )}
+            </View>
+
+            <View style={styles.inputmain}>
+              <Text style={styles.title2}>Date of Birth*</Text>
+              <Animated.View
+                style={[{transform: [{translateX: shakeAnimation.date}]}]}>
+                <TouchableOpacity
+                  onPress={() => setOpen(true)}
+                  style={[
+                    styles.input,
+                    styles.inputShadow,
+                    {
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    },
+                    validationError.date && {borderColor: 'red'},
+                  ]}>
+                  <Text
+                    style={[
+                      styles.input1,
+                      {
+                        color:
+                          date === '' ? colors.placeholder : colors.heading,
+                      },
+                    ]}>
+                    {formatDate(date)}
+                  </Text>
+
+                  <CalendarIcon
                     width={wp(4)}
-                    height={wp(3)}
+                    height={wp(4)}
                     style={{marginRight: 10}}
                   />
-                )}
-              />
-            </Animated.View>
-            {validationError.gender && (
-              <Text style={styles.errorText}>Please select your gender.</Text>
-            )}
-          </View>
-          <View style={styles.inputmain}>
-            <Text style={styles.title2}>Current City Pincode*</Text>
-            <View
-              style={[
-                styles.input,
-                styles.inputShadow,
-                validationError.cityPincode && {borderColor: 'red'},
-              ]}>
-              <Animated.View
-                style={[
-                  {transform: [{translateX: shakeAnimation.cityPincode}]},
-                ]}>
-                <TextInput
-                  style={styles.inputText}
-                  placeholder="Current City Pincode"
-                  placeholderTextColor={colors.placeholder}
-                  keyboardType="numeric"
-                  maxLength={6}
-                  value={formData.cityPincode}
-                  onChangeText={text => handleInputChange('cityPincode', text)}
-                />
+                </TouchableOpacity>
               </Animated.View>
-            </View>
-            {validationError.cityPincode && (
-              <Text style={styles.errorText}>
-                Please enter your valid city pincode.
-              </Text>
-            )}
-          </View>
+              <DatePicker
+                modal
+                open={open}
+                date={date || new Date()}
+                mode="date"
+                maximumDate={new Date()}
+                onConfirm={selectedDate => {
+                  const formattedTime = selectedDate.toISOString();
 
-          <View style={styles.inputmain}>
-            <Text style={styles.title2}>Date of Birth*</Text>
-            <Animated.View
-              style={[{transform: [{translateX: shakeAnimation.date}]}]}>
+                  setOpen(false);
+                  setDate(selectedDate);
+                  setBirth(formattedTime);
+                }}
+                onCancel={() => setOpen(false)}
+              />
+              {validationError.date && (
+                <Text style={styles.errorText}>
+                  Please enter your valid date of birth.
+                </Text>
+              )}
+            </View>
+
+            <View style={styles.inputmain}>
+              <Text style={styles.title2}>Time of Birth</Text>
               <TouchableOpacity
-                onPress={() => setOpen(true)}
+                onPress={() => setOpen1(true)}
                 style={[
                   styles.input,
                   styles.inputShadow,
@@ -521,143 +589,93 @@ const [birthtime,setBirthTime]=useState('');
                     justifyContent: 'space-between',
                     alignItems: 'center',
                   },
-                  validationError.date && {borderColor: 'red'},
                 ]}>
                 <Text
                   style={[
                     styles.input1,
-                    {color: date === '' ? colors.placeholder : colors.heading},
+                    {color: time === '' ? colors.placeholder : colors.heading},
                   ]}>
-                  {formatDate(date)}
+                  {formatTime(time)}
                 </Text>
 
-                <CalendarIcon
+                <ClockIcon
                   width={wp(4)}
                   height={wp(4)}
                   style={{marginRight: 10}}
                 />
               </TouchableOpacity>
-            </Animated.View>
-            <DatePicker
-              modal
-              open={open}
-              date={date || new Date()}
-              mode="date"
-              maximumDate={new Date()}
-              onConfirm={(selectedDate) => {
 
-                const formattedTime = selectedDate.toISOString();
-               
-                setOpen(false);
-                setDate(selectedDate);
-                setBirth(formattedTime);
-              }}
-              onCancel={() => setOpen(false)}
-            />
-            {validationError.date && (
-              <Text style={styles.errorText}>
-                Please enter your valid date of birth.
-              </Text>
-            )}
-          </View>
-
-          <View style={styles.inputmain}>
-            <Text style={styles.title2}>Time of Birth</Text>
-            <TouchableOpacity
-              onPress={() => setOpen1(true)}
-              style={[
-                styles.input,
-                styles.inputShadow,
-                {
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                },
-              ]}>
-              <Text
+              <DatePicker
+                modal
+                open={open1}
+                date={time || new Date()}
+                mode="time"
+                onConfirm={selectedTime => {
+                  setOpen1(false);
+                  setTime(selectedTime);
+                  const formattedTime = selectedTime.toISOString();
+                  setBirthTime(formattedTime);
+                }}
+                onCancel={() => setOpen1(false)}
+              />
+            </View>
+            <View style={styles.inputmain}>
+              <Text style={styles.title2}>Place of Birth</Text>
+              <View style={[styles.input, styles.inputShadow]}>
+                <TextInput
+                  style={styles.inputText}
+                  placeholder="Place of Birth"
+                  placeholderTextColor={colors.placeholder}
+                  value={formData.birthPlace}
+                  onChangeText={text => handleInputChange('birthPlace', text)}
+                  onFocus={() => setIsKeyboardOpen(true)}
+                  onBlur={() => setIsKeyboardOpen(false)}
+                />
+              </View>
+            </View>
+            <View style={styles.inputmain}>
+              <Text style={styles.title2}>Upload Photo</Text>
+              <View
                 style={[
-                  styles.input1,
-                  {color: time === '' ? colors.placeholder : colors.heading},
+                  styles.input,
+                  styles.inputShadow,
+                  {
+                    alignItems: 'center',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    paddingHorizontal: 5,
+                  },
                 ]}>
-                {formatTime(time)}
-              </Text>
+                <TextInput
+                  style={styles.input1}
+                  placeholder="Upload Photo"
+                  placeholderTextColor={colors.placeholder}
+                  value={selectedImage?.uri}
+                  editable={false}
+                />
 
-              <ClockIcon
-                width={wp(4)}
-                height={wp(4)}
-                style={{marginRight: 10}}
-              />
-            </TouchableOpacity>
-
-            <DatePicker
-              modal
-              open={open1}
-             
-              date={time || new Date()}
-              mode="time"
-              onConfirm={selectedTime => {
-                setOpen1(false);
-                setTime(selectedTime);
-                const formattedTime = selectedTime.toISOString();
-                setBirthTime(formattedTime);
-              }}
-              onCancel={() => setOpen1(false)}
-            />
-          </View>
-          <View style={styles.inputmain}>
-            <Text style={styles.title2}>Place of Birth</Text>
-            <View style={[styles.input, styles.inputShadow]}>
-              <TextInput
-                style={styles.inputText}
-                placeholder="Place of Birth"
-                placeholderTextColor={colors.placeholder}
-                value={formData.birthPlace}
-                onChangeText={text => handleInputChange('birthPlace', text)}
-              />
+                <TouchableOpacity
+                  onPress={() => setModalVisible(true)}
+                  style={styles.buttoncontainer1}>
+                  <Text style={[styles.btext, {fontSize: fontSize.Fourteen}]}>
+                    {'Browse'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <Text style={styles.uppload}>Maximum upload file size 2mb.</Text>
             </View>
-          </View>
-          <View style={styles.inputmain}>
-            <Text style={styles.title2}>Upload Photo</Text>
-            <View
-              style={[
-                styles.input,
-                styles.inputShadow,
-                {
-                  alignItems: 'center',
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  paddingHorizontal: 5,
-                },
-              ]}>
-              <TextInput
-                style={styles.input1}
-                placeholder="Upload Photo"
-                placeholderTextColor={colors.placeholder}
-                value={selectedImage?.uri}
-                editable={false}
-              />
 
+            <Animated.View
+              style={[{transform: [{scale: buttonAnimatedValue}]}]}>
               <TouchableOpacity
-                onPress={() => setModalVisible(true)}
-                style={styles.buttoncontainer1}>
-                <Text style={[styles.btext, {fontSize: fontSize.Fourteen}]}>
-                  {'Browse'}
-                </Text>
+                onPress={handleSubmit}
+                style={styles.buttoncontainer}>
+                <Text style={styles.btext}>{'SUBMIT'}</Text>
               </TouchableOpacity>
-            </View>
-            <Text style={styles.uppload}>Maximum upload file size 2mb.</Text>
+            </Animated.View>
           </View>
-
-          <Animated.View style={[{transform: [{scale: buttonAnimatedValue}]}]}>
-            <TouchableOpacity
-              onPress={handleSubmit}
-              style={styles.buttoncontainer}>
-              <Text style={styles.btext}>{'SUBMIT'}</Text>
-            </TouchableOpacity>
-          </Animated.View>
-        </View>
-      </ScrollView>
-
+        </ScrollView>
+      </KeyboardAvoidingView>
       <Modal
         transparent={true}
         animationType="fade"
@@ -696,7 +714,7 @@ const [birthtime,setBirthTime]=useState('');
           </View>
         </View>
       </Modal>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

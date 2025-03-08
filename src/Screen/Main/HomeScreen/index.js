@@ -33,6 +33,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {
   Banner,
   CourceLis,
+  getAllCityApi,
   GetConsultationList,
   submitEnquryApi,
 } from '../../../Redux/Slice/HomeSlice';
@@ -76,6 +77,7 @@ const HomeScreen = () => {
   const homeData = useSelector(state => state?.HomeBanner);
 
   const Cource1 = useSelector(state => state?.home?.Cource);
+  const city = useSelector(state => state?.home?.city);
   const consultationList = useSelector(state => state?.home?.ConsultationList);
   const submitedEnqury = useSelector(state => state?.home?.submitedEnqury);
   const userDetail = useSelector(state => state?.Auth?.userData);
@@ -93,7 +95,16 @@ const HomeScreen = () => {
     city: '',
   });
 
+  const [validationError, setValidationError] = useState({
+    name: false,
+    email: false,
+    phone: false,
+    course: false,
+    city: false,
+  });
+
   const handleInputChange = (key, value) => {
+    setValidationError({...validationError, [key]: false});
     setFormData(prevState => ({
       ...prevState,
       [key]: value,
@@ -102,25 +113,22 @@ const HomeScreen = () => {
 
   const handleSubmit = async () => {
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-    const {name, email, phone, course} = formData;
+    const {name, email, phone, course, city} = formData;
 
     if (name === '') {
-      Toast.show('Username is required!');
+      setValidationError({...validationError, name: true});
       return;
-    } else if (email === '') {
-      Toast.show('Useremail is required!');
+    } else if (email === '' || !emailRegex.test(email)) {
+      setValidationError({...validationError, email: true});
       return;
-    } else if (!emailRegex.test(email)) {
-      Toast.show('valid email is required!');
+    } else if (city === '') {
+      setValidationError({...validationError, city: true});
       return;
-    } else if (phone === '') {
-      Toast.show('phone is required!');
-      return;
-    } else if (phone < 10) {
-      Toast.show('phone number must be of 10 digit!');
+    } else if (phone === '' || phone < 10) {
+      setValidationError({...validationError, phone: true});
       return;
     } else if (course === '') {
-      Toast.show('course is required!');
+      setValidationError({...validationError, course: true});
       return;
     } else {
       await dispatch(
@@ -195,6 +203,7 @@ const HomeScreen = () => {
 
   const apicall = async () => {
     await dispatch(Banner({url: 'home-slider'}));
+    await dispatch(getAllCityApi({url: 'fetch-city-all'}));
     await dispatch(CourceLis({url: 'fetch-course-data'}));
     await dispatch(GetConsultationList({url: 'franchise-data'}));
     await dispatch(getDrawerData());
@@ -389,7 +398,7 @@ const HomeScreen = () => {
             },
           });
         }}
-        style={[{height: wp(40), width: wp(46)}, styles.cardContainer3]}>
+        style={[{height: wp(38), width: wp(38)}, styles.cardContainer3]}>
         <ImageBackground
           source={{uri: `${item.CardImage}`}}
           style={{height: '100%', width: '100%', backgroundColor: '#fff'}}>
@@ -459,7 +468,7 @@ const HomeScreen = () => {
               style={styles.cardImage}
             />
             <View style={styles.infoSection}>
-              <Text style={styles.third}>{item?.level}</Text>
+              <Text style={[styles.third, {marginTop: 10}]}>{item?.level}</Text>
               <Text style={styles.third1}>{item?.franchise_name}</Text>
               <Text style={[styles.third2, {width: '85%'}]}>
                 Services :{' '}
@@ -1089,6 +1098,11 @@ const HomeScreen = () => {
                 onChangeText={text => handleInputChange('name', text)}
               />
             </View>
+            {validationError.name && (
+              <Text style={styles.errorText}>
+                Please enter your valid name.
+              </Text>
+            )}
 
             <View style={styles.textInputContainer}>
               <TextInput
@@ -1099,6 +1113,39 @@ const HomeScreen = () => {
                 onChangeText={text => handleInputChange('email', text)}
               />
             </View>
+            {validationError.email && (
+              <Text style={styles.errorText}>
+                Please enter your valid email.
+              </Text>
+            )}
+            <View style={styles.textInputContainer}>
+              <Dropdown
+                style={[styles.input]}
+                data={city}
+                labelField="name"
+                valueField="name"
+                placeholder={'City'}
+                placeholderStyle={[styles.inputText, {color: '#7B93AF'}]}
+                selectedTextStyle={styles.selectedText}
+                itemTextStyle={styles.inputText}
+                search
+                inputSearchStyle={styles.inputSearchStyle}
+                iconStyle={styles.iconStyle}
+                searchPlaceholder="Search..."
+                value={formData.course}
+                onChange={item => handleInputChange('city', item.name)}
+                renderRightIcon={() => (
+                  <DownarrowIcon
+                    width={wp(4)}
+                    height={wp(3)}
+                    style={{marginRight: 10}}
+                  />
+                )}
+              />
+            </View>
+            {validationError.city && (
+              <Text style={styles.errorText}>Please select your city.</Text>
+            )}
 
             <View style={styles.textInputContainer}>
               <TextInput
@@ -1108,9 +1155,14 @@ const HomeScreen = () => {
                 value={formData.phone}
                 onChangeText={text => handleInputChange('phone', text)}
                 keyboardType="numeric"
+                maxLength={10}
               />
             </View>
-
+            {validationError.phone && (
+              <Text style={styles.errorText}>
+                Please enter your valid phone number.
+              </Text>
+            )}
             <View style={styles.textInputContainer}>
               <Dropdown
                 style={[styles.input]}
@@ -1124,10 +1176,6 @@ const HomeScreen = () => {
                 value={formData.course}
                 onChange={item => handleInputChange('course', item.lable)}
                 renderRightIcon={() => (
-                  // <Image
-                  // style={{height: 8, width: 15}}
-                  // source={require('../../../assets/image/arrow_icon.png')}
-                  // />
                   <DownarrowIcon
                     width={wp(4)}
                     height={wp(3)}
@@ -1136,6 +1184,9 @@ const HomeScreen = () => {
                 )}
               />
             </View>
+            {validationError.course && (
+              <Text style={styles.errorText}>Please select a course.</Text>
+            )}
 
             <TouchableOpacity onPress={() => handleSubmit()}>
               <Text style={[styles.cardBtn, styles.submitBtn]}>
@@ -1166,7 +1217,7 @@ const HomeScreen = () => {
             </View>
 
             <FlatList
-              data={homeData?.remedies?.cards?.slice(0, 5)}
+              data={homeData?.remedies?.cards}
               renderItem={renderItem2}
               keyExtractor={(item, index) => index?.toString()}
               horizontal
@@ -1194,7 +1245,7 @@ const HomeScreen = () => {
             </TouchableOpacity>
           </View>
           <FlatList
-            data={consultationList.slice(0, 3)}
+            data={consultationList}
             pagingEnabled
             snapToAlignment="center"
             decelerationRate="fast"
@@ -1215,7 +1266,7 @@ const HomeScreen = () => {
             }}
           />
           <View style={[styles.dotContainer, {marginTop: 15}]}>
-            {Homebanner?.franchises.map((item, index) => (
+            {consultationList?.map((item, index) => (
               <TouchableOpacity
                 key={item.id}
                 style={[
@@ -1223,7 +1274,7 @@ const HomeScreen = () => {
                   currentIndex1.cousultationIndex == index && styles.activeDot,
                 ]}
                 onPress={() => {
-                  if (index < Homebanner?.franchises.length) {
+                  if (index < consultationList?.length) {
                     handleImageChange(index);
                   }
                 }}

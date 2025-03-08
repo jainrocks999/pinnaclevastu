@@ -88,6 +88,33 @@ export const CourceLis = createAsyncThunk(
     }
   },
 );
+export const getAllCityApi = createAsyncThunk(
+  'home/getAllCity',
+  async ({url}, {rejectWithValue}) => {
+    try {
+      const config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: `${constant.mainUrl}${url}`,
+        headers: {},
+      };
+
+      const response = await axios.request(config);
+      // console.log(response,"Venom")
+      if (response?.data?.status == 200) {
+        return response?.data?.data;
+      } else {
+        Toast.show(response?.data?.msg);
+      }
+    } catch (error) {
+      console.log('banner error 211', error);
+
+      return rejectWithValue(
+        error.response ? error.response.data : error.message,
+      );
+    }
+  },
+);
 
 export const submitEnquryApi = createAsyncThunk(
   'home/submitEnquryApi',
@@ -105,7 +132,6 @@ export const submitEnquryApi = createAsyncThunk(
       };
 
       const response = await axios.request(config);
-
       if (response?.data?.status == 200) {
         Toast.show(response?.data?.msg);
         return response?.data?.status;
@@ -128,6 +154,7 @@ const homeSlice = createSlice({
     submitedEnqury: false,
     loading: false,
     error: null,
+    city: [],
   },
   reducers: {
     clearError: state => {
@@ -157,6 +184,18 @@ const homeSlice = createSlice({
         state.Cource = action.payload;
       })
       .addCase(CourceLis.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(getAllCityApi.pending, state => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllCityApi.fulfilled, (state, action) => {
+        state.loading = false;
+        state.city = action.payload;
+      })
+      .addCase(getAllCityApi.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
