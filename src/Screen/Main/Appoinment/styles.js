@@ -22,6 +22,9 @@ export default styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  backBtn: {
+    marginRight: 10,
+  },
   logoText: {
     fontSize: fontSize.Eighteen,
     color: colors.heading,
@@ -90,10 +93,10 @@ export default styles = StyleSheet.create({
   appointmentImage: {
     resizeMode: 'contain',
     width: 120,
-    height: 125,
+    height: 120,
     marginRight: 8,
     marginLeft: -3,
-    borderRadius: 20,
+    borderRadius: wp(50),
   },
   appointmentDetails: {
     flex: 1,

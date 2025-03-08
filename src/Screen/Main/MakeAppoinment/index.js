@@ -15,6 +15,11 @@ import {
   BackHandler,
 } from 'react-native';
 import styles from './styles';
+import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
+import BackIcon from '../../../assets/image/backIcon.svg';
+import DownarrowIcon from '../../../assets/image/down_grey_icon.svg';
+import ClockIcon from '../../../assets/image/timeIcon.svg';
+import CalendarIcon from '../../../assets/image/calendarIcon.svg';
 import {colors} from '../../../Component/colors';
 import {fontSize} from '../../../Component/fontsize';
 import {Checkbox} from 'react-native-paper';
@@ -276,10 +281,7 @@ const ResidentalScreen = ({navigation}) => {
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-          <Image
-            style={styles.backBtn}
-            source={require('../../../assets/drawer/Back1.png')}
-          />
+          <BackIcon width={wp(4)} height={wp(4)} style={styles.backBtn} />
         </TouchableOpacity>
 
         <View style={styles.headerview}>
@@ -473,12 +475,10 @@ const ResidentalScreen = ({navigation}) => {
                     })
                   )}
                   renderRightIcon={() => (
-                    <Image
-                      style={{
-                        height: 8,
-                        width: 15,
-                      }}
-                      source={require('../../../assets/image/arrow_icon.png')}
+                    <DownarrowIcon
+                      width={wp(4)}
+                      height={wp(3)}
+                      style={{marginRight: 10}}
                     />
                   )}
                   renderItem={item => (
@@ -547,12 +547,10 @@ const ResidentalScreen = ({navigation}) => {
                   {formatDate(date)}
                 </Text>
 
-                <Image
-                  style={{
-                    height: 20,
-                    width: 20,
-                  }}
-                  source={require('../../../assets/image/cale.png')}
+                <CalendarIcon
+                  width={wp(4)}
+                  height={wp(4)}
+                  style={{marginRight: 10}}
                 />
               </TouchableOpacity>
               <DatePicker
@@ -595,12 +593,10 @@ const ResidentalScreen = ({navigation}) => {
                   {formatTime(time)}
                 </Text>
 
-                <Image
-                  style={{
-                    height: 20,
-                    width: 20,
-                  }}
-                  source={require('../../../assets/image/Layer.png')}
+                <ClockIcon
+                  width={wp(4)}
+                  height={wp(4)}
+                  style={{marginRight: 10}}
                 />
               </TouchableOpacity>
 

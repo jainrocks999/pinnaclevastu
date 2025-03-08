@@ -46,7 +46,7 @@ export default function BottomTab() {
       {
       isExtraDataLoading ||
       collection1 ||
-      search ||
+      // search ||
       PDP ||
       cartisLoading ||
       orderisLoading ||

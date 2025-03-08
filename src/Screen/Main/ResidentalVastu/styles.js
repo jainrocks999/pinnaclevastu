@@ -79,9 +79,6 @@ export default StyleSheet.create({
     paddingBottom: hp(8),
   },
   nextBtn: {
-    height: wp(5),
-    width: wp(2.5),
-    tintColor: colors.orange,
     alignSelf: 'center',
     resizeMode: 'contain',
   },
@@ -117,7 +114,7 @@ export default StyleSheet.create({
     width: '65%',
   },
   cardImage: {
-    borderRadius: 10,
+    borderRadius: wp(50),
     width: '100%',
     height: wp(30),
     resizeMode: 'cover',
@@ -141,11 +138,8 @@ export default StyleSheet.create({
     fontFamily: 'Poppins-Medium',
   },
   backBtn: {
-    marginTop: -5,
-    height: wp(4),
-    width: wp(2.3),
-    resizeMode: 'stretch',
-    marginRight: 20,
+    marginRight: 10,
+    marginTop:-8
   },
   emptyMessageContainer: {
     margin: 'auto',

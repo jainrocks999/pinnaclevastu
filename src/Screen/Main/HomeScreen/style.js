@@ -70,8 +70,10 @@ export default StyleSheet.create({
     backgroundColor: colors.white,
     borderRadius: 15,
     elevation: 3,
+    borderWidth:1,
+    borderColor:"#bdc3c7",
     // shadowColor: '#000', // Shadow for iOS
-    shadowColor: '#bdc3c7',
+    shadowColor: '',
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.2,
     shadowRadius: 5,
@@ -397,7 +399,7 @@ export default StyleSheet.create({
     paddingBottom: 30,
   },
   cardImage: {
-    borderRadius: 10,
+    borderRadius: wp(50),
     width: '36%',
     height: '93%',
     resizeMode: 'contain',
@@ -408,9 +410,7 @@ export default StyleSheet.create({
   },
   arrowNext: {
     position: 'absolute',
-    height: 20,
-    width: 20,
-    right: -2,
+    right: 0,
     alignSelf: 'center',
   },
   dotContainer: {
@@ -821,4 +821,5 @@ export default StyleSheet.create({
     fontSize: fontSize.Sixteen,
     fontFamily: 'Poppins-SemiBold',
   },
+
 });

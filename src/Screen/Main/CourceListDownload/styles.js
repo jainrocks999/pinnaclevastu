@@ -169,18 +169,15 @@ export default styles = StyleSheet.create({
     marginBottom: 20,
   },
   subItemIcon: {
-    backgroundColor: '#f3dacd',
-    width: wp(10),
-    height: wp(10),
-    marginRight: 10,
-    borderRadius: 10,
+    width: wp(6),
+    height: wp(6),
     resizeMode: 'contain',
   },
   subItemTitle: {
     fontSize: fontSize.Fourteen,
     color: colors.heading,
     fontFamily: 'Poppins-Medium',
-    width: '80%',
+    width: '60%',
   },
   subItemSubtitle: {
     fontSize: fontSize.Eleven,
@@ -194,6 +191,15 @@ export default styles = StyleSheet.create({
   downloadIconContainer: {
     position: 'absolute',
     right: 0,
+    padding:12,
+    borderRadius:5,
+    backgroundColor:'#FFFBF9'
+  },
+  videoIcon:{
+    padding:12,
+    borderRadius:10,
+    backgroundColor:'#F3DACD',
+    marginRight:10,
   },
   direction: {
     flexDirection: 'row',
@@ -201,10 +207,7 @@ export default styles = StyleSheet.create({
   },
   backBtn: {
     marginTop: -5,
-    height: wp(4),
-    width: wp(2.3),
-    resizeMode: 'stretch',
-    marginRight: 20,
+    marginRight: 10,
   },
   modalOverlay: {
     flex: 1,

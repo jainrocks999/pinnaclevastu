@@ -237,10 +237,8 @@ export default StyleSheet.create({
     fontWeight: 500,
   },
   backBtn: {
-    height: wp(4),
-    width: wp(2.3),
-    resizeMode: 'stretch',
-    marginRight: 20,
+    marginTop: -5,
+    marginRight: 10,
   },
   input: {
     borderWidth: 1,

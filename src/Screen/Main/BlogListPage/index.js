@@ -74,8 +74,14 @@ const BlogList = () => {
                 : item?.node?.content
               : ' '}
           </Text>
-<Pressable    onPress={() => navigation.navigate('Home', {screen: 'BlogDetail',params:{item:item} })}>
-          <Text style={styles.blogCardBtnText}>{'View Details >'}</Text>
+          <Pressable
+            onPress={() =>
+              navigation.navigate('Home', {
+                screen: 'BlogDetail',
+                params: {item: item},
+              })
+            }>
+            <Text style={styles.blogCardBtnText}>{'View Details >'}</Text>
           </Pressable>
         </View>
       </TouchableOpacity>
@@ -89,7 +95,7 @@ const BlogList = () => {
           <TouchableOpacity
             onPress={() => navigation.openDrawer()}
             hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-            <Image source={require('../../../assets/image/Drawer.png')} />
+            <DrawerIcon />
           </TouchableOpacity>
           <Image
             style={{marginLeft: 15}}

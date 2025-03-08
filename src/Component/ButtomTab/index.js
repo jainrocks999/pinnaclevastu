@@ -17,7 +17,7 @@ const BottomNavBar = ({navigation}) => {
         <Text style={styles.navText}>Home</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate('Residental')}>
+      <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate('Franchise')}>
         <Image source={require('../../assets/buttomtabview/chat.png')} style={styles.icon} />
         <Text style={styles.navText}>Consultancy</Text>
       </TouchableOpacity>

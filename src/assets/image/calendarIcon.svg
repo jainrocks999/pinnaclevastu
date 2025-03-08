@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="18.1" height="18.1" viewBox="0 0 18.1 18.1">
+  <g id="_9004671_calendar_date_schedule_event_icon" data-name="9004671_calendar_date_schedule_event_icon" transform="translate(0.05 0.05)">
+    <path id="Path_62996" data-name="Path 62996" d="M15,1.5h-.75V.75a.75.75,0,1,0-1.5,0V1.5H5.25V.75a.75.75,0,1,0-1.5,0V1.5H3a3,3,0,0,0-3,3V15a3,3,0,0,0,3,3H15a3,3,0,0,0,3-3V4.5A3,3,0,0,0,15,1.5ZM16.5,15A1.5,1.5,0,0,1,15,16.5H3A1.5,1.5,0,0,1,1.5,15V4.5A1.5,1.5,0,0,1,3,3h.75v.75a.75.75,0,0,0,1.5,0V3h7.5v.75a.75.75,0,0,0,1.5,0V3H15a1.5,1.5,0,0,1,1.5,1.5Z" fill="#949494" stroke="#949494" stroke-width="0.1"/>
+    <path id="Path_62997" data-name="Path 62997" d="M15.25,7H4.75a.75.75,0,1,0,0,1.5h10.5a.75.75,0,1,0,0-1.5Z" transform="translate(-1 -1.75)" fill="#949494" stroke="#949494" stroke-width="0.1"/>
+    <path id="Path_62998" data-name="Path 62998" d="M6.25,12H4.75a.75.75,0,0,0,0,1.5h1.5a.75.75,0,0,0,0-1.5Z" transform="translate(-1 -3)" fill="#949494" stroke="#949494" stroke-width="0.1"/>
+    <path id="Path_62999" data-name="Path 62999" d="M6.25,17H4.75a.75.75,0,0,0,0,1.5h1.5a.75.75,0,0,0,0-1.5Z" transform="translate(-1 -4.25)" fill="#949494" stroke="#949494" stroke-width="0.1"/>
+    <path id="Path_63000" data-name="Path 63000" d="M12.25,12h-1.5a.75.75,0,0,0,0,1.5h1.5a.75.75,0,0,0,0-1.5Z" transform="translate(-2.5 -3)" fill="#949494" stroke="#949494" stroke-width="0.1"/>
+    <path id="Path_63001" data-name="Path 63001" d="M12.25,17h-1.5a.75.75,0,0,0,0,1.5h1.5a.75.75,0,0,0,0-1.5Z" transform="translate(-2.5 -4.25)" fill="#949494" stroke="#949494" stroke-width="0.1"/>
+    <path id="Path_63002" data-name="Path 63002" d="M18.25,12h-1.5a.75.75,0,0,0,0,1.5h1.5a.75.75,0,0,0,0-1.5Z" transform="translate(-4 -3)" fill="#949494" stroke="#949494" stroke-width="0.1"/>
+    <path id="Path_63003" data-name="Path 63003" d="M18.25,17h-1.5a.75.75,0,0,0,0,1.5h1.5a.75.75,0,0,0,0-1.5Z" transform="translate(-4 -4.25)" fill="#949494" stroke="#949494" stroke-width="0.1"/>
+  </g>
+</svg>

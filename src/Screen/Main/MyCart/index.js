@@ -11,6 +11,9 @@ import {
 import React, {useEffect, useState, useRef} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import styles from './styles';
+import DrawerIcon from '../../../assets/image/Drawer.svg';
+import BackIcon from '../../../assets/image/backIcon.svg';
+import BagIcon from '../../../assets/image/bagIcon.svg';
 import {colors} from '../../../Component/colors';
 import {Rating} from 'react-native-ratings';
 import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
@@ -280,7 +283,7 @@ const Remedies12SecondComponent = () => {
           <TouchableOpacity
             onPress={() => navigation.openDrawer()}
             hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-            <Image source={require('../../../assets/image/Drawer.png')} />
+            <DrawerIcon />
           </TouchableOpacity>
           <Image
             style={{marginLeft: 15}}
@@ -296,7 +299,8 @@ const Remedies12SecondComponent = () => {
               <Text style={styles.countText}>{cartTotalQuantity}</Text>
             </View>
           )}
-          <Image source={require('../../../assets/image/small_bag.png')} />
+
+          <BagIcon />
         </TouchableOpacity>
       </View>
       <View
@@ -312,10 +316,7 @@ const Remedies12SecondComponent = () => {
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-          <Image
-            style={styles.backBtn}
-            source={require('../../../assets/drawer/Back1.png')}
-          />
+          <BackIcon width={wp(3)} height={wp(3)} style={styles.backBtn} />
         </TouchableOpacity>
 
         <View style={styles.headerview}>

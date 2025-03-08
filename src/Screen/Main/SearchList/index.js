@@ -14,16 +14,18 @@ import {
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {colors} from '../../../Component/colors';
-
+import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
 import {fontSize} from '../../../Component/fontsize';
 import {fetchProduct, InitProduct} from '../../../Redux/Slice/productSlice';
+import SearchIcon from '../../../assets/image/searchIcon.svg';
+import BagIcon from '../../../assets/image/bagIcon.svg';
+import BackIcon from '../../../assets/image/backIcon.svg';
 import Cross from '../../../assets/svg/blackCross.svg';
 import {
   InitSearch,
   searchResult,
   searchResultLoadMore,
 } from '../../../Redux/Slice/searchSlice';
-import Search from '../../../assets/svg/Search.svg';
 import {widthPrecent} from '../../../Component/ResponsiveScreen/responsive';
 import Loader from '../../../Component/Loader';
 
@@ -34,7 +36,7 @@ const CollectionScreen = ({navigation, route}) => {
   const placeholderText = 'Search';
   const [displayedText, setDisplayedText] = useState('');
   const selector = useSelector(state => state?.search);
-   const search =useSelector(state => state?.search?.isLoading)
+  const search = useSelector(state => state?.search?.isLoading);
   const cartTotalQuantity = useSelector(
     state => state?.cart?.cartTotalQuantity,
   );
@@ -104,16 +106,7 @@ const CollectionScreen = ({navigation, route}) => {
             hitSlop={{top: 10, left: 10, right: 10, bottom: 10}}
             //
           >
-            <Image
-              style={{
-                height: widthPrecent(4),
-                marginTop: -5,
-                width: widthPrecent(2.3),
-                resizeMode: 'stretch',
-                marginRight: 20,
-              }}
-              source={require('../../../assets/drawer/Back1.png')}
-            />
+            <BackIcon width={wp(4)} height={wp(4)} style={styles.backBtn} />
           </TouchableOpacity>
           <Text
             style={{
@@ -155,10 +148,7 @@ const CollectionScreen = ({navigation, route}) => {
               </Text>
             </View>
           )}
-          <Image
-            style={styles.bagBtn}
-            source={require('../../../assets/image/small_bag.png')}
-          />
+          <BagIcon width={wp(5)} height={wp(5)} style={styles.bagBtn} />
         </TouchableOpacity>
       </View>
 
@@ -177,7 +167,7 @@ const CollectionScreen = ({navigation, route}) => {
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <TouchableOpacity
             hitSlop={{top: 10, left: 10, right: 10, bottom: 10}}>
-            <Image source={require('../../../assets/image/SearchIcon.png')} />
+            <SearchIcon width={wp(5)} height={wp(5)} />
           </TouchableOpacity>
 
           <TextInput
@@ -205,7 +195,7 @@ const CollectionScreen = ({navigation, route}) => {
                 width: 20,
                 borderWidth: 1,
                 borderRadius: 10,
-                borderColor:'#4c4a4a',
+                borderColor: '#4c4a4a',
                 justifyContent: 'center',
                 alignItems: 'center',
               }}
@@ -220,7 +210,7 @@ const CollectionScreen = ({navigation, route}) => {
         </View>
       </View>
 
-    {search?<Loader/>:null}
+      {search ? <Loader /> : null}
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={{paddingHorizontal: 15}}>
           {selector?.products?.length > 0 ? (
@@ -363,26 +353,29 @@ const CollectionScreen = ({navigation, route}) => {
               }}
               ListFooterComponent={() => (
                 <View style={{alignItems: 'center'}}>
-                  {console.log(selector?.products?.length,'selector.endCursor')}
-                  {selector?.products?.length>9 &&(
-                  <TouchableOpacity
-                    onPress={() => loadMoreData()}
-                    style={{
-                      backgroundColor: colors.orange,
-                      paddingHorizontal: 15,
-                      paddingVertical: 8,
-                      borderRadius: 10,
-                    }}>
-                    <Text
+                  {console.log(
+                    selector?.products?.length,
+                    'selector.endCursor',
+                  )}
+                  {selector?.products?.length > 9 && (
+                    <TouchableOpacity
+                      onPress={() => loadMoreData()}
                       style={{
-                        fontSize: fontSize.Fifteen,
-                        color: '#fff',
-                        fontFamily: 'Poppins-Regular',
+                        backgroundColor: colors.orange,
+                        paddingHorizontal: 15,
+                        paddingVertical: 8,
+                        borderRadius: 10,
                       }}>
-                      {'Load More'}
-                    </Text>
-                  </TouchableOpacity>
-            )  }
+                      <Text
+                        style={{
+                          fontSize: fontSize.Fifteen,
+                          color: '#fff',
+                          fontFamily: 'Poppins-Regular',
+                        }}>
+                        {'Load More'}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
               )}
             />

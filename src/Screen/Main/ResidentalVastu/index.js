@@ -10,6 +10,13 @@ import {
   TextInput,
 } from 'react-native';
 import styles from './styles';
+import BackIcon from '../../../assets/image/backIcon.svg';
+import SearchIcon from '../../../assets/image/searchIcon.svg';
+import FilterIcon from '../../../assets/image/filterIcon.svg';
+import RightarrowIcon from '../../../assets/image/right_arrow_icon.svg';
+import LeftarrowIcon from '../../../assets/image/left_arrow_icon.svg';
+import OrgRightarrowIcon from '../../../assets/image/right_arrow_icon_org.svg';
+
 import {colors} from '../../../Component/colors';
 import {Rating} from 'react-native-ratings';
 import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
@@ -54,7 +61,7 @@ const ResidentalScreen = ({route}) => {
     await dispatch(
       getCosultationListApi({
         url: `fetch-franchise-list?franchise_services_name=${
-          services_name || "all"
+          services_name || 'all'
         }`,
       }),
     );
@@ -243,9 +250,11 @@ const ResidentalScreen = ({route}) => {
               </Text>
               <Text style={styles.priceText}>Price:₹ {item?.charges}</Text>
             </View>
-            <Image
+           
+            <OrgRightarrowIcon
+              height={wp(4)}
+              width={wp(4)}
               style={styles.nextBtn}
-              source={require('../../../assets/drawer/raero.png')}
             />
           </View>
         </TouchableOpacity>
@@ -259,10 +268,7 @@ const ResidentalScreen = ({route}) => {
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-          <Image
-            style={styles.backBtn}
-            source={require('../../../assets/drawer/Back1.png')}
-          />
+          <BackIcon width={wp(4)} height={wp(4)} style={styles.backBtn} />
         </TouchableOpacity>
 
         <View style={styles.headerview}>
@@ -277,7 +283,7 @@ const ResidentalScreen = ({route}) => {
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <TouchableOpacity
               hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-              <Image source={require('../../../assets/image/SearchIcon.png')} />
+              <SearchIcon width={wp(5)} height={wp(5)} />
             </TouchableOpacity>
 
             <TextInput
@@ -289,7 +295,7 @@ const ResidentalScreen = ({route}) => {
           <TouchableOpacity
             style={styles.filterBtn}
             hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-            <Image source={require('../../../assets/image/Vector.png')} />
+            <FilterIcon width={wp(5)} height={wp(5)} />
           </TouchableOpacity>
         </View>
 
@@ -299,10 +305,7 @@ const ResidentalScreen = ({route}) => {
             activeOpacity={0.6}
             style={styles.arrowButton}
             hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-            <Image
-              style={styles.arrowIcon}
-              source={require('../../../assets/drawer/aero.png')}
-            />
+            <LeftarrowIcon width={wp(3)} height={wp(3)} />
           </TouchableOpacity>
 
           <Animated.View
@@ -321,10 +324,7 @@ const ResidentalScreen = ({route}) => {
             activeOpacity={0.6}
             style={styles.arrowButton}
             hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-            <Image
-              style={styles.arrowIcon}
-              source={require('../../../assets/drawer/raero.png')}
-            />
+            <RightarrowIcon width={wp(3)} height={wp(3)} />
           </TouchableOpacity>
         </Animated.View>
 

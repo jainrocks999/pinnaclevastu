@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import styles from './styles';
+import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
+import BackIcon from '../../../assets/image/backIcon.svg';
 import {colors} from '../../../Component/colors';
 import {useDispatch, useSelector} from 'react-redux';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
@@ -146,10 +148,7 @@ const DeliveryAddress = ({route}) => {
           <TouchableOpacity
             onPress={() => navigation.goBack()}
             hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-            <Image
-              style={styles.backBtn}
-              source={require('../../../assets/drawer/Back1.png')}
-            />
+          <BackIcon width={wp(4)} height={wp(4)} style={styles.backBtn} />
           </TouchableOpacity>
           <Text style={styles.logoText}>Select Delivery Address</Text>
         </View>

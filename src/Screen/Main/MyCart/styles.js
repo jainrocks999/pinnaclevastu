@@ -284,9 +284,9 @@ export default StyleSheet.create({
     color: colors.white,
   },
   backBtn: {
-    height: wp(4),
-    width: wp(2.3),
-    resizeMode: 'stretch',
+    // height: wp(4),
+    // width: wp(2.3),
+    // resizeMode: 'stretch',
     marginRight: 20,
     marginTop: -5,
   },

@@ -12,6 +12,14 @@ import {
   ToastAndroid,
   Animated,
 } from 'react-native';
+import DrawerIcon from '../../../assets/image/Drawer.svg';
+import BagIcon from '../../../assets/image/bagIcon.svg';
+import SearchIcon from '../../../assets/image/searchIcon.svg';
+import DownarrowIcon from '../../../assets/image/down_arrow_icon.svg';
+import OrgRightarrowIcon from '../../../assets/image/right_arrow_icon_org.svg';
+import BottomGrp1 from '../../../assets/image/bottomGrp1.svg';
+import BottomGrp2 from '../../../assets/image/bottomGrp2.svg';
+import BottomGrp3 from '../../../assets/image/bottomGrp3.svg';
 import styles from './style';
 import {colors} from '../../../Component/colors';
 import BannerSlider from '../../../Component/Banner';
@@ -481,8 +489,9 @@ const HomeScreen = () => {
               </View>
             </View>
 
-            <Image
-              source={require('../../../assets/otherApp/arrowrc.png')}
+            <OrgRightarrowIcon
+              height={wp(3)}
+              width={wp(3)}
               style={styles.arrowNext}
             />
           </View>
@@ -495,10 +504,7 @@ const HomeScreen = () => {
     return (
       <View style={{flexDirection: 'row'}}>
         <View style={[styles.itemContainer]}>
-          <Image
-            source={item.image}
-            style={{width: '35%', resizeMode: 'contain'}}
-          />
+          {item.svg}
           <Text style={styles.bottomCardtext}>{item.name}</Text>
         </View>
         {item.id !== '3' ? <View style={styles.viewLine} /> : null}
@@ -722,7 +728,7 @@ const HomeScreen = () => {
         <TouchableOpacity
           onPress={() => navigation.openDrawer()}
           hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-          <Image source={require('../../../assets/image/Drawer.png')} />
+          <DrawerIcon />
         </TouchableOpacity>
         <Image source={require('../../../assets/image/header.png')} />
         <TouchableOpacity
@@ -734,8 +740,7 @@ const HomeScreen = () => {
               <Text style={styles.countText}>{cartTotalQuantity}</Text>
             </View>
           )}
-
-          <Image source={require('../../../assets/image/small_bag.png')} />
+          <BagIcon  width={wp(5)} height={wp(5)} style={styles.bagBtn} />
         </TouchableOpacity>
       </View>
       {isLoading ? <Loader /> : null}
@@ -745,8 +750,9 @@ const HomeScreen = () => {
             onPress={() => navigation.navigate('Searchlist')}
             hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
             style={{flexDirection: 'row', alignItems: 'center'}}>
-            <TouchableOpacity>
-              <Image source={require('../../../assets/image/SearchIcon.png')} />
+            <TouchableOpacity style={{marginBottom: wp(1)}}>
+              {/* <Image source={require('../../../assets/image/SearchIcon.png')} /> */}
+              <SearchIcon width={wp(5)} height={wp(5)} />
             </TouchableOpacity>
             <TextInput
               style={styles.searchInput}
@@ -1121,9 +1127,14 @@ const HomeScreen = () => {
                 value={formData.course}
                 onChange={item => handleInputChange('course', item.lable)}
                 renderRightIcon={() => (
-                  <Image
-                    style={{height: 8, width: 15}}
-                    source={require('../../../assets/image/arrow_icon.png')}
+                  // <Image
+                  // style={{height: 8, width: 15}}
+                  // source={require('../../../assets/image/arrow_icon.png')}
+                  // />
+                  <DownarrowIcon
+                    width={wp(4)}
+                    height={wp(3)}
+                    style={{marginRight: 10}}
                   />
                 )}
               />
@@ -1690,17 +1701,17 @@ export default HomeScreen;
 const data5 = [
   {
     id: '1',
-    image: require('../../../assets/image/Gro.png'),
     name: 'Private & Confidential',
+    svg:<BottomGrp1 width={wp(6)} height={wp(6)}/>
   },
   {
     id: '2',
-    image: require('../../../assets/image/gp1.png'),
     name: 'Verified Vastu Experts',
+    svg:<BottomGrp2 width={wp(6)} height={wp(6)}/>
   },
   {
     id: '3',
-    image: require('../../../assets/image/credit-card.png'),
     name: 'Secure Payments',
+    svg:<BottomGrp3 width={wp(5)} height={wp(5)}/>
   },
 ];

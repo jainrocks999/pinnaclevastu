@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import React, {useRef, useState} from 'react';
 import styles from './styles';
+import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
 import {colors} from '../../../Component/colors';
 import {useNavigation} from '@react-navigation/native';
 import {fontSize} from '../../../Component/fontsize';
@@ -22,6 +23,9 @@ import {useDispatch, useSelector} from 'react-redux';
 import {signupUser} from '../../../Redux/Slice/Authslice';
 import {Dropdown} from 'react-native-element-dropdown';
 import Loader from '../../../Component/Loader';
+import DownarrowIcon from '../../../assets/image/down_grey_icon.svg';
+import ClockIcon from '../../../assets/image/timeIcon.svg';
+import CalendarIcon from '../../../assets/image/calendarIcon.svg';
 
 const SignUpPage = ({route}) => {
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
@@ -451,12 +455,10 @@ const SignUpPage = ({route}) => {
                   setValidationError({...validationError, gender: false})
                 )}
                 renderRightIcon={() => (
-                  <Image
-                    style={{
-                      height: 8,
-                      width: 15,
-                    }}
-                    source={require('../../../assets/image/arrow_icon.png')}
+                  <DownarrowIcon
+                    width={wp(4)}
+                    height={wp(3)}
+                    style={{marginRight: 10}}
                   />
                 )}
               />
@@ -519,12 +521,10 @@ const SignUpPage = ({route}) => {
                   {formatDate(date)}
                 </Text>
 
-                <Image
-                  style={{
-                    height: 20,
-                    width: 20,
-                  }}
-                  source={require('../../../assets/image/cale.png')}
+                <CalendarIcon
+                  width={wp(4)}
+                  height={wp(4)}
+                  style={{marginRight: 10}}
                 />
               </TouchableOpacity>
             </Animated.View>
@@ -568,12 +568,10 @@ const SignUpPage = ({route}) => {
                 {formatTime(time)}
               </Text>
 
-              <Image
-                style={{
-                  height: 20,
-                  width: 20,
-                }}
-                source={require('../../../assets/image/Layer.png')}
+              <ClockIcon
+                width={wp(4)}
+                height={wp(4)}
+                style={{marginRight: 10}}
               />
             </TouchableOpacity>
 

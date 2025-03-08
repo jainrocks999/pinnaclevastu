@@ -10,12 +10,20 @@ import {
 } from 'react-native';
 import styles from './styles';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   clearcartdata,
   clearLocalCartData,
 } from '../../../Redux/Slice/CartSlice';
 import {useDispatch, useSelector} from 'react-redux';
+import BackIcon from '../../../assets/image/backIcon.svg';
+import RightarrowIcon from '../../../assets/image/right_arrow_icon.svg';
+import ProfileIcon1 from '../../../assets/image/profileIcon1.svg';
+import ProfileIcon2 from '../../../assets/image/profileIcon2.svg';
+import ProfileIcon3 from '../../../assets/image/profileIcon3.svg';
+import ProfileIcon4 from '../../../assets/image/profileIcon4.svg';
+import ProfileIcon5 from '../../../assets/image/profileIcon5.svg';
 import Loader from '../../../Component/Loader';
 import Imagepath from '../../../Component/Imagepath';
 import {clearUserData} from '../../../Redux/Slice/Authslice';
@@ -94,28 +102,28 @@ const MyProfile = () => {
     {
       id: '1',
       title: 'Contact Support',
-      image: require('../../../assets/otherApp/profile1.png'),
+      svg: <ProfileIcon1  width={wp(6)} height={wp(6)}   style={styles.actionIcon}/>,
     },
     {
       id: '2',
       title: 'Sign up as Franchise',
-      image: require('../../../assets/otherApp/profile2.png'),
+      svg: <ProfileIcon2 width={wp(6)} height={wp(6)}   style={styles.actionIcon}/>,
     },
     {
       id: '3',
       title: 'Rate Pinnacle Vastu on App Store',
-      image: require('../../../assets/otherApp/profile3.png'),
+      svg: <ProfileIcon3 width={wp(6)} height={wp(6)}   style={styles.actionIcon}/>,
     },
     {
       id: '4',
       title: 'Share App',
-      image: require('../../../assets/otherApp/profile4.png'),
+      svg: <ProfileIcon4 width={wp(6)} height={wp(6)}   style={styles.actionIcon}/>,
     },
     {
       id: '5',
       title: 'Delete My Account',
-      image: require('../../../assets/otherApp/profile5.png'),
       noArrow: true,
+      svg: <ProfileIcon5 width={wp(6)} height={wp(6)}   style={styles.actionIcon}/>,
     },
   ];
 
@@ -129,15 +137,11 @@ const MyProfile = () => {
           : null
       }>
       <View style={styles.actionContent}>
-        <Image source={item.image} style={styles.actionIcon} />
+        {/* <Image source={item.image} style={styles.actionIcon} /> */}
+        {item?.svg}
         <Text style={styles.actionText}>{item.title}</Text>
       </View>
-      {!item.noArrow && (
-        <Image
-          source={require('../../../assets/otherApp/arrowr.png')}
-          style={styles.arrowIcon}
-        />
-      )}
+      {!item.noArrow && <RightarrowIcon width={wp(3)} height={wp(3)} />}
     </TouchableOpacity>
   );
 
@@ -149,10 +153,8 @@ const MyProfile = () => {
           style={styles.backBtn}
           onPress={() => navigation.goBack()}
           hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-          <Image
-            style={styles.backIcon}
-            source={require('../../../assets/drawer/Back1.png')}
-          />
+       
+          <BackIcon width={wp(4)} height={wp(4)} style={styles.backIcon} />
         </TouchableOpacity>
 
         <View style={styles.headerview}>

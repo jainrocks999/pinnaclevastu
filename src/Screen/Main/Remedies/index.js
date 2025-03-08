@@ -9,6 +9,9 @@ import {
 } from 'react-native';
 import React, {useEffect} from 'react';
 import styles from './styles';
+import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
+import BackIcon from '../../../assets/image/backIcon.svg';
+import BagIcon from '../../../assets/image/bagIcon.svg';
 import LinearGradient from 'react-native-linear-gradient';
 import {useDispatch, useSelector} from 'react-redux';
 import Imagepath from '../../../Component/Imagepath';
@@ -71,7 +74,6 @@ const Remedies = ({navigation}) => {
         onPress={() => RemediesProductcategory(item)}
         style={[styles.cardContainer1]}>
         <ImageBackground
-          
           source={
             item?.image
               ? {uri: item?.image?.url}
@@ -98,10 +100,7 @@ const Remedies = ({navigation}) => {
           <TouchableOpacity
             onPress={() => navigation.goBack()}
             hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-            <Image
-              style={styles.backBtn}
-              source={require('../../../assets/drawer/Back1.png')}
-            />
+            <BackIcon width={wp(4)} height={wp(4)} style={styles.backBtn} />
           </TouchableOpacity>
           <Text style={styles.logoText}>Remedies</Text>
         </View>
@@ -113,13 +112,10 @@ const Remedies = ({navigation}) => {
               <Text style={styles.countText}>{cartTotalQuantity}</Text>
             </View>
           )}
-          <Image
-            style={styles.bagBtn}
-            source={require('../../../assets/image/small_bag.png')}
-          />
+          <BagIcon width={wp(5)} height={wp(5)} style={styles.bagBtn} />
         </TouchableOpacity>
       </View>
-      
+
       <ScrollView contentContainerStyle={styles.searchContainer}>
         <View style={styles.contain1}>
           <Image
@@ -127,7 +123,7 @@ const Remedies = ({navigation}) => {
             source={require('../../../assets/image/Group1x.png')}
           />
         </View>
-        
+
         <View>
           <FlatList
             data={category ? category : []}
@@ -149,5 +145,3 @@ const Remedies = ({navigation}) => {
 };
 
 export default Remedies;
-
-

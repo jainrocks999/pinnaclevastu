@@ -109,8 +109,6 @@ export default StyleSheet.create({
   },
   backBtn: {
     marginTop:-5,
-    height: wp(4),
-    width: wp(2.3),
-    marginRight: 20,
+    marginRight: 10,
   },
 });

@@ -11,7 +11,11 @@ import {
   BackHandler,
 } from 'react-native';
 import styles from './styles';
-
+import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
+import BackIcon from '../../../assets/image/backIcon.svg';
+import ClockIcon from '../../../assets/image/timeIcon.svg';
+import CalendarIcon from '../../../assets/image/calendarIcon.svg';
+import RightarrowIcon from '../../../assets/image/right_arrow_icon_org.svg';
 import {Rating} from 'react-native-ratings';
 import {heightPercent} from '../../../Component/ResponsiveScreen/responsive';
 import {useNavigation} from '@react-navigation/native';
@@ -139,10 +143,11 @@ const Appointment = ({route}) => {
             </Text>
 
             <View style={styles.direction1}>
-              <Image
+              {/* <Image
                 source={require('../../../assets/image/cale.png')}
                 style={styles.dateimg}
-              />
+              /> */}
+              <CalendarIcon width={wp(4)} height={wp(4)} style={{marginRight: 10}} />
               <Text
                 style={[
                   styles.appointmentDate,
@@ -153,10 +158,11 @@ const Appointment = ({route}) => {
               </Text>
             </View>
             <View style={styles.direction1}>
-              <Image
+              {/* <Image
                 source={require('../../../assets/image/Layer.png')}
                 style={styles.dateimg}
-              />
+              /> */}
+               <ClockIcon width={wp(4)} height={wp(4)} style={{marginRight: 10}} />
               <Text
                 style={[
                   styles.appointmentTime,
@@ -188,13 +194,7 @@ const Appointment = ({route}) => {
             )}
           </View>
           <View style={styles.arrowButton}>
-            <Image
-              source={require('../../../assets/otherApp/arrowcom.png')}
-              style={[
-                styles.arrowIcon,
-                item?.status == 'upcoming' && styles.arrowIconup,
-              ]}
-            />
+               <RightarrowIcon width={wp(4)} height={wp(4)} />
           </View>
         </TouchableOpacity>
       </Animated.View>
@@ -214,10 +214,7 @@ const Appointment = ({route}) => {
                 routes: [{name: 'UserProfile'}],
               })
             }>
-            <Image
-              style={{height: 15, width: 10}}
-              source={require('../../../assets/drawer/Back.png')}
-            />
+            <BackIcon width={wp(4)} height={wp(4)} style={styles.backBtn} />
           </TouchableOpacity>
           <Text style={styles.logoText}>Appointments</Text>
         </View>

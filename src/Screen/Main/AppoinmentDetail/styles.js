@@ -43,8 +43,8 @@ export default StyleSheet.create({
     borderBottomEndRadius: 30,
   },
   mainImg: {
-    height: wp(30),
-    width: wp(30),
+    height: wp(35),
+    width: wp(35),
     borderRadius: 80,
     margin: 'auto',
     borderWidth: 2,
@@ -112,10 +112,7 @@ export default StyleSheet.create({
     fontSize: fontSize.Twelve,
     fontFamily: 'Poppins-SemiBold',
   },
-  ImgIcon: {
-    height: wp(3.5),
-    width: wp(3.5),
-  },
+
   textContainer: {
     paddingVertical: hp(4),
     paddingHorizontal: 18,
@@ -199,10 +196,7 @@ export default StyleSheet.create({
   },
   backBtn: {
     marginTop: -5,
-    height: wp(4),
-    width: wp(2.3),
-    resizeMode: 'stretch',
-    marginRight: 20,
+    marginRight: 10,
   },
   cardContainer1: {
     marginHorizontal: 15,

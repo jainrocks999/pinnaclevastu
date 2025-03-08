@@ -14,6 +14,12 @@ import {
 } from 'react-native';
 import styles from './styles';
 import {colors} from '../../../Component/colors';
+import BackIcon from '../../../assets/image/backIcon.svg';
+import BagIcon from '../../../assets/image/bagIcon.svg';
+import ShareIcon from '../../../assets/image/share.svg';
+import PluseIcon from '../../../assets/image/pluesRoundIcon.svg';
+import DownarrowIcon from '../../../assets/image/down_grey_icon.svg';
+import UparrowIcon from '../../../assets/image/org_up_arrow_icon.svg';
 import BannerSlider from '../../../Component/Banner';
 import {fontSize} from '../../../Component/fontsize';
 import Collapsible from 'react-native-collapsible';
@@ -459,7 +465,8 @@ const RemediesProductDetail = ({route}) => {
         </View>
       </Pressable>
       {index !== similardata?.length - 1 ? (
-        <Text style={styles.plusBtn}>+</Text>
+        // <Text style={styles.plusBtn}>+</Text>
+       <PluseIcon width={wp(3)} height={wp(3)} style={styles.plusBtn}/>
       ) : null}
     </View>
   );
@@ -547,7 +554,7 @@ const RemediesProductDetail = ({route}) => {
             {item?.question?.value}
           </Text>
         </View>
-        <Image
+        {/* <Image
           source={
             expandedSection === index
               ? require('../../../assets/otherApp/updown.png')
@@ -557,7 +564,20 @@ const RemediesProductDetail = ({route}) => {
             styles.toggleIcon2,
             expandedSection !== index ? {resizeMode: 'contain'} : null,
           ]}
-        />
+        /> */}
+        {expandedSection !== index ? (
+          <DownarrowIcon
+            width={wp(4)}
+            height={wp(3)}
+            style={{marginRight: 10}}
+          />
+        ) : (
+          <UparrowIcon
+            width={wp(4)}
+            height={wp(3)}
+            style={{marginRight: 10}}
+          />
+        )}
       </TouchableOpacity>
 
       <Collapsible collapsed={expandedSection !== index}>
@@ -571,17 +591,15 @@ const RemediesProductDetail = ({route}) => {
   if (isLoading || isMetaDataLoading) {
     return (
       <View>
-        <View style={styles.headerdouble}>
-          <View style={styles.directionsytyle}>
-            <Image
-              style={styles.backBtn1}
-              source={require('../../../assets/drawer/Back1.png')}
-            />
+        <View style={styles.header}>
+          <View style={styles.headerview}>
+            <BackIcon width={wp(4)} height={wp(4)} style={styles.backBtn} />
 
-            <Text style={styles.logoText1}>Product Detail</Text>
+            <Text style={styles.logoText}>Product Detail</Text>
           </View>
 
-          <Image source={require('../../../assets/image/small_bag.png')} />
+          {/* <Image source={require('../../../assets/image/small_bag.png')} /> */}
+          <BagIcon width={wp(5)} height={wp(5)} />
         </View>
         <AnimatedLine />
       </View>
@@ -596,10 +614,7 @@ const RemediesProductDetail = ({route}) => {
           <TouchableOpacity
             onPress={() => navigation.goBack()}
             hitSlop={{bottom: 10, top: 10, left: 10, right: 10}}>
-            <Image
-              style={styles.backBtn}
-              source={require('../../../assets/drawer/Back1.png')}
-            />
+            <BackIcon width={wp(4)} height={wp(4)} style={styles.backBtn} />
           </TouchableOpacity>
           <Text style={styles.logoText}>Product Detail</Text>
         </View>
@@ -613,10 +628,7 @@ const RemediesProductDetail = ({route}) => {
               <Text style={styles.countText}>{cartTotalQuantity}</Text>
             </View>
           )}
-          <Image
-            style={styles.bagBtn}
-            source={require('../../../assets/image/small_bag.png')}
-          />
+          <BagIcon width={wp(5)} height={wp(5)} />
         </TouchableOpacity>
       </View>
 
@@ -715,16 +727,9 @@ const RemediesProductDetail = ({route}) => {
                 {'write a review'}
               </Text>
               <TouchableOpacity
-                style={{
-                  backgroundColor: colors.ordercolor,
-                  position: 'absolute',
-                  right: 5,
-                }}
+                style={styles.shareimage}
                 onPress={() => share()}>
-                <Image
-                  style={styles.shareIcon}
-                  source={require('../../../assets/otherApp/share.png')}
-                />
+                <ShareIcon width={wp(4)} height={wp(4)} />
               </TouchableOpacity>
             </View>
 

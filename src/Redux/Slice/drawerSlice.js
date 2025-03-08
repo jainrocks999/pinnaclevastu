@@ -40,7 +40,7 @@ export const getDrawerData = () => async (dispatch) => {
 
     // Dono API calls ek saath execute
     const [sidebarMenu, sidebarMenuLinks] = await Promise.all([
-      fetchMenuFromGql("sidebar-menu"),
+      fetchMenuFromGql("main-menu"),
       fetchMenuFromGql("sidebar-menu-links"),
     ]);
 

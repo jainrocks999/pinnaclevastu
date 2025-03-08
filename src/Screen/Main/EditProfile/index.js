@@ -12,8 +12,12 @@ import {
 } from 'react-native';
 import React, {useRef, useState} from 'react';
 import styles from './styles';
+import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
 import {colors} from '../../../Component/colors';
-
+import BackIcon from '../../../assets/image/backIcon.svg';
+import DownarrowIcon from '../../../assets/image/down_grey_icon.svg';
+import ClockIcon from '../../../assets/image/timeIcon.svg';
+import CalendarIcon from '../../../assets/image/calendarIcon.svg';
 import {useNavigation} from '@react-navigation/native';
 import {fontSize} from '../../../Component/fontsize';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
@@ -367,10 +371,7 @@ const EditProfile = () => {
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-          <Image
-            style={styles.backBtn}
-            source={require('../../../assets/drawer/Back1.png')}
-          />
+          <BackIcon width={wp(4)} height={wp(4)} style={styles.backBtn} />
         </TouchableOpacity>
 
         <Text style={styles.logoText}>Edit My Profile</Text>
@@ -475,19 +476,17 @@ const EditProfile = () => {
                 setValidationError({...validationError, gender: false})
               )}
               renderRightIcon={() => (
-                <Image
-                  style={{
-                    height: 8,
-                    width: 15,
-                  }}
-                  source={require('../../../assets/image/arrow_icon.png')}
+                <DownarrowIcon
+                  width={wp(4)}
+                  height={wp(3)}
+                  style={{marginRight: 10}}
                 />
               )}
             />
           </Animated.View>
-          {/* {validationError.gender && ( */}
-            <Text style={styles.errorText}>Please select your gender.</Text>
-          {/* )} */}
+          {validationError.gender && (
+          <Text style={styles.errorText}>Please select your gender.</Text>
+          )}
         </View>
 
         <View style={styles.inputmain}>
@@ -535,12 +534,10 @@ const EditProfile = () => {
               {formatDate(date)}
             </Text>
 
-            <Image
-              style={{
-                height: 20,
-                width: 20,
-              }}
-              source={require('../../../assets/image/cale.png')}
+            <CalendarIcon
+              width={wp(4)}
+              height={wp(4)}
+              style={{marginRight: 10}}
             />
           </TouchableOpacity>
           <DatePicker
@@ -582,13 +579,7 @@ const EditProfile = () => {
               {formatTime(time)}
             </Text>
 
-            <Image
-              style={{
-                height: 20,
-                width: 20,
-              }}
-              source={require('../../../assets/image/Layer.png')}
-            />
+            <ClockIcon width={wp(4)} height={wp(4)} style={{marginRight: 10}} />
           </TouchableOpacity>
 
           <DatePicker
