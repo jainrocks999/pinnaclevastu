@@ -3,7 +3,8 @@ import axios from 'axios';
 import Toast from 'react-native-simple-toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import constants from '../constant/constants';
-import { getUserDetails } from './loginSlice';
+import {getUserDetails} from './loginSlice';
+import {updateCustomerMetafields} from '../Api';
 export const loginUser = createAsyncThunk(
   'auth/loginUser',
   async ({mobile, navigation, url, route}, {rejectWithValue}) => {
@@ -67,11 +68,10 @@ export const loginUser = createAsyncThunk(
 export const signupUser = createAsyncThunk(
   'auth/signupUser',
   async (
-    {formUserData, url, navigation, route},
+    {formUserData, url, navigation, data, route},
     {dispatch, rejectWithValue},
   ) => {
     try {
-    
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
@@ -84,43 +84,84 @@ export const signupUser = createAsyncThunk(
       };
       const response = await axios.request(config);
 
+      console.log('response ,datat', response.data, data);
 
       if (response.data.status == 200) {
         const responseDataString = JSON.stringify(response.data);
-        
+
         AsyncStorage.setItem('user_data', responseDataString);
         AsyncStorage.setItem('user_type', response.data.user_type);
         AsyncStorage.setItem('user_id', JSON.stringify(response.data.user_id));
         AsyncStorage.setItem('Token', response.data.token);
 
-        if (route?.params?.from == 'profile') {
+        let customerId = response?.data?.shopify_register_response?.id;
+        const metafields = [
+          {  namespace: "custom",
+            key: 'gender',
+            type: 'list.single_line_text_field',
+            value: [data?.gender],
+          },
+          {  namespace: "custom",
+            key: 'current_city_pincode',
+            type: 'single_line_text_field',
+            value: data.pincode,
+          },
 
-await dispatch(getUserDetails(response?.data?.shopify_access_token));
+          {  namespace: "custom",
+            key: 'place_of_birth',
+            type: 'single_line_text_field',
+            value: data?.palceofbirth,
+          },
+          {  namespace: "custom",
+            key: 'mobile_number',
+            type: 'single_line_text_field',
+            value: data.mobile,
+          },
+          {  namespace: "custom",
+            key: 'full_name',
+            type: 'single_line_text_field',
+            value: data.name,
+          },
+          {  namespace: "custom",
+            key: 'email',
+            type: 'single_line_text_field',
+            value: data.email   ,
+          },
 
+          {  namespace: "custom", key: 'birth_time', type: 'date_time', value: data.birthtime},
+          {  namespace: "custom",key: 'birth_date', type: 'date', value: data.birthdate},
+          {  namespace: "facts",key: 'birth_date', type: 'date', value: data.birthdate},
+        ];
 
-          await dispatch(
-            getUserDetailApi({
-              token: response.data.token,
-              url: `profile-list?user_id=${response.data.user_id}`,
-            }),
-          );
-          navigation.pop();
-          navigation.pop();
-          navigation.replace('profile');
-        } else if (route?.params?.from == 'CourseDetails') {
-          await dispatch(getUserDetails(response?.data?.shopify_access_token));
-          await dispatch(
-            getUserDetailApi({
-              token: response.data.token,
-              url: `profile-list?user_id=${response.data.user_id}`,
-            }),
-          );
-          navigation.pop();
-          navigation.pop();
-          navigation.replace('CourseDetail');
-        } else {
-          navigation.navigate('Home');
-        }
+        await updateCustomerMetafields(customerId, metafields);
+
+                if (route?.params?.from == 'profile') {
+
+        await dispatch(getUserDetails(response?.data?.shopify_access_token));
+
+                  await dispatch(
+                    getUserDetailApi({
+                      token: response.data.token,
+                      url: `profile-list?user_id=${response.data.user_id}`,
+                    }),
+                  );
+                  navigation.pop();
+                  navigation.pop();
+                  navigation.replace('profile');
+                } else if (route?.params?.from == 'CourseDetails') {
+                  await dispatch(getUserDetails(response?.data?.shopify_access_token));
+                  await dispatch(
+                    getUserDetailApi({
+                      token: response.data.token,
+                      url: `profile-list?user_id=${response.data.user_id}`,
+                    }),
+                  );
+                  navigation.pop();
+                  navigation.pop();
+                  navigation.replace('CourseDetail');
+                } else {
+                  navigation.navigate('Home');
+                }
 
         return response.data;
       } else {
@@ -183,8 +224,6 @@ export const updateApi = createAsyncThunk(
       const response = await axios.request(config);
 
       if (response.data.status == 200) {
-
-        
         await dispatch(
           getUserDetailApi({
             token: token,

@@ -170,27 +170,24 @@ export const getCutomerMetafields = async customerId => {
 
 export const updateCustomerMetafields = async (customerId, metafields) => {
   try {
-    console.log("📌 Received customerId:", customerId);
-    console.log("📌 Received metafields:", metafields);
+   
 
-    // ✅ Convert customerId to Shopify format if needed
+   
     const ownerId =
       typeof customerId === "string" && customerId.includes("gid://shopify/Customer/")
         ? customerId
         : `gid://shopify/Customer/${customerId}`;
 
-    // ✅ Properly formatting metafields
-    const formattedMetafields = metafields.map(({ key, type, value }) => ({
+    const formattedMetafields = metafields.map(({ key, type, value , namespace}) => ({
       ownerId,
-      namespace: "custom",
+      namespace,
       key,
       type,
-      value: Array.isArray(value) ? JSON.stringify(value) : value, // Ensuring correct format
+      value: Array.isArray(value) ? JSON.stringify(value) : value,
     }));
 
-    console.log("🔹 Formatted metafields:", formattedMetafields);
+  
 
-    // ✅ Correct GraphQL mutation
     const query = `
       mutation metafieldsSet($metafields: [MetafieldsSetInput!]!) {
         metafieldsSet(metafields: $metafields) {
@@ -210,10 +207,10 @@ export const updateCustomerMetafields = async (customerId, metafields) => {
 
     const variables = { metafields: formattedMetafields };
 
-    // ✅ Axios request configuration
+    console.log('variabbaleieiei',variables);
+    
     const response = await axios.post(
       `${MAIN_URL}/graphql.json`,
-      // "https://pinnaclevastu-in.myshopify.com/admin/api/2024-04/graphql.json",
       { query, variables },
       {
         headers: {
@@ -224,13 +221,12 @@ export const updateCustomerMetafields = async (customerId, metafields) => {
     );
 
     const metafieldsData = response?.data?.data?.metafieldsSet;
+console.log('addd meta daata ',metafieldsData);
 
     if (metafieldsData?.userErrors?.length) {
-      console.error("❌ Shopify API Errors:", metafieldsData.userErrors);
       throw new Error("Shopify GraphQL returned errors.");
     }
 
-    console.log("✅ Metafields updated successfully:", metafieldsData?.metafields);
     return metafieldsData?.metafields || [];
 
   } catch (error) {

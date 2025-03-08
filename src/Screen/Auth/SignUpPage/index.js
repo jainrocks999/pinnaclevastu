@@ -26,9 +26,6 @@ import Loader from '../../../Component/Loader';
 const SignUpPage = ({route}) => {
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
   const loginUserData = useSelector(state => state?.Auth?.loginUserData);
-console.log('otp very fy ',loginUserData);
-console.log('datattatatat1213',route.params);
-
   const dispatch = useDispatch();
   const [visible, setVisible] = useState(false);
   const isLoading = useSelector(state => state.Auth?.loading);
@@ -37,7 +34,7 @@ console.log('datattatatat1213',route.params);
 
   const navigation = useNavigation();
   const [gender, setGender] = useState('');
-
+const [birthdate,setBirth]=useState(new Date());
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
 
@@ -76,7 +73,7 @@ console.log('datattatatat1213',route.params);
     const year = date.getFullYear().toString();
     return `${day}-${month}-${year}`;
   };
-
+const [birthtime,setBirthTime]=useState('');
   const [time, setTime] = useState(new Date());
   const [open1, setOpen1] = useState(false);
 
@@ -303,11 +300,24 @@ console.log('datattatatat1213',route.params);
               type: selectedImage?.type,
             });
         }
+
+        const data={
+        name:formData.name,
+        email:formData.email,
+        mobile:formData.mobile,
+        gender:gender,
+        pincode:formData.cityPincode,
+        palceofbirth:formData.birthPlace,
+        birthdate:birthdate,
+        birthtime:birthtime
+
+        }
         await dispatch(
           signupUser({
             formUserData,
             url: 'sign-up',
             navigation,
+            data,
             route,
           }),
         );
@@ -534,9 +544,13 @@ console.log('datattatatat1213',route.params);
               date={date || new Date()}
               mode="date"
               maximumDate={new Date()}
-              onConfirm={selectedDate => {
+              onConfirm={(selectedDate) => {
+
+                const formattedTime = selectedDate.toISOString();
+               
                 setOpen(false);
                 setDate(selectedDate);
+                setBirth(formattedTime);
               }}
               onCancel={() => setOpen(false)}
             />
@@ -586,6 +600,8 @@ console.log('datattatatat1213',route.params);
               onConfirm={selectedTime => {
                 setOpen1(false);
                 setTime(selectedTime);
+                const formattedTime = selectedTime.toISOString();
+                setBirthTime(formattedTime);
               }}
               onCancel={() => setOpen1(false)}
             />

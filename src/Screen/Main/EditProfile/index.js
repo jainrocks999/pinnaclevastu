@@ -21,48 +21,78 @@ import DatePicker from 'react-native-date-picker';
 import Toast from 'react-native-simple-toast';
 import {useDispatch, useSelector} from 'react-redux';
 import {Dropdown} from 'react-native-element-dropdown';
-import {updateApi} from '../../../Redux/Slice/Authslice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loader from '../../../Component/Loader';
-import { updatedata1 } from '../../../Redux/Slice/loginSlice';
-import { getCutomerMetafields, updateCustomerMetafields } from '../../../Redux/Api';
+import {updatedata1} from '../../../Redux/Slice/loginSlice';
+import {
+  getCutomerMetafields,
+  updateCustomerMetafields,
+} from '../../../Redux/Api';
 
 const EditProfile = () => {
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
   const userDetail = useSelector(state => state?.Auth?.userData);
   const isLoading = useSelector(state => state?.Auth?.loading);
- const {userDetails} = useSelector(state => state.Login);
-
-     const loginUserData = useSelector(state => state?.Auth?.loginUserData);
-     console.log('datata ....12332',userDetails,loginUserData?.shopify_access_token);
+  const {userDetails} = useSelector(state => state.Login);
+  const metadata = userDetails?.metafields?.edges;
+  const loginUserData = useSelector(state => state?.Auth?.loginUserData);
+ 
   const [isuserselectimage, setIsuserselectimage] = useState(false);
 
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const [gender, setGender] = useState(userDetail?.gender ?? '');
+
 
   const [selectedImage, setSelectedImage] = useState({
     uri: userDetail?.avatar ?? '',
     name: '',
     type: '',
   });
+  const getMetafieldValue = (metafields, key) => {
+    const metafield = metafields.find(item => item.node.key === key);
 
- const Apicall =async()=>{
-  // const variables = {
-  //   customer: {
-  //     acceptsMarketing: true,
-  //     email: userDetails?.email,
-  //     firstName:userDetails?.firstName,
-  //     lastName: userDetails?.lastName,
-  //     password: '123456',
-  //     phone: userDetails?.phone
-  //   },
-  //   customerAccessToken:loginUserData?.shopify_access_token
+    if (!metafield) return null; // Agar key nahi mili to null return karein
+
+    let value = metafield.node.value; // Value extract karein
+   // Debugging ke liye print karein
+
+    // Check karein ki value ek array hai
+    if (Array.isArray(value)) {
+        return value.length > 0 ? value[0] : null;
+    }
+
    
-  //   }
-  const userStatus = await AsyncStorage.getItem('user_data');
-  const userData = userStatus ? JSON.parse(userStatus) : null;
- 
+    if (typeof value === "string" && value.startsWith("[") && value.endsWith("]")) {
+        try {
+            const parsedValue = JSON.parse(value);
+            
+            return Array.isArray(parsedValue) && parsedValue.length > 0 ? parsedValue[0] : null;
+        } catch (error) {
+            console.log("Error parsing JSON:", error);
+            return null;
+        }
+    }
+
+    return value; 
+};
+
+
+  const Apicall = async () => {
+    // const variables = {
+    //   customer: {
+    //     acceptsMarketing: true,
+    //     email: userDetails?.email,
+    //     firstName:userDetails?.firstName,
+    //     lastName: userDetails?.lastName,
+    //     password: '123456',
+    //     phone: userDetails?.phone
+    //   },
+    //   customerAccessToken:loginUserData?.shopify_access_token
+
+    //   }
+    const userStatus = await AsyncStorage.getItem('user_data');
+    const userData = userStatus ? JSON.parse(userStatus) : null;
+
     // await dispatch(
     //   updatedata1({
     //       acceptsMarketing: true,
@@ -75,42 +105,32 @@ const EditProfile = () => {
     //     navigation
     //   }),
     // );
-      // const customerId = userDetails?.id;
 
-      // data.append('name', formData.name);
-      // data.append('email', formData.email);
-      // data.append('phone', formData.mobile);
-      // data.append('dob', formatDate(date));
-      // data.append('time_of_birth', formatTime(time));
-      // data.append('place_of_birth', formData.birthPlace);
-      // data.append('gender', gender);
-      // data.append('city_pincode', formData.cityPincode);
-      // data.append('user_id', userid);
+    const customerId = userDetails?.id; // ✅ Ensure this is correct format
 
-      const customerId =userDetails?.id;  // ✅ Ensure this is correct format
+    const metafields = [
+      {key: 'gender', type: 'list.single_line_text_field', value: [gender]},
+      {
+        key: 'current_city_pincode',
+        type: 'single_line_text_field',
+        value: formData.cityPincode,
+      },
+      {
+        key: 'mobile_number',
+        type: 'single_line_text_field',
+        value: formData.mobile,
+      },
+      {key: 'full_name', type: 'single_line_text_field', value: formData.name},
+      {key: 'birth_time', type: 'date_time', value: '2005-08-06T20:30:00Z'},
+      {key: 'birth_date', type: 'date', value: '2005-11-30'},
+    ];
 
-      const metafields = [
-        { key: "gender", type: "list.single_line_text_field", value: [gender] },
-        { key: "current_city_pincode", type: "single_line_text_field", value:formData.cityPincode },
-        { key: "mobile_number", type: "single_line_text_field", value: formData.mobile },
-        { key: "full_name", type: "single_line_text_field", value: formData.name },
-        { key: "birth_time", type: "date_time", value: "2005-08-06T20:30:00Z" },
-        { key: "birth_date", type: "date", value: "2005-11-30" }
-      ];
-      
-      updateCustomerMetafields(customerId, metafields)
-        .then(data => console.log("✅ Final Metafields Response:", data))
-        .catch(error => console.error("❌ Error:", error));
+    updateCustomerMetafields(customerId, metafields)
+  };
 
-          
-        
- }
-
-// useEffect(()=>{
-//   Apicall()
-// },[userDetails])
-
-
+  // useEffect(()=>{
+  //   Apicall()
+  // },[userDetails])
 
   const [isModalVisible, setModalVisible] = useState(false);
 
@@ -127,10 +147,18 @@ const EditProfile = () => {
     name: userDetails?.displayName,
     email: userDetails?.email,
     mobile: userDetails?.phone,
-    cityPincode: JSON.stringify(userDetail?.city_pincode) ?? '',
-    birthPlace: userDetail?.place_of_birth ?? '',
+    cityPincode: getMetafieldValue(metadata, 'current_city_pincode'),
+    birthPlace: getMetafieldValue(metadata, 'place_of_birth'),
   });
+  const [gender, setGender] = useState(null); // Initialize with null
 
+  useEffect(() => {
+      if (metadata) {
+          const extractedGender = getMetafieldValue(metadata, 'gender');
+          setGender(extractedGender);
+      }
+  }, [metadata])
+  
   const [shakeAnimation, setShakeAnimation] = useState({
     name: new Animated.Value(0),
     email: new Animated.Value(0),
@@ -140,9 +168,9 @@ const EditProfile = () => {
     birthPlace: new Animated.Value(0),
   });
   const scrollViewRef = useRef(null);
-
+const [birthdate,setBirth]=useState(getMetafieldValue(metadata, 'birth_date'))
   const [date, setDate] = useState(
-    userDetail?.dob ? new Date(userDetail.dob) : null,
+    new Date(getMetafieldValue(metadata, 'birth_date')),
   );
   const [open, setOpen] = useState(false);
 
@@ -153,44 +181,51 @@ const EditProfile = () => {
     const year = date.getFullYear().toString();
     return `${day}-${month}-${year}`;
   };
+  const formatTime2 = (timeString) => {
+    console.log("Raw Time:", timeString);
 
-  const parseTimeString = timeString => {
-    const [time, modifier] = timeString.split(' ');
-    const [hours, minutes] = time.split(':');
+    if (!timeString) return 'Time Of Birth';
 
-    let hour = parseInt(hours, 10);
-    if (modifier === 'PM' && hour !== 12) {
-      hour += 12;
-    }
-    if (modifier === 'AM' && hour === 12) {
-      hour = 0;
-    }
+    const date = new Date(timeString.trim());
 
-    const date = new Date();
-    date.setHours(hour);
-    date.setMinutes(parseInt(minutes, 10));
-    date.setSeconds(0);
+    if (isNaN(date.getTime())) return 'Invalid Time';
 
-    return date;
-  };
+    let hours = date.getUTCHours(); 
+    const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM'; 
 
+    hours = hours % 12 || 12; // 12-hour format
+
+    const formattedTime = `${hours}:${minutes} ${ampm}`;
+    console.log("Formatted Time:", formattedTime);
+
+    return formattedTime;
+};
+
+const [birthtime,setBirthTime]=useState(getMetafieldValue(metadata, 'birth_time'))
   const [time, setTime] = useState(() => {
-    if (userDetail?.time_of_birth) {
-      return parseTimeString(userDetail.time_of_birth);
+    if (metadata) {
+      return formatTime2(getMetafieldValue(metadata, 'birth_time'));
     }
     return null;
   });
 
   const [open1, setOpen1] = useState(false);
 
-  const formatTime = time => {
-    if (!time) return 'Time Of Birth';
+  const formatTime = time1 => {
+ console.log(time1,);
+ 
+  
+    if (!time1) return 'Time Of Birth';
+    let time =new Date(time1)
     let hours = time.getHours();
     const minutes = time.getMinutes().toString().padStart(2, '0');
     const ampm = hours >= 12 ? 'PM' : 'AM';
     hours = hours % 12;
     hours = hours ? hours : 12;
     const strTime = `${hours}:${minutes} ${ampm}`;
+    console.log(strTime,'hdhdhdhdd');
+    setTime(strTime);
     return strTime;
   };
 
@@ -280,12 +315,17 @@ const EditProfile = () => {
 
     if (name === 'mobile') {
       const numericValue = value.replace(/[^0-9]/g, '');
-      const mobileRegex = /^[0-9]{0,13}$/;
+      const mobileRegex = /^\+91[0-9]{0,10}$/;
+     
 
+      
       mobileRegex.test(numericValue)
+     
+      
         ? setFormData({...formData, mobile: numericValue})
-        : (Toast.show('Invalid mobile number.'),
-          setValidationError({...validationError, mobile: true}));
+        : 
+        (
+          setValidationError({...validationError, mobile:false}));
     } else if (name === 'cityPincode') {
       const numericValue = value.replace(/[^0-9]/g, '');
       const pinCodeRegex = /^[0-9]{0,6}$/;
@@ -379,11 +419,13 @@ const EditProfile = () => {
       shake('mobile');
       scrollToField('mobile');
       return;
-    } else if (formData.mobile.length < 13) {
+    } 
+    else if (formData.mobile.length < 13) {
       shake('mobile');
       scrollToField('mobile');
       return;
-    } else if (gender === '') {
+    } 
+    else if (gender === '') {
       shake('gender');
       scrollToField('gender');
       return;
@@ -396,39 +438,98 @@ const EditProfile = () => {
       scrollToField('cityPincode');
       return;
     } else {
-      const userid = await AsyncStorage.getItem('user_id');
-      const token = await AsyncStorage.getItem('Token');
+      // const userid = await AsyncStorage.getItem('user_id');
+      // const token = await AsyncStorage.getItem('Token');
 
-      let data = new FormData();
-      data.append('name', formData.name);
-      data.append('email', formData.email);
-      data.append('phone', formData.mobile);
-      data.append('dob', formatDate(date));
-      data.append('time_of_birth', formatTime(time));
-      data.append('place_of_birth', formData.birthPlace);
-      data.append('gender', gender);
-      data.append('city_pincode', formData.cityPincode);
-      data.append('user_id', userid);
-      {
-        isuserselectimage
-          ? data.append('avatar', {
-              uri: selectedImage.uri,
-              name: selectedImage.name,
-              type: selectedImage.type,
-            })
-          : null;
-      }
+      // let data = new FormData();
+      // data.append('name', formData.name);
+      // data.append('email', formData.email);
+      // data.append('phone', formData.mobile);
+      // data.append('dob', formatDate(date));
+      // data.append('time_of_birth', formatTime(time));
+      // data.append('place_of_birth', formData.birthPlace);
+      // data.append('gender', gender);
+      // data.append('city_pincode', formData.cityPincode);
+      // data.append('user_id', userid);
+      // {
+      //   isuserselectimage
+      //     ? data.append('avatar', {
+      //         uri: selectedImage.uri,
+      //         name: selectedImage.name,
+      //         type: selectedImage.type,
+      //       })
+      //     : null;
+      // }
 
-      await dispatch(
-        updateApi({
-          formUserData: data,
-          url: 'profile-update',
-          token,
-          userid,
-          navigation,
-        }),
-      );
-    }
+      // await dispatch(
+      //   updateApi({
+      //     formUserData: data,
+      //     url: 'profile-update',
+      //     token,
+      //     userid,
+      //     navigation,
+      //   }),
+      // );
+
+        const userStatus = await AsyncStorage.getItem('user_data');
+        const userData = userStatus ? JSON.parse(userStatus) : null;
+        const fullName = formData.name || "";
+        const nameParts = fullName.trim().split(" "); 
+        const firstName = nameParts[0] || ""; // First part is first name
+        const lastName = nameParts.slice(1).join(" ") || ""; 
+        await dispatch(
+          updatedata1({
+              acceptsMarketing: true,
+              email: formData.email,
+              firstName:firstName,
+              lastName: lastName,
+              password: '123456',
+              phone: formData?.mobile,
+            customerAccessToken:userData?.shopify_access_token,
+             navigation
+          }),
+        );
+    
+        const customerId = userDetails?.id;
+    
+
+
+
+
+        const metafields = [
+          {namespace: "custom", key: 'gender', type: 'list.single_line_text_field', value: [gender]},
+          {namespace: "custom",
+            key: 'current_city_pincode',
+            type: 'single_line_text_field',
+            value: formData.cityPincode,
+          },
+
+          {namespace: "custom", key: 'place_of_birth', type: 'single_line_text_field', value:formData.birthPlace },
+          {namespace: "custom",
+            key: 'mobile_number',
+            type: 'single_line_text_field',
+            value: formData.mobile,
+          },
+          {namespace: "custom", key: 'full_name', type: 'single_line_text_field', value: formData.name},
+          {namespace: "custom", key: 'birth_time', type: 'date_time', value: birthtime},
+          {namespace: "custom", key: 'birth_date', type: 'date', value: birthdate},
+          {  namespace: "facts",key: 'birth_date', type: 'date', value: birthdate},
+        ];
+    
+        updateCustomerMetafields(customerId, metafields)
+      };
+
+
+
+
+
+
+
+
+
+
+
+    
   };
 
   return (
@@ -555,9 +656,9 @@ const EditProfile = () => {
               )}
             />
           </Animated.View>
-           {validationError.gender && ( 
+          {validationError.gender && (
             <Text style={styles.errorText}>Please select your gender.</Text>
-          )} 
+          )}
         </View>
 
         <View style={styles.inputmain}>
@@ -619,12 +720,16 @@ const EditProfile = () => {
             date={date || new Date()}
             mode="date"
             maximumDate={new Date()}
-            onConfirm={selectedDate => {
+            onConfirm={(selectedDate) => {
+
+              const formattedTime = selectedDate.toISOString();
               setOpen(false);
               setDate(selectedDate);
+              setBirth(formattedTime);
             }}
             onCancel={() => setOpen(false)}
           />
+         
           {validationError.date && (
             <Text style={styles.errorText}>
               Please enter your valid date of birth.
@@ -649,7 +754,7 @@ const EditProfile = () => {
                 styles.input1,
                 {color: time === '' ? colors.placeholder : colors.heading},
               ]}>
-              {formatTime(time)}
+              {time}
             </Text>
 
             <Image
@@ -664,11 +769,16 @@ const EditProfile = () => {
           <DatePicker
             modal
             open={open1}
-            date={time || new Date()}
+            date={new Date()}
             mode="time"
-            onConfirm={selectedTime => {
+            onConfirm={(selectedTime) => {          
+              const formattedTime = selectedTime.toISOString();
+             
               setOpen1(false);
-              setTime(selectedTime);
+              formatTime(selectedTime)
+             
+              setBirthTime(formattedTime);
+    
             }}
             onCancel={() => setOpen1(false)}
           />

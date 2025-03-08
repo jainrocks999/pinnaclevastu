@@ -261,11 +261,9 @@ export const getUserDetails = customerAccessToken => {
           console.log('response data ,,111', response?.data?.data?.customer);
 
           const data = response.data.data?.customer;
-
-          const usermetadata=  await getCutomerMetafields(response.data.data?.customer?.id);
          
           if (data) {
-            await AsyncStorage.setItem('USERINFO', JSON.stringify(data));
+            const usermetadata=  await getCutomerMetafields(response.data.data?.customer?.id);
             dispatch(SHOPIFY_USER_DATA_FETCH_SUCCESS({...data,...usermetadata}));
           } else {
             SHOPIFY_USER_DATA_FETCH_FAILED(data);
@@ -345,7 +343,7 @@ export const DeleteShopifyUserAccount = (id, navigation) => {
 export const updatedata1 = customerAccessToken => {
   return async dispatch => {
     try {
-      console.log('datatttaaaa', customerAccessToken);
+     
 
       dispatch(SHOPIFY_UPDATE_DATA_FETCH_LOADING());
       let data = JSON.stringify({
@@ -365,16 +363,19 @@ export const updatedata1 = customerAccessToken => {
       axios
         .request(GraphQlConfig(data))
         .then(async response => {
-          console.log('response data ,,32323', response?.data?.data?.customerUpdate?.customerAccessToken?.accessToken);
+          console.log('response data ,,32323', response?.data?.data?.customerUpdate);
           const userStatus = await AsyncStorage.getItem('user_data');
           const userData = userStatus ? JSON.parse(userStatus) : null;
-           let newdata ={...userData,shopify_access_token:response?.data?.data?.customerUpdate?.customerAccessToken?.accessToken}
+          
           const data = response.data.data?.customerUpdate?.customer;
+          let newdata ={...userData,shopify_access_token:response?.data?.data?.customerUpdate?.customerAccessToken?.accessToken}
           if (data) {
             await AsyncStorage.setItem('user_data',JSON.stringify(newdata));
             
 await dispatch(getUserDetails(response?.data?.data?.customerUpdate?.customerAccessToken?.accessToken));
             dispatch(SHOPIFY_UPDATE_DATA_FETCH_SUCCESS(data));
+            customerAccessToken?.navigation.goBack();
+
           } else {
             SHOPIFY_UPDATE_DATA_FETCH_FAILED(data);
           }
