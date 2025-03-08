@@ -284,13 +284,11 @@ export default StyleSheet.create({
   },
 
   shareIcon: {
-    borderRadius: 50,
-    width: wp(6),
-    height: wp(6),
+    
   },
   rowSection: {
     flexDirection: 'row',
-    gap: 5,
+    gap: 10,
     alignItems: 'center',
   },
   
