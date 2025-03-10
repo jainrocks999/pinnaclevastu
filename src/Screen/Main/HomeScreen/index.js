@@ -1671,7 +1671,14 @@ const HomeScreen = () => {
               {paddingHorizontal: 10, marginBottom: wp(8)},
             ]}
             renderItem={({item}) => (
-              <TouchableOpacity style={styles.blogCard}>
+              <TouchableOpacity  onPress={() =>
+                navigation.navigate('Home', {
+                  screen: 'BlogDetail',
+                  params: {item: item},
+                })
+              }
+              
+              style={styles.blogCard}>
                 <Image
                   source={
                     item?.node?.image?.url
@@ -1708,12 +1715,7 @@ const HomeScreen = () => {
                   </Text>
 
                   <Text
-                    onPress={() =>
-                      navigation.navigate('Home', {
-                        screen: 'BlogDetail',
-                        params: {item: item},
-                      })
-                    }
+                   
                     style={styles.blogCardBtnText}>
                     {'View Details >'}
                   </Text>

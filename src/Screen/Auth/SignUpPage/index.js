@@ -12,7 +12,7 @@ import {
   KeyboardAvoidingView,
   Keyboard,
 } from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import styles from './styles';
 import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
 import {colors} from '../../../Component/colors';
@@ -41,8 +41,8 @@ const SignUpPage = ({route}) => {
 
   const navigation = useNavigation();
   const [gender, setGender] = useState('');
-  const [birthdate, setBirth] = useState(new Date());
-  const [date, setDate] = useState(new Date());
+  const [birthdate, setBirth] = useState('');
+  const [date, setDate] = useState(null);
   const [open, setOpen] = useState(false);
 
   const [shakeAnimation, setShakeAnimation] = useState({
@@ -63,6 +63,11 @@ const SignUpPage = ({route}) => {
     date: false,
   });
 
+
+  useEffect(() => {
+    setDate(new Date());
+  }, []);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -81,7 +86,7 @@ const SignUpPage = ({route}) => {
     return `${day}-${month}-${year}`;
   };
   const [birthtime, setBirthTime] = useState('');
-  const [time, setTime] = useState(new Date());
+  const [time, setTime] = useState('');
   const [open1, setOpen1] = useState(false);
 
   const formatTime = time => {
@@ -526,7 +531,7 @@ const SignUpPage = ({route}) => {
               <Animated.View
                 style={[{transform: [{translateX: shakeAnimation.date}]}]}>
                 <TouchableOpacity
-                  onPress={() => setOpen(true)}
+                   onPress={() => date && setOpen(true)} 
                   style={[
                     styles.input,
                     styles.inputShadow,
@@ -555,10 +560,10 @@ const SignUpPage = ({route}) => {
                   />
                 </TouchableOpacity>
               </Animated.View>
-              <DatePicker
+              {date && (    <DatePicker
                 modal
                 open={open}
-                date={date || new Date()}
+                date={date}
                 mode="date"
                 maximumDate={new Date()}
                 onConfirm={selectedDate => {
@@ -569,7 +574,7 @@ const SignUpPage = ({route}) => {
                   setBirth(formattedTime);
                 }}
                 onCancel={() => setOpen(false)}
-              />
+              />)}
               {validationError.date && (
                 <Text style={styles.errorText}>
                   Please enter your valid date of birth.
@@ -608,7 +613,7 @@ const SignUpPage = ({route}) => {
               <DatePicker
                 modal
                 open={open1}
-                date={time || new Date()}
+                date={new Date()}
                 mode="time"
                 onConfirm={selectedTime => {
                   setOpen1(false);

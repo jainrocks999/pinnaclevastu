@@ -155,7 +155,6 @@ import crashlytics from '@react-native-firebase/crashlytics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 
-// 🌐 Internet Context (Pure App ke liye)
 export const InternetContext = createContext();
 
 LogBox.ignoreAllLogs();
@@ -172,7 +171,7 @@ PushNotification.createChannel(
 const App = () => {
   const [isConnected, setIsConnected] = useState(true);
 
-  // 📡 Internet Check Functionality (Pure App ke liye)
+ 
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
       setIsConnected(state.isConnected);
@@ -258,10 +257,10 @@ const App = () => {
             backgroundColor: Platform.OS === 'ios' ? '#FC0600' : '#fff',
           }}>
           
-          {/* 🌐 Internet Context Provider (Pure App ke liye) */}
+      
           <InternetContext.Provider value={{ isConnected }}>
             
-            {/* 🔴 Agar Internet Nahi Hai Toh Warning Show Hogi */}
+           
             {!isConnected && (
               <View style={{
                 backgroundColor: colors.orange,
@@ -269,13 +268,13 @@ const App = () => {
                 alignItems: 'center'
               }}>
                 <Text style={{ color: 'white', fontWeight: 'bold' }}>
-                  {/* ❌ No Internet Connection. Please check your network. */}
+              
                  No Internet Connection. Please check your network.
                 </Text>
               </View>
             )}
 
-            {/* 🌍 Pure App Ka Navigation */}
+         
             <Provider store={store}>
               <RootApp />
             </Provider>
@@ -289,3 +288,4 @@ const App = () => {
 };
 
 export default App;
+

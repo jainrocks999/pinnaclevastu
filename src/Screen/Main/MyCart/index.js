@@ -316,7 +316,7 @@ const Remedies12SecondComponent = () => {
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-          <BackIcon width={wp(3)} height={wp(3)} style={styles.backBtn} />
+          <BackIcon width={wp(4)} height={wp(4)} style={styles.backBtn} />
         </TouchableOpacity>
 
         <View style={styles.headerview}>
