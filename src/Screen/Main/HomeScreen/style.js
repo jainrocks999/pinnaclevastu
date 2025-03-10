@@ -476,11 +476,6 @@ export default StyleSheet.create({
     padding: 10,
     borderRadius: 15,
   },
-  addCartIcon: {
-    height: wp(6),
-    width: wp(6),
-    resizeMode: 'contain',
-  },
   contain2: {
     paddingVertical: 10,
     // backgroundColor: '#FAF6ED',

@@ -88,10 +88,10 @@ export default StyleSheet.create({
   },
 
   imgContainer: {
-    width: '30%',
+    width: '35%',
   },
   direction: {
-    marginTop: 4,
+    marginTop: 5,
     minHeight: 12,
   },
 
@@ -111,7 +111,7 @@ export default StyleSheet.create({
   },
   card: {
     paddingLeft: 10,
-    width: '65%',
+    width: '60%',
   },
   cardImage: {
     borderRadius: wp(50),

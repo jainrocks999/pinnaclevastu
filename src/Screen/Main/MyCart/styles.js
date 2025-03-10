@@ -41,20 +41,20 @@ export default StyleSheet.create({
     paddingTop: 10,
   },
   subtotalsavingyview: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
     width: '100%',
-    paddingVertical: 7,
+    paddingVertical: 10,
     backgroundColor: '#FBF5F2',
     position: 'absolute',
     bottom: 0,
   },
   subtotaltext: {
-    fontSize: fontSize.Twelve,
+    fontSize: fontSize.Thirteen,
     color: colors.heading,
     fontFamily: 'Poppins-Medium',
   },
   subtotaltext1: {
-    fontSize: fontSize.Fourteen,
+    fontSize: fontSize.Fifteen,
     color: colors.heading,
     fontFamily: 'Poppins-Medium',
   },
@@ -63,7 +63,7 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
   rupeestext: {
-    fontSize: fontSize.Twelve,
+    fontSize: fontSize.Thirteen,
     color: colors.heading,
     fontFamily: 'Poppins-SemiBold',
     marginLeft: wp(1),
@@ -80,7 +80,7 @@ export default StyleSheet.create({
   
   image1: {
     height: hp(15),
-    width: wp(40),
+    width: wp(35),
     borderRadius: 20,
     marginBottom: hp(2),
   },
@@ -126,7 +126,7 @@ export default StyleSheet.create({
   },
   textstyle: {
     color: colors.heading,
-    width: '80%',
+    width: '90%',
     fontSize: fontSize.Thirteen,
     fontFamily: 'Poppins-Medium',
   },
@@ -162,6 +162,8 @@ export default StyleSheet.create({
     color: '#fff',
     fontSize: wp(3.5),
     transform: [{rotate: '45deg'}],
+    marginTop:-1,
+    marginRight:-1
   },
 
   toview: {
@@ -229,15 +231,15 @@ export default StyleSheet.create({
   },
   quantitySection: {
     backgroundColor: colors.ordercolor,
-    borderRadius: 20,
-    width: '80%',
+    borderRadius: 5,
+    width: '70%',
     justifyContent: 'space-around',
     paddingHorizontal: 5,
     marginTop: 10,
   },
   quantityBtns: {
     fontSize: fontSize.TwentyTwo,
-    color: colors.orange,
+    color: colors.searchBarTextColor,
     textAlign: 'center',
     textAlignVertical: 'center',
   },
@@ -270,7 +272,6 @@ export default StyleSheet.create({
   },
 
   book: {
-    marginHorizontal: 15,
     backgroundColor: colors.orange,
     alignItems: 'center',
     height: wp(13),

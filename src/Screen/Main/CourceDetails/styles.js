@@ -105,8 +105,6 @@ export default StyleSheet.create({
     alignSelf: 'center',
   },
   cardimg1: {
-    width: wp(10),
-    height: wp(8),
     marginBottom: 5,
   },
   languagetext: {

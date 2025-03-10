@@ -20,6 +20,9 @@ import ShareIcon from '../../../assets/image/share.svg';
 import PluseIcon from '../../../assets/image/pluesRoundIcon.svg';
 import DownarrowIcon from '../../../assets/image/down_grey_icon.svg';
 import UparrowIcon from '../../../assets/image/org_up_arrow_icon.svg';
+import ProdStockIcon from '../../../assets/image/now-in-stock.svg';
+import SpeedDeliveryIcon from '../../../assets/image/commerce-and-shopping.svg';
+import PaymentIcon from '../../../assets/image/credit-card.svg';
 import BannerSlider from '../../../Component/Banner';
 import {fontSize} from '../../../Component/fontsize';
 import Collapsible from 'react-native-collapsible';
@@ -382,7 +385,8 @@ const RemediesProductDetail = ({route}) => {
     return (
       <View style={{flexDirection: 'row'}}>
         <View style={[styles.cardContainer]}>
-          <Image source={item.image} style={styles.sevicesImg} />
+          {/* <Image source={item.image} style={styles.sevicesImg} /> */}
+          {item.svg}
           <Text style={styles.text}>{item.name}</Text>
           <Text style={[styles.text, {fontSize: fontSize.Ten}]}>
             {item.title}
@@ -466,7 +470,7 @@ const RemediesProductDetail = ({route}) => {
       </Pressable>
       {index !== similardata?.length - 1 ? (
         // <Text style={styles.plusBtn}>+</Text>
-       <PluseIcon width={wp(3)} height={wp(3)} style={styles.plusBtn}/>
+        <PluseIcon width={wp(3)} height={wp(3)} style={styles.plusBtn} />
       ) : null}
     </View>
   );
@@ -554,29 +558,14 @@ const RemediesProductDetail = ({route}) => {
             {item?.question?.value}
           </Text>
         </View>
-        {/* <Image
-          source={
-            expandedSection === index
-              ? require('../../../assets/otherApp/updown.png')
-              : require('../../../assets/image/arrow_icon.png')
-          }
-          style={[
-            styles.toggleIcon2,
-            expandedSection !== index ? {resizeMode: 'contain'} : null,
-          ]}
-        /> */}
+      
         {expandedSection !== index ? (
           <DownarrowIcon
             width={wp(4)}
             height={wp(3)}
-            style={{marginRight: 10}}
           />
         ) : (
-          <UparrowIcon
-            width={wp(4)}
-            height={wp(3)}
-            style={{marginRight: 10}}
-          />
+          <UparrowIcon width={wp(4)} height={wp(3)} />
         )}
       </TouchableOpacity>
 
@@ -597,8 +586,6 @@ const RemediesProductDetail = ({route}) => {
 
             <Text style={styles.logoText}>Product Detail</Text>
           </View>
-
-          {/* <Image source={require('../../../assets/image/small_bag.png')} /> */}
           <BagIcon width={wp(5)} height={wp(5)} />
         </View>
         <AnimatedLine />
@@ -608,7 +595,6 @@ const RemediesProductDetail = ({route}) => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerview}>
           <TouchableOpacity
@@ -637,12 +623,24 @@ const RemediesProductDetail = ({route}) => {
           <ScrollView contentContainerStyle={styles.servicesContainer}>
             {imagearray?.length != 0 ? (
               <View style={styles.welcomeCard}>
-                <BannerSlider
-                  onPress={item => {}}
-                  data={imagearray}
-                  local={true}
-                  height1={wp(60)}
-                />
+                {imagearray?.length < 1 ? (
+                  <BannerSlider
+                    onPress={item => {}}
+                    data={imagearray}
+                    local={true}
+                    height1={wp(60)}
+                  />
+                ) : (
+                  <Image
+                    source={{uri: `${imagearray[0]?.image}`}}
+                    style={{
+                      width: '95%',
+                      height: wp(60),
+                      borderRadius: 15,
+                      margin: 10,
+                    }}
+                  />
+                )}
               </View>
             ) : (
               <View style={styles.welcomeCard}>
@@ -765,7 +763,7 @@ const RemediesProductDetail = ({route}) => {
               <View
                 style={[
                   styles.headerview,
-                  {marginTop: 15, marginHorizontal: 15},
+                  {marginTop: 15, marginBottom: 10, marginHorizontal: 15},
                 ]}>
                 <Text style={[styles.third2, {color: colors.heading}]}>
                   Quantity:
@@ -985,19 +983,19 @@ export default RemediesProductDetail;
 const data5 = [
   {
     id: '1',
-    image: require('../../../assets/otherApp/services1.png'),
+    svg: <SpeedDeliveryIcon width={wp(9)} height={wp(8)} />,
     name: 'Speedy Delivery',
     title: 'We ensure express & fast deliver',
   },
   {
     id: '2',
-    image: require('../../../assets/otherApp/services2.png'),
+    svg: <PaymentIcon width={wp(8)} height={wp(8)} />,
     name: '100% Payment Secure',
     title: 'We assure 100% payment Security',
   },
   {
     id: '3',
-    image: require('../../../assets/otherApp/services3.png'),
+    svg: <ProdStockIcon width={wp(8)} height={wp(8)} />,
     name: 'Over 3000 Products',
     title: "India's largest healing crystal store",
   },

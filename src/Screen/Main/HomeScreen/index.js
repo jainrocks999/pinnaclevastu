@@ -20,6 +20,7 @@ import OrgRightarrowIcon from '../../../assets/image/right_arrow_icon_org.svg';
 import BottomGrp1 from '../../../assets/image/bottomGrp1.svg';
 import BottomGrp2 from '../../../assets/image/bottomGrp2.svg';
 import BottomGrp3 from '../../../assets/image/bottomGrp3.svg';
+import AddtoCartIcon from '../../../assets/image/add_to_cart_icon.svg';
 import styles from './style';
 import {colors} from '../../../Component/colors';
 import BannerSlider from '../../../Component/Banner';
@@ -579,9 +580,13 @@ const HomeScreen = () => {
               }
             }}
             style={styles.addToCartBtn}>
-            <Image
+            {/* <Image
               source={require('../../../assets/image/bagSmall.png')}
               style={styles.addCartIcon}
+            /> */}
+            <AddtoCartIcon
+              height={wp(5)}
+              width={wp(5)}
             />
           </TouchableOpacity>
         </View>
