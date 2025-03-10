@@ -14,6 +14,7 @@ import styles from './styles';
 import DrawerIcon from '../../../assets/image/Drawer.svg';
 import BackIcon from '../../../assets/image/backIcon.svg';
 import BagIcon from '../../../assets/image/bagIcon.svg';
+import CrossIcon from '../../../assets/image/crossCartIcon.svg';
 import {colors} from '../../../Component/colors';
 import {Rating} from 'react-native-ratings';
 import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
@@ -41,7 +42,8 @@ const Remedies12SecondComponent = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const cartisLoading = useSelector(state => state.cart?.loading);
-  const isLoading = useSelector(state => state.address?.loading);
+  const addressIsLoading = useSelector(state => state?.Login?.isLoadingUser);
+  // const isLoading = useSelector(state => state.address?.loading);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [itemToRemove, setItemToRemove] = useState(null);
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
@@ -220,11 +222,12 @@ const Remedies12SecondComponent = () => {
   );
 
   const renderItem = ({item}) => (
-    <TouchableOpacity    onPress={() =>
-      navigation.navigate('ProductDetail', {itemId: item.productId})
-    }style={styles.viewinner}>
-      <TouchableOpacity
-      >
+    <TouchableOpacity
+      onPress={() =>
+        navigation.navigate('ProductDetail', {itemId: item.productId})
+      }
+      style={styles.viewinner}>
+      <TouchableOpacity>
         <Image
           source={
             item?.image
@@ -238,8 +241,8 @@ const Remedies12SecondComponent = () => {
         <Text style={styles.textstyle}>
           {' '}
           {item?.title
-            ? item?.title.length > 15
-              ? `${item?.title.substring(0, 15)}...`
+            ? item?.title.length > 25
+              ? `${item?.title.substring(0, 25)}...`
               : item?.title
             : ' '}
         </Text>
@@ -269,9 +272,10 @@ const Remedies12SecondComponent = () => {
         onPress={() => {
           confirmRemoveItem(item);
         }}>
-        <View style={styles.closeButton}>
+        {/* <View style={styles.closeButton}>
           <Text style={styles.closeIcon}>+</Text>
-        </View>
+        </View> */}
+        <CrossIcon width={wp(5)} height={wp(5)} />
       </TouchableOpacity>
     </TouchableOpacity>
   );
@@ -323,7 +327,7 @@ const Remedies12SecondComponent = () => {
           <Text style={styles.logoText}>My Cart</Text>
         </View>
       </View>
-      {cartisLoading || isLoading ? (
+      {cartisLoading || addressIsLoading ? (
         <Loader />
       ) : localCartDataList.length > 0 ? (
         <>
@@ -377,26 +381,26 @@ const Remedies12SecondComponent = () => {
                 <Text style={styles.rupeestext}>₹ {subtotal}</Text>
               </View>
             </View>
-            <View style={[styles.direction1, {marginBottom: -10}]}>
+            {/* <View style={[styles.direction1, {marginBottom: -10}]}>
               <Text style={styles.subtotaltext}>Tax</Text>
               <View style={styles.rupees}>
                 <Text style={styles.rupeestext}>₹ {Tax}</Text>
               </View>
-            </View>
-            {savings > 0 && subtotal !== savings ? (
-              <>
-                <View style={styles.direction1}>
-                  <Text style={[styles.subtotaltext, {paddingBottom: 10}]}>
-                    Saving:
-                  </Text>
-                  <View style={styles.rupees}>
-                    <Text style={styles.rupeestext}>₹ {savings}</Text>
-                  </View>
+            </View> */}
+            {/* {savings > 0 && subtotal !== savings ? ( */}
+            <>
+              <View style={styles.direction1}>
+                <Text style={[styles.subtotaltext, {paddingBottom: 10}]}>
+                  Saving:
+                </Text>
+                <View style={styles.rupees}>
+                  <Text style={styles.rupeestext}>₹ {savings}</Text>
                 </View>
+              </View>
 
-                <View style={styles.horizontalLine} />
-              </>
-            ) : null}
+              <View style={styles.horizontalLine} />
+            </>
+            {/* ) : null} */}
 
             <View style={styles.direction1}>
               <Text style={[styles.subtotaltext1, {paddingBottom: 5}]}>
@@ -406,16 +410,11 @@ const Remedies12SecondComponent = () => {
                 <Text style={styles.rupeestext}> ₹ {totalAmount}</Text>
               </View>
             </View>
-            <Text style={[styles.subtotaltext, {color: colors?.grey}]}>
-              {' '}
-              Shipping charges will be calculated in the next step.
-            </Text>
             <Animated.View
               style={[
                 {
                   transform: [{scale: buttonAnimatedValue}],
                 },
-                {marginTop: 15},
               ]}>
               <TouchableOpacity onPress={handlePlaceOrder} style={styles.book}>
                 <Text style={styles.btext1}>PLACE ORDER</Text>

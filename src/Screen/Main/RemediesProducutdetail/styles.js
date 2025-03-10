@@ -146,9 +146,9 @@ export default StyleSheet.create({
     fontFamily: 'Poppins-Regular',
   },
   touch: {
-    height: wp(6),
+    // height: wp(6),
+    height:"100%",
     width: wp(6),
-    marginTop: wp(-3),
   },
 
   plusBtn: {
@@ -395,15 +395,18 @@ export default StyleSheet.create({
   quantitySection: {
     backgroundColor: colors.ordercolor,
     marginLeft: 20,
-    borderRadius: 20,
+    borderRadius: 10,
     width: '40%',
+    height:wp(9),
     justifyContent: 'space-around',
   },
   quantityBtns: {
     fontSize: fontSize.TwentyTwo,
-    color: colors.orange,
+    color: colors.searchBarTextColor,
     textAlign: 'center',
     textAlignVertical: 'center',
+    height:"100%",
+    marginTop: wp(1)
   },
   checkboxWrapper: {
     height: 21,

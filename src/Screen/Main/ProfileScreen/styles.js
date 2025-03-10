@@ -26,7 +26,8 @@ export default StyleSheet.create({
   },
   cardImage: {
     height: wp(30),
-    width: wp(28),
+    // width: wp(28),
+    width: "100%",
     borderRadius: wp(50),
   },
 
@@ -74,7 +75,7 @@ export default StyleSheet.create({
   },
 
   imgContainer: {
-    width: '30%',
+    width: '35%',
   },
   third1: {
     marginBottom: 5,

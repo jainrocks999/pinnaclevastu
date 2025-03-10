@@ -157,8 +157,8 @@ const RemediesProductList = ({route}) => {
         <View style={styles.textContainer}>
           <Text style={[styles.third, styles.titleText]}>
             {item?.node?.title
-              ? item?.node?.title.length > 20
-                ? `${item?.node?.title.substring(0, 20)}...`
+              ? item?.node?.title.length > 30
+                ? `${item?.node?.title.substring(0, 30)}...`
                 : item?.node.title
               : ' '}
           </Text>
@@ -236,8 +236,7 @@ const RemediesProductList = ({route}) => {
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <TouchableOpacity
               hitSlop={{top: 10, left: 10, right: 10, bottom: 10}}>
-              {/* <Image source={require('../../../assets/image/SearchIcon.png')} /> */}
-               <SearchIcon width={wp(5)} height={wp(5)} />
+              <SearchIcon width={wp(5)} height={wp(5)} />
             </TouchableOpacity>
 
             <TextInput
@@ -254,7 +253,6 @@ const RemediesProductList = ({route}) => {
             <FilterIcon width={wp(5)} height={wp(5)} />
           </TouchableOpacity>
         </View>
-
         <FlatList
           data={RemediesCategor1 || []}
           renderItem={renderItem}

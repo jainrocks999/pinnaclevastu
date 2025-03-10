@@ -18,6 +18,7 @@ import {
 } from '../../../Redux/Slice/CartSlice';
 import {useDispatch, useSelector} from 'react-redux';
 import BackIcon from '../../../assets/image/backIcon.svg';
+import LogoutIcon from '../../../assets/image/logoutIcon.svg';
 import RightarrowIcon from '../../../assets/image/right_arrow_icon.svg';
 import ProfileIcon1 from '../../../assets/image/profileIcon1.svg';
 import ProfileIcon2 from '../../../assets/image/profileIcon2.svg';
@@ -37,8 +38,8 @@ const MyProfile = () => {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const userDetail = useSelector(state => state?.Auth?.userData);
-    const {userDetails} = useSelector(state => state.Login);
-     const isUserLoading = useSelector(state => state?.Auth?.loading);
+  const {userDetails} = useSelector(state => state.Login);
+  const isUserLoading = useSelector(state => state?.Auth?.loading);
   const focus = useIsFocused();
 
   const [count, setCount] = useState('');
@@ -103,28 +104,38 @@ const MyProfile = () => {
     {
       id: '1',
       title: 'Contact Support',
-      svg: <ProfileIcon1  width={wp(6)} height={wp(6)}   style={styles.actionIcon}/>,
+      svg: (
+        <ProfileIcon1 width={wp(6)} height={wp(6)} style={styles.actionIcon} />
+      ),
     },
     {
       id: '2',
       title: 'Sign up as Franchise',
-      svg: <ProfileIcon2 width={wp(6)} height={wp(6)}   style={styles.actionIcon}/>,
+      svg: (
+        <ProfileIcon2 width={wp(6)} height={wp(6)} style={styles.actionIcon} />
+      ),
     },
     {
       id: '3',
       title: 'Rate Pinnacle Vastu on App Store',
-      svg: <ProfileIcon3 width={wp(6)} height={wp(6)}   style={styles.actionIcon}/>,
+      svg: (
+        <ProfileIcon3 width={wp(6)} height={wp(6)} style={styles.actionIcon} />
+      ),
     },
     {
       id: '4',
       title: 'Share App',
-      svg: <ProfileIcon4 width={wp(6)} height={wp(6)}   style={styles.actionIcon}/>,
+      svg: (
+        <ProfileIcon4 width={wp(6)} height={wp(6)} style={styles.actionIcon} />
+      ),
     },
     {
       id: '5',
       title: 'Delete My Account',
       noArrow: true,
-      svg: <ProfileIcon5 width={wp(6)} height={wp(6)}   style={styles.actionIcon}/>,
+      svg: (
+        <ProfileIcon5 width={wp(6)} height={wp(6)} style={styles.actionIcon} />
+      ),
     },
   ];
 
@@ -154,7 +165,6 @@ const MyProfile = () => {
           style={styles.backBtn}
           onPress={() => navigation.goBack()}
           hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-       
           <BackIcon width={wp(4)} height={wp(4)} style={styles.backIcon} />
         </TouchableOpacity>
 
@@ -166,9 +176,14 @@ const MyProfile = () => {
           style={styles.settingsButton}
           hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
           onPress={() => setIsModalVisible(true)}>
-          <Image
+          {/* <Image
             style={styles.settingsIcon}
             source={require('../../../assets/otherApp/shutdown.png')}
+          /> */}
+          <LogoutIcon
+            width={wp(4)}
+            height={wp(4)}
+            style={styles.settingsIcon}
           />
         </TouchableOpacity>
       </View>
@@ -197,7 +212,7 @@ const MyProfile = () => {
             {marginBottom: 4},
             {opacity: userDetails.length === 0 ? 0 : 1},
           ]}>
-           {userDetails?.phone}
+          {userDetails?.phone}
         </Text>
         <TouchableOpacity
           onPress={() => navigation.navigate('EditProfile')}

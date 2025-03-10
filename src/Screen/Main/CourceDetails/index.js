@@ -21,6 +21,16 @@ import BackIcon from '../../../assets/image/backIcon.svg';
 import ShareIcon from '../../../assets/image/share.svg';
 import DownarrowIcon from '../../../assets/image/down_grey_icon.svg';
 import UparrowIcon from '../../../assets/image/org_up_arrow_icon.svg';
+import WhatAppIcon from '../../../assets/image/whatAppIcon.svg';
+import PhoneIcon from '../../../assets/image/phoneIcon.svg';
+import MetaDataIcon1 from '../../../assets/image/metaDataIcon1.svg';
+import MetaDataIcon2 from '../../../assets/image/metaDataIcon2.svg';
+import MetaDataIcon3 from '../../../assets/image/metaDataIcon3.svg';
+import MetaDataIcon4 from '../../../assets/image/metaDataIcon4.svg';
+import CourseBottomIcon1 from '../../../assets/image/courseBottomIcon1.svg';
+import CourseBottomIcon2 from '../../../assets/image/courseBottomIcon2.svg';
+import CourseBottomIcon3 from '../../../assets/image/courseBottomIcon3.svg';
+import CourseBottomIcon4 from '../../../assets/image/courseBottomIcon4.svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 import WebView from 'react-native-webview';
@@ -231,7 +241,8 @@ const CourseDetail = ({route}) => {
 
   const renderItem = ({item}) => (
     <View style={styles.itemContainer}>
-      <Image source={item.icon} style={styles.icon} />
+      {/* <Image source={item.icon} style={styles.icon} /> */}
+      {item.svg}
       <View style={styles.textContainer}>
         <Text style={styles.title}>{item.title}</Text>
         <Text style={styles.description}>{item.description}</Text>
@@ -297,14 +308,6 @@ const CourseDetail = ({route}) => {
               {item?.question?.value}
             </Text>
           </View>
-          {/* <Image
-            source={
-              expandedSection == item?.question?.id
-                ? require('../../../assets/otherApp/updown1.png')
-                : require('../../../assets/image/arrow_icon.png')
-            }
-            style={[styles.toggleIcon2]}
-          /> */}
           {expandedSection != item?.question?.id ? (
             <DownarrowIcon
               width={wp(4)}
@@ -465,8 +468,9 @@ const CourseDetail = ({route}) => {
           ) && (
             <>
               <View style={styles.cardItem}>
-                <Image
-                  source={require('../../../assets/otherApp/cardimg1.png')}
+                <MetaDataIcon1
+                  height={wp(7)}
+                  width={wp(7)}
                   style={styles.cardimg1}
                 />
                 <Text style={styles.languagetext}>Languages</Text>
@@ -486,8 +490,9 @@ const CourseDetail = ({route}) => {
           ) && (
             <>
               <View style={styles.cardItem}>
-                <Image
-                  source={require('../../../assets/otherApp/cardimg1.png')}
+                <MetaDataIcon2
+                  height={wp(6)}
+                  width={wp(6)}
                   style={styles.cardimg1}
                 />
                 <Text style={styles.languagetext}>Date</Text>
@@ -507,8 +512,9 @@ const CourseDetail = ({route}) => {
           ) && (
             <>
               <View style={styles.cardItem}>
-                <Image
-                  source={require('../../../assets/otherApp/cardimg1.png')}
+                <MetaDataIcon4
+                  height={wp(6)}
+                  width={wp(6)}
                   style={styles.cardimg1}
                 />
                 <Text style={styles.languagetext}>Time</Text>
@@ -527,8 +533,9 @@ const CourseDetail = ({route}) => {
             item?.key?.includes('trained'),
           ) && (
             <View style={styles.cardItem}>
-              <Image
-                source={require('../../../assets/otherApp/cardimg1.png')}
+              <MetaDataIcon3
+                height={wp(7)}
+                width={wp(7)}
                 style={styles.cardimg1}
               />
               <Text style={styles.languagetext}>Trained</Text>
@@ -561,7 +568,7 @@ const CourseDetail = ({route}) => {
           <TouchableOpacity
             onPress={() => openWhatsApp()}
             style={styles.whatsapp}>
-            <Image source={require('../../../assets/otherApp/whatsapp.png')} />
+            <WhatAppIcon height={wp(8)} width={wp(8)} />
             <Text style={styles.textnumber}>+91 915 330 01 11</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -571,7 +578,7 @@ const CourseDetail = ({route}) => {
               );
             }}
             style={styles.call}>
-            <Image source={require('../../../assets/otherApp/call.png')} />
+            <PhoneIcon height={wp(8)} width={wp(8)} />
             <Text style={styles.textnumber}>+91 905 661 10 64</Text>
           </TouchableOpacity>
         </View>
@@ -759,28 +766,28 @@ export default CourseDetail;
 const data1 = [
   {
     id: '1',
-    icon: require('../../../assets/otherApp/trusted.png'),
+    svg: <CourseBottomIcon1 height={wp(8)} width={wp(8)} />,
     title: 'Trusted Content',
     description:
       'Content specially created to understand Vastu Techniques in easy way.',
   },
   {
     id: '2',
-    icon: require('../../../assets/otherApp/trusted1.png'),
+    svg: <CourseBottomIcon2 height={wp(8)} width={wp(8)} />,
     title: 'Experienced Teachers',
     description:
       'Content specially created to understand Vastu Techniques in easy way.',
   },
   {
     id: '3',
-    icon: require('../../../assets/otherApp/trusted2.png'),
+    svg: <CourseBottomIcon3 height={wp(8)} width={wp(8)} />,
     title: 'Lifetime Access',
     description:
       'Content specially created to understand Vastu Techniques in easy way.',
   },
   {
     id: '4',
-    icon: require('../../../assets/otherApp/trusted3.png'),
+    svg: <CourseBottomIcon4 height={wp(8)} width={wp(8)} />,
     title: 'Certification',
     description:
       'Content specially created to understand Vastu Techniques in easy way.',

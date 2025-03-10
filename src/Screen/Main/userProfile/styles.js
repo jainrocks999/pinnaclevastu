@@ -47,13 +47,14 @@ export default StyleSheet.create({
   settingsButton: {
     position: 'absolute',
     right: 16,
+    top:18,
     height: wp(10),
     width: wp(10),
-    top: 10,
+    backgroundColor:"#fff",
+    borderRadius:10,
   },
   settingsIcon: {
-    width: '100%',
-    height: '100%',
+    margin:"auto"
   },
   scrollContent: {
     flex: 1,

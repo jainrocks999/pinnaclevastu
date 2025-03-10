@@ -64,17 +64,17 @@ const BannerSlider = ({
   const renderItem = ({item}) => {
     return (
       <TouchableOpacity
-        style={{
-          width,
-          alignSelf: 'center',
-          justifyContent: 'center',
-          height: iscollection ? 110 : height1,
-          paddingHorizontal: 12,
-        }}
-        activeOpacity={1}
-        onPressIn={() => setAutoplay(false)}
-        onPressOut={() => setAutoplay(true)}
-        onPress={() => onPress(item)}>
+      style={{
+        width,
+        alignSelf: 'center',
+        justifyContent: 'center',
+        height: iscollection ? 110 : height1,
+        paddingHorizontal: 12,
+      }}
+      activeOpacity={1}
+      onPressIn={() => setAutoplay(false)}
+      onPressOut={() => setAutoplay(true)}
+      onPress={() => onPress(item)}>
         <Animated.Image
           style={[
             {
@@ -86,7 +86,7 @@ const BannerSlider = ({
             },
           ]}
           source={height1 == wp(60) ? {uri: item.image} : {uri: item.silderImage}}
-        />
+          />
       </TouchableOpacity>
     );
   };

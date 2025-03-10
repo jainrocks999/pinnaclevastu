@@ -270,7 +270,7 @@ const App = () => {
               }}>
                 <Text style={{ color: 'white', fontWeight: 'bold' }}>
                   {/* ❌ No Internet Connection. Please check your network. */}
-                 No Internet Connection. Please check your network.
+                  No Connection please check your internet connect.
                 </Text>
               </View>
             )}
