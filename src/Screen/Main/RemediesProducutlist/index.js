@@ -157,8 +157,8 @@ const RemediesProductList = ({route}) => {
         <View style={styles.textContainer}>
           <Text style={[styles.third, styles.titleText]}>
             {item?.node?.title
-              ? item?.node?.title.length > 30
-                ? `${item?.node?.title.substring(0, 30)}...`
+              ? item?.node?.title.length > 35
+                ? `${item?.node?.title.substring(0, 35)}...`
                 : item?.node.title
               : ' '}
           </Text>

@@ -133,6 +133,8 @@ export default StyleSheet.create({
     paddingVertical:6,
     paddingHorizontal:15,
     borderRadius: wp(3),
+    position:"absolute",
+    right:0
   },
   reviewText: {
     marginBottom: 5,
