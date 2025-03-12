@@ -439,9 +439,12 @@ export default StyleSheet.create({
   },
 
   subItemTitle: {
-    fontSize: fontSize.Sixteen,
+    fontSize: fontSize.Fourteen,
+    color: colors.cardcolor,
     fontFamily: 'Poppins-Regular',
-    color: colors.heading,
+    // fontSize: fontSize.Sixteen,
+    // fontFamily: 'Poppins-Regular',
+    // color: colors.heading,
   },
   subItemSubtitle: {
     fontSize: fontSize.Fourteen,

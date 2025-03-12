@@ -41,6 +41,7 @@ const RemediesProductList = ({route}) => {
   const [countdata, setCountdata] = useState(0);
   const placeholderText = 'Search';
   const [displayedText, setDisplayedText] = useState('');
+  const [displayedText1, setDisplayedText1] = useState('');
 
   useEffect(() => {
     let currentIndex = 0;
@@ -234,7 +235,7 @@ const RemediesProductList = ({route}) => {
       <View style={[styles.Scroll, {flexGrow: 1}]}>
         <View style={styles.searchContainer}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               hitSlop={{top: 10, left: 10, right: 10, bottom: 10}}>
               <SearchIcon width={wp(5)} height={wp(5)} />
             </TouchableOpacity>
@@ -245,13 +246,32 @@ const RemediesProductList = ({route}) => {
               placeholderTextColor={colors.searchBarTextColor}
               value={search}
               onChangeText={val => searchFilterFunction(val)}
-            />
+            /> */}
+
+
+             <TouchableOpacity
+                        onPress={() => navigation.navigate('Searchlist')}
+                        hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
+                        style={{flexDirection: 'row', alignItems: 'center'}}>
+                        <TouchableOpacity style={{marginBottom: wp(1)}}>
+                          {/* <Image source={require('../../../assets/image/SearchIcon.png')} /> */}
+                          <SearchIcon width={wp(5)} height={wp(5)} />
+                        </TouchableOpacity>
+                        <TextInput
+                          style={styles.searchInput}
+                          value={displayedText1}
+                          onChangeText={val => setDisplayedText1(val)}
+                          placeholder={displayedText}
+                          editable={false}
+                          placeholderTextColor={colors.searchBarTextColor}
+                        />
+                      </TouchableOpacity>
           </View>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.filterBtn}
             hitSlop={{top: 10, left: 10, right: 10, bottom: 10}}>
             <FilterIcon width={wp(5)} height={wp(5)} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
         <FlatList
           data={RemediesCategor1 || []}

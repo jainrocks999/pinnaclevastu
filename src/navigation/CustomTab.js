@@ -12,7 +12,6 @@ import {colors} from '../Component/colors';
 import {moderateScale} from '../Component/Meterscale';
 import TabBarButton from '../Component/TabBarbutton/TabBarButton';
 
-
 import Home from '../assets/svg/home.svg';
 import Chat from '../assets/svg/chat.svg';
 import Chat1 from '../assets/svg/chat1.svg';
@@ -23,36 +22,45 @@ import Group1 from '../assets/svg/Group1.svg';
 import Icon1 from '../assets/svg/Icon1.svg';
 import Icons from '../assets/svg/Icon.svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { widthPrecent } from '../Component/ResponsiveScreen/responsive';
+import {widthPrecent} from '../Component/ResponsiveScreen/responsive';
 
+// function shouldHideTabBar(route) {
+//   const focusedRouteName = getFocusedRouteNameFromRoute(route);
+// console.log('routeejjj',route.name,focusedRouteName);
 
+//   if (route.name === 'MyProfile') {
+//     if (!focusedRouteName) {
+//       return true;
+//     }
+//     if (
+//       // focusedRouteName === 'UserProfile' ||
+//       focusedRouteName === 'EditProfile' ||
+//       focusedRouteName === 'signupFranchise'
+//     ) {
+//       return true;
+//     }
+//   }
+
+//   return false;
+// }
 function shouldHideTabBar(route) {
   const focusedRouteName = getFocusedRouteNameFromRoute(route);
 
-
-  if (route.name === 'MyProfile') {
-    if (!focusedRouteName) {
-      return true; 
-    }
-    if (
-      focusedRouteName === 'UserProfile' ||
-      focusedRouteName === 'EditProfile' ||
-      focusedRouteName === 'signupFranchise'
-    ) {
-      return true; 
-    }
+  if (
+    focusedRouteName === 'EditProfile' ||
+    focusedRouteName === 'signupFranchise'
+  ) {
+    return true;
   }
 
   return false;
 }
-
 const TabBar = ({state, descriptors, navigation}) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const checkLoginStatus = async () => {
     try {
       const userStatus = await AsyncStorage.getItem('user_data');
-    
 
       if (userStatus) {
         setIsLoggedIn(true);
@@ -126,7 +134,6 @@ const TabBar = ({state, descriptors, navigation}) => {
   return (
     <View style={[styles.container]}>
       <View style={styles.tab}>
-     
         {state.routes.map((route, index) => {
           const isFocused = state.index === index;
 
@@ -145,7 +152,13 @@ const TabBar = ({state, descriptors, navigation}) => {
             // tabPositionX.value = withTiming(buttonWidth * state.index);
 
             if (!isFocused && !event.defaultPrevented) {
-              navigation.navigate(route.name=="MyProfile"?isLoggedIn?"MyProfile":"Login":route.name)
+              navigation.navigate(
+                route.name == 'MyProfile'
+                  ? isLoggedIn
+                    ? 'MyProfile'
+                    : 'Login'
+                  : route.name,
+              );
             }
           };
 

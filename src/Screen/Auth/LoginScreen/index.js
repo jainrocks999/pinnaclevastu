@@ -50,12 +50,25 @@ const LoginScreen = ({route, navigation}) => {
     }
   };
 
+  const scrollViewRef = useRef(null);
+
+  const handleFocus = event => {
+    event.persist(); 
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollToFocusedInput(event.target);
+    }
+  };
+
   return (
     <KeyboardAwareScrollView
-      extraScrollHeight={20}
-      enableOnAndroid={true}
-      keyboardShouldPersistTaps="handled"
-      contentContainerStyle={styles.scrollContainer}>
+    ref={scrollViewRef}
+    extraScrollHeight={100} // Adjust this value as needed
+    enableOnAndroid={true}
+    enableAutomaticScroll={true}
+    keyboardShouldPersistTaps="handled"
+    keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 50} // Adjust offset based on OS
+    contentContainerStyle={styles.scrollContainer}
+    showsVerticalScrollIndicator={false}>
       <ImageBackground
         style={styles.imgbcg}
         source={require('../../../assets/image/Group1.png')}>
@@ -75,6 +88,7 @@ const LoginScreen = ({route, navigation}) => {
               placeholderTextColor={colors.placeholder}
               keyboardType="phone-pad"
               maxLength={10}
+              onFocus={handleFocus}
               onChangeText={text => handleInputChange(text)}
             />
           </View>

@@ -228,12 +228,24 @@ export const modifyHomeObject = async (currentval, dispatch) => {
           const element = currentval[key];
           if (
             element.type === 'our-services' &&
-            Object.keys(element.blocks)?.length > 0
+            Object.keys(element.blocks)?.length > 0&& !element?.disabled
           ) {
             let data = [];
             let updatedData;
-            Object.values(element?.blocks)?.forEach(item => {
+
+            const filteredBlocks = Object.values(element.blocks)?.filter(item => !item.disabled);
+
+            filteredBlocks.forEach(item => {
               data.push(item?.settings);
+           
+
+
+            // Object.values(element?.blocks)?.forEach(item => {
+            //   data.push(item?.settings);
+
+          
+           
+
               updatedData = data?.map(item => {
                 const dynamicPart = item.icon?.split('/')?.pop();
                 const fileName = dynamicPart?.split('.')[0];
@@ -256,11 +268,13 @@ export const modifyHomeObject = async (currentval, dispatch) => {
             let updatedData;
             Object.values(element?.blocks)?.forEach(item => {
               data.push(item?.settings);
+              
               updatedData = data?.map(item => {
                 const dynamicPart = item.image?.split('/')?.pop();
                 const fileName = dynamicPart?.split('.')[0];
+                extension = dynamicPart?.split('.').pop(); 
 
-                const newMobileImage = `https://pinnaclevastu-in.myshopify.com/cdn/shop/files/${fileName}.png`;
+                const newMobileImage = `https://pinnaclevastu-in.myshopify.com/cdn/shop/files/${fileName}.${extension}`;
                 return {
                   ...item,
                   CardImage: newMobileImage,
@@ -551,7 +565,7 @@ export const fetchExtraCollectonHome = collectionHandle => {
           products(first: 10) {
             edges {
               node {
-               metafields(identifiers: [{ namespace: "reviews", key: "rating" }]) {
+               metafields(identifiers: [{ namespace: "reviews", key: "rating" },{namespace:"custom",key:"date"}]) {
                 key
                 value
             }

@@ -7,6 +7,8 @@ import {
   FlatList,
   ScrollView,
   Modal,
+  Share as SocialShare,
+  Linking,
 } from 'react-native';
 import styles from './styles';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
@@ -30,6 +32,7 @@ import Imagepath from '../../../Component/Imagepath';
 import {clearUserData} from '../../../Redux/Slice/Authslice';
 import constants from '../../../Redux/constant/constants';
 import axios from 'axios';
+import {orderlistapi} from '../../../Redux/Slice/orderSclice';
 
 const MyProfile = () => {
   const navigation = useNavigation();
@@ -40,6 +43,8 @@ const MyProfile = () => {
   const userDetail = useSelector(state => state?.Auth?.userData);
   const {userDetails} = useSelector(state => state.Login);
   const isUserLoading = useSelector(state => state?.Auth?.loading);
+  const product = useSelector(state => state?.order?.orderList1);
+
   const focus = useIsFocused();
 
   const [count, setCount] = useState('');
@@ -52,6 +57,7 @@ const MyProfile = () => {
 
         if (userStatus) {
           apiCall(userData);
+          apiCall1(userData);
         }
       } catch (error) {
         console.log('Error checking login status:', error);
@@ -59,6 +65,17 @@ const MyProfile = () => {
     };
     checkLoginStatus();
   }, [focus]);
+
+  const apiCall1 = async userData => {
+    await dispatch(
+      orderlistapi({
+        id: userData?.user_id,
+        token: userData?.token,
+        url: 'shopify-customer-order-list',
+        accessToken: JSON.parse(userData).shopify_access_token,
+      }),
+    );
+  };
 
   const apiCall = async userData => {
     try {
@@ -97,6 +114,19 @@ const MyProfile = () => {
     } catch (error) {
       setIsLoading(false);
       console.log('Error in logout', error);
+    }
+  };
+
+  const share = async () => {
+    const productUrl = `https://pinnaclevastu-in/products`; // Product URL to share
+    const productDescription = `Check out this amazing product!`;
+    try {
+      await SocialShare.share({
+        title:'share App',
+        message: `${productDescription} ${productUrl}`,
+      });
+    } catch (error) {
+      console.error("Couldn't share to Instagram", error);
     }
   };
 
@@ -143,10 +173,17 @@ const MyProfile = () => {
     <TouchableOpacity
       hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
       style={styles.actionItem}
-      onPress={() =>
-        item?.title.includes('Franchise')
-          ? navigation.navigate('signupFranchise')
-          : null
+      onPress={() => {
+        if (item?.title.includes('Franchise')) {
+          navigation.navigate('signupFranchise');
+        } else if (item?.title.includes('Share')) {
+          share();
+        } else if (item?.title.includes('Contact')) {
+          Linking.openURL(`tel:+919056611064`).catch(err =>
+            console.error('Error opening dialer:', err)
+          );
+        }
+      }
       }>
       <View style={styles.actionContent}>
         {/* <Image source={item.image} style={styles.actionIcon} /> */}
@@ -222,7 +259,10 @@ const MyProfile = () => {
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.scrollContent}>
+      <ScrollView contentContainerStyle={styles.scrollContent}
+      nestedScrollEnabled={true}  
+      showsVerticalScrollIndicator={false}  
+      >
         <View style={styles.statsSection}>
           <TouchableOpacity
             onPress={() =>
@@ -233,7 +273,7 @@ const MyProfile = () => {
             }
             hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
             style={styles.statItem}>
-            <Text style={styles.statValue}>25</Text>
+            <Text style={styles.statValue}>{''}</Text>
             <View style={styles.statLabelRow}>
               <Text style={styles.statLabel}>{'My Orders >'}</Text>
             </View>

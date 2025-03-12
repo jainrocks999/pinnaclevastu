@@ -9,7 +9,7 @@ import {
   getProductsCount,
 } from '../../common/queries';
 import Toast from 'react-native-simple-toast';
-import { getSimilarProductMetafieldValue } from '../Api';
+import { getProductMetafieldsApiCall, getSimilarProductMetafieldValue } from '../Api';
 
 const initialState = {
   products: [],
@@ -192,6 +192,12 @@ export const fetchCollection = (
           const productlist = await Promise.all(
             response?.data?.data?.collection?.products?.edges.map(async(product) =>{
               const review = await getSimilarProductMetafieldValue(product.node.id);
+                  const data  =      await getProductMetafieldsApiCall(product.node.id)
+                  const dateMetafield = data?.metafields?.find(
+                    (item) => item.namespace === "custom" && item.key === "date"
+                  );
+                 
+                  
               let parsedReview = null;
               
               if (review && review.value && review.value.trim() !== "") {
@@ -209,6 +215,7 @@ export const fetchCollection = (
                 node: {
                   ...product.node,
                   review: parsedReview,
+                  date:dateMetafield,
                 },
               };
               

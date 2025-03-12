@@ -1,7 +1,7 @@
 import {Dimensions, StyleSheet} from 'react-native';
 import {fontSize} from '../../../Component/fontsize';
 import {colors} from '../../../Component/colors';
-import {widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
+import {heightPercent, widthPrecent as wp} from '../../../Component/ResponsiveScreen/responsive';
 
 export default StyleSheet.create({
   container: {
@@ -57,8 +57,8 @@ export default StyleSheet.create({
     margin:"auto"
   },
   scrollContent: {
-    flex: 1,
-    paddingBottom: '15%',
+    flexGrow: 1,
+    paddingBottom: heightPercent(10),
   },
   profileSection: {
     marginTop: wp(17),

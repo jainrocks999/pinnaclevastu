@@ -42,7 +42,8 @@ const Remedies12SecondComponent = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const cartisLoading = useSelector(state => state.cart?.loading);
-  const addressIsLoading = useSelector(state => state?.Login?.isLoadingUser);
+  
+   
   // const isLoading = useSelector(state => state.address?.loading);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [itemToRemove, setItemToRemove] = useState(null);
@@ -327,7 +328,7 @@ const Remedies12SecondComponent = () => {
           <Text style={styles.logoText}>My Cart</Text>
         </View>
       </View>
-      {cartisLoading || addressIsLoading ? (
+      {cartisLoading? (
         <Loader />
       ) : localCartDataList.length > 0 ? (
         <>

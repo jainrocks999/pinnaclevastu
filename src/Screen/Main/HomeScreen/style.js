@@ -89,8 +89,8 @@ export default StyleSheet.create({
     gap: wp(0.8),
   },
   cardContainer: {
-    height: wp(22),
-    width: wp(30),
+    height: wp(24),
+    width: wp(46.3),
     margin: wp(1.2),
     backgroundColor: colors.white,
     borderRadius: 15,
@@ -267,8 +267,8 @@ export default StyleSheet.create({
     overflow: 'hidden',
   },
   cardInfo: {
-    padding: 15,
-    gap: 6,
+    paddingHorizontal: 15,
+    gap: 3,
   },
   DateText: {
     color: colors.Headertext,
@@ -469,7 +469,7 @@ export default StyleSheet.create({
   },
   addToCartBtn: {
     position: 'absolute',
-    top: 30,
+    top: 16,
     right: 10,
     marginVertical: 5,
     backgroundColor: colors.orange,
@@ -491,7 +491,7 @@ export default StyleSheet.create({
   },
   imgContainer: {
     backgroundColor: '#f3f3f3',
-    height: hp(35),
+    height: hp(30),
     margin: 10,
     borderRadius: 10,
   },

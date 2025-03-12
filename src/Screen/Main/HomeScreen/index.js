@@ -172,15 +172,6 @@ const HomeScreen = () => {
     newArray.push(...item.slider);
   });
 
-  const imagesilder11 = [];
-  (Homebanner?.offer_slider?.[0]?.slider_items || []).forEach(item => {
-    const updatedItem = {
-      ...item,
-      image: `${Imagepath.Path}${item.image}`,
-    };
-
-    imagesilder11.push(updatedItem);
-  });
   const focus = useIsFocused();
 
   useEffect(() => {
@@ -351,7 +342,7 @@ const HomeScreen = () => {
             {backgroundColor: item?.background_color},
           ]}
           onPress={() => handleItemClick(index, item.text)}>
-          <SvgUri width="30%" height="30%" uri={item?.CardImage} />
+          <SvgUri width="35%" height="35%" uri={item?.CardImage} />
           <Text style={styles.text}>{item.text}</Text>
         </TouchableOpacity>
       </Animated.View>
@@ -373,10 +364,18 @@ const HomeScreen = () => {
             styles.smallCardContainer,
             {backgroundColor: item?.card_bg_color},
           ]}>
-          <Image
-            source={{uri: `${item?.CardImage}`}}
-            style={[styles.itemImg, {resizeMode: 'contain'}]}
-          />
+
+{item?.CardImage?.endsWith('.svg') ? (
+                    <SvgUri width={22} height={22} uri={item?.CardImage} />
+                  ) : (
+                    <Image
+                    source={{uri: `${item?.CardImage}`}}
+                    style={[styles.itemImg, {resizeMode: 'contain'}]}
+                  />
+                  )}
+
+
+          
           <Text style={[styles.smallCardtext, {color: item?.text_color}]}>
             {item.text}
           </Text>
@@ -534,7 +533,7 @@ const HomeScreen = () => {
             width={'100%'}
             height={'100%'}
             resizeMode="contain"
-            style={[styles.cardImg, {margin: 'auto'}]}
+            style={[styles.cardImg, {margin: 'auto',borderRadius:10}]}
           />
         </View>
         <View style={styles.cardInfo}>
@@ -542,15 +541,17 @@ const HomeScreen = () => {
 
           <View style={{flexDirection: 'row', gap: 10}}>
             <Text style={styles.prodPriceText}>
-              {' '}
               {`₹ ${item?.variants?.edges?.[0].node?.price.amount}`}
             </Text>
-            {item?.variants?.edges?.[0].node?.compareAtPrice ? (
-              <Text
-                style={
-                  styles.prodCrossPriceText
-                }>{`₹ ${item?.variants?.edges?.[0].node?.compareAtPrice?.amount}`}</Text>
-            ) : null}
+
+            {item?.variants?.edges?.[0].node?.compareAtPrice &&
+              parseFloat(
+                item?.variants?.edges?.[0].node?.compareAtPrice.amount,
+              ) > parseFloat(item?.variants?.edges?.[0].node?.price.amount) && (
+                <Text style={styles.prodCrossPriceText}>
+                  {`₹ ${item?.variants?.edges?.[0].node?.compareAtPrice.amount}`}
+                </Text>
+              )}
           </View>
           <View style={styles.starContainer}>
             {rating?.value && (
@@ -561,7 +562,7 @@ const HomeScreen = () => {
                   ratingCount={rating?.scale_max || 5}
                   imageSize={13}
                   startingValue={rating?.value}
-                  ratingColor="#F4C76C"
+                  ratingColor={colors?.Headertext}
                   readonly
                   ratingBackgroundColor={colors.lightGrey}
                 />
@@ -584,17 +585,20 @@ const HomeScreen = () => {
               source={require('../../../assets/image/bagSmall.png')}
               style={styles.addCartIcon}
             /> */}
-            <AddtoCartIcon
-              height={wp(5)}
-              width={wp(5)}
-            />
+            <AddtoCartIcon height={wp(5)} width={wp(5)} />
           </TouchableOpacity>
         </View>
         {item?.variants?.edges?.[0].node?.compareAtPrice?.amount &&
-          parseInt(item?.variants?.edges?.[0].node?.compareAtPrice.amount) >
-            0 && (
+          parseFloat(item?.variants?.edges?.[0].node?.compareAtPrice.amount) >
+            parseFloat(item?.variants?.edges?.[0].node?.price.amount) &&
+          ((parseFloat(item?.variants?.edges?.[0].node?.compareAtPrice.amount) -
+            parseFloat(item?.variants?.edges?.[0].node?.price.amount)) /
+            parseFloat(
+              item?.variants?.edges?.[0].node?.compareAtPrice.amount,
+            )) *
+            100 >=
+            1 && (
             <Text style={styles.discountTag}>
-              {' '}
               {(
                 ((parseFloat(
                   item?.variants?.edges?.[0].node?.compareAtPrice?.amount,
@@ -634,6 +638,30 @@ const HomeScreen = () => {
     );
   };
 
+  const CousrseDate = dateString => {
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+
+    const date = new Date(dateString); // Convert string to Date object
+    const day = date.getDate().toString().padStart(2, '0'); // Ensure two-digit day
+    const month = months[date.getMonth()]; // Get short month name
+    const year = date.getFullYear(); // Get full year
+
+    return `${day} ${month} ${year}`;
+  };
+
   const renderCard = ({item}) => {
     return (
       <TouchableOpacity
@@ -659,10 +687,11 @@ const HomeScreen = () => {
           onLoad={e => handleImageLoad(e, item.id, wp(65))}
           resizeMode="cover"
         />
-
         <View style={styles.cardInfo}>
           {isLiveCourse ? (
-            <Text style={styles.DateText}>{item?.start_date}</Text>
+            <Text style={styles.DateText}>
+              {CousrseDate(item?.metafields[1]?.value)}
+            </Text>
           ) : null}
           <Text style={styles.titleText}>
             {' '}
@@ -801,7 +830,7 @@ const HomeScreen = () => {
           renderItem={renderItem}
           scrollEnabled={false}
           keyExtractor={(item, index) => index.toString()}
-          numColumns={3}
+          numColumns={2}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContainer}
         />
@@ -1676,14 +1705,14 @@ const HomeScreen = () => {
               {paddingHorizontal: 10, marginBottom: wp(8)},
             ]}
             renderItem={({item}) => (
-              <TouchableOpacity  onPress={() =>
-                navigation.navigate('Home', {
-                  screen: 'BlogDetail',
-                  params: {item: item},
-                })
-              }
-              
-              style={styles.blogCard}>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate('Home', {
+                    screen: 'BlogDetail',
+                    params: {item: item},
+                  })
+                }
+                style={styles.blogCard}>
                 <Image
                   source={
                     item?.node?.image?.url
@@ -1719,11 +1748,7 @@ const HomeScreen = () => {
                       : ' '}
                   </Text>
 
-                  <Text
-                   
-                    style={styles.blogCardBtnText}>
-                    {'View Details >'}
-                  </Text>
+                  <Text style={styles.blogCardBtnText}>{'View Details >'}</Text>
                 </View>
               </TouchableOpacity>
             )}
