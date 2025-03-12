@@ -11,7 +11,6 @@ import {
   Easing,
   FlatList,
   ImageBackground,
-  Vibration,
   BackHandler,
 } from 'react-native';
 import styles from './styles';
@@ -30,6 +29,7 @@ import {useSelector} from 'react-redux';
 
 const ResidentalScreen = ({navigation}) => {
   const userDetail = useSelector(state => state?.Auth?.userData);
+  const {userDetails} = useSelector(state => state.Login);
   const data = useSelector(state => state?.consultation?.ConsultationDetail);
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
   const [services, setServices] = useState([]);
@@ -106,12 +106,23 @@ const ResidentalScreen = ({navigation}) => {
   };
 
   const [formData, setFormData] = useState({
-    name: userDetail?.name || '',
-    email: userDetail?.email || '',
-    mobile: userDetail?.phone || '',
-    cityPincode: userDetail?.city_pincode?.toString() || '',
-    gender: userDetail?.gender || '',
-    birthPlace: userDetail?.place_of_birth || '',
+    name: userDetails?.displayName || '',
+    email: userDetails?.email || '',
+    mobile: userDetails?.phone || '',
+    cityPincode:
+      userDetails?.metafields?.edges?.find(
+        item => item?.node?.key === 'current_city_pincode',
+      )?.node?.value || '',
+    gender:
+      JSON.parse(
+        userDetails?.metafields?.edges?.find(
+          item => item?.node?.key === 'gender',
+        )?.node?.value,
+      )[0] || '',
+    birthPlace:
+      userDetails?.metafields?.edges?.find(
+        item => item?.node?.key === 'place_of_birth',
+      )?.node?.value || '',
     additionalInfo: '',
   });
 

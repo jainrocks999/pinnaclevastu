@@ -327,7 +327,7 @@ const Remedies12SecondComponent = () => {
           <Text style={styles.logoText}>My Cart</Text>
         </View>
       </View>
-      {cartisLoading || addressIsLoading ? (
+      {cartisLoading ? (
         <Loader />
       ) : localCartDataList.length > 0 ? (
         <>
