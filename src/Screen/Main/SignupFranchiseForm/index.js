@@ -44,11 +44,12 @@ const SignUpFranchise = () => {
   const [servicesFields, setServicesFields] = useState([
     {serviceId: '', charges: ''},
   ]);
-
   const [shakeAnimationServices] = useState(
-    servicesFields.map(() => new Animated.Value(0)),
+    servicesFields.map(() => ({
+      serviceId: new Animated.Value(0),
+      charges: new Animated.Value(0),
+    })),
   );
-
   const buttonAnimatedValue = useRef(new Animated.Value(1)).current;
 
   const [isuserselectimage, setIsuserselectimage] = useState(false);
@@ -150,39 +151,28 @@ const SignUpFranchise = () => {
   };
 
   const validateInputs = () => {
-    // if (
-    //   servicesFields[0].serviceId === '' ||
-    //   servicesFields[0].charges === '' ||
-    //   servicesFields[0].charges <= 0
-    // ) {
-    //   shake(0);
-    //   return false;
-    // }
+    let isValid = true;
+
     if (servicesFields[0].serviceId === '') {
-      shake(0);
-      setValidationError({...validationError, services: true});
-      return false;
+      shake2(0, 'serviceId');
+      setValidationError(prevState => ({
+        ...prevState,
+        services: true,
+      }));
+      isValid = false;
+      return isValid;
     }
+
     if (servicesFields[0].charges === '' || servicesFields[0].charges <= 0) {
-      shake(0);
-      setValidationError({...validationError, servicesCharges: true});
-      return false;
+      shake2(0, 'charges');
+      setValidationError(prevState => ({
+        ...prevState,
+        servicesCharges: true,
+      }));
+      isValid = false;
+      return isValid;
     }
-    // if (
-    //   servicesFields[0].serviceId !== '' ||
-    //   servicesFields[0].charges !== ''
-    // ) {
-    //   for (let i = 1; i < servicesFields.length; i++) {
-    //     if (
-    //       servicesFields[i].serviceId !== '' ||
-    //       servicesFields[i].charges !== ''
-    //     ) {
-    //       shake(i);
-    //       return false;
-    //     }
-    //   }
-    // }
-    return true;
+    return isValid;
   };
 
   const requestCameraPermission = async () => {
@@ -278,34 +268,65 @@ const SignUpFranchise = () => {
     Vibration.vibrate(100);
     setValidationError({...validationError, [field]: true});
     Animated.sequence([
-      Animated.timing(shakeAnimation[field] || shakeAnimationServices[field], {
+      Animated.timing(shakeAnimation[field], {
         toValue: 5,
         duration: 100,
         useNativeDriver: true,
       }),
-      Animated.timing(shakeAnimation[field] || shakeAnimationServices[field], {
+      Animated.timing(shakeAnimation[field], {
         toValue: -5,
         duration: 100,
         useNativeDriver: true,
       }),
-      Animated.timing(shakeAnimation[field] || shakeAnimationServices[field], {
+      Animated.timing(shakeAnimation[field], {
         toValue: 5,
         duration: 100,
         useNativeDriver: true,
       }),
-      Animated.timing(shakeAnimation[field] || shakeAnimationServices[field], {
+      Animated.timing(shakeAnimation[field], {
         toValue: -5,
         duration: 100,
         useNativeDriver: true,
       }),
-      Animated.timing(shakeAnimation[field] || shakeAnimationServices[field], {
+      Animated.timing(shakeAnimation[field], {
         toValue: 0,
         duration: 100,
         useNativeDriver: true,
       }),
     ]).start(() => {
-      !shakeAnimationServices[field] && scrollToField(field); // Scroll to the field after shake animation completes
+      scrollToField(field);
     });
+  };
+  const shake2 = (index, field) => {
+    Vibration.vibrate(100);
+    setValidationError({...validationError, [field]: true});
+    Animated.sequence([
+      Animated.timing(shakeAnimationServices[index][field], {
+        toValue: 5,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnimationServices[index][field], {
+        toValue: -5,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnimationServices[index][field], {
+        toValue: 5,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnimationServices[index][field], {
+        toValue: -5,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnimationServices[index][field], {
+        toValue: 0,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start();
   };
 
   const scrollToField = fieldName => {
@@ -398,7 +419,6 @@ const SignUpFranchise = () => {
       scrollToField('language');
       return;
     } else if (!validateInputs()) {
-      console.log(validateInputs(), 'Venom');
       return;
     } else if (formData.country === '') {
       shake('country');
@@ -753,141 +773,122 @@ const SignUpFranchise = () => {
             )}
           </View>
 
-          <View style={{flexDirection: 'row'}}>
-            <View style={[styles.inputmain, {flex: 1}]}>
-              <Text style={styles.title2}>Experience in Field*</Text>
-              <View
-                style={[
-                  styles.input,
-                  styles.inputShadow,
-                  validationError.fieldOfExp && {borderColor: 'red'},
-                ]}>
-                <Animated.View
-                  style={[
-                    {transform: [{translateX: shakeAnimation.fieldOfExp}]},
-                  ]}>
-                  <TextInput
-                    style={styles.inputText}
-                    placeholder="Servicename"
-                    placeholderTextColor={colors.placeholder}
-                    value={formData.fieldOfExp}
-                    onChangeText={text => handleInputChange('fieldOfExp', text)}
-                  />
-                </Animated.View>
-              </View>
-            </View>
-
-            <View style={[styles.inputmain, {flex: 1}]}>
-              <Text style={styles.title2}>Year of Experience*</Text>
-              <View
-                style={[
-                  styles.input,
-                  styles.inputShadow,
-                  validationError.yearOfExp && {borderColor: 'red'},
-                ]}>
-                <Animated.View
-                  style={[
-                    {transform: [{translateX: shakeAnimation.yearOfExp}]},
-                  ]}>
-                  <TextInput
-                    style={styles.inputText}
-                    keyboardType="numeric"
-                    placeholder="year"
-                    placeholderTextColor={colors.placeholder}
-                    value={formData.yearOfExp}
-                    onChangeText={text => handleInputChange('yearOfExp', text)}
-                  />
-                </Animated.View>
-              </View>
-            </View>
-          </View>
-          {validationError.fieldOfExp && (
-            <Text
+          {/* <View style={{flexDirection: 'row'}}> */}
+          <View style={[styles.inputmain, {flex: 1}]}>
+            <Text style={styles.title2}>Experience in Field*</Text>
+            <View
               style={[
-                styles.errorText,
-                {paddingHorizontal: 15, marginTop: -5},
+                styles.input,
+                styles.inputShadow,
+                validationError.fieldOfExp && {borderColor: 'red'},
               ]}>
-              Please enter a valid service name that you have experience in.
-            </Text>
-          )}
-          {validationError.yearOfExp && (
-            <Text
-              style={[
-                styles.errorText,
-                {paddingHorizontal: 15, marginTop: -5},
-              ]}>
-              Please enter a valid year of experience that you have.
-            </Text>
-          )}
-
-          <View style={{flexDirection: 'row'}}>
-            <View style={[styles.inputmain, {flex: 1}]}>
-              <Text style={styles.title2}>Specialization*</Text>
-              <View
+              <Animated.View
                 style={[
-                  styles.input,
-                  styles.inputShadow,
-                  validationError.specialization && {borderColor: 'red'},
+                  {transform: [{translateX: shakeAnimation.fieldOfExp}]},
                 ]}>
-                <Animated.View
-                  style={[
-                    {transform: [{translateX: shakeAnimation.specialization}]},
-                  ]}>
-                  <TextInput
-                    style={styles.inputText}
-                    placeholder="Specialization name"
-                    placeholderTextColor={colors.placeholder}
-                    value={formData.specialization}
-                    onChangeText={text =>
-                      handleInputChange('specialization', text)
-                    }
-                  />
-                </Animated.View>
-              </View>
+                <TextInput
+                  style={styles.inputText}
+                  placeholder="Servicename"
+                  placeholderTextColor={colors.placeholder}
+                  value={formData.fieldOfExp}
+                  onChangeText={text => handleInputChange('fieldOfExp', text)}
+                />
+              </Animated.View>
             </View>
-
-            <View style={[styles.inputmain, {flex: 1}]}>
-              <Text style={styles.title2}>Charges*</Text>
-              <View
-                style={[
-                  styles.input,
-                  styles.inputShadow,
-                  validationError.charges && {borderColor: 'red'},
-                ]}>
-                <Animated.View
-                  style={[{transform: [{translateX: shakeAnimation.charges}]}]}>
-                  <TextInput
-                    style={styles.inputText}
-                    placeholder="₹ charges"
-                    placeholderTextColor={colors.placeholder}
-                    keyboardType="numeric"
-                    maxLength={6}
-                    value={formData.charges}
-                    onChangeText={text => handleInputChange('charges', text)}
-                  />
-                </Animated.View>
-              </View>
-            </View>
+            {validationError.fieldOfExp && (
+              <Text style={styles.errorText}>
+                Please enter a valid service name that you have experience in.
+              </Text>
+            )}
           </View>
 
-          {validationError.specialization && (
-            <Text
+          <View style={[styles.inputmain, {flex: 1}]}>
+            <Text style={styles.title2}>Year of Experience*</Text>
+            <View
               style={[
-                styles.errorText,
-                {paddingHorizontal: 15, marginTop: -5},
+                styles.input,
+                styles.inputShadow,
+                validationError.yearOfExp && {borderColor: 'red'},
               ]}>
-              Please enter a valid service name that you have specialized in.
-            </Text>
-          )}
-          {validationError.charges && (
-            <Text
+              <Animated.View
+                style={[{transform: [{translateX: shakeAnimation.yearOfExp}]}]}>
+                <TextInput
+                  style={styles.inputText}
+                  keyboardType="numeric"
+                  placeholder="year"
+                  placeholderTextColor={colors.placeholder}
+                  value={formData.yearOfExp}
+                  onChangeText={text => handleInputChange('yearOfExp', text)}
+                />
+              </Animated.View>
+            </View>
+            {validationError.yearOfExp && (
+              <Text style={styles.errorText}>
+                Please enter a valid year of experience that you have.
+              </Text>
+            )}
+          </View>
+          {/* </View> */}
+
+          {/* <View style={{flexDirection: 'row'}}> */}
+          <View style={[styles.inputmain]}>
+            <Text style={styles.title2}>Specialization*</Text>
+            <View
               style={[
-                styles.errorText,
-                {paddingHorizontal: 15, marginTop: -5},
+                styles.input,
+                styles.inputShadow,
+                validationError.specialization && {borderColor: 'red'},
               ]}>
-              Please enter a valid service's charges.
-            </Text>
-          )}
+              <Animated.View
+                style={[
+                  {transform: [{translateX: shakeAnimation.specialization}]},
+                ]}>
+                <TextInput
+                  style={styles.inputText}
+                  placeholder="Specialization name"
+                  placeholderTextColor={colors.placeholder}
+                  value={formData.specialization}
+                  onChangeText={text =>
+                    handleInputChange('specialization', text)
+                  }
+                />
+              </Animated.View>
+            </View>
+            {validationError.specialization && (
+              <Text style={styles.errorText}>
+                Please enter a valid service name that you have specialized in.
+              </Text>
+            )}
+          </View>
+
+          <View style={[styles.inputmain]}>
+            <Text style={styles.title2}>Charges*</Text>
+            <View
+              style={[
+                styles.input,
+                styles.inputShadow,
+                validationError.charges && {borderColor: 'red'},
+              ]}>
+              <Animated.View
+                style={[{transform: [{translateX: shakeAnimation.charges}]}]}>
+                <TextInput
+                  style={styles.inputText}
+                  placeholder="₹ charges"
+                  placeholderTextColor={colors.placeholder}
+                  keyboardType="numeric"
+                  maxLength={6}
+                  value={formData.charges}
+                  onChangeText={text => handleInputChange('charges', text)}
+                />
+              </Animated.View>
+            </View>
+            {validationError.charges && (
+              <Text style={styles.errorText}>
+                Please enter a valid service's charges.
+              </Text>
+            )}
+          </View>
+          {/* </View> */}
 
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Language*</Text>
@@ -957,18 +958,18 @@ const SignUpFranchise = () => {
             </View>
 
             {servicesFields.map((input, index) => (
-              <Animated.View
-                key={index}
-                style={[
-                  {transform: [{translateX: shakeAnimationServices[index]}]},
-                ]}>
-                <View
-                  style={{flexDirection: 'row', gap: 10, marginVertical: 10}}>
+              <View key={`service-${index}`}>
+                <Animated.View
+                  style={{
+                    transform: [
+                      {translateX: shakeAnimationServices[0].serviceId},
+                    ],
+                  }}>
                   <Dropdown
                     style={[
                       styles.input,
                       styles.inputShadow,
-                      {flex: 1},
+                      {marginBottom: 10},
                       validationError.services &&
                         index == 0 && {borderColor: 'red'},
                     ]}
@@ -1002,13 +1003,22 @@ const SignUpFranchise = () => {
                       />
                     )}
                   />
+                </Animated.View>
+
+                <Animated.View
+                  style={{
+                    transform: [
+                      {translateX: shakeAnimationServices[0].charges},
+                    ],
+                  }}>
                   <View
                     style={[
                       styles.input,
                       styles.inputShadow,
-                      {flex: 1},
-                      validationError.servicesCharges &&
-                        index == 0 && {borderColor: 'red'},
+                      {flex: 1, marginBottom: 10},
+                      validationError.servicesCharges && index == 0
+                        ? {borderColor: 'red'}
+                        : {},
                     ]}>
                     <TextInput
                       style={styles.inputText}
@@ -1016,17 +1026,17 @@ const SignUpFranchise = () => {
                       placeholderTextColor={colors.placeholder}
                       keyboardType="numeric"
                       value={input.charges}
-                      onChangeText={text => (
-                        handleExtraInputChange(index, 'charges', text),
+                      onChangeText={text => {
+                        handleExtraInputChange(index, 'charges', text);
                         setValidationError({
                           ...validationError,
                           servicesCharges: false,
-                        })
-                      )}
+                        });
+                      }}
                     />
                   </View>
-                </View>
-              </Animated.View>
+                </Animated.View>
+              </View>
             ))}
           </View>
           {validationError.services && (
@@ -1047,172 +1057,161 @@ const SignUpFranchise = () => {
               Please enter a valid service's charges.
             </Text>
           )}
-          <View style={{flexDirection: 'row'}}>
-            <View style={[styles.inputmain, {flex: 1}]}>
-              <Text style={styles.title2}>Country*</Text>
-              <Animated.View
-                style={[{transform: [{translateX: shakeAnimation.country}]}]}>
-                <Dropdown
-                  style={[
-                    styles.input,
-                    styles.inputShadow,
-                    validationError.country && {borderColor: 'red'},
-                  ]}
-                  data={countryOptions}
-                  labelField="name"
-                  valueField="id"
-                  placeholder={'Country'}
-                  placeholderStyle={[
-                    styles.inputText,
-                    {color: colors.placeholder},
-                  ]}
-                  search
-                  inputSearchStyle={styles.inputSearchStyle}
-                  iconStyle={styles.iconStyle}
-                  searchPlaceholder="Search..."
-                  selectedTextStyle={styles.selectedText}
-                  itemTextStyle={styles.inputText}
-                  value={formData.country}
-                  onChange={text => handleInputChange('country', text.id)}
-                  renderRightIcon={() => (
-                    <DownarrowIcon
-                    width={wp(4)}
-                    height={wp(3)}
-                    style={{marginRight: 5}}
-                  />
-                  )}
-                />
-              </Animated.View>
-            </View>
 
-            <View style={[styles.inputmain, {flex: 1}]}>
-              <Text style={styles.title2}>State*</Text>
-              <Animated.View
-                style={[{transform: [{translateX: shakeAnimation.stateName}]}]}>
-                <Dropdown
-                  style={[
-                    styles.input,
-                    styles.inputShadow,
-                    validationError.stateName && {borderColor: 'red'},
-                  ]}
-                  data={stateOptions}
-                  labelField="name"
-                  valueField="id"
-                  placeholder="state"
-                  placeholderStyle={[
-                    styles.inputText,
-                    {color: colors.placeholder},
-                  ]}
-                  search
-                  inputSearchStyle={styles.inputSearchStyle}
-                  iconStyle={styles.iconStyle}
-                  searchPlaceholder="Search..."
-                  selectedTextStyle={styles.selectedText}
-                  itemTextStyle={styles.inputText}
-                  value={formData.stateName}
-                  onChange={text => handleInputChange('stateName', text.id)}
-                  renderRightIcon={() => (
-                    <DownarrowIcon
-                    width={wp(4)}
-                    height={wp(3)}
-                    style={{marginRight: 5}}
-                  />
-                  )}
-                />
-              </Animated.View>
-            </View>
-          </View>
-
-          {validationError.country && (
-            <Text
-              style={[styles.errorText, {paddingHorizontal: 15, marginTop: 0}]}>
-              Please select your country.
-            </Text>
-          )}
-          {validationError.stateName && (
-            <Text
-              style={[styles.errorText, {paddingHorizontal: 15, marginTop: 0}]}>
-              Please select your state.
-            </Text>
-          )}
-
-          <View style={{flexDirection: 'row'}}>
-            <View style={[styles.inputmain, {flex: 1}]}>
-              <Text style={styles.title2}>City*</Text>
-              <Animated.View
-                style={[{transform: [{translateX: shakeAnimation.city}]}]}>
-                <Dropdown
-                  style={[
-                    styles.input,
-                    styles.inputShadow,
-                    validationError.city && {borderColor: 'red'},
-                  ]}
-                  data={cityOptions}
-                  labelField="name"
-                  valueField="id"
-                  placeholder="City"
-                  placeholderStyle={[
-                    styles.inputText,
-                    {color: colors.placeholder},
-                  ]}
-                  search
-                  inputSearchStyle={styles.inputSearchStyle}
-                  iconStyle={styles.iconStyle}
-                  searchPlaceholder="Search..."
-                  selectedTextStyle={styles.selectedText}
-                  itemTextStyle={styles.inputText}
-                  value={formData.city}
-                  onChange={text => handleInputChange('city', text.id)}
-                  renderRightIcon={() => (
-                    <DownarrowIcon
-                    width={wp(4)}
-                    height={wp(3)}
-                    style={{marginRight: 5}}
-                  />
-                  )}
-                />
-              </Animated.View>
-            </View>
-
-            <View style={[styles.inputmain, {flex: 1}]}>
-              <Text style={styles.title2}>City Pincode*</Text>
-              <View
+          {/* <View style={{flexDirection: 'row'}}> */}
+          <View style={styles.inputmain}>
+            <Text style={styles.title2}>Country*</Text>
+            <Animated.View
+              style={[{transform: [{translateX: shakeAnimation.country}]}]}>
+              <Dropdown
                 style={[
                   styles.input,
                   styles.inputShadow,
-                  validationError.cityPincode && {borderColor: 'red'},
-                ]}>
-                <Animated.View
-                  style={[
-                    {transform: [{translateX: shakeAnimation.cityPincode}]},
-                  ]}>
-                  <TextInput
-                    style={styles.inputText}
-                    placeholder="City Pincode"
-                    placeholderTextColor={colors.placeholder}
-                    keyboardType="numeric"
-                    maxLength={6}
-                    value={formData.cityPincode}
-                    onChangeText={text =>
-                      handleInputChange('cityPincode', text)
-                    }
+                  validationError.country && {borderColor: 'red'},
+                ]}
+                data={countryOptions}
+                labelField="name"
+                valueField="id"
+                placeholder={'Country'}
+                placeholderStyle={[
+                  styles.inputText,
+                  {color: colors.placeholder},
+                ]}
+                search
+                inputSearchStyle={styles.inputSearchStyle}
+                iconStyle={styles.iconStyle}
+                searchPlaceholder="Search..."
+                selectedTextStyle={styles.selectedText}
+                itemTextStyle={styles.inputText}
+                value={formData.country}
+                onChange={text => handleInputChange('country', text.id)}
+                renderRightIcon={() => (
+                  <DownarrowIcon
+                    width={wp(4)}
+                    height={wp(3)}
+                    style={{marginRight: 5}}
                   />
-                </Animated.View>
-              </View>
-            </View>
+                )}
+              />
+            </Animated.View>
+            {validationError.country && (
+              <Text style={styles.errorText}>Please select your country.</Text>
+            )}
           </View>
-          {validationError.city && (
-            <Text
-              style={[styles.errorText, {paddingHorizontal: 15, marginTop: 0}]}>
-              Please select your city.
-            </Text>
-          )}
-          {validationError.cityPincode && (
-            <Text
-              style={[styles.errorText, {paddingHorizontal: 15, marginTop: 0}]}>
-              Please enter your valid city pincode.
-            </Text>
-          )}
+
+          <View style={[styles.inputmain, {flex: 1}]}>
+            <Text style={styles.title2}>State*</Text>
+            <Animated.View
+              style={[{transform: [{translateX: shakeAnimation.stateName}]}]}>
+              <Dropdown
+                style={[
+                  styles.input,
+                  styles.inputShadow,
+                  validationError.stateName && {borderColor: 'red'},
+                ]}
+                data={stateOptions}
+                labelField="name"
+                valueField="id"
+                placeholder="state"
+                placeholderStyle={[
+                  styles.inputText,
+                  {color: colors.placeholder},
+                ]}
+                search
+                inputSearchStyle={styles.inputSearchStyle}
+                iconStyle={styles.iconStyle}
+                searchPlaceholder="Search..."
+                selectedTextStyle={styles.selectedText}
+                itemTextStyle={styles.inputText}
+                value={formData.stateName}
+                onChange={text => handleInputChange('stateName', text.id)}
+                renderRightIcon={() => (
+                  <DownarrowIcon
+                    width={wp(4)}
+                    height={wp(3)}
+                    style={{marginRight: 5}}
+                  />
+                )}
+              />
+            </Animated.View>
+            {validationError.stateName && (
+              <Text style={styles.errorText}>Please select your state.</Text>
+            )}
+          </View>
+          {/* </View> */}
+
+          {/* <View style={{flexDirection: 'row'}}> */}
+          <View style={[styles.inputmain, {flex: 1, marginBottom: 10}]}>
+            <Text style={styles.title2}>City*</Text>
+            <Animated.View
+              style={[{transform: [{translateX: shakeAnimation.city}]}]}>
+              <Dropdown
+                style={[
+                  styles.input,
+                  styles.inputShadow,
+                  validationError.city && {borderColor: 'red'},
+                ]}
+                data={cityOptions}
+                labelField="name"
+                valueField="id"
+                placeholder="City"
+                placeholderStyle={[
+                  styles.inputText,
+                  {color: colors.placeholder},
+                ]}
+                search
+                inputSearchStyle={styles.inputSearchStyle}
+                iconStyle={styles.iconStyle}
+                searchPlaceholder="Search..."
+                selectedTextStyle={styles.selectedText}
+                itemTextStyle={styles.inputText}
+                value={formData.city}
+                onChange={text => handleInputChange('city', text.id)}
+                renderRightIcon={() => (
+                  <DownarrowIcon
+                    width={wp(4)}
+                    height={wp(3)}
+                    style={{marginRight: 5}}
+                  />
+                )}
+              />
+            </Animated.View>
+            {validationError.city && (
+              <Text style={styles.errorText}>Please select your city.</Text>
+            )}
+          </View>
+
+          <View style={[styles.inputmain, {flex: 1}]}>
+            <Text style={styles.title2}>City Pincode*</Text>
+            <View
+              style={[
+                styles.input,
+                styles.inputShadow,
+                validationError.cityPincode && {borderColor: 'red'},
+              ]}>
+              <Animated.View
+                style={[
+                  {transform: [{translateX: shakeAnimation.cityPincode}]},
+                ]}>
+                <TextInput
+                  style={styles.inputText}
+                  placeholder="City Pincode"
+                  placeholderTextColor={colors.placeholder}
+                  keyboardType="numeric"
+                  maxLength={6}
+                  value={formData.cityPincode}
+                  onChangeText={text => handleInputChange('cityPincode', text)}
+                />
+              </Animated.View>
+            </View>
+            {validationError.cityPincode && (
+              <Text style={styles.errorText}>
+                Please enter your valid city pincode.
+              </Text>
+            )}
+          </View>
+          {/* </View> */}
+
           <View style={styles.inputmain}>
             <Text style={styles.title2}>Current Location*</Text>
             <View
@@ -1250,33 +1249,45 @@ const SignUpFranchise = () => {
               ]}>
               <Text style={styles.title2}>Upload Photo</Text>
               <View
-                style={[
-                  styles.input,
-                  styles.inputShadow,
-                  {
-                    alignItems: 'center',
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    paddingHorizontal: 5,
-                  },
-                ]}>
-                <TextInput
-                  style={styles.input1}
-                  placeholder="Upload Photo"
-                  placeholderTextColor={colors.placeholder}
-                  value={
-                    selectedImage?.uri ? selectedImage?.uri : selectedImage
-                  }
-                  editable={false}
-                />
+                style={{flexDirection: 'row'}}>
+                <View
+                  style={[
+                    styles.input,
+                    styles.inputShadow,
+                    {
+                      alignItems: 'center',
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      paddingHorizontal: 5,
+                      // width: '85%',
+                      flex:1
+                    },
+                  ]}>
+                  <TextInput
+                    style={styles.input1}
+                    placeholder="Upload Photo"
+                    placeholderTextColor={colors.placeholder}
+                    value={
+                      selectedImage?.uri ? selectedImage?.uri : selectedImage
+                    }
+                    editable={false}
+                  />
 
-                <TouchableOpacity
-                  onPress={() => setModalVisible(true)}
-                  style={styles.buttoncontainer1}>
-                  <Text style={[styles.btext, {fontSize: fontSize.Fourteen}]}>
-                    {'Browse'}
-                  </Text>
-                </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => setModalVisible(true)}
+                    style={styles.buttoncontainer1}>
+                    <Text style={[styles.btext, {fontSize: fontSize.Fourteen}]}>
+                      {'Browse'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                {selectedImage.length !== 0 && (
+                  <TouchableOpacity
+                    style={styles.removeImgBtn}
+                    onPress={() => setSelectedImage('')}>
+                    <Text style={styles.removeImg}>+</Text>
+                  </TouchableOpacity>
+                )}
               </View>
               <Text style={styles.uppload}>Maximum upload file size 2mb.</Text>
             </Animated.View>

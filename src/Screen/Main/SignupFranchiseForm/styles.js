@@ -218,6 +218,7 @@ export default StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+    marginBottom:15
   },
   errorText: {
     marginTop: 8,
@@ -228,5 +229,19 @@ export default StyleSheet.create({
    errorTextCommon:{
     position: 'absolute',
     bottom:0
+   },
+   removeImgBtn:{
+     backgroundColor:colors.orange,
+     borderRadius:30,
+     width: wp(10),
+     height:wp(10),
+     alignSelf:"center",
+     transform: [{rotate: '45deg'}],
+     marginLeft:15
+   },
+   removeImg:{
+    margin:"auto",
+    fontSize:wp(5),
+    color:"#fff"
    }
 });
